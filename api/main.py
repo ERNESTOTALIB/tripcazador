@@ -91,7 +91,8 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
-# CORS: permitir solo tripcazador.com y localhost en dev
+# CORS: permitir tripcazador.com (prod), localhost (dev), y previews Vercel
+# del proyecto ernesto-talibs-projects/tripcazador (para no romper CI visual).
 ALLOWED_ORIGINS = [
     "https://tripcazador.com",
     "https://www.tripcazador.com",
@@ -99,9 +100,15 @@ ALLOWED_ORIGINS = [
     "http://localhost:3001",
 ]
 
+# Previews Vercel: tripcazador-*.vercel.app
+# Regex explícita para evitar que cualquier *.vercel.app pida /api — solo
+# deploys del repo tripcazador.
+ALLOWED_ORIGIN_REGEX = r"https://tripcazador(-[a-z0-9-]+)?\.vercel\.app"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=ALLOWED_ORIGIN_REGEX,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )

@@ -383,14 +383,29 @@ async def run_pipeline(args):
         )
 
     elif mode == "all":
-        # Modo ALL: Ryanair (tiempo real) + Travelpayouts (cubre VY, U2, W6, IB, AF, LH, TK, EK...)
-        # Travelpayouts ya agrega 750+ aerolíneas → no necesitamos Vueling por separado
+        # Modo ALL: Ryanair (tiempo real, sin API key) + Travelpayouts (750+ aerolíneas vía Aviasales)
+        #          + RapidAPI Sky Scrapper (cubre destinos long-haul fuera de Ryanair/Travelpayouts).
+        # Kiwi Tequila queda explícitamente FUERA (API abandonada, no concede acceso comercial).
+        # Amadeus también fuera (API cerrada desde 2025).
         origins = parse_origins(args)
         include_business = getattr(args, "include_business", False)
         cabin_label = "economy + BUSINESS 👑" if include_business else "economy"
-        print_header(f"all (Ryanair + Travelpayouts — 750+ aerolíneas{' + Business' if include_business else ''})",
+
+        # Instanciar todos los motores primero para saber qué hay disponible
+        rapidapi = RapidAPIEngine()
+        amadeus = AmadeusEngine()  # se mantiene solo por si en el futuro vuelve; hoy available=False
+
+        motor_names = ["Ryanair", "Travelpayouts"]
+        if rapidapi.available:
+            motor_names.append("RapidAPI/SkyScrapper")
+        if amadeus.available:
+            motor_names.append("Amadeus")
+        if include_business:
+            motor_names.append("SerpAPI/Business")
+
+        print_header(f"all ({' + '.join(motor_names)})",
                      origins, args.date_from, args.date_to, cabin_label)
-        print(f"   🚀 Ejecutando {3 if include_business else 2} motores en paralelo...")
+        print(f"   🚀 Ejecutando {len(motor_names)} motores en paralelo...")
 
         ryanair_task = RyanairEngine().search_error_hunter(
             origins=origins,
@@ -406,36 +421,42 @@ async def run_pipeline(args):
             include_long_haul=True,
         )
 
-        amadeus = AmadeusEngine()
         tasks_parallel = [ryanair_task, tp_task]
+        tasks_labels = ["ryanair", "travelpayouts"]
+        if rapidapi.available:
+            # Modo anywhere-affordable cubre long-haul popular (JFK, BKK, GRU, DXB, ZNZ,
+            # MLE, ...). Se autolimita a ~6 orígenes × 2 fechas por ruta para no quemar
+            # el free tier de 500 req/mes.
+            tasks_parallel.append(rapidapi.search_anywhere_affordable(
+                origins=origins,
+                date_from=args.date_from,
+                date_to=args.date_to,
+            ))
+            tasks_labels.append("rapidapi")
         if amadeus.available:
-            amadeus_task = amadeus.search_gds_deals(
+            tasks_parallel.append(amadeus.search_gds_deals(
                 origins=origins,
                 date_from=args.date_from,
                 date_to=args.date_to,
-            )
-            tasks_parallel.append(amadeus_task)
+            ))
+            tasks_labels.append("amadeus")
         if include_business:
-            biz_task = SerpAPIEngine().search_business_routes(
+            tasks_parallel.append(SerpAPIEngine().search_business_routes(
                 origins=origins,
                 date_from=args.date_from,
                 date_to=args.date_to,
-            )
-            tasks_parallel.append(biz_task)
+            ))
+            tasks_labels.append("business_serpapi")
 
         parallel_results = await asyncio.gather(*tasks_parallel, return_exceptions=True)
-        ryanair_res  = parallel_results[0]
-        tp_res       = parallel_results[1]
-        idx = 2
-        amadeus_res  = parallel_results[idx] if amadeus.available and len(parallel_results) > idx else []
-        if amadeus.available:
-            idx += 1
-        biz_res      = parallel_results[idx] if include_business and len(parallel_results) > idx else []
 
         combined = []
-        for res in [ryanair_res, tp_res, amadeus_res, biz_res]:
+        for label, res in zip(tasks_labels, parallel_results):
             if isinstance(res, list):
                 combined.extend(res)
+                print(f"      ✓ {label}: {len(res)} vuelos")
+            else:
+                print(f"      ✗ {label}: error {type(res).__name__}: {res}")
 
         # Dedup final: más barato por (origin, dest, date_out, cabin_code)
         seen = {}

@@ -75,18 +75,51 @@ export async function getDeals(params?: {
   if (params?.max_price) query.set("max_price", String(params.max_price));
   if (params?.limit) query.set("limit", String(params.limit));
 
-  const url = `${API_BASE}/api/deals${query.toString() ? "?" + query : ""}`;
+  const dealsUrl = `${API_BASE}/api/deals${query.toString() ? "?" + query : ""}`;
+  const statsUrl = `${API_BASE}/api/stats`;
 
-  const res = await fetch(url, {
-    next: { revalidate: 300 }, // Revalidar cada 5 minutos (ISR)
-  });
+  // El backend FastAPI separa /api/deals (array) y /api/stats (object). Los
+  // componemos aquí en la forma DealsResponse que espera la web.
+  // Si cualquiera falla → fallback a deals.json estático para que la build no
+  // se rompa (p. ej. cuando la API responde lista vacía en cold-start).
+  try {
+    const [dealsRes, statsRes] = await Promise.all([
+      fetch(dealsUrl, { next: { revalidate: 300 } }),
+      fetch(statsUrl, { next: { revalidate: 300 } }),
+    ]);
 
-  if (!res.ok) {
-    // Fallback: intentar cargar desde deals.json estático
+    if (!dealsRes.ok || !statsRes.ok) {
+      return getDealsFromStatic();
+    }
+
+    const dealsBody: unknown = await dealsRes.json();
+    const stats = await statsRes.json();
+
+    const deals: Deal[] = Array.isArray(dealsBody)
+      ? (dealsBody as Deal[])
+      : ((dealsBody as { deals?: Deal[] })?.deals ?? []);
+
+    return {
+      schema_version: "v4.1",
+      generated_at: stats?.generated_at ?? new Date().toISOString(),
+      total_deals: stats?.total ?? deals.length,
+      stats: {
+        total: stats?.total ?? 0,
+        flights: stats?.flights ?? 0,
+        hotels: stats?.hotels ?? 0,
+        by_classification: stats?.by_classification ?? {},
+        by_region: stats?.by_region ?? {},
+        by_cabin: stats?.by_cabin ?? {},
+        price_min: stats?.price_min ?? 0,
+        price_max: stats?.price_max ?? 0,
+        price_avg: stats?.price_avg ?? 0,
+        verified_count: stats?.verified_count ?? 0,
+      },
+      deals,
+    };
+  } catch {
     return getDealsFromStatic();
   }
-
-  return res.json();
 }
 
 // ──────────────────────────────────────────────────────────────
