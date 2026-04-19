@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🦒 Tanzania & Zanzíbar — Mejor Época y Precios</title>
+<style>
+  :root {
+    --bg: #0a0f1e; --card: #111827; --card2: #1a2436;
+    --accent: #f59e0b; --green: #10b981; --yellow: #f59e0b;
+    --red: #ef4444; --blue: #3b82f6; --purple: #8b5cf6;
+    --text: #f1f5f9; --text2: #94a3b8; --border: #1e293b;
+    --orange: #f97316;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; }
+
+  header {
+    background: linear-gradient(135deg, #0f2027 0%, #1a4a2e 50%, #0f2027 100%);
+    padding: 48px 24px; text-align: center;
+    border-bottom: 1px solid #1e3a2e;
+    position: relative; overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+  header h1 { font-size: 2.4em; font-weight: 800; position: relative; }
+  header p { color: #6ee7b7; margin-top: 8px; font-size: 1.1em; position: relative; }
+  header .subtitle { color: var(--text2); margin-top: 6px; font-size: 0.9em; position: relative; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 36px 16px; }
+
+  h2 { font-size: 1.35em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--text); }
+  h2 .tag { font-size: 0.65em; background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 2px 10px; color: var(--text2); font-weight: 400; }
+
+  /* Sweet spot banner */
+  .sweet-spot {
+    background: linear-gradient(135deg, #064e3b, #065f46);
+    border: 1px solid #10b981;
+    border-radius: 16px; padding: 24px 28px; margin-bottom: 40px;
+    display: flex; align-items: flex-start; gap: 20px;
+  }
+  .sweet-spot .icon { font-size: 2.5em; flex-shrink: 0; }
+  .sweet-spot h3 { font-size: 1.2em; color: #6ee7b7; margin-bottom: 6px; }
+  .sweet-spot p { color: #a7f3d0; line-height: 1.6; }
+  .sweet-spot strong { color: #fff; }
+
+  /* Month calendar grid */
+  .month-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 900px) { .month-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 500px) { .month-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .month-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px 14px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .month-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .month-card.best { border-color: var(--green); background: linear-gradient(135deg, #0f2d20, #111827); }
+  .month-card.good { border-color: #065f46; }
+  .month-card.avoid { border-color: #7f1d1d; background: linear-gradient(135deg, #1a0a0a, #111827); }
+  .month-card.ok { border-color: #78350f; }
+
+  .month-name { font-size: 1.0em; font-weight: 700; margin-bottom: 4px; }
+  .month-badge {
+    display: inline-block; font-size: 0.62em; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px; margin-bottom: 10px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .badge-best { background: var(--green); color: #000; }
+  .badge-good { background: #065f46; color: #6ee7b7; }
+  .badge-ok { background: #78350f; color: #fcd34d; }
+  .badge-avoid { background: #7f1d1d; color: #fca5a5; }
+
+  .month-metric { margin-bottom: 6px; }
+  .metric-label { font-size: 0.68em; color: var(--text2); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+  .metric-bar { background: var(--card2); border-radius: 3px; height: 5px; overflow: hidden; margin-bottom: 1px; }
+  .metric-fill { height: 100%; border-radius: 3px; }
+
+  .month-price { font-size: 1.4em; font-weight: 800; color: var(--accent); margin-top: 10px; }
+  .month-price span { font-size: 0.55em; color: var(--text2); font-weight: 400; display: block; }
+
+  .month-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .mtag {
+    font-size: 0.6em; padding: 2px 6px; border-radius: 6px;
+    background: var(--card2); color: var(--text2); border: 1px solid var(--border);
+  }
+  .mtag.active { background: #1e3a5f; color: #93c5fd; border-color: #2563eb; }
+
+  /* Score bar */
+  .score-section { margin-bottom: 40px; }
+  .score-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; align-items: end; height: 80px; }
+  .score-col { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .score-bar-wrap { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; width: 100%; }
+  .score-bar { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.3s; }
+  .score-label { font-size: 0.65em; color: var(--text2); text-align: center; }
+
+  /* Airlines section */
+  .airlines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 40px; }
+  .airline-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .airline-icon { font-size: 1.8em; flex-shrink: 0; }
+  .airline-name { font-weight: 700; font-size: 0.95em; margin-bottom: 4px; }
+  .airline-hub { font-size: 0.75em; color: var(--text2); margin-bottom: 6px; }
+  .airline-price { font-size: 1.1em; font-weight: 700; color: var(--accent); }
+  .airline-price span { font-size: 0.7em; color: var(--text2); font-weight: 400; }
+
+  /* Tips */
+  .tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .tip-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .tip-card .tip-icon { font-size: 1.6em; margin-bottom: 10px; }
+  .tip-card h4 { font-size: 0.95em; margin-bottom: 8px; color: var(--accent); }
+  .tip-card p { font-size: 0.85em; color: var(--text2); line-height: 1.6; }
+
+  /* Detail panel */
+  #detail-panel {
+    background: linear-gradient(135deg, var(--card2), var(--card));
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px;
+    margin-bottom: 40px; display: none;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  #detail-panel h3 { font-size: 1.2em; margin-bottom: 16px; }
+  .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .detail-item { background: var(--card); border-radius: 8px; padding: 12px; }
+  .detail-item .d-label { font-size: 0.7em; color: var(--text2); text-transform: uppercase; margin-bottom: 4px; }
+  .detail-item .d-value { font-size: 1.0em; font-weight: 600; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 0.8em; color: var(--text2); }
+  .leg-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+  footer { text-align: center; padding: 28px; color: var(--text2); font-size: 0.78em; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🦒 Tanzania & Zanzíbar</h1>
+  <p>Mejor época para viajar · Clima · Precios de vuelos desde Europa Central</p>
+  <div class="subtitle">Frankfurt · Basel · Zürich · Stuttgart · Ginebra · Munich</div>
+</header>
+
+<div class="container">
+
+  <!-- Sweet Spot -->
+  <div class="sweet-spot">
+    <div class="icon">⭐</div>
+    <div>
+      <h3>Sweet Spots — Precio + Clima</h3>
+      <p>
+        <strong>Junio y Septiembre/Octubre</strong> son las mejores épocas: tiempo seco, paisajes espectaculares, y precios de vuelo más bajos que en julio-agosto.
+        <strong>Enero-Febrero</strong> también es excelente (seco, cálido) con precios moderados tras el pico navideño.
+        <br>Evita <strong>abril-mayo</strong> (lluvias torrenciales) salvo que busques el precio más bajo de todo el año.
+      </p>
+    </div>
+  </div>
+
+  <!-- Month Calendar -->
+  <h2>📅 Mes a mes <span class="tag">Haz clic en un mes para detalles</span></h2>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:var(--green)"></div> Mejor época</div>
+    <div class="leg"><div class="leg-dot" style="background:#065f46"></div> Buena época</div>
+    <div class="leg"><div class="leg-dot" style="background:#78350f"></div> Aceptable</div>
+    <div class="leg"><div class="leg-dot" style="background:#7f1d1d"></div> Evitar (lluvias)</div>
+  </div>
+
+  <div class="month-grid" id="monthGrid"></div>
+  <div id="detail-panel"></div>
+
+  <!-- Score chart -->
+  <h2>📊 Puntuación global por mes <span class="tag">Clima + Precio + Actividades</span></h2>
+  <div class="score-section">
+    <div class="score-grid" id="scoreGrid"></div>
+  </div>
+
+  <!-- Airlines -->
+  <h2>✈️ Aerolíneas y rutas desde Europa Central</h2>
+  <div class="airlines-grid">
+    <div class="airline-card">
+      <div class="airline-icon">🇪🇹</div>
+      <div>
+        <div class="airline-name">Ethiopian Airlines</div>
+        <div class="airline-hub">Vía Addis Abeba (ADD) · Escala corta 1-2h</div>
+        <div class="airline-price">~400-600€ <span>ida y vuelta</span></div>
+      </div>
+    </div>
+    <div class="airline-card">
+      <div class="airline-icon">🇶🇦</div>
+      <div>
+        <div class="airline-name">Qatar Airways</div>
+        <div class="airline-hub">Vía Doha (DOH) · Escala 2-4h</div>
+        <div class="airline-price">~500-750€ <span>ida y vuelta</span></div>
+      </div>
+    </div>
+    <div class="airline-card">
+      <div class="airline-icon">🇹🇷</div>
+      <div>
+        <div class="airline-name">Turkish Airlines</div>
+        <div class="airline-hub">Vía Estambul (IST) · Escala 1-3h</div>
+        <div class="airline-price">~450-650€ <span>ida y vuelta</span></div>
+      </div>
+    </div>
+    <div class="airline-card">
+      <div class="airline-icon">🇰🇪</div>
+      <div>
+        <div class="airline-name">Kenya Airways</div>
+        <div class="airline-hub">Vía Nairobi (NBO) · Con KLM desde AMS</div>
+        <div class="airline-price">~550-800€ <span>ida y vuelta</span></div>
+      </div>
+    </div>
+    <div class="airline-card">
+      <div class="airline-icon">🇦🇪</div>
+      <div>
+        <div class="airline-name">Emirates</div>
+        <div class="airline-hub">Vía Dubái (DXB) · Escala 2-4h</div>
+        <div class="airline-price">~600-900€ <span>ida y vuelta</span></div>
+      </div>
+    </div>
+    <div class="airline-card">
+      <div class="airline-icon">🇳🇱</div>
+      <div>
+        <div class="airline-name">KLM (desde AMS)</div>
+        <div class="airline-hub">Ámsterdam directo a Nairobi / ZNZ</div>
+        <div class="airline-price">~580-850€ <span>ida y vuelta</span></div>
+      </div>
+    </div>
+    <div class="airline-card">
+      <div class="airline-icon">🇦🇪</div>
+      <div>
+        <div class="airline-name">flydubai + Emirates</div>
+        <div class="airline-hub">Combinación económica vía DXB</div>
+        <div class="airline-price">~480-700€ <span>ida y vuelta</span></div>
+      </div>
+    </div>
+    <div class="airline-card">
+      <div class="airline-icon">🇸🇦</div>
+      <div>
+        <div class="airline-name">Saudia / Oman Air</div>
+        <div class="airline-hub">Vía Riad o Mascate · Opción menos conocida</div>
+        <div class="airline-price">~420-580€ <span>ida y vuelta</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <h2>💡 Consejos para encontrar el mejor precio</h2>
+  <div class="tips-grid">
+    <div class="tip-card">
+      <div class="tip-icon">🔍</div>
+      <h4>Busca con escala en Nairobi o Addis</h4>
+      <p>Los vuelos más baratos a Zanzíbar (ZNZ) suelen ser vía Nairobi (NBO) con Kenya Airways/KLM, o vía Addis Abeba (ADD) con Ethiopian. La conexión añade 2-4h pero ahorra 150-300€.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">📅</div>
+      <h4>Compra con 3-5 meses de antelación</h4>
+      <p>Para temporada seca (jun-oct), los precios suben rápidamente. Comprar en enero-febrero para un viaje en junio suele dar los mejores precios. Para enero-febrero, compra en septiembre.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">✈️</div>
+      <h4>Prueba volar a DAR en vez de ZNZ</h4>
+      <p>Dar es Salaam (DAR) suele ser 50-150€ más barata que volar directo a Zanzíbar (ZNZ). Desde DAR hay ferry a Zanzíbar en 1h30 por ~10€, o vuelo local por ~30€.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🛫</div>
+      <h4>Hubs más baratos desde tu zona</h4>
+      <p>Desde Basel/FRA/ZRH, Ethiopian Airlines (vía ADD) y Turkish Airlines (vía IST) compiten fuerte. Compara saliendo de FRA, ZRH, BSL y MUC — las diferencias pueden ser de 100-200€.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🌊</div>
+      <h4>Combina safari + Zanzíbar</h4>
+      <p>Muchos viajeros vuelan a NBO o DAR (más barato), hacen safari en Serengeti/Ngorongoro y terminan en Zanzíbar. El vuelo interno JRO/DAR→ZNZ cuesta ~30-80€ y vale muchísimo.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">📉</div>
+      <h4>Meses de precio mínimo</h4>
+      <p>Marzo-Mayo tienen los precios más bajos del año (400-550€ i/v desde Europa Central) pero son meses de lluvias intensas. Si toleras la lluvia o priorizas el precio, considera mayo (menos lluvia que abril).</p>
+    </div>
+  </div>
+
+  <!-- Price by season summary -->
+  <h2>💰 Rangos de precio por temporada <span class="tag">ida y vuelta desde FRA/ZRH/BSL</span></h2>
+  <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:40px;">
+    <table style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr style="background:var(--card2);">
+          <th style="padding:12px 16px; text-align:left; font-size:0.8em; color:var(--text2); text-transform:uppercase; letter-spacing:0.05em;">Temporada</th>
+          <th style="padding:12px 16px; text-align:left; font-size:0.8em; color:var(--text2); text-transform:uppercase;">Meses</th>
+          <th style="padding:12px 16px; text-align:left; font-size:0.8em; color:var(--text2); text-transform:uppercase;">Precio vuelo</th>
+          <th style="padding:12px 16px; text-align:left; font-size:0.8em; color:var(--text2); text-transform:uppercase;">Clima</th>
+          <th style="padding:12px 16px; text-align:left; font-size:0.8em; color:var(--text2); text-transform:uppercase;">Valoración</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px; font-weight:700; color:#fcd34d;">🌟 Alta demanda</td>
+          <td style="padding:12px 16px; color:var(--text2);">Jul · Ago · Dic · Ene</td>
+          <td style="padding:12px 16px; color:var(--red); font-weight:700;">800 – 1.500€</td>
+          <td style="padding:12px 16px; color:var(--text2);">☀️ Excelente</td>
+          <td style="padding:12px 16px;">⭐⭐⭐⭐⭐ clima / 💸 caro</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border); background: linear-gradient(90deg, #0a1f12 0%, transparent 100%);">
+          <td style="padding:12px 16px; font-weight:700; color:var(--green);">✅ Sweet Spot</td>
+          <td style="padding:12px 16px; color:var(--text2);">Jun · Sep · Oct</td>
+          <td style="padding:12px 16px; color:var(--green); font-weight:700;">500 – 750€</td>
+          <td style="padding:12px 16px; color:var(--text2);">☀️ Muy bueno</td>
+          <td style="padding:12px 16px;">⭐⭐⭐⭐⭐ precio+clima</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px; font-weight:700; color:var(--yellow);">🟡 Temporada media</td>
+          <td style="padding:12px 16px; color:var(--text2);">Feb · Mar · Nov</td>
+          <td style="padding:12px 16px; color:var(--yellow); font-weight:700;">450 – 650€</td>
+          <td style="padding:12px 16px; color:var(--text2);">🌤️ Bueno / lluvia leve</td>
+          <td style="padding:12px 16px;">⭐⭐⭐⭐ buen equilibrio</td>
+        </tr>
+        <tr>
+          <td style="padding:12px 16px; font-weight:700; color:var(--red);">🔴 Mínimo precio</td>
+          <td style="padding:12px 16px; color:var(--text2);">Abr · May</td>
+          <td style="padding:12px 16px; color:var(--orange); font-weight:700;">380 – 520€</td>
+          <td style="padding:12px 16px; color:var(--text2);">🌧️ Lluvias largas</td>
+          <td style="padding:12px 16px;">⭐⭐ solo por precio</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  🌍 Datos: Expert Africa, ExpertAfrica.com, Expedia, Skyscanner · Klimatabelle Zanzibar · Flight Hunter v4<br>
+  Precios orientativos. Verificar en Google Flights, Skyscanner o directamente con las aerolíneas.
+</footer>
+
+<script>
+const months = [
+  {
+    name: "Enero", short: "Ene", type: "good",
+    rain: 15, sun: 85, temp: 28, sea: 27,
+    price: 700, priceRange: "650-900€",
+    score: 78,
+    badge: "good", badgeText: "Buena época",
+    tags: ["beach", "buceo"],
+    detail: {
+      clima: "Seco y cálido. Pocas lluvias, cielos despejados. Ideal para playa.",
+      safari: "Safari bueno — vegetación baja facilita ver animales. Calor intenso en el interior.",
+      zanzibar: "Excelente para playa y buceo. Agua cálida (~27°C), visibilidad perfecta.",
+      vuelo: "Caro: pico de Navidad/Año Nuevo extendido. Baja tras el 10 de enero.",
+      tip: "Reserva lo antes posible si viajas en enero. Tras el 15 de enero bajan los precios.",
+    }
+  },
+  {
+    name: "Febrero", short: "Feb", type: "good",
+    rain: 20, sun: 80, temp: 28, sea: 27,
+    price: 550, priceRange: "490-650€",
+    score: 82,
+    badge: "good", badgeText: "Buena época",
+    tags: ["beach", "safari", "buceo"],
+    detail: {
+      clima: "Muy seco. Uno de los meses más secos del año en Tanzania continental.",
+      safari: "Excelente. Animales concentrados en fuentes de agua. Gran visibilidad.",
+      zanzibar: "Muy bueno. Calor, cielos despejados, buena visibilidad submarina.",
+      vuelo: "Precio razonable tras el pico navideño. Buenos deals disponibles.",
+      tip: "Sweet spot de invierno. Combina bien safari + playa a buen precio.",
+    }
+  },
+  {
+    name: "Marzo", short: "Mar", type: "ok",
+    rain: 45, sun: 60, temp: 29, sea: 28,
+    price: 470, priceRange: "420-550€",
+    score: 55,
+    badge: "ok", badgeText: "Aceptable",
+    tags: ["precio bajo", "flores"],
+    detail: {
+      clima: "Inicio de las lluvias largas (Masika). Lluvias vespertinas, mañanas despejadas.",
+      safari: "Todavía aceptable la primera quincena. Acceso difícil con lluvias.",
+      zanzibar: "Mezcla de sol y lluvia. Mar aún agradable. Playas vacías.",
+      vuelo: "Uno de los más baratos del año. Gran oportunidad si toleras la lluvia.",
+      tip: "Primera quincena de marzo puede ser muy buena — lluvias aún escasas.",
+    }
+  },
+  {
+    name: "Abril", short: "Abr", type: "avoid",
+    rain: 90, sun: 20, temp: 28, sea: 28,
+    price: 420, priceRange: "380-490€",
+    score: 22,
+    badge: "avoid", badgeText: "Evitar",
+    tags: ["lluvia intensa", "precio mínimo"],
+    detail: {
+      clima: "Lluvias largas (Masika) en pleno apogeo. Lluvias persistentes varios días.",
+      safari: "No recomendado. Carreteras cortadas, parques parcialmente cerrados.",
+      zanzibar: "Muy húmedo. Lluvias intensas y continuas. Hoteles en mínimos.",
+      vuelo: "Precio más bajo del año (~380-450€ i/v). Solo si el precio es lo único que importa.",
+      tip: "Solo para viajeros muy flexibles con presupuesto ajustado. Muchos lodges cierran.",
+    }
+  },
+  {
+    name: "Mayo", short: "May", type: "avoid",
+    rain: 70, sun: 30, temp: 26, sea: 27,
+    price: 440, priceRange: "400-510€",
+    score: 30,
+    badge: "avoid", badgeText: "Evitar",
+    tags: ["lluvia", "precio bajo"],
+    detail: {
+      clima: "Último mes de lluvias largas. Hacia finales empieza a mejorar notablemente.",
+      safari: "Final del mes puede estar bien. Serengeti y Ngorongoro menos afectados.",
+      zanzibar: "Segunda quincena de mayo mejora mucho. Algunos años ya hay sol constante.",
+      vuelo: "Muy barato. Segunda quincena de mayo puede ser buena opción calidad/precio.",
+      tip: "Fin de mayo es el mes más infravalorado: precios de temporada baja, clima ya en recuperación.",
+    }
+  },
+  {
+    name: "Junio", short: "Jun", type: "best",
+    rain: 10, sun: 90, temp: 24, sea: 25,
+    price: 560, priceRange: "500-680€",
+    score: 92,
+    badge: "best", badgeText: "Mejor época",
+    tags: ["safari", "playa", "migración"],
+    detail: {
+      clima: "Inicio de la estación seca larga. Clima fresco y seco. Perfecto.",
+      safari: "EXCELENTE. Gran Migración llega al Serengeti norte. Cruces del Mara River.",
+      zanzibar: "Muy buena. Playa limpia, brisas suaves, buen snorkel. Algo más fresco (~24°C).",
+      vuelo: "Precio razonable — aún no ha llegado el pico de julio-agosto.",
+      tip: "⭐ Mejor mes para combinar safari + Zanzíbar al mejor precio. Reserva con 4-5 meses de antelación.",
+    }
+  },
+  {
+    name: "Julio", short: "Jul", type: "best",
+    rain: 5, sun: 95, temp: 22, sea: 23,
+    price: 850, priceRange: "750-1.100€",
+    score: 70,
+    badge: "best", badgeText: "Excelente pero caro",
+    tags: ["safari", "migración", "temporada alta"],
+    detail: {
+      clima: "Seco y soleado. Temperatura fresca por las noches. El mejor mes de safari.",
+      safari: "Espectacular. Pico de la Gran Migración. Masas de ñus cruzando el Mara.",
+      zanzibar: "Muy buena — agua más fresca (22-23°C). Windsurf y kite excelentes.",
+      vuelo: "CARO. Pico de verano europeo. Precios al máximo anual.",
+      tip: "Si el presupuesto lo permite, es el mes más espectacular. Reserva con 6 meses de antelación.",
+    }
+  },
+  {
+    name: "Agosto", short: "Ago", type: "best",
+    rain: 5, sun: 92, temp: 22, sea: 23,
+    price: 820, priceRange: "700-1.050€",
+    score: 68,
+    badge: "best", badgeText: "Excelente pero caro",
+    tags: ["safari", "migración", "temporada alta"],
+    detail: {
+      clima: "Igual de perfecto que julio. Temperaturas agradables, sin lluvia.",
+      safari: "Gran Migración en plena acción. Depredadores activos. Vista espectacular.",
+      zanzibar: "Buena playa. Agua algo fresca pero muy agradable para bucear.",
+      vuelo: "Muy caro. Agosto es temporada alta en Europa = vuelos caros.",
+      tip: "Si viajas en agosto, reserva con 5-6 meses y compara muchas aerolíneas.",
+    }
+  },
+  {
+    name: "Septiembre", short: "Sep", type: "best",
+    rain: 15, sun: 85, temp: 23, sea: 24,
+    price: 590, priceRange: "530-720€",
+    score: 93,
+    badge: "best", badgeText: "Sweet Spot ⭐",
+    tags: ["safari", "playa", "precio-calidad"],
+    detail: {
+      clima: "Seco, temperaturas suben suavemente. Noches agradables. Muy estable.",
+      safari: "Muy bueno — Migración aún activa en el norte. Menos turistas que julio-agosto.",
+      zanzibar: "El agua empieza a calentar (24°C+). Playas mucho menos masificadas.",
+      vuelo: "Baja notable respecto a julio-agosto. Excelente precio-calidad.",
+      tip: "⭐⭐ Mejor mes combinado de todo el año. Mismas condiciones que agosto a mitad de precio.",
+    }
+  },
+  {
+    name: "Octubre", short: "Oct", type: "best",
+    rain: 25, sun: 75, temp: 25, sea: 26,
+    price: 570, priceRange: "520-700€",
+    score: 85,
+    badge: "best", badgeText: "Muy bueno",
+    tags: ["playa", "safari", "calor"],
+    detail: {
+      clima: "Fin de estación seca. Algunos chubascos cortos al final del mes. Calor aumenta.",
+      safari: "Excelente la primera quincena. Vegetación empieza a crecer → dificulta avistamiento.",
+      zanzibar: "IDEAL para playa. Agua caliente (26°C), cielos despejados, pocas lluvias.",
+      vuelo: "Buen precio — temporada media. El mes más barato del período seco.",
+      tip: "Para playa principalmente: octubre es el mes perfecto. Safari: primera quincena.",
+    }
+  },
+  {
+    name: "Noviembre", short: "Nov", type: "ok",
+    rain: 50, sun: 55, temp: 27, sea: 27,
+    price: 500, priceRange: "460-600€",
+    score: 60,
+    badge: "ok", badgeText: "Lluvia corta",
+    tags: ["lluvias cortas", "precio bajo"],
+    detail: {
+      clima: "Inicio de las lluvias cortas (Vuli). Chubascos breves, mañanas soleadas.",
+      safari: "Aceptable — vegetación exuberante, difícil ver animales pero flora espectacular.",
+      zanzibar: "Lluvias más impredecibles pero más cortas. Temperatura ideal (27°C).",
+      vuelo: "Precio moderado-bajo. Buena oportunidad si no te importa algún chubasco.",
+      tip: "Las lluvias de noviembre son cortas (30-60 min) y luego vuelve el sol. Muy diferente de abril.",
+    }
+  },
+  {
+    name: "Diciembre", short: "Dic", type: "good",
+    rain: 35, sun: 65, temp: 28, sea: 27,
+    price: 810, priceRange: "700-1.200€",
+    score: 62,
+    badge: "good", badgeText: "Navidades caras",
+    tags: ["navidad", "lluvias cortas", "festivo"],
+    detail: {
+      clima: "Primera quincena con lluvias cortas. Segunda quincena mejora — ideal para Navidades.",
+      safari: "Bueno en la segunda quincena. Ñus paridero en el Serengeti sur.",
+      zanzibar: "Buen tiempo la segunda quincena. Navidad en Zanzíbar es espectacular.",
+      vuelo: "Muy caro en Navidades (del 20 al 31). Principios de diciembre más barato.",
+      tip: "Viajar del 5 al 20 de diciembre es un truco excelente: precio de temporada media con clima navideño.",
+    }
+  }
+];
+
+function buildGrid() {
+  const grid = document.getElementById('monthGrid');
+  months.forEach((m, i) => {
+    const card = document.createElement('div');
+    card.className = `month-card ${m.type}`;
+    card.innerHTML = `
+      <div class="month-name">${m.name}</div>
+      <span class="month-badge badge-${m.badge}">${m.badgeText}</span>
+
+      <div class="month-metric">
+        <div class="metric-label">☀️ Sol</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:${m.sun}%;background:${m.sun>70?'#f59e0b':'#475569'}"></div></div>
+      </div>
+      <div class="month-metric">
+        <div class="metric-label">🌧️ Lluvia</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:${m.rain}%;background:${m.rain>50?'#3b82f6':'#1e40af'}"></div></div>
+      </div>
+      <div class="month-metric">
+        <div class="metric-label">🌡️ Temp ${m.temp}°C / 🌊 ${m.sea}°C</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:${((m.temp-18)/15)*100}%;background:#10b981"></div></div>
+      </div>
+
+      <div class="month-price">${m.priceRange}<span>desde Europa Central i/v</span></div>
+
+      <div class="month-tags">
+        ${m.tags.map(t => `<span class="mtag active">${t}</span>`).join('')}
+      </div>
+    `;
+    card.onclick = () => showDetail(m, i);
+    grid.appendChild(card);
+  });
+}
+
+function showDetail(m, i) {
+  const panel = document.getElementById('detail-panel');
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <h3>📍 ${m.name} — Detalle completo</h3>
+    <div class="detail-grid">
+      <div class="detail-item">
+        <div class="d-label">🌤️ Clima</div>
+        <div class="d-value" style="font-size:0.85em;font-weight:400;color:var(--text2)">${m.detail.clima}</div>
+      </div>
+      <div class="detail-item">
+        <div class="d-label">🦁 Safari</div>
+        <div class="d-value" style="font-size:0.85em;font-weight:400;color:var(--text2)">${m.detail.safari}</div>
+      </div>
+      <div class="detail-item">
+        <div class="d-label">🏝️ Zanzíbar (playa)</div>
+        <div class="d-value" style="font-size:0.85em;font-weight:400;color:var(--text2)">${m.detail.zanzibar}</div>
+      </div>
+      <div class="detail-item">
+        <div class="d-label">✈️ Precio vuelo</div>
+        <div class="d-value" style="font-size:0.85em;font-weight:400;color:var(--text2)">${m.detail.vuelo}</div>
+      </div>
+    </div>
+    <div style="background:var(--card2);border-radius:10px;padding:14px;margin-top:14px;border:1px solid var(--border)">
+      <div style="font-size:0.75em;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px">💡 Consejo</div>
+      <div style="font-size:0.9em;color:var(--text)">${m.detail.tip}</div>
+    </div>
+  `;
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function buildScoreGrid() {
+  const grid = document.getElementById('scoreGrid');
+  const maxScore = 100;
+  months.forEach(m => {
+    const col = document.createElement('div');
+    col.className = 'score-col';
+    const pct = (m.score / maxScore) * 100;
+    const color = m.score >= 85 ? '#10b981' : m.score >= 60 ? '#f59e0b' : m.score >= 40 ? '#f97316' : '#ef4444';
+    col.innerHTML = `
+      <div class="score-bar-wrap">
+        <div class="score-bar" style="height:${pct}%;background:${color};min-height:4px"></div>
+      </div>
+      <div class="score-label">${m.short}<br><span style="color:${color};font-weight:700">${m.score}</span></div>
+    `;
+    grid.appendChild(col);
+  });
+}
+
+buildGrid();
+buildScoreGrid();
+</script>
+</body>
+</html>

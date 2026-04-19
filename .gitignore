@@ -1,0 +1,72 @@
+# ==============================================================
+# TripCazador — .gitignore
+# ==============================================================
+
+# Secrets — NUNCA commitear
+.env
+.env.local
+.env.production
+.env.*.local
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+.mypy_cache/
+.ruff_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+.vercel/
+.turbo/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# DBs locales
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Logs / artefactos
+*.log
+logs/
+deals.json
+flights_v4.db
+price_history_v4.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backups
+backups/
+*.tar.gz
+*.dump
+
+# Tests
+htmlcov/
+.coverage.*

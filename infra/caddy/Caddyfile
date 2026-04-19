@@ -1,0 +1,69 @@
+# Caddyfile — reverse proxy con SSL automático (Let's Encrypt) para TripCazador
+#
+# Los placeholders {{DOMAIN}}, {{API_DOMAIN}} y {{EMAIL}} son reemplazados
+# por bootstrap.sh con sed.
+
+{
+    email {{EMAIL}}
+    # admin endpoint solo local
+    admin localhost:2019
+    # log global
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 100mb
+            roll_keep 7
+        }
+        format json
+        level INFO
+    }
+}
+
+# --- Web frontend (Next.js) ---
+{{DOMAIN}}, www.{{DOMAIN}} {
+    encode zstd gzip
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        -Server
+    }
+
+    # Redirect www → apex
+    @www host www.{{DOMAIN}}
+    redir @www https://{{DOMAIN}}{uri} permanent
+
+    reverse_proxy localhost:3000 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto https
+    }
+}
+
+# --- API (FastAPI) ---
+{{API_DOMAIN}} {
+    encode zstd gzip
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        Access-Control-Allow-Origin "https://{{DOMAIN}}"
+        Access-Control-Allow-Methods "GET, POST, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization"
+        -Server
+    }
+
+    # Rate limit (requiere plugin, opcional — por ahora confiamos en FastAPI middleware)
+    # Endpoint de salud SIN auth
+    @health path /health /healthz /ready
+    reverse_proxy @health localhost:8000
+
+    reverse_proxy localhost:8000 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto https
+    }
+}

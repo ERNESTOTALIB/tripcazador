@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "data": [
+    {
+      "origin": "MAD",
+      "destination": "CUN",
+      "price": 385,
+      "airline": "UX",
+      "flight_number": "101",
+      "departure_at": "2026-11-10T10:00:00",
+      "return_at": "2026-11-24T18:30:00",
+      "transfers": 0,
+      "expires_at": "2026-04-25T09:00:00Z"
+    },
+    {
+      "origin": "MAD",
+      "destination": "CUN",
+      "price": 540,
+      "airline": "IB",
+      "flight_number": "6525",
+      "departure_at": "2026-11-12T13:20:00",
+      "return_at": "2026-11-26T21:00:00",
+      "transfers": 1,
+      "expires_at": "2026-04-25T09:00:00Z"
+    }
+  ]
+}

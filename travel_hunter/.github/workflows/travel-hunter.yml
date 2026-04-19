@@ -1,0 +1,147 @@
+# =============================================================
+# Travel Hunter - GitHub Actions Workflow
+# =============================================================
+# Ejecuta búsquedas automáticas cada 4h de día, cada 6h de noche (CET)
+# Envía emails separados para vuelos y hoteles
+#
+# CONFIGURACIÓN NECESARIA (GitHub Secrets):
+#   SMTP_EMAIL        - Tu email de Gmail
+#   SMTP_PASSWORD     - App Password de Gmail (16 caracteres)
+#   RECIPIENT_EMAIL   - Donde recibir las alertas
+#   SEARCH_CONFIG     - JSON con tus búsquedas (ver README)
+#   TEQUILA_API_KEY   - API key de Tequila/Kiwi (gratis, fuente principal vuelos)
+# =============================================================
+
+name: Travel Hunter
+
+on:
+  # Ejecución manual (para probar)
+  workflow_dispatch:
+    inputs:
+      search_mode:
+        description: 'Modo de búsqueda'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full          # Scraping + URLs
+          - urls_only     # Solo generar URLs y enviar email
+
+  # Programación automática (cron en UTC)
+  # Estrasburgo = UTC+1 (invierno) / UTC+2 (verano)
+  # Día (7:00-23:00 CET) = cada 4h: 06,10,14,18,22 UTC (aprox)
+  # Noche (23:00-7:00 CET) = cada 6h: 01,05 UTC
+  schedule:
+    # Búsquedas de DÍA (cada 4h, CET 07:00 a 23:00)
+    - cron: '0 6 * * *'    # 07:00 CET / 08:00 CEST
+    - cron: '0 10 * * *'   # 11:00 CET / 12:00 CEST
+    - cron: '0 14 * * *'   # 15:00 CET / 16:00 CEST
+    - cron: '0 18 * * *'   # 19:00 CET / 20:00 CEST
+    - cron: '0 22 * * *'   # 23:00 CET / 00:00 CEST
+
+    # Búsquedas de NOCHE (cada 6h)
+    - cron: '0 1 * * *'    # 02:00 CET / 03:00 CEST
+    - cron: '0 5 * * *'    # 06:00 CET / 07:00 CEST (justo antes del día)
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # ----- SETUP -----
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install --upgrade pip
+
+      # ----- CACHE PLAYWRIGHT BROWSERS -----
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: playwright install chromium --with-deps
+
+      - name: Install Playwright deps (if cached)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: playwright install-deps chromium
+
+      # ----- CACHE PRICE DATABASE -----
+      - name: Cache price database
+        uses: actions/cache@v4
+        with:
+          path: travel_prices.db
+          key: travel-db-${{ github.run_id }}
+          restore-keys: |
+            travel-db-
+
+      # ----- GENERATE CONFIG -----
+      # ----- CACHE SCRAPING STATE -----
+      - name: Cache scraping state
+        uses: actions/cache@v4
+        with:
+          path: scraping_state.json
+          key: scraping-state-${{ github.run_id }}
+          restore-keys: |
+            scraping-state-
+
+      # ----- GENERATE CONFIG -----
+      - name: Generate config from secrets
+        env:
+          SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          SEARCH_CONFIG: ${{ secrets.SEARCH_CONFIG }}
+          TEQUILA_API_KEY: ${{ secrets.TEQUILA_API_KEY }}
+        run: |
+          python generate_ci_config.py
+
+      # ----- RUN SEARCH -----
+      - name: Run Travel Hunter search
+        env:
+          SEARCH_MODE: ${{ github.event.inputs.search_mode || 'full' }}
+        run: |
+          if [ "$SEARCH_MODE" = "urls_only" ]; then
+            python main.py urls 2>&1 | tee search_output.log
+            python ci_email_urls.py 2>&1 | tee -a search_output.log
+          else
+            python ci_search.py 2>&1 | tee search_output.log
+          fi
+        timeout-minutes: 25
+
+      # ----- SAVE RESULTS -----
+      - name: Upload search results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: search-results-${{ github.run_id }}
+          path: |
+            search_output.log
+            result_*.json
+          retention-days: 30
+
+      # ----- SAVE DB AS ARTIFACT (backup) -----
+      - name: Upload price database
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: price-database-${{ github.run_id }}
+          path: travel_prices.db
+          retention-days: 90

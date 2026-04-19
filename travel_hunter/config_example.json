@@ -1,0 +1,152 @@
+{
+    "_INSTRUCCIONES": "COPIA ESTE ARCHIVO A config.json Y RELLENA TUS DATOS",
+
+    "email": {
+        "_nota": "Para Gmail: activa 2FA y crea App Password en https://myaccount.google.com/apppasswords",
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "sender_email": "TU_EMAIL@gmail.com",
+        "sender_password": "TU_APP_PASSWORD_DE_16_CARACTERES",
+        "recipient_email": "DONDE_QUIERES_RECIBIR@email.com"
+    },
+
+    "tequila": {
+        "_nota": "API de vuelos Tequila (Kiwi.com) - FUENTE PRINCIPAL. Regístrate gratis en https://tequila.kiwi.com",
+        "api_key": "TU_TEQUILA_API_KEY",
+        "enabled": true,
+        "flex_days": 3,
+        "_nota_flex": "Busca +/- 3 días alrededor de tus fechas para encontrar precios más baratos"
+    },
+
+    "scraper": {
+        "headless": true,
+        "slow_mo": 100,
+        "_nota_headless": "true = navegador invisible, false = ves lo que hace (útil para debug)",
+        "_nota_v2": "Ahora incluye stealth avanzado, rotación de fingerprints y scraping selectivo"
+    },
+
+    "database": {
+        "path": "travel_prices.db"
+    },
+
+    "monitor": {
+        "interval_day_hours": 4,
+        "interval_night_hours": 6,
+        "day_start_hour": 7,
+        "day_end_hour": 23,
+        "min_drop_percent_flight": 5.0,
+        "min_drop_percent_hotel": 8.0,
+        "price_error_threshold": 15.0,
+        "airlines_to_check": [
+            "ryanair", "easyjet", "vueling", "transavia",
+            "lufthansa", "airfrance", "aegean", "turkish"
+        ],
+        "_nota_intervalos": "De día busca cada 4h, de noche cada 6h. Ajusta según quieras."
+    },
+
+    "anomaly_detection": {
+        "_nota": "Detección de errores de precio y anomalías en hoteles",
+        "enabled": true,
+        "occupancy_configs": [
+            {"adults": 1, "rooms": 1, "label": "1adult_1room"},
+            {"adults": 2, "rooms": 1, "label": "2adult_1room"},
+            {"adults": 3, "rooms": 1, "label": "3adult_1room"},
+            {"adults": 2, "rooms": 2, "label": "2adult_2rooms"},
+            {"adults": 4, "rooms": 2, "label": "4adult_2rooms"}
+        ],
+        "scan_existing_searches": true,
+        "_nota_scan": "Escanea automáticamente los destinos de tus búsquedas existentes",
+        "destinations": [
+            "Costa Amalfitana, Italia",
+            "Santorini, Grecia",
+            "Creta, Grecia",
+            "Bali, Indonesia"
+        ],
+        "_nota_destinos": "Destinos adicionales a escanear para anomalías (además de tus búsquedas)",
+        "scan_regions": [],
+        "_nota_regiones": "Regiones para escaneo amplio: europe_coastal, europe_city, asia_se, america",
+        "max_destinations_per_run": 2,
+        "thresholds": {
+            "room_type_ratio": 0.35,
+            "room_type_extreme": 0.20,
+            "room_type_severity": 55,
+            "zone_percentile": 10.0,
+            "zone_severity": 60,
+            "min_zone_hotels": 10,
+            "seasonal_deviation": 0.50,
+            "seasonal_severity": 65,
+            "combined_severity": 50,
+            "min_stars": 3,
+            "min_rating": 7.0
+        },
+        "_nota_umbrales": "room_type_ratio=0.35 significa que individual <35% del doble es anomalía"
+    },
+
+    "searches": [
+        {
+            "name": "Grecia Agosto 2026",
+            "_descripcion": "Ejemplo: 4 adultos + 1 bebé, Estrasburgo a Atenas, agosto",
+
+            "flight_params": {
+                "origin": "SXB",
+                "destination": "ATH",
+                "date_depart": "2026-08-01",
+                "date_return": "2026-08-15",
+                "adults": 4,
+                "children": 0,
+                "infants_lap": 1,
+                "cabin_class": "economy",
+                "currency": "EUR"
+            },
+
+            "hotel_params": {
+                "destination": "Atenas, Grecia",
+                "checkin": "2026-08-01",
+                "checkout": "2026-08-11",
+                "adults": 4,
+                "children": 1,
+                "children_ages": [1],
+                "rooms": 2,
+                "currency": "EUR",
+                "board_type": "all_inclusive",
+                "stars": [4, 5],
+                "min_review_score": 8.0
+            }
+        },
+        {
+            "name": "Grecia desde Basel",
+            "_descripcion": "Misma búsqueda pero desde Basel (a veces más barato)",
+
+            "flight_params": {
+                "origin": "BSL",
+                "destination": "ATH",
+                "date_depart": "2026-08-01",
+                "date_return": "2026-08-15",
+                "adults": 4,
+                "children": 0,
+                "infants_lap": 1,
+                "cabin_class": "economy",
+                "currency": "EUR"
+            },
+
+            "hotel_params": null
+        },
+        {
+            "name": "Grecia desde Frankfurt",
+
+            "flight_params": {
+                "origin": "FRA",
+                "destination": "ATH",
+                "date_depart": "2026-08-01",
+                "date_return": "2026-08-15",
+                "adults": 4,
+                "children": 0,
+                "infants_lap": 1,
+                "cabin_class": "economy",
+                "currency": "EUR"
+            },
+
+            "hotel_params": null
+        }
+    ]
+}

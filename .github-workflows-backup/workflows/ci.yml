@@ -1,0 +1,75 @@
+name: CI — pytest
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    name: Tests (unit + engines + api + integration)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install engine deps (best effort)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r tests/requirements.txt
+          # Dependencias runtime principales (si existen requirements propios)
+          if [ -f flight_hunter_v4/requirements.txt ]; then
+            pip install -r flight_hunter_v4/requirements.txt || true
+          fi
+          if [ -f api/requirements.txt ]; then
+            pip install -r api/requirements.txt || true
+          fi
+
+      - name: Run pytest with coverage
+        env:
+          KIWI_API_KEY: test-kiwi-key
+          SERPAPI_KEY: test-serp-key
+          RAPIDAPI_KEY: test-rapid-key
+          TRAVELPAYOUTS_TOKEN: test-tp-key
+          TP_MARKER: "999999"
+          TELEGRAM_BOT_TOKEN: ""
+          TELEGRAM_CHAT_ID: ""
+        run: |
+          pytest tests/ \
+            --cov=flight_hunter_v4 --cov=api \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-fail-under=60 \
+            -v
+
+      - name: Upload coverage to artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+
+      - name: Notify Telegram on failure
+        if: failure()
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
+            curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              -d chat_id="${TG_CHAT}" \
+              -d parse_mode=HTML \
+              --data-urlencode text="🚨 <b>CI fallo</b>
+Repo: ${{ github.repository }}
+Branch: ${{ github.ref_name }}
+Commit: ${{ github.sha }}
+Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" || true
+          fi

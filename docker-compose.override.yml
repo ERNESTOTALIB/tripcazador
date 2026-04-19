@@ -1,0 +1,18 @@
+# docker-compose.override.yml — SOLO para desarrollo local
+# ===========================================================
+# En dev, expone Postgres en localhost:5432 para conectar desde DBeaver/psql.
+# En producción NO usar este override (Caddy + el firewall bloquean 5432).
+#
+# Arrancar dev: docker compose up -d
+# Arrancar prod: docker compose -f docker-compose.yml up -d
+
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  api:
+    environment:
+      ENVIRONMENT: development
+    ports:
+      - "0.0.0.0:8000:8000"

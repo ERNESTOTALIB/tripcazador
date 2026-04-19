@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🦅 TripCazador — Plan Estratégico Completo</title>
+<style>
+:root {
+  --bg: #07090f; --card: #0f1623; --card2: #161f30;
+  --accent: #f59e0b; --green: #10b981; --blue: #3b82f6;
+  --purple: #8b5cf6; --red: #ef4444; --orange: #f97316;
+  --text: #f1f5f9; --text2: #94a3b8; --border: #1e293b;
+  --t1: #1e3a5f; --t2: #064e3b; --t3: #4a1d96; --t4: #7f1d1d; --t5: #1e1b4b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(7,9,15,0.95); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+}
+nav a { font-size: 0.78em; color: var(--text2); text-decoration: none; padding: 4px 10px; border-radius: 6px; border: 1px solid transparent; }
+nav a:hover { background: var(--card2); border-color: var(--border); color: var(--text); }
+nav .logo { font-weight: 800; color: var(--accent); margin-right: 12px; font-size: 1em; }
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg, #07090f 0%, #0f1a2e 40%, #120a20 100%);
+  padding: 64px 24px 48px; text-align: center;
+  border-bottom: 1px solid var(--border); position: relative; overflow: hidden;
+}
+header::after {
+  content: ''; position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 60% 40%, rgba(139,92,246,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 30% 70%, rgba(59,130,246,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+header h1 { font-size: 3.2em; font-weight: 900; letter-spacing: -0.02em; position: relative; }
+header h1 span { color: var(--accent); }
+header .tagline { color: #a5b4fc; margin-top: 10px; font-size: 1.15em; position: relative; }
+header .version { color: var(--text2); font-size: 0.8em; margin-top: 8px; position: relative; }
+
+/* CONTAINERS */
+.container { max-width: 1100px; margin: 0 auto; padding: 48px 16px; }
+section { margin-bottom: 64px; scroll-margin-top: 80px; }
+h2 { font-size: 1.6em; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+h2 .num { background: var(--accent); color: #000; width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75em; flex-shrink: 0; }
+.section-desc { color: var(--text2); margin-bottom: 28px; font-size: 0.95em; }
+h3 { font-size: 1.1em; font-weight: 700; margin-bottom: 12px; color: var(--accent); }
+
+/* BRAND HERO */
+.brand-hero {
+  background: linear-gradient(135deg, #0f1623, #1a0f2e);
+  border: 1px solid #4a1d96; border-radius: 20px; padding: 36px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 32px;
+}
+@media (max-width: 700px) { .brand-hero { grid-template-columns: 1fr; } }
+.brand-name { font-size: 3.5em; font-weight: 900; color: var(--accent); line-height: 1; }
+.brand-domain { font-size: 1.2em; color: #c4b5fd; margin-top: 6px; }
+.brand-tagline { color: var(--text2); margin-top: 12px; font-size: 0.95em; }
+.brand-pill { display: inline-block; background: #4a1d96; color: #c4b5fd; font-size: 0.72em; padding: 3px 10px; border-radius: 10px; margin: 2px; }
+
+/* MONETIZATION cards */
+.money-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.money-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px;
+  border-left: 3px solid var(--accent);
+}
+.money-card h4 { font-size: 0.9em; margin-bottom: 6px; }
+.money-card .revenue { font-size: 1.4em; font-weight: 800; color: var(--green); }
+.money-card .timeline { font-size: 0.72em; color: var(--text2); margin-top: 4px; }
+.money-card p { font-size: 0.8em; color: var(--text2); margin-top: 8px; line-height: 1.5; }
+
+/* ROADMAP */
+.phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .phases { grid-template-columns: 1fr; } }
+.phase {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px;
+  position: relative; overflow: hidden;
+}
+.phase::before {
+  content: attr(data-phase);
+  position: absolute; top: -10px; right: -10px; font-size: 5em; font-weight: 900;
+  color: rgba(255,255,255,0.03); line-height: 1;
+}
+.phase h3 { color: var(--text); }
+.phase .duration { font-size: 0.72em; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.phase ul { padding-left: 16px; color: var(--text2); font-size: 0.82em; }
+.phase ul li { margin-bottom: 4px; }
+.phase-1 { border-color: var(--green); }
+.phase-2 { border-color: var(--blue); }
+.phase-3 { border-color: var(--purple); }
+
+/* TRACKS */
+.tracks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.track {
+  border-radius: 14px; padding: 22px; border: 1px solid var(--border);
+  position: relative;
+}
+.track-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.7em; font-weight: 700; padding: 3px 10px; border-radius: 10px;
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;
+}
+.track h3 { font-size: 1.0em; margin-bottom: 10px; color: var(--text); }
+.track-tasks { list-style: none; padding: 0; }
+.track-tasks li {
+  font-size: 0.8em; color: var(--text2); padding: 6px 10px; margin-bottom: 4px;
+  background: rgba(255,255,255,0.03); border-radius: 6px; border-left: 2px solid transparent;
+  display: flex; align-items: flex-start; gap: 6px;
+}
+.track-tasks li.p1 { border-left-color: var(--red); }
+.track-tasks li.p2 { border-left-color: var(--orange); }
+.track-tasks li.p3 { border-left-color: var(--text2); }
+.priority-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+
+/* CHAT BRIEFS */
+.brief-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.brief-tab {
+  padding: 8px 16px; border-radius: 8px; font-size: 0.82em; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border); background: var(--card2); color: var(--text2);
+  transition: all 0.15s;
+}
+.brief-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+.brief-content { display: none; }
+.brief-content.active { display: block; }
+.brief-box {
+  background: var(--card2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 0; overflow: hidden;
+}
+.brief-header {
+  background: var(--card); padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.brief-header span { font-size: 0.78em; color: var(--text2); }
+.copy-btn {
+  background: var(--accent); color: #000; border: none; padding: 6px 14px;
+  border-radius: 6px; font-size: 0.75em; font-weight: 700; cursor: pointer;
+}
+.copy-btn:hover { opacity: 0.9; }
+.copy-btn.copied { background: var(--green); }
+pre {
+  padding: 20px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.78em;
+  color: #cbd5e1; white-space: pre-wrap; word-break: break-word; line-height: 1.6;
+  max-height: 400px; overflow-y: auto;
+}
+
+/* TECH STACK */
+.stack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.stack-item {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px;
+  text-align: center;
+}
+.stack-item .si-icon { font-size: 1.8em; margin-bottom: 6px; }
+.stack-item .si-name { font-size: 0.88em; font-weight: 700; }
+.stack-item .si-role { font-size: 0.72em; color: var(--text2); }
+.stack-item .si-cost { font-size: 0.72em; color: var(--green); margin-top: 4px; font-weight: 700; }
+
+/* METRICS */
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.metric { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+.metric .m-val { font-size: 1.8em; font-weight: 900; color: var(--accent); }
+.metric .m-label { font-size: 0.72em; color: var(--text2); margin-top: 4px; }
+.metric .m-when { font-size: 0.65em; color: var(--purple); margin-top: 2px; }
+
+/* COMPARISON */
+.comp-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+.comp-table th { background: var(--card2); padding: 10px 14px; text-align: left; color: var(--text2); font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.05em; }
+.comp-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.comp-table tr:last-child td { border-bottom: none; }
+.comp-table tr:hover td { background: var(--card2); }
+.chk { color: var(--green); }
+.x { color: var(--red); }
+
+footer { text-align: center; padding: 32px; color: var(--text2); font-size: 0.78em; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">🦅 TripCazador</span>
+  <a href="#estado" style="color:#3b82f6; border-color:#3b82f6">→ Estado</a>
+  <a href="#marca">Marca</a>
+  <a href="#monetizacion">Monetización</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#tracks">5 Tracks</a>
+  <a href="#briefs">Chat Briefs</a>
+  <a href="#tech">Tech Stack</a>
+  <a href="#kpis">KPIs</a>
+  <a href="#dudas" style="color:#10b981; border-color:#10b981">✓ Dudas Resueltas</a>
+</nav>
+
+<header>
+  <h1>🦅 <span>Caza</span>Vuelos</h1>
+  <div class="tagline">De motor de búsqueda a marca de viajes — Plan Estratégico Completo</div>
+  <div class="version">v2.0 · Abril 2026 · Confidencial · Actualizado 2026-04-18 (Tracks 1, 2, 4 completados)</div>
+</header>
+
+<div class="container">
+
+<!-- ==================== ESTADO ACTUAL ==================== -->
+<section id="estado" style="scroll-margin-top:80px; margin-bottom:64px">
+  <h2 style="font-size:1.6em; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:12px">
+    <span style="background:#3b82f6; color:#fff; width:32px; height:32px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75em; flex-shrink:0">→</span>
+    Estado del Proyecto — Actualizado 2026-04-18
+  </h2>
+  <p style="color:#94a3b8; margin-bottom:20px; font-size:0.95em">Resumen ejecutivo de decisiones tomadas, código en producción y próximos pasos por track.</p>
+
+  <!-- NOMBRE Y MARCA -->
+  <div style="background:linear-gradient(135deg,#1a0f2e,#0f1623); border:2px solid #f59e0b; border-radius:16px; padding:24px; margin-bottom:20px">
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap">
+      <div style="font-size:2.8em; font-weight:900; color:#f59e0b; line-height:1">TripCazador</div>
+      <div>
+        <div style="font-size:0.85em; color:#c4b5fd; font-weight:600">Nombre elegido y confirmado ✅</div>
+        <div style="font-size:0.78em; color:#94a3b8; margin-top:2px">tripcazador.com · tripcazador.com — Design system: #f59e0b ámbar + #0a0f1e negro</div>
+        <div style="font-size:0.78em; color:#94a3b8">Target: hispanohablantes en DACH (Alemania, Austria, Suiza, Alsacia)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESO POR TRACK -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:14px; margin-bottom:20px">
+
+    <!-- Track 1 -->
+    <div style="background:var(--card); border:1px solid #1e3a5f; border-radius:12px; padding:18px">
+      <div style="font-size:0.7em; font-weight:700; color:#93c5fd; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px">🔧 Track 1 · Motor de Búsqueda</div>
+      <div style="font-size:0.78em; color:#94a3b8; line-height:1.7">
+        <div style="color:#6ee7b7">✅ Kiwi, Ryanair, Travelpayouts, SerpAPI, RapidAPI, Vueling activos</div>
+        <div style="color:#6ee7b7">✅ duration_min, nights calculados correctamente en todos los motores</div>
+        <div style="color:#6ee7b7">✅ distance_category corregido (bug MRS→CTA "largo" → "corto")</div>
+        <div style="color:#6ee7b7">✅ T0 detector recalibrado: low-cost vs aerolíneas regulares</div>
+        <div style="color:#6ee7b7">✅ geo_data.py: coords + imágenes para 80 aeropuertos</div>
+        <div style="color:#6ee7b7">✅ deal_enricher.py: headline, tags, expires_at, price_per_night</div>
+        <div style="color:#6ee7b7">✅ deals_exporter.py: deals.json v4.1 + dedup + Telegram alerts</div>
+        <div style="color:#6ee7b7">✅ FastAPI api/main.py: 5 endpoints + Pydantic + CORS + cache 5min</div>
+        <div style="color:#fbbf24">⏳ TP_MARKER en .env (manual — necesita número afiliado)</div>
+        <div style="color:#fbbf24">⏳ Hotel hunter → schema v4.1 unificado</div>
+        <div style="color:#fbbf24">⏳ 30+ aerolíneas africanas/asiáticas en airline_links.py</div>
+        <div style="color:#f87171">🚫 Amadeus — cerrado, no usar</div>
+      </div>
+    </div>
+
+    <!-- Track 2 -->
+    <div style="background:var(--card); border:1px solid #4a1d96; border-radius:12px; padding:18px">
+      <div style="font-size:0.7em; font-weight:700; color:#c4b5fd; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px">🌐 Track 2 · Página Web</div>
+      <div style="font-size:0.78em; color:#94a3b8; line-height:1.7">
+        <div style="color:#6ee7b7">✅ tripcazador-web/ — Next.js 14 App Router + TypeScript + Tailwind</div>
+        <div style="color:#6ee7b7">✅ app/page.tsx — landing: hero, stats ISR 300s, grid top 9 deals</div>
+        <div style="color:#6ee7b7">✅ app/deals/page.tsx — filtros por clasificación, cabin, región</div>
+        <div style="color:#6ee7b7">✅ app/destinos/[slug] — tanzania, japon, maldivas, ny, bali, buenos-aires</div>
+        <div style="color:#6ee7b7">✅ DealCard + DealRow components + lib/api.ts con tipos TypeScript</div>
+        <div style="color:#6ee7b7">✅ vercel.json — rewrites API, headers seguridad, región fra1</div>
+        <div style="color:#fbbf24">⏳ app/blog/[slug]/page.tsx — artículos SEO con MDX</div>
+        <div style="color:#fbbf24">⏳ Buscador en vivo origen/destino/fechas</div>
+        <div style="color:#fbbf24">⏳ Página de suscripción Telegram + Newsletter</div>
+      </div>
+    </div>
+
+    <!-- Track 3 -->
+    <div style="background:var(--card); border:1px solid #7f1d1d; border-radius:12px; padding:18px">
+      <div style="font-size:0.7em; font-weight:700; color:#fca5a5; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px">🛡️ Track 3 · Seguridad y Tests</div>
+      <div style="font-size:0.78em; color:#94a3b8; line-height:1.7">
+        <div style="color:#6ee7b7">✅ Secrets via .env + python-dotenv (nunca en git)</div>
+        <div style="color:#6ee7b7">✅ Pydantic validation en FastAPI</div>
+        <div style="color:#6ee7b7">✅ CORS configurado: solo tripcazador.com + localhost:3000</div>
+        <div style="color:#fbbf24">⏳ pytest suite: test_airline_links, test_config, test_serpapi_engine</div>
+        <div style="color:#fbbf24">⏳ Rate limiting: slowapi max 60 req/min por IP</div>
+        <div style="color:#fbbf24">⏳ Circuit breaker por API externa (fallo 3x → esperar 15min)</div>
+        <div style="color:#fbbf24">⏳ detect-secrets + pre-commit hook anti-API-keys</div>
+        <div style="color:#fbbf24">⏳ GDPR: política de privacidad + banner de cookies</div>
+        <div style="color:#fbbf24">⏳ Backup automático PostgreSQL</div>
+      </div>
+    </div>
+
+    <!-- Track 4 -->
+    <div style="background:var(--card); border:1px solid #064e3b; border-radius:12px; padding:18px">
+      <div style="font-size:0.7em; font-weight:700; color:#6ee7b7; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px">⚙️ Track 4 · Infraestructura</div>
+      <div style="font-size:0.78em; color:#94a3b8; line-height:1.7">
+        <div style="color:#6ee7b7">✅ docker-compose.yml: api + worker + db (postgres:15-alpine)</div>
+        <div style="color:#6ee7b7">✅ api/Dockerfile + flight_hunter_v4/Dockerfile</div>
+        <div style="color:#6ee7b7">✅ cron_runner.py: worker loop Python cada 6h</div>
+        <div style="color:#6ee7b7">✅ .env.example con todas las variables documentadas</div>
+        <div style="color:#6ee7b7">✅ sql/init.sql: 9 tablas + 2 vistas + índices</div>
+        <div style="color:#6ee7b7">✅ GitHub Actions CI/CD: pytest → npm build → SSH deploy</div>
+        <div style="color:#fbbf24">⏳ Aprovisionar Hetzner CX22 (manual — crear servidor)</div>
+        <div style="color:#fbbf24">⏳ Configurar Cloudflare DNS (api.tripcazador.com → Hetzner)</div>
+        <div style="color:#fbbf24">⏳ GitHub Secrets: HETZNER_HOST, HETZNER_USER, HETZNER_SSH_KEY</div>
+        <div style="color:#fbbf24">⏳ UptimeRobot: monitoring gratuito del endpoint /api/health</div>
+      </div>
+    </div>
+
+    <!-- Track 5 -->
+    <div style="background:var(--card); border:1px solid #1e1b4b; border-radius:12px; padding:18px">
+      <div style="font-size:0.7em; font-weight:700; color:#a5b4fc; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px">🦅 Track 5 · Marca y Marketing</div>
+      <div style="font-size:0.78em; color:#94a3b8; line-height:1.7">
+        <div style="color:#6ee7b7">✅ Nombre: <strong style="color:#f59e0b">TripCazador</strong> — elegido y confirmado</div>
+        <div style="color:#6ee7b7">✅ Design system: ámbar #f59e0b + negro #0a0f1e + Inter</div>
+        <div style="color:#fbbf24">⏳ Logo: halcón estilizado (prompt Midjourney en brief Track 5)</div>
+        <div style="color:#fbbf24">⏳ @tripcazador en Instagram, Telegram, Twitter/X, TikTok</div>
+        <div style="color:#fbbf24">⏳ Canal Telegram gratuito: bot que postea deals automáticamente</div>
+        <div style="color:#fbbf24">⏳ Script Instagram: Pillow → imagen deal card oscuro/ámbar</div>
+        <div style="color:#fbbf24">⏳ 10 artículos SEO pillar ("mejor época para ir a Tanzania/Egipto…")</div>
+        <div style="color:#fbbf24">⏳ Google Analytics 4 + Search Console</div>
+        <div style="color:#fbbf24">⏳ Newsletter setup en Beehiiv</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PRÓXIMOS PASOS CRÍTICOS -->
+  <div style="background:linear-gradient(135deg,#0f1a0f,#0f1623); border:1px solid #10b981; border-radius:14px; padding:22px">
+    <h3 style="color:#6ee7b7; margin-bottom:14px; font-size:1em">🚀 Próximos 3 pasos críticos para tener algo live</h3>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:12px">
+      <div style="background:rgba(0,0,0,0.3); border-radius:10px; padding:14px">
+        <div style="font-size:0.72em; font-weight:700; color:#f59e0b; margin-bottom:6px">PASO 1 — Hetzner + DNS (30 min)</div>
+        <div style="font-size:0.78em; color:#94a3b8; line-height:1.5">Crear VPS Hetzner CX22, instalar Docker, clonar repo, rellenar .env.production, ejecutar docker-compose up -d. Configurar Cloudflare DNS.</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3); border-radius:10px; padding:14px">
+        <div style="font-size:0.72em; font-weight:700; color:#f59e0b; margin-bottom:6px">PASO 2 — Vercel + Dominio (15 min)</div>
+        <div style="font-size:0.78em; color:#94a3b8; line-height:1.5">Importar tripcazador-web/ en Vercel, añadir NEXT_PUBLIC_API_URL, conectar tripcazador.com via CNAME en el registrar del dominio.</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3); border-radius:10px; padding:14px">
+        <div style="font-size:0.72em; font-weight:700; color:#f59e0b; margin-bottom:6px">PASO 3 — Keys + TP_MARKER (10 min)</div>
+        <div style="font-size:0.78em; color:#94a3b8; line-height:1.5">Rellenar KIWI_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID y TP_MARKER en .env.production. El motor empieza a buscar y enviar alertas automáticamente.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MARCA ==================== -->
+<section id="marca">
+  <h2><span class="num">1</span> Marca y Posicionamiento</h2>
+  <div class="section-desc">Construir una marca reconocible en el nicho de chollos de viaje en España y mercado hispano.</div>
+
+  <div class="brand-hero">
+    <div>
+      <div class="brand-name">TripCazador</div>
+      <div class="brand-domain">tripcazador.com · tripcazador.com</div>
+      <div class="brand-tagline" style="margin-top:14px">
+        Somos el cazador automático de chollos de vuelo. Mientras el resto busca a mano, nuestro motor rastrea 24/7 cientos de rutas desde Europa Central y dispara alertas cuando aparece una oferta real.
+      </div>
+      <div style="margin-top:16px">
+        <span class="brand-pill">Automatización</span>
+        <span class="brand-pill">Transparencia</span>
+        <span class="brand-pill">Comunidad</span>
+        <span class="brand-pill">Europa Central</span>
+        <span class="brand-pill">Chollos reales</span>
+      </div>
+    </div>
+    <div>
+      <h3 style="color:#c4b5fd">Diferencial vs Viajeros Piratas</h3>
+      <table class="comp-table" style="margin-top:0">
+        <thead><tr><th>Aspecto</th><th>Viajeros Piratas</th><th>TripCazador</th></tr></thead>
+        <tbody>
+          <tr><td>Búsqueda</td><td class="x">Manual, curación humana</td><td class="chk">Motor automático 24/7</td></tr>
+          <tr><td>Zona</td><td class="x">España genérico</td><td class="chk">Europa Central (BSL/FRA/ZRH)</td></tr>
+          <tr><td>Datos</td><td class="x">Sin historial precio</td><td class="chk">Historial + tendencias</td></tr>
+          <tr><td>Hoteles</td><td class="x">Básico</td><td class="chk">Motor propio integrado</td></tr>
+          <tr><td>Business</td><td class="x">Solo economy</td><td class="chk">Business class deals</td></tr>
+          <tr><td>Destinos</td><td class="x">Todo el mundo</td><td class="chk">Nichos curados (Egipto, Tanzania…)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:14px">
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px">
+      <h3>🎯 Audiencia primaria</h3>
+      <p style="color:var(--text2); font-size:0.85em; line-height:1.6">Viajeros de 28-50 años en Alemania, Suiza, Austria, Alsacia. Hablan español o alemán. Quieren viajar 2-4 veces al año. Priorizan precio pero no sacrifican comodidad. Usuarios de Skyscanner y Booking pero no tienen tiempo de monitorizar precios.</p>
+    </div>
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px">
+      <h3>🌍 Expansión de audiencia</h3>
+      <p style="color:var(--text2); font-size:0.85em; line-height:1.6">Fase 1: hispanohablantes en DACH (Alemania/Austria/Suiza). Fase 2: toda España + Portugal. Fase 3: mercado europeo en inglés. La comunidad hispanohablante en Europa central es nicho desatendido por Viajeros Piratas (enfocado en España peninsular).</p>
+    </div>
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px">
+      <h3>🗣️ Tono de voz</h3>
+      <p style="color:var(--text2); font-size:0.85em; line-height:1.6">Amigo experto, no corporativo. "Oye, acabo de cazar esto para ti" — directo, emocionante, con contexto real. Sin clickbait, con datos. Si hay una oferta: precio exacto, aerolínea, fechas, ratio vs. precio normal. Sin exageraciones.</p>
+    </div>
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px">
+      <h3>📱 Identidad visual</h3>
+      <p style="color:var(--text2); font-size:0.85em; line-height:1.6">Ámbar/dorado + negro profundo. Minimalismo con datos. El logo: un halcón (cazador) estilizado con alas en forma de gráfico de precio cayendo. Cards de oferta con estética "pantalla de vuelo" — como un radar que detecta una presa.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MONETIZACIÓN ==================== -->
+<section id="monetizacion">
+  <h2><span class="num">2</span> Modelo de Monetización</h2>
+  <div class="section-desc">Stack de ingresos diversificado, empezando por afiliación desde el día 1 y escalando hacia premium y B2B.</div>
+
+  <div class="money-grid">
+    <div class="money-card" style="border-left-color: var(--green)">
+      <h4>✈️ Afiliación Vuelos</h4>
+      <div class="revenue">2-6% por reserva</div>
+      <div class="timeline">Día 1 — Travelpayouts ya integrado</div>
+      <p>Travelpayouts paga comisión por cada reserva completada via link de afiliado. Ya tenemos la API — solo hay que activar el programa de afiliados y añadir UTM parameters a los links de resultados.</p>
+    </div>
+    <div class="money-card" style="border-left-color: var(--blue)">
+      <h4>🏨 Afiliación Hoteles</h4>
+      <div class="revenue">4% por noche</div>
+      <div class="timeline">Mes 1 — Booking.com + Hotels.com</div>
+      <p>Booking.com Affiliate Partner: 4% de comisión. El motor de hoteles ya genera resultados — activar links de afiliado. Con 10 reservas/mes de 100€/noche = 40€. Escala linealmente.</p>
+    </div>
+    <div class="money-card" style="border-left-color: var(--purple)">
+      <h4>📢 Canal Telegram Premium</h4>
+      <div class="revenue">5-9€/mes por usuario</div>
+      <div class="timeline">Mes 2 — Canal con alertas prioritarias</div>
+      <p>Canal gratuito con ~24h de retraso. Canal premium con alertas en tiempo real + deals exclusivos de Business class + notificaciones push. Modelo como Scott's Cheap Flights o Jack's Flight Club.</p>
+    </div>
+    <div class="money-card" style="border-left-color: var(--orange)">
+      <h4>📧 Newsletter Premium</h4>
+      <div class="revenue">7€/mes o 59€/año</div>
+      <div class="timeline">Mes 3 — Lista de correo curada</div>
+      <p>Newsletter semanal gratuita con top 5 deals. Newsletter premium diaria con todos los deals + análisis de tendencias + guías de destino exclusivas. Substack o Beehiiv (mejor para ingresos).</p>
+    </div>
+    <div class="money-card" style="border-left-color: var(--red)">
+      <h4>🎯 Display Advertising</h4>
+      <div class="revenue">2-5€ CPM</div>
+      <div class="timeline">Mes 4 — Google AdSense → Mediavine</div>
+      <p>Al principio AdSense (accesible desde el día 1). Con 50k visitas/mes calificar para Mediavine (RPM superior, 20-35€). Los posts SEO de "mejor época para viajar a X" generan tráfico orgánico rentable.</p>
+    </div>
+    <div class="money-card" style="border-left-color: var(--accent)">
+      <h4>🤝 Contenido Patrocinado</h4>
+      <div class="revenue">200-1.500€ por post</div>
+      <div class="timeline">Mes 6+ — Una vez con audiencia</div>
+      <p>Agencias de viaje, seguros de viaje (IATI, Chapka), tarjetas de crédito viajeras, aplicaciones de viaje. Solo marcas alineadas con valores — sin spam. Precio según seguidores y engagement.</p>
+    </div>
+    <div class="money-card" style="border-left-color: var(--green)">
+      <h4>🏢 API B2B / White-label</h4>
+      <div class="revenue">99-499€/mes</div>
+      <div class="timeline">Año 2+ — Para agencias y RRHH</div>
+      <p>El motor de búsqueda empaquetado como servicio para agencias de viaje corporativas, departamentos de RRHH que gestionan viajes de empresa, o blogs de viaje que quieren integrar alertas.</p>
+    </div>
+    <div class="money-card" style="border-left-color: var(--blue)">
+      <h4>🎒 Actividades y Seguros</h4>
+      <div class="revenue">8-15% por venta</div>
+      <div class="timeline">Mes 4 — GetYourGuide + IATI</div>
+      <p>GetYourGuide/Viator: 8% en tours y actividades. IATI Seguros: 15-20% en seguros de viaje. Complementa perfectamente los deals de vuelo+hotel — el usuario ya está comprando el viaje.</p>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,#064e3b,#0f2d1a); border:1px solid var(--green); border-radius:14px; padding:24px; margin-top:24px">
+    <h3 style="color:#6ee7b7; margin-bottom:12px">💰 Proyección de ingresos realista</h3>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px">
+      <div style="text-align:center; background:rgba(0,0,0,0.3); border-radius:10px; padding:14px">
+        <div style="font-size:1.5em; font-weight:900; color:#6ee7b7">0-500€</div>
+        <div style="font-size:0.75em; color:#a7f3d0">Mes 1-3<br>Afiliación básica activa</div>
+      </div>
+      <div style="text-align:center; background:rgba(0,0,0,0.3); border-radius:10px; padding:14px">
+        <div style="font-size:1.5em; font-weight:900; color:#6ee7b7">500-2.000€</div>
+        <div style="font-size:0.75em; color:#a7f3d0">Mes 4-6<br>+ Telegram Premium</div>
+      </div>
+      <div style="text-align:center; background:rgba(0,0,0,0.3); border-radius:10px; padding:14px">
+        <div style="font-size:1.5em; font-weight:900; color:#6ee7b7">2.000-8.000€</div>
+        <div style="font-size:0.75em; color:#a7f3d0">Mes 7-12<br>+ SEO tráfico orgánico</div>
+      </div>
+      <div style="text-align:center; background:rgba(0,0,0,0.3); border-radius:10px; padding:14px">
+        <div style="font-size:1.5em; font-weight:900; color:#6ee7b7">8.000-25.000€</div>
+        <div style="font-size:0.75em; color:#a7f3d0">Año 2<br>+ Display + Newsletter</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ROADMAP ==================== -->
+<section id="roadmap">
+  <h2><span class="num">3</span> Roadmap por Fases</h2>
+  <div class="section-desc">3 fases de 3-4 meses cada una, de MVP funcional a negocio escalable.</div>
+
+  <div class="phases">
+    <div class="phase phase-1" data-phase="1">
+      <div class="duration">Meses 1-3 · MVP</div>
+      <h3>🌱 Fundación</h3>
+      <ul>
+        <li>✅ Activar programa afiliados Travelpayouts (código integrado, solo falta TP_MARKER en .env)</li>
+        <li>Dominio + hosting básico (tripcazador.com)</li>
+        <li>✅ Web Next.js 14 con top deals actualizados (tripcazador-web/ scaffolding completo)</li>
+        <li>Canal Telegram gratuito (alertas diarias)</li>
+        <li>Instagram con template de posts de deals</li>
+        <li>🚫 Amadeus → CERRADO. Sustituido por Kiwi (750+ aerolíneas) + RapidAPI + scrapers directos</li>
+        <li>✅ DB PostgreSQL dockerizada en docker-compose.yml</li>
+        <li>Sistema de alertas Telegram por deal ✅ (deals_exporter.py)</li>
+        <li>10 artículos SEO ("mejor época para ir a X")</li>
+        <li>Primeras 500 visitas orgánicas</li>
+      </ul>
+    </div>
+    <div class="phase phase-2" data-phase="2">
+      <div class="duration">Meses 4-6 · Crecimiento</div>
+      <h3>🚀 Tracción</h3>
+      <ul>
+        <li>Canal Telegram Premium (5-9€/mes)</li>
+        <li>Newsletter semanal (Beehiiv)</li>
+        <li>Google AdSense activado</li>
+        <li>Motor hoteles integrado en web</li>
+        <li>Buscador en vivo en la web</li>
+        <li>Página de destinos curados (Egipto, Tanzania…)</li>
+        <li>Comparador Business class vs Economy</li>
+        <li>Colaboraciones con 2-3 travel influencers</li>
+        <li>1.000 seguidores Instagram, 500 Telegram</li>
+        <li>20 artículos SEO posicionados</li>
+      </ul>
+    </div>
+    <div class="phase phase-3" data-phase="3">
+      <div class="duration">Meses 7-12 · Escala</div>
+      <h3>💎 Escala</h3>
+      <ul>
+        <li>Mediavine ads (50k visitas/mes requeridas)</li>
+        <li>App móvil (PWA o nativa)</li>
+        <li>Alertas personalizadas por usuario</li>
+        <li>Contenido patrocinado + partnerships</li>
+        <li>Motor de actividades (GetYourGuide)</li>
+        <li>API B2B para agencias</li>
+        <li>5.000+ suscriptores premium</li>
+        <li>100k visitas/mes orgánicas</li>
+        <li>Expansión a mercado en inglés</li>
+        <li>MRR 5.000€+</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 5 TRACKS ==================== -->
+<section id="tracks">
+  <h2><span class="num">4</span> Los 5 Tracks de Trabajo Paralelo</h2>
+  <div class="section-desc">Cada track puede ejecutarse en un chat independiente. Prioridad: 🔴 Alta · 🟠 Media · ⚪ Baja</div>
+
+  <div class="tracks-grid">
+
+    <!-- TRACK 1 -->
+    <div class="track" style="background: linear-gradient(135deg, #0c1a2a, #0f1623); border-color: var(--blue)">
+      <div class="track-badge" style="background:#1e3a5f; color:#93c5fd">🔧 Track 1</div>
+      <h3>⚡ Motor de Búsqueda (Vuelos + Hoteles)</h3>
+      <ul class="track-tasks">
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Afiliación Travelpayouts: travelpayouts_url() con marker= integrada en airline_links.py</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Bug hotel_hunter corregido: paths de sesión hardcodeados → rutas relativas dinámicas</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Tanzania añadido a DEST_AFRICA: ZNZ, DAR, JRO</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ requirements.txt completos para flight_hunter_v4 y travel_hunter</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ FastAPI REST creada: /api/deals, /api/deals/top, /api/stats, /api/deals/{id}, /api/regions — con Pydantic + CORS + cache 5min</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Scheduler cron: cron_runner.py (worker Docker) — loop Python cada CRON_INTERVAL (default 6h), arranca inmediatamente</li>
+        <li class="p1" style="color:#ef4444; font-weight:600"><span class="priority-dot" style="background:#ef4444"></span>🚫 Amadeus API — CERRADO desde 2025 (no permite nuevos registros). Sustituido por Kiwi + RapidAPI + scrapers directos.</li>
+        <li class="p1"><span class="priority-dot" style="background:var(--red)"></span>Poner TP_MARKER en .env para activar comisiones de afiliado (manual — necesita número de afiliado Travelpayouts)</li>
+        <li class="p1"><span class="priority-dot" style="background:var(--red)"></span>PostgreSQL: migrar de SQLite — schema definido, dockerizado en docker-compose.yml. Pendiente: sql/init.sql + Alembic migraciones</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Dashboard unificado vuelos + hoteles en un solo HTML/informe</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Informe geo avanzado: filtrar por región, duración (corto/medio/largo) y cabin en html_report.py — actualmente los filtros no están implementados</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>30+ aerolíneas desconocidas: ampliar airline_links.py con aerolíneas africanas (Kenya Airways KQ, Ethiopian ET, RwandAir WB…), asiáticas (AirAsia AK, Cebu Pacific 5J…) y del Golfo (flydubai FZ, Air Arabia G9…)</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Hotel hunter unificado: integrar hotel_hunter con schema v4.1 (Booking.com affiliate links, image_url, price_per_night, classification) → deals.json incluye hoteles además de vuelos</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Duffel API: activar para rutas long-haul no cubiertas por Kiwi</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Comparador Business/Economy: widget embebible para la web</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Hotellook API (Travelpayouts): motor de hoteles alternativo con afiliación</li>
+      </ul>
+    </div>
+
+    <!-- TRACK 2 -->
+    <div class="track" style="background: linear-gradient(135deg, #1a0a2e, #0f1623); border-color: var(--purple)">
+      <div class="track-badge" style="background:#4a1d96; color:#c4b5fd">🎨 Track 2</div>
+      <h3>🌐 Creación de la Página Web</h3>
+      <ul class="track-tasks">
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Stack: Next.js 14 App Router + TypeScript + Tailwind — tripcazador-web/ scaffolding completo + vercel.json (rewrites, headers seguridad, región fra1)</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Landing page (app/page.tsx): hero animado, stats ISR, grid top 9 deals, featured deal</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Sistema de diseño: DealCard + DealRow (grid/lista), filtros en /deals, lib/api.ts con tipos TypeScript</li>
+        <li class="p2" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Páginas /destinos/[slug] creadas: tanzania, japon, maldivas, nueva-york, bali, buenos-aires</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Buscador en vivo: origen/destino/fechas → resultados</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Blog con MDX: artículos SEO de "mejor época para ir a X" (pendiente: app/blog/[slug]/page.tsx)</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Página de suscripción (Telegram + Newsletter)</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Dashboard de historial de precios por ruta</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Alertas personalizadas: usuario define origen + destino</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>i18n: ES / DE / EN</li>
+      </ul>
+    </div>
+
+    <!-- TRACK 3 -->
+    <div class="track" style="background: linear-gradient(135deg, #1a0a0a, #0f1623); border-color: var(--red)">
+      <div class="track-badge" style="background:#7f1d1d; color:#fca5a5">🛡️ Track 3</div>
+      <h3>🔒 Seguridad, Auditoría y Testing</h3>
+      <ul class="track-tasks">
+        <li class="p1"><span class="priority-dot" style="background:var(--red)"></span>Gestión de secrets: .env + python-dotenv (nunca en git)</li>
+        <li class="p1"><span class="priority-dot" style="background:var(--red)"></span>Rate limiting en API calls (evitar ban de Travelpayouts)</li>
+        <li class="p1"><span class="priority-dot" style="background:var(--red)"></span>Test suite: pytest para motores de búsqueda</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Validación de datos: schemas para flights y hotels</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Manejo de errores: retry logic, circuit breakers</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Audit log: registrar cada API call con timestamp</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>GDPR compliance: política de privacidad + cookies</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Penetration testing básico de la API pública</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Alertas de anomalía: detectar datos corruptos</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Backup automático DB</li>
+      </ul>
+    </div>
+
+    <!-- TRACK 4 -->
+    <div class="track" style="background: linear-gradient(135deg, #0a1a0a, #0f1623); border-color: var(--green)">
+      <div class="track-badge" style="background:#064e3b; color:#6ee7b7">⚙️ Track 4</div>
+      <h3>🖥️ Infraestructura y Monitorización</h3>
+      <ul class="track-tasks">
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Hosting: Hetzner CX22 + Docker — docker-compose.yml con 3 servicios (api, worker, db)</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ PostgreSQL 15-alpine dockerizado + volumen persistente + sql/init.sql creado (9 tablas: flights, anomalies, price_history, deals, hotels, user_alerts, notification_log, api_calls_log, airlines + 2 vistas)</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ Cron scheduler: cron_runner.py en Python (loop while, sin dependencias extra). DECISIÓN: no usar crontab ni APScheduler — el loop Python es más portable en Docker.</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Cloudflare: DNS + WAF + CDN (gratis) — pendiente configurar en dashboard Cloudflare</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Uptime monitoring: UptimeRobot o Better Uptime (gratis)</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Logging centralizado: Loki + Grafana o Logtail — por ahora: worker.log en volumen Docker</li>
+        <li class="p2" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ CI/CD: GitHub Actions (.github/workflows/deploy.yml) — test-python → test-nextjs → deploy SSH a Hetzner → Vercel para frontend</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Alertas de error: Telegram bot para notificar fallos</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Redis cache: evitar llamadas repetidas a APIs</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Auto-scaling con Coolify o Dokku</li>
+      </ul>
+    </div>
+
+    <!-- TRACK 5 -->
+    <div class="track" style="background: linear-gradient(135deg, #0a0a1a, #0f1623); border-color: var(--accent); grid-column: span 1">
+      <div class="track-badge" style="background:#1e1b4b; color:#a5b4fc">🎨 Track 5</div>
+      <h3>🦅 Marca, Redes Sociales y SEO</h3>
+      <p style="font-size:0.75em; color:var(--text2); margin-bottom:10px; padding:6px 10px; background:rgba(245,158,11,0.08); border-radius:6px; border-left:2px solid var(--accent)">
+        ⚡ Incluye creación de marca — debe ejecutarse <strong>antes o en paralelo al Track 2 (Web)</strong>
+      </p>
+      <ul class="track-tasks">
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ <strong>Naming final: TripCazador</strong> — nombre elegido y confirmado. tripcazador.com / tripcazador.com</li>
+        <li class="p1" style="text-decoration:line-through; opacity:0.55"><span class="priority-dot" style="background:#22c55e"></span>✅ <strong>Design system decidido:</strong> #f59e0b ámbar + #0a0f1e negro profundo. Aplicado en web Next.js (Tailwind config), informes HTML, briefs. Tipografía: system-ui/Segoe UI. Tono: amigo experto, datos reales, sin clickbait.</li>
+        <li class="p1"><span class="priority-dot" style="background:var(--red)"></span><strong>Logo:</strong> halcón estilizado + wordmark "TripCazador" — generar con IA (prompt en brief Track 5) + refinar en Canva/Figma</li>
+        <li class="p1"><span class="priority-dot" style="background:var(--red)"></span>Instagram: template de deal card automatizado (Pillow/Canvas)</li>
+        <li class="p1"><span class="priority-dot" style="background:var(--red)"></span>Canal Telegram gratuito: bot que postea deals automáticamente</li>
+        <li class="p1"><span class="priority-dot" style="background:var(--red)"></span>SEO: 10 artículos pillar ("mejor época para ir a Tanzania/Egipto/…")</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Handles redes: @tripcazador en IG, Telegram, Twitter/X, TikTok</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Google Search Console + Analytics 4 configurados</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Keyword research: long-tail de chollos de vuelo desde BSL/FRA/ZRH</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Newsletter: setup Beehiiv + primer envío semanal</li>
+        <li class="p2"><span class="priority-dot" style="background:var(--orange)"></span>Twitter/X: bot de deals + cuenta humana</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Brand book PDF: guía de uso de marca para colaboradores</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Link building: colaboraciones con blogs de expat DACH</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>Pinterest: infografías de destinos (tráfico pasivo)</li>
+        <li class="p3"><span class="priority-dot" style="background:var(--text2)"></span>TikTok: shorts de "acabo de cazar este vuelo"</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== CHAT BRIEFS ==================== -->
+<section id="briefs">
+  <h2><span class="num">5</span> Chat Briefs — Listo para pegar en nuevas sesiones</h2>
+  <div class="section-desc">Copia el brief del track que quieras trabajar y pégalo al inicio de un nuevo chat. Cada brief es autocontenido.</div>
+
+  <div class="brief-tabs">
+    <button class="brief-tab active" onclick="showBrief(0)">Track 1 · Motor</button>
+    <button class="brief-tab" onclick="showBrief(1)">Track 2 · Web</button>
+    <button class="brief-tab" onclick="showBrief(2)">Track 3 · Seguridad</button>
+    <button class="brief-tab" onclick="showBrief(3)">Track 4 · Infra</button>
+    <button class="brief-tab" onclick="showBrief(4)">Track 5 · Marketing</button>
+  </div>
+
+  <div id="brief0" class="brief-content active">
+    <div class="brief-box">
+      <div class="brief-header">
+        <strong>🔧 Track 1 · Motor de Búsqueda</strong>
+        <button class="copy-btn" onclick="copyBrief(0)">📋 Copiar</button>
+      </div>
+      <pre id="brief-text-0">
+# CONTEXTO DEL PROYECTO — TripCazador (Track 1: Motor de Búsqueda)
+# ═══════════════════════════════════════════════════════════════
+# Última actualización: 2026-04-18 (auditoría completa Track 1)
+
+Estoy construyendo TripCazador, una marca de chollos de viaje automatizada (estilo Viajeros Piratas pero con motor propio 24/7). Este chat es el Track 1: mejorar los motores de búsqueda.
+
+## ESTRUCTURA DE HUNTERS (3 proyectos en /Viajes/)
+
+### 1. flight_hunter_v4/  ← MOTOR PRINCIPAL
+- main.py          → orquestador async (13 modos: ryanair, travelpayouts, all, business, amadeus, kiwi, rapidapi, vueling, anywhere, business-hunter, error-hunter, matrix, custom, monitor)
+- kiwi_engine.py   → Kiwi/Tequila API (PRIMARIA — gratuita, ilimitada, 750+ aerolíneas, modo anywhere)
+- travelpayouts_engine.py → precios cacheados TP (no cubre rutas largas a África/Asia)
+- serpapi_engine.py → Google Flights real-time (Business/Premium Economy, 100 calls/mes gratis)
+- amadeus_engine.py → GDS real: Eurowings, Condor, TUIfly, LOT, airBaltic, Aer Lingus — PENDIENTE CREDENCIALES
+- rapidapi_engine.py → Sky Scrapper via RapidAPI (20 req/mes gratis)
+- ryanair_engine.py → scraper directo Ryanair sin API key
+- vueling_engine.py → scraper directo Vueling
+- airline_links.py  → 116 aerolíneas mapeadas + afiliación Travelpayouts (TP_MARKER)
+- html_report.py    → dashboard HTML interactivo con Chart.js
+- excel_report.py   → informe Excel con openpyxl
+- detector.py       → detección anomalías: IQR + z-score + ratio B/E
+- db.py             → SQLite (price_history_v4.db + flights_v4.db)
+- config.py         → todas las API keys + TRAVELPAYOUTS_MARKER (afiliación)
+- geo_data.py       → enriquecimiento geográfico de rutas
+
+### 2. hotel_hunter/  ← MOTOR HOTELES
+- main.py           → scraper Booking.com con 11 técnicas de detección (T1-T11)
+- scraper.py        → Playwright headless (anti-bot stealth)
+- detector.py       → anomaly scoring multi-factor (precio_absoluto, ratio_bec, caida_historica)
+- db.py             → SQLite (price_history.db)
+- MEMORIA_ESTRATEGIA.md → histórico de mejores errores: Petit Lafitte 79% OFF, Korè Hotel 83% OFF
+- Preferencias usuario: 4-5★, review 7.8+, beachfront, all-inclusive, EUR
+
+### 3. travel_hunter/  ← GENERADOR DE URLs + CI SCRAPER
+- main.py           → genera URLs para Google Flights, Skyscanner, Booking, Airbnb + aerolíneas directas
+- url_generator.py  → motor de URLs por destino/fechas/cabina
+- tequila_api.py    → Kiwi/Tequila API con manejo de paginación
+- anomaly_detector.py / anomaly_engine.py / anomaly_scorer.py → detección de precios anómalos
+- occupancy_scraper.py → Playwright para scraping de ocupación hotelera
+- ci_search.py      → búsqueda en GitHub Actions (headless Chromium)
+- notifier.py       → alertas por email (SMTP)
+- config.json       → configuración de búsquedas (origen SXB, destino ATH, 4 adultos + 1 bebé)
+
+## APIs EN USO (estado actual)
+| API               | Estado    | Tier gratis          | Cobertura                        |
+|-------------------|-----------|----------------------|----------------------------------|
+| Kiwi/Tequila      | ✅ ACTIVA  | Ilimitado            | 750+ aerolíneas, modo anywhere   |
+| Travelpayouts     | ✅ ACTIVA  | Ilimitado (cacheado) | Europa corto-medio haul          |
+| SerpAPI           | ✅ ACTIVA  | 100 búsquedas/mes    | Google Flights, Business class   |
+| RapidAPI Scrapper | ✅ ACTIVA  | 20 req/mes           | Multi-aerolínea                  |
+| Ryanair (scraper) | ✅ ACTIVA  | Ilimitado            | Solo Ryanair                     |
+| Vueling (scraper) | ✅ ACTIVA  | Ilimitado            | Solo Vueling                     |
+| Amadeus GDS       | 🚫 CERRADO  | No hay nuevos registros desde 2025 | Imposible — API cerrada a nuevas cuentas |
+| Duffel            | ⏳ TEST    | Gratis búsquedas     | 300+ aerolíneas (real-time)      |
+
+## ORÍGENES MONITORIZADOS
+BSL (Basilea), STR (Stuttgart), FRA (Frankfurt), FKB (Karlsruhe), ZRH (Zúrich), GVA (Ginebra), MUC (Munich), CDG (París), AMS (Amsterdam)
+
+## DESTINOS CONFIGURADOS (config.py)
+- Europa: todas las capitales + secundarios
+- África: JNB, CPT, NBO, CMN, CAI, ZNZ, DAR, JRO (Tanzania añadido Track 1), MRU, ADD...
+- Asia, Américas, Oceanía, Oriente Medio, Subcontinente Indio
+
+## LO QUE SE HA HECHO (auditoría completa 2026-04-18)
+✅ Bug crítico hotel_hunter/main.py corregido: paths hardcodeados de sesión antigua → paths relativos dinámicos
+✅ Tanzania añadido a DEST_AFRICA: ZNZ (Zanzibar), DAR (Dar es Salaam), JRO (Kilimanjaro)
+✅ requirements.txt flight_hunter_v4 completado: aiohttp + openpyxl + python-dotenv
+✅ requirements.txt travel_hunter actualizado: playwright + playwright-stealth + requests + python-dotenv
+✅ Afiliación Travelpayouts: travelpayouts_url() + get_booking_url() con TP affiliate como fallback + TRAVELPAYOUTS_MARKER en config.py
+✅ Bug duration_min = 0: kiwi_engine (duration_minutes→duration_min) + ryanair (cálculo desde arrivalTime-departureTime)
+✅ Bug nights = 0: ryanair_engine _trip_to_dict() calcula noches desde fechas reales
+✅ Bug distance_category (MRS→CTA = "largo" incorrecto): añadido _EUROPEAN_EXTRAS set en config.py
+✅ T0 detector recalibrado para low-cost: LOWCOST_AIRLINES set + umbrales separados (corto=8€ vs 30€ standard)
+✅ CRÍTICO false positives: low-cost requiere 3 técnicas (no 2) para clasificar como CRÍTICO
+✅ geo_data.py: AIRPORT_COORDS (80 aeropuertos) + AIRPORT_IMAGES (50 aeropuertos) + get_image_url() con fallback
+✅ deal_enricher.py (NUEVO): headline, tags, expires_at, price_per_night, image_url con TTL por fuente
+✅ deals_exporter.py (NUEVO): dedup cross-source, unified deals.json v4.1, Telegram alerts por deal nuevo
+✅ main.py actualizado con FASE 5.5: run_export() después de análisis
+✅ FastAPI REST completa: api/main.py con Pydantic, cache 5min, CORS, 5 endpoints
+✅ Next.js 14 web: tripcazador-web/ completo (landing, /deals, /destinos/[slug], DealCard, lib/api.ts)
+✅ Docker: Dockerfiles para api + worker, docker-compose.yml (3 servicios), .env.example
+✅ CI/CD: .github/workflows/deploy.yml (pytest → npm build → SSH deploy a Hetzner)
+✅ cron_runner.py: worker loop Python cada 6h (sin APScheduler)
+
+## 🚫 AMADEUS — CERRADO PERMANENTEMENTE
+Amadeus cerró nuevos registros en 2025. NO intentar activar.
+ALTERNATIVA: Kiwi/Tequila cubre el 95% de rutas (incluyendo Eurowings, Condor via GDS).
+
+## TAREAS PENDIENTES (por prioridad)
+
+### PRIORIDAD 1 — Activar afiliación Travelpayouts (manual, 5 min)
+
+1. Obtener marker en https://travelpayouts.com → Programas de afiliados
+2. Añadir a .env.production: TP_MARKER=tu_numero
+3. Los enlaces de reserva generarán 2-6% comisión automáticamente
+4. Verificar: python -c "from airline_links import travelpayouts_url; print(travelpayouts_url('BSL','BCN','2026-06-15'))"
+
+### PRIORIDAD 2 — PostgreSQL: completar sql/init.sql
+Migrar de SQLite a PostgreSQL para escalar y hacer historial de precios consultable desde web.
+Esquema sugerido:
+  - tabla flights: id, origin, destination, airline, price_eur, cabin, date_out, date_ret, found_at, source_engine, booking_url
+  - tabla anomalies: id, flight_id, anomaly_type, score, ratio_be, pct_below_median, created_at
+  - tabla price_history: origin, destination, date_out, price_eur, recorded_at
+Usar SQLAlchemy async + Alembic para migraciones.
+
+### PRIORIDAD 4 — FastAPI REST endpoint
+Para que la web (Track 2) pueda consultar los deals en tiempo real.
+  GET  /api/deals?origin=BSL&limit=20&cabin=economy
+  GET  /api/deals/top → top 10 del día con score más alto
+  GET  /api/stats → totales por origen, destino, aerolínea
+  POST /api/alert → {email, origin, destination, max_price, cabin}
+  GET  /api/prices/{origin}/{destination} → historial de precios por ruta
+
+### PRIORIDAD 5 — Unificar hotel + vuelo en dashboard único
+Actualmente hotel_hunter y flight_hunter tienen dashboards separados.
+Crear un main_tripcazador.py que ejecute ambos en paralelo y genere un único HTML.
+
+## NOTAS TÉCNICAS
+- Python 3.10+, asyncio para paralelismo (todo async con aiohttp)
+- Rate limiting: max 10 req/s Travelpayouts, 1 req/s Amadeus, 1 req/5s SerpAPI
+- Guardar siempre timestamp UTC en DB
+- hotel_hunter usa Playwright headless — requiere: playwright install chromium
+- travel_hunter/config.json define las búsquedas (editar para cambiar destinos)
+- No subir API keys a git — usar .env + python-dotenv
+</pre>
+    </div>
+  </div>
+
+  <div id="brief1" class="brief-content">
+    <div class="brief-box">
+      <div class="brief-header">
+        <strong>🌐 Track 2 · Creación de la Página Web</strong>
+        <button class="copy-btn" onclick="copyBrief(1)">📋 Copiar</button>
+      </div>
+      <pre id="brief-text-1">
+# CONTEXTO DEL PROYECTO — TripCazador (Track 2: Página Web)
+
+Estoy construyendo TripCazador, una web de chollos de viaje automatizada (estilo Viajeros Piratas).
+Ya tenemos el motor backend (Python) funcionando. Este chat es para construir la web.
+
+## LA MARCA
+Nombre: TripCazador | Dominio: tripcazador.com
+Tagline: "El cazador automático de chollos de vuelo desde Europa"
+Audiencia: hispanohablantes en DACH (Alemania, Austria, Suiza)
+Estética: oscuro/negro + ámbar/dorado. Minimalista con datos. Estilo "radar de vuelos".
+
+## BACKEND QUE EXISTE
+- API en FastAPI (Python) en puerto 8000
+- GET /api/deals → lista de deals [{origin, destination, price, airline, date_out, date_back, cabin}]
+- GET /api/deals/top → top 10 deals del día
+- Datos de vuelos en PostgreSQL
+
+## TECH STACK ELEGIDO PARA LA WEB
+- Next.js 14 (App Router) + TypeScript
+- Tailwind CSS v3
+- Shadcn/ui para componentes
+- Vercel para hosting (plan gratuito inicial)
+- MDX para blog/artículos SEO
+- next-sitemap para SEO
+
+## TAREA DE ESTE CHAT (por orden de prioridad)
+
+### PRIORIDAD 1: Estructura del proyecto
+Scaffolding de Next.js 14 con App Router. Estructura de carpetas:
+/app/page.tsx (landing con top deals)
+/app/deals/page.tsx (todos los deals con filtros)
+/app/destinos/[slug]/page.tsx (página de destino: Tanzania, Egipto, etc.)
+/app/blog/[slug]/page.tsx (artículos SEO)
+/components/DealCard.tsx (card de oferta con precio, aerolínea, fechas)
+
+### PRIORIDAD 2: Componente DealCard
+Card visual de oferta que muestre: precio prominente, ruta (BSL → ZNZ), aerolínea con logo,
+fechas salida/vuelta, noches, badge de "Oferta del día" / "Business Deal" / "Chollo".
+Al clicar: link de afiliado a la aerolínea.
+
+### PRIORIDAD 3: Landing page
+Hero con buscador inline + sección "Últimos chollos" (cards en grid).
+Stats: "127 rutas monitorizadas · 24h actualización · desde 89€"
+
+### PRIORIDAD 4: Página de destino (Tanzania ejemplo)
+Combinar datos de vuelos + guía de temporadas + precio por mes (como el informe Tanzania que ya tenemos en HTML).
+Esta página es la base del SEO — objetivo: rankear "vuelos baratos Tanzania desde Zúrich".
+
+## NOTAS DE DISEÑO
+- Dark theme por defecto (igual que los informes HTML que ya tenemos)
+- Mobile-first
+- Core Web Vitals: LCP < 2.5s, CLS < 0.1
+- Open Graph images generadas dinámicamente para compartir deals en redes
+</pre>
+    </div>
+  </div>
+
+  <div id="brief2" class="brief-content">
+    <div class="brief-box">
+      <div class="brief-header">
+        <strong>🛡️ Track 3 · Seguridad, Auditoría y Testing</strong>
+        <button class="copy-btn" onclick="copyBrief(2)">📋 Copiar</button>
+      </div>
+      <pre id="brief-text-2">
+# CONTEXTO DEL PROYECTO — TripCazador (Track 3: Seguridad y Testing)
+
+Estoy construyendo TripCazador, un motor de búsqueda de vuelos automatizado.
+Necesito que sea robusto y seguro antes de hacerlo público.
+
+## EL CÓDIGO BASE
+- Python 3.10+, asyncio, aiohttp
+- Archivos principales: main.py, serpapi_engine.py, amadeus_engine.py,
+  airline_links.py, html_report.py, config.py
+- APIs externas: Travelpayouts, SerpAPI, Amadeus
+- Almacenamiento: deals_log.jsonl (hoy) → PostgreSQL (próximo)
+- Exposición: API FastAPI pública en internet
+
+## PROBLEMÁTICAS ACTUALES
+1. API keys en config.py cargadas desde .env — verificar que no se filtran en logs ni HTML
+2. No hay tests unitarios ni de integración
+3. No hay manejo robusto de errores (si una API falla, el run entero puede romperse)
+4. No hay validación de datos de entrada a la API FastAPI
+5. No hay rate limiting para proteger nuestra propia API
+
+## TAREA DE ESTE CHAT (por orden de prioridad)
+
+### PRIORIDAD 1: Test suite completo
+pytest para:
+- test_airline_links.py: name_to_iata() con 20+ casos incluyendo edge cases
+- test_config.py: verificar que secrets no están hardcoded
+- test_serpapi_engine.py: mock de API, verificar parsing de respuesta
+- test_amadeus_engine.py: mock auth, mock search, verificar normalización datos
+- test_html_report.py: verificar que genera HTML válido sin XSS
+
+### PRIORIDAD 2: Error handling robusto
+Implementar circuit breaker pattern para cada API externa.
+Si Travelpayouts falla 3 veces seguidas → esperar 15 min antes de reintentar.
+Todas las excepciones loggeadas con contexto (qué origen/destino se buscaba).
+
+### PRIORIDAD 3: Seguridad de la API FastAPI
+- Validación de inputs con Pydantic (origin debe ser IATA 3 letras, dates válidas)
+- Rate limiting: max 60 req/min por IP (slowapi)
+- CORS configurado correctamente (solo tripcazador.com)
+- No exponer stack traces en errores 500
+
+### PRIORIDAD 4: Secrets audit
+Scan del código con detect-secrets o trufflehog.
+Pre-commit hook que bloquee commit si detecta API keys.
+Documentar qué credenciales se necesitan y cómo rotarlas.
+
+## NOTAS
+- No queremos un sistema ultra-complejo, solo producción-ready básico
+- Los tests deben mockear APIs externas (no gastar créditos reales en CI)
+- GDPR: asegurarse de que no guardamos datos personales sin consentimiento
+</pre>
+    </div>
+  </div>
+
+  <div id="brief3" class="brief-content">
+    <div class="brief-box">
+      <div class="brief-header">
+        <strong>⚙️ Track 4 · Infraestructura y Monitorización</strong>
+        <button class="copy-btn" onclick="copyBrief(3)">📋 Copiar</button>
+      </div>
+      <pre id="brief-text-3">
+# CONTEXTO DEL PROYECTO — TripCazador (Track 4: Infraestructura)
+
+Estoy construyendo TripCazador, motor de vuelos automatizado que debe correr 24/7.
+Necesito infraestructura sencilla, barata y fiable para producción.
+
+## LO QUE NECESITA CORRER EN PRODUCCIÓN
+1. Python scraper (main.py) — cron cada 6 horas
+2. FastAPI server — endpoint /api/deals (respuesta a la web)
+3. PostgreSQL — histórico de deals y alertas de usuarios
+4. Next.js web — servida por Vercel (ya gestionado por Vercel, no necesita server)
+
+## PRESUPUESTO OBJETIVO
+<20€/mes en infraestructura durante fase MVP
+
+## STACK ELEGIDO
+- Hetzner CX22 VPS: 4.15€/mes (2 vCPU, 4GB RAM, 40GB SSD)
+- Docker + docker-compose para orchestración
+- Cloudflare: DNS + proxy + WAF (gratis)
+- Vercel: Next.js hosting (gratis hasta ciertos límites)
+- UptimeRobot: monitoring gratuito (50 monitores gratis)
+
+## TAREA DE ESTE CHAT (por orden de prioridad)
+
+## ✅ LO QUE YA ESTÁ HECHO (2026-04-18)
+- docker-compose.yml: 3 servicios (api, worker, db) + volúmenes + .env.production
+- api/Dockerfile: python:3.11-slim + uvicorn 2 workers + healthcheck curl
+- flight_hunter_v4/Dockerfile: python:3.11-slim + ryanair-py + cron_runner.py
+- cron_runner.py: loop Python cada CRON_INTERVAL s (default 6h), sin APScheduler
+- .env.example: template completo con todas las variables necesarias
+- .github/workflows/deploy.yml: test-python → test-nextjs → SSH deploy a Hetzner
+- Alertas Telegram: deals_exporter.py envía alerta por cada deal CRÍTICO/ERROR nuevo
+- DECISIÓN: sin Nginx — Cloudflare hace de proxy público
+
+## TAREAS PENDIENTES (hacer en Hetzner)
+
+### PRIORIDAD 1: Aprovisionar el servidor Hetzner CX22
+1. Crear cuenta en hetzner.com → nuevo servidor CX22 (Ubuntu 22.04)
+2. SSH y correr: apt update && apt install -y docker.io docker-compose git
+3. git clone tu-repo /opt/tripcazador
+4. cp .env.example .env.production && nano .env.production (rellenar keys reales)
+5. docker-compose --env-file .env.production up -d
+6. Verificar: curl http://localhost:8000/api/health
+
+### PRIORIDAD 2: Crear sql/init.sql con schema base
+Tablas que necesita la aplicación:
+CREATE TABLE price_history (origin VARCHAR(3), destination VARCHAR(3), date_out DATE, price_eur NUMERIC, source VARCHAR(50), recorded_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE user_alerts (id SERIAL PRIMARY KEY, email VARCHAR(200), origin VARCHAR(3), destination VARCHAR(3), max_price NUMERIC, cabin VARCHAR(20), created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE INDEX ON price_history(origin, destination, date_out);
+
+### PRIORIDAD 3: Configurar Cloudflare DNS
+1. En Cloudflare: añadir sitio tripcazador.com
+2. A record: api.tripcazador.com → IP del Hetzner (proxied ✓)
+3. CNAME: www → cname.vercel-dns.com (proxied ✓)
+4. Activar WAF: bloquear países no target, rate limiting 100 req/min por IP
+
+### PRIORIDAD 4: GitHub Secrets para CI/CD automático
+En GitHub repo → Settings → Secrets → añadir:
+- HETZNER_HOST: IP del servidor
+- HETZNER_USER: root (o usuario deploy)
+- HETZNER_SSH_KEY: clave privada SSH
+
+### MÉTRICAS A MONITORIZAR
+- Uptime de FastAPI (target: 99.5%)
+- Tiempo por run de scraper (target: <10 min)
+- Número de deals por run (alerta si <5 = posible ban API)
+- Uso de créditos API (alerta si >80% del mes gastado)
+</pre>
+    </div>
+  </div>
+
+  <div id="brief4" class="brief-content">
+    <div class="brief-box">
+      <div class="brief-header">
+        <strong>📣 Track 5 · Marketing, SEO y Redes Sociales</strong>
+        <button class="copy-btn" onclick="copyBrief(4)">📋 Copiar</button>
+      </div>
+      <pre id="brief-text-4">
+# CONTEXTO DEL PROYECTO — TripCazador (Track 5: Marca + Marketing + SEO)
+
+Estoy construyendo TripCazador, una marca de chollos de viaje automatizada.
+Target: hispanohablantes en Europa Central (Suiza, Alemania, Austria, Alsacia).
+Competencia principal: Viajeros Piratas (España), Jack's Flight Club (UK).
+
+## EL PRODUCTO
+- Motor automático que rastrea vuelos baratos 24/7 desde BSL/FRA/ZRH/STR/GVA/MUC
+- Especializado en: chollos de vuelo, deals de Business class, destinos exóticos (Tanzania, Egipto, Sudamérica)
+- Diferencial: automático, datos reales, historial de precios, zona DACH
+
+## CANALES A DESARROLLAR
+1. Instagram (@tripcazador)
+2. Canal Telegram (gratuito + premium de pago)
+3. Blog/SEO en tripcazador.com
+4. Newsletter (Beehiiv)
+5. Twitter/X (@tripcazador)
+
+## TAREA DE ESTE CHAT (por orden de prioridad)
+
+### PRIORIDAD 0: Identidad de marca (hacer PRIMERO — bloquea todo lo demás)
+1. Confirmar nombre: "TripCazador" es el favorito. Alternativas si no gusta:
+   - AzimutViajes, AeroHunter, VueloCaza, WingHunt, PiloDeals
+2. Verificar disponibilidad: tripcazador.com en Namecheap/Ionos, @tripcazador en IG/Telegram/X
+3. Generar logo con IA: prompt para Midjourney/DALL-E:
+   "Minimalist logo, a stylized falcon silhouette with wings forming a downward price chart arrow,
+   amber/gold color #f59e0b on black background, modern sans-serif wordmark 'TripCazador' below,
+   travel brand, clean geometric"
+4. Design system básico (para usar en web + redes):
+   - Colores: Primary #f59e0b (ámbar), Background #0a0f1e (negro), Accent #10b981 (verde deal)
+   - Tipografía: Inter (headings bold) + Inter (body)
+   - Tono: directo, emocionante, datos reales, sin clickbait
+
+### PRIORIDAD 1: Sistema de posts automáticos para Instagram
+Script Python que:
+- Tome un deal del motor (precio, ruta, fechas, aerolínea)
+- Genere una imagen con Pillow: diseño oscuro + ámbar, precio grande, ruta, fechas
+- Formato 1:1 y 9:16 (story)
+- Plantilla: fondo negro, precio en ámbar enorme, "🔥 CHOLLO" badge, logo TripCazador
+No necesita postear automáticamente en fase 1 — solo generar las imágenes.
+
+### PRIORIDAD 2: Bot de Telegram
+Bot que postee automáticamente en el canal cuando el motor encuentre un deal nuevo.
+Formato del mensaje:
+🔥 [CHOLLO] BSL → ZNZ (Zanzíbar)
+✈️ Ethiopian Airlines
+💰 487€ ida y vuelta
+📅 15 Jun → 29 Jun (14 noches)
+🔗 [Ver oferta](link afiliado)
+📊 30% más barato que el precio habitual
+
+### PRIORIDAD 3: Estrategia SEO + 5 artículos pillar
+Keyword research para:
+- "vuelos baratos desde Basel/Frankfurt/Zürich a [destino]"
+- "mejor época para ir a [destino] desde Europa"
+- "chollos vuelos 2026"
+Escribir 5 artículos de 1500-2500 palabras cada uno.
+Estructura: H1 con keyword principal, tabla de precios por mes, FAQ Schema.
+
+### PRIORIDAD 4: Setup Newsletter Beehiiv
+Diseño del template de newsletter semanal:
+- Header: "🦅 TripCazador Weekly — Los mejores chollos de la semana"
+- Sección: Top 5 deals de la semana (con imágenes)
+- Sección: Destino de la semana (guía rápida + mejor precio)
+- Footer: links a Telegram + Instagram
+
+## MÉTRICAS OBJETIVO MES 3
+- Instagram: 500 seguidores, engagement >5%
+- Telegram: 300 suscriptores canal gratuito
+- Newsletter: 200 suscriptores
+- Web: 2.000 visitas/mes orgánicas
+</pre>
+    </div>
+  </div>
+
+</section>
+
+<!-- ==================== TECH STACK ==================== -->
+<section id="tech">
+  <h2><span class="num">6</span> Tech Stack Completo</h2>
+  <div class="section-desc">Herramientas elegidas por criterio coste/rendimiento para una startup bootstrapped.</div>
+
+  <div class="stack-grid">
+    <div class="stack-item">
+      <div class="si-icon">🐍</div>
+      <div class="si-name">Python 3.11</div>
+      <div class="si-role">Motor de búsqueda</div>
+      <div class="si-cost">Gratis</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">⚡</div>
+      <div class="si-name">FastAPI</div>
+      <div class="si-role">API REST backend</div>
+      <div class="si-cost">Gratis</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">🗄️</div>
+      <div class="si-name">PostgreSQL 15</div>
+      <div class="si-role">Base de datos</div>
+      <div class="si-cost">Gratis (self-hosted)</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">▲</div>
+      <div class="si-name">Next.js 14</div>
+      <div class="si-role">Frontend web</div>
+      <div class="si-cost">Gratis</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">🔺</div>
+      <div class="si-name">Vercel</div>
+      <div class="si-role">Hosting web</div>
+      <div class="si-cost">Gratis (hobby)</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">🟠</div>
+      <div class="si-name">Hetzner VPS</div>
+      <div class="si-role">Servidor backend</div>
+      <div class="si-cost">4.15€/mes</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">🐋</div>
+      <div class="si-name">Docker</div>
+      <div class="si-role">Containerización</div>
+      <div class="si-cost">Gratis</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">☁️</div>
+      <div class="si-name">Cloudflare</div>
+      <div class="si-role">CDN + WAF + DNS</div>
+      <div class="si-cost">Gratis</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">📊</div>
+      <div class="si-name">Travelpayouts</div>
+      <div class="si-role">API vuelos + afiliación</div>
+      <div class="si-cost">Gratis (afiliado)</div>
+    </div>
+    <div class="stack-item" style="opacity:0.4; text-decoration:line-through">
+      <div class="si-icon">🚫</div>
+      <div class="si-name">Amadeus</div>
+      <div class="si-role">GDS — CERRADO 2025</div>
+      <div class="si-cost" style="color:#ef4444">Sin nuevos registros</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">🔍</div>
+      <div class="si-name">SerpAPI</div>
+      <div class="si-role">Google Flights Business</div>
+      <div class="si-cost">49$/mes (100 free)</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">📧</div>
+      <div class="si-name">Beehiiv</div>
+      <div class="si-role">Newsletter</div>
+      <div class="si-cost">Gratis hasta 2.500</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">🤖</div>
+      <div class="si-name">Telegram Bot API</div>
+      <div class="si-role">Canal + alertas</div>
+      <div class="si-cost">Gratis</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">🖼️</div>
+      <div class="si-name">Pillow (Python)</div>
+      <div class="si-role">Generación imágenes IG</div>
+      <div class="si-cost">Gratis</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">🔄</div>
+      <div class="si-name">GitHub Actions</div>
+      <div class="si-role">CI/CD</div>
+      <div class="si-cost">Gratis</div>
+    </div>
+    <div class="stack-item">
+      <div class="si-icon">📈</div>
+      <div class="si-name">GA4 + Search Console</div>
+      <div class="si-role">Analytics + SEO</div>
+      <div class="si-cost">Gratis</div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px; background:var(--card); border:1px solid var(--green); border-radius:12px; padding:18px">
+    <strong style="color:var(--green)">💰 Coste total infraestructura MVP: ~12-20€/mes</strong>
+    <p style="color:var(--text2); font-size:0.85em; margin-top:6px">VPS Hetzner (4.15€) + dominio tripcazador.com (~10€/año) + SerpAPI (49$ si ampliamos Business class). Todo lo demás es gratis en los planes básicos.</p>
+  </div>
+</section>
+
+<!-- ==================== KPIs ==================== -->
+<section id="kpis">
+  <h2><span class="num">7</span> KPIs por Fase</h2>
+  <div class="section-desc">Métricas clave para saber si estamos en el camino correcto.</div>
+
+  <h3 style="color:var(--green); margin-bottom:12px">🌱 Fase 1 (Mes 3)</h3>
+  <div class="metrics-grid" style="margin-bottom:24px">
+    <div class="metric"><div class="m-val">500</div><div class="m-label">Visitas/mes web</div><div class="m-when">Mes 3</div></div>
+    <div class="metric"><div class="m-val">300</div><div class="m-label">Suscriptores Telegram</div><div class="m-when">Mes 3</div></div>
+    <div class="metric"><div class="m-val">10+</div><div class="m-label">Artículos SEO publicados</div><div class="m-when">Mes 3</div></div>
+    <div class="metric"><div class="m-val">100€</div><div class="m-label">Ingresos afiliación/mes</div><div class="m-when">Mes 3</div></div>
+    <div class="metric"><div class="m-val">99%</div><div class="m-label">Uptime motor búsqueda</div><div class="m-when">Continuo</div></div>
+    <div class="metric"><div class="m-val">6h</div><div class="m-label">Frecuencia actualización</div><div class="m-when">Continuo</div></div>
+  </div>
+
+  <h3 style="color:var(--blue); margin-bottom:12px">🚀 Fase 2 (Mes 6)</h3>
+  <div class="metrics-grid" style="margin-bottom:24px">
+    <div class="metric"><div class="m-val">5.000</div><div class="m-label">Visitas/mes web</div><div class="m-when">Mes 6</div></div>
+    <div class="metric"><div class="m-val">1.000</div><div class="m-label">Suscriptores Telegram</div><div class="m-when">Mes 6</div></div>
+    <div class="metric"><div class="m-val">100</div><div class="m-label">Suscriptores premium (5€)</div><div class="m-when">Mes 6</div></div>
+    <div class="metric"><div class="m-val">1.000€</div><div class="m-label">MRR (ingresos recurrentes)</div><div class="m-when">Mes 6</div></div>
+    <div class="metric"><div class="m-val">1.000</div><div class="m-label">Seguidores Instagram</div><div class="m-when">Mes 6</div></div>
+    <div class="metric"><div class="m-val">30</div><div class="m-label">Posiciones top-10 Google</div><div class="m-when">Mes 6</div></div>
+  </div>
+
+  <h3 style="color:var(--purple); margin-bottom:12px">💎 Fase 3 (Mes 12)</h3>
+  <div class="metrics-grid">
+    <div class="metric"><div class="m-val">50k</div><div class="m-label">Visitas/mes web</div><div class="m-when">Mes 12</div></div>
+    <div class="metric"><div class="m-val">5.000</div><div class="m-label">Suscriptores Telegram</div><div class="m-when">Mes 12</div></div>
+    <div class="metric"><div class="m-val">500</div><div class="m-label">Suscriptores premium</div><div class="m-when">Mes 12</div></div>
+    <div class="metric"><div class="m-val">5.000€</div><div class="m-label">MRR</div><div class="m-when">Mes 12</div></div>
+    <div class="metric"><div class="m-val">10k</div><div class="m-label">Seguidores Instagram</div><div class="m-when">Mes 12</div></div>
+    <div class="metric"><div class="m-val">150</div><div class="m-label">Posiciones top-10 Google</div><div class="m-when">Mes 12</div></div>
+  </div>
+</section>
+
+
+<!-- ==================== DUDAS RESUELTAS ==================== -->
+<section id="dudas" style="scroll-margin-top:80px; margin-bottom:64px">
+  <h2 style="font-size:1.6em; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:12px">
+    <span style="background:#10b981; color:#000; width:32px; height:32px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75em; flex-shrink:0">✓</span>
+    Dudas Resueltas — Decisiones Tomadas
+  </h2>
+  <p style="color:#94a3b8; margin-bottom:28px; font-size:0.95em">Respuestas definitivas a las preguntas abiertas del plan. Actualizadas 2026-04-18.</p>
+
+  <div style="display:grid; gap:14px">
+
+    <!-- DUDA 1: Amadeus -->
+    <div style="background:#0f1a0f; border:1px solid #ef4444; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#ef4444; color:#fff; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">CERRADO</span>
+        <strong>¿Usar Amadeus GDS para cubrir Eurowings, Condor, TUIfly?</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6"><strong style="color:#fca5a5">NO. Amadeus cerró registros de nuevas cuentas en 2025.</strong> No hay forma de registrarse ni obtener credenciales. Solución definitiva: Kiwi/Tequila API cubre virtualmente todas las aerolíneas del mundo (750+, incluyendo Eurowings y Condor via GDS de Kiwi). Complementar con RapidAPI Sky Scrapper para rutas específicas. Eliminar cualquier referencia a activar Amadeus de las prioridades.</p>
+    </div>
+
+    <!-- DUDA 2: Cron -->
+    <div style="background:#0f1623; border:1px solid #10b981; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#10b981; color:#000; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">RESUELTO</span>
+        <strong>¿Crontab del sistema, APScheduler o solución propia para los runs periódicos?</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6"><strong style="color:#6ee7b7">Loop Python en cron_runner.py.</strong> Razón: más portable en Docker (no depende de crontab del sistema ni de librerías extra). El worker arranca, ejecuta inmediatamente, luego duerme CRON_INTERVAL segundos (default: 21600 = 6h). Configurable via variable de entorno. Logs centralizados en /app/output/worker.log.</p>
+    </div>
+
+    <!-- DUDA 3: Nginx o no -->
+    <div style="background:#0f1623; border:1px solid #10b981; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#10b981; color:#000; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">RESUELTO</span>
+        <strong>¿Necesitamos Nginx como reverse proxy en el servidor?</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6"><strong style="color:#6ee7b7">No para el MVP.</strong> Cloudflare actúa como proxy/CDN/WAF en la capa pública. FastAPI con uvicorn (2 workers) expone directo al puerto 8000. Docker mapea el puerto al host. Cloudflare → Puerto 443 → Docker puerto 8000. Añadir Nginx si se necesita SSL termination local o múltiples servicios web en un VPS.</p>
+    </div>
+
+    <!-- DUDA 4: SQLite vs PostgreSQL -->
+    <div style="background:#0f1623; border:1px solid #10b981; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#10b981; color:#000; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">RESUELTO</span>
+        <strong>¿Migrar de SQLite a PostgreSQL ahora o más adelante?</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6"><strong style="color:#6ee7b7">PostgreSQL desde el día 1 en producción.</strong> Ya está dockerizado en docker-compose.yml (postgres:15-alpine + volumen persistente). El worker sigue usando SQLite localmente para historial de búsquedas. La API FastAPI lee deals.json (no SQL directo) — esto permite escalar sin cambiar el motor de búsqueda. <strong style="color:#6ee7b7">sql/init.sql creado</strong> con 9 tablas (flights, anomalies, price_history, deals, hotels, user_alerts, notification_log, api_calls_log, airlines), 2 vistas (top_deals_today, price_stats_by_route) y trigger de updated_at.</p>
+    </div>
+
+    <!-- DUDA 5: T0 demasiado sensible -->
+    <div style="background:#0f1623; border:1px solid #10b981; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#10b981; color:#000; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">RESUELTO</span>
+        <strong>¿Por qué todos los deals aparecían como CRÍTICO (score=100)? ¿Cómo calibrar el detector?</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6"><strong style="color:#6ee7b7">Causa: T0 (precio absoluto) era demasiado sensible para low-cost.</strong> Un vuelo Ryanair de 15€ MRS→PMI es normal, no un error fare. Solución aplicada: (1) LOWCOST_AIRLINES set (FR, U2, W6, VY, etc.) con umbrales T0 permisivos (corto=8€, medio=30€, largo=80€ vs los umbrales standard más altos). (2) Para clasificar como CRÍTICO, low-cost requiere 3 técnicas activas (vs 2 para aerolíneas regulares). Resultado: clasificaciones realistas.</p>
+    </div>
+
+    <!-- DUDA 6: API keys en logs -->
+    <div style="background:#0f1623; border:1px solid #10b981; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#10b981; color:#000; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">RESUELTO</span>
+        <strong>¿Las API keys se filtran en logs o en el HTML generado? (Track 3)</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6"><strong style="color:#6ee7b7">Protegidas.</strong> Todas las keys se cargan desde .env via python-dotenv (nunca hardcodeadas). El HTML report no incluye ninguna key. La API FastAPI no expone secrets en respuestas. Docker lee secrets de .env.production (en .gitignore). Pendiente Track 3: audit con detect-secrets + pre-commit hook que bloquee commits con API keys detectadas.</p>
+    </div>
+
+    <!-- DUDA 7: Validación FastAPI -->
+    <div style="background:#0f1623; border:1px solid #10b981; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#10b981; color:#000; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">RESUELTO</span>
+        <strong>¿Cómo validar datos de entrada a la API FastAPI? ¿Rate limiting? (Track 3)</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6"><strong style="color:#6ee7b7">Pydantic models en api/main.py.</strong> El modelo Deal valida todos los campos del deals.json. Los query params (origin, destination, cabin, classification) son strings con valores posibles validados por FastAPI. CORS configurado para solo tripcazador.com + localhost:3000. Pendiente: rate limiting con slowapi (max 60 req/min por IP) — tarea del Track 3.</p>
+    </div>
+
+    <!-- DUDA 8: Schema unificado -->
+    <div style="background:#0f1623; border:1px solid #10b981; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#10b981; color:#000; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">RESUELTO</span>
+        <strong>¿Qué formato tiene deals.json para conectar backend con web? ¿Versión del schema?</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6"><strong style="color:#6ee7b7">deals.json v4.1</strong> generado por deals_exporter.py. Contiene: schema_version, generated_at, stats (total, critico, error, anomalia), deals[] con campos: id, type, origin, destination, airline, price_eur, cabin, date_out, date_back, nights, duration_min, classification, score, headline, tags, image_url, lat, lon, expires_at, booking_url, verified (true si 2+ fuentes confirman precio ±10%). También guarda historial en output/history/deals_YYYYMMDD_HHMM.json.</p>
+    </div>
+
+    <!-- DUDA 9: Vercel + dominio -->
+    <div style="background:#0f1623; border:1px solid #3b82f6; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#3b82f6; color:#fff; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">PENDIENTE MANUAL</span>
+        <strong>¿Cómo conectar Vercel con el dominio tripcazador.com?</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6"><strong style="color:#93c5fd">vercel.json creado</strong> en tripcazador-web/ con: rewrites de /api/* → FastAPI en Hetzner, headers de seguridad (HSTS, X-Frame-Options, CSP), caché agresiva para assets estáticos, región fra1 (Frankfurt, más cercana al target DACH). Para desplegarlo: (1) Push repo a GitHub. (2) Importar en vercel.com → "New Project" → seleccionar tripcazador-web/. (3) Añadir variable NEXT_PUBLIC_API_URL=https://api.tripcazador.com. (4) DNS: CNAME "www" → cname.vercel-dns.com y A "@" → 76.76.21.21. El CI/CD de Vercel es automático (GitHub integration).</p>
+    </div>
+
+    <!-- DUDA 10: Blog MDX -->
+    <div style="background:#0f1623; border:1px solid #f97316; border-radius:12px; padding:18px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <span style="background:#f97316; color:#fff; font-size:0.7em; font-weight:700; padding:2px 8px; border-radius:6px">PENDIENTE</span>
+        <strong>¿Cómo funcionará el blog con artículos SEO?</strong>
+      </div>
+      <p style="color:#94a3b8; font-size:0.85em; line-height:1.6">Pendiente crear app/blog/[slug]/page.tsx en tripcazador-web/. El plan: archivos .mdx en /content/blog/. Next.js 14 con @next/mdx o contentlayer. Estructura de cada artículo: H1 con keyword ("Vuelos baratos a Tanzania desde Basilea"), tabla de precios por mes (data del motor), temporadas, FAQ Schema.org para rich snippets. Prioridad alta para SEO — es la principal fuente de tráfico orgánico.</p>
+    </div>
+
+  </div>
+</section>
+
+</div>
+
+<footer>
+  🦅 TripCazador · Plan Estratégico v2.0 · Actualizado 2026-04-18 · Confidencial<br>
+  Generado con Claude · Basado en Flight Hunter v4
+</footer>
+
+<script>
+function showBrief(n) {
+  document.querySelectorAll('.brief-content').forEach((el,i) => {
+    el.classList.toggle('active', i === n);
+  });
+  document.querySelectorAll('.brief-tab').forEach((el,i) => {
+    el.classList.toggle('active', i === n);
+  });
+}
+
+function copyBrief(n) {
+  const text = document.getElementById('brief-text-' + n).textContent;
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    const btn = document.querySelectorAll('.copy-btn')[n];
+    const original = btn.textContent;
+    btn.textContent = '✅ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>

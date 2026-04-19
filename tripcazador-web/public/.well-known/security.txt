@@ -1,0 +1,13 @@
+# TripCazador — Security disclosure policy (RFC 9116)
+# https://securitytxt.org/
+
+Contact: mailto:security@tripcazador.com
+Contact: https://t.me/tripcazador_bot
+Expires: 2027-04-19T23:59:59Z
+Preferred-Languages: es, en
+Canonical: https://tripcazador.com/.well-known/security.txt
+Policy: https://tripcazador.com/legal#security
+
+# Alcance: todo *.tripcazador.com y el bot de Telegram.
+# Recompensas: sin bug bounty económico, pero reconocimiento público en /legal si lo deseas.
+# Ámbito fuera de scope: DoS, phishing sin vulnerabilidad técnica, vulnerabilidades en apps de terceros (Kiwi, Booking, Travelpayouts) que no podamos controlar.

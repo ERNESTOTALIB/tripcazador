@@ -1,0 +1,48 @@
+{
+  "data": [
+    {
+      "price": 198.5,
+      "deep_link": "https://www.kiwi.com/deep/MAD-NRT/2026-07-15",
+      "cityTo": "Tokio",
+      "countryTo": {"name": "Japon", "code": "JP"},
+      "flyTo": "NRT",
+      "duration": {"total": 43200, "departure": 39600, "return": 43200},
+      "dTimeUTC": 1791552000,
+      "aTimeUTC": 1791595200,
+      "route": [
+        {
+          "flyFrom": "MAD",
+          "flyTo": "NRT",
+          "airline": "JL",
+          "return": 0,
+          "dTimeUTC": 1791552000,
+          "aTimeUTC": 1791595200
+        },
+        {
+          "flyFrom": "NRT",
+          "flyTo": "MAD",
+          "airline": "JL",
+          "return": 1,
+          "dTimeUTC": 1792800000,
+          "aTimeUTC": 1792843200
+        }
+      ]
+    },
+    {
+      "price": 450.0,
+      "deep_link": "https://www.kiwi.com/deep/MAD-NRT/2026-07-16",
+      "cityTo": "Tokio",
+      "countryTo": {"name": "Japon"},
+      "flyTo": "NRT",
+      "duration": {"total": 46800},
+      "dTimeUTC": 1791638400,
+      "aTimeUTC": 1791685200,
+      "route": [
+        {"flyFrom": "MAD", "flyTo": "FRA", "airline": "LH", "return": 0},
+        {"flyFrom": "FRA", "flyTo": "NRT", "airline": "LH", "return": 0},
+        {"flyFrom": "NRT", "flyTo": "FRA", "airline": "LH", "return": 1},
+        {"flyFrom": "FRA", "flyTo": "MAD", "airline": "LH", "return": 1}
+      ]
+    }
+  ]
+}

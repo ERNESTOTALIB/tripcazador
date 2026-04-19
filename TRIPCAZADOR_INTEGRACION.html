@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>TripCazador · Integración — Estado, pendientes y bloqueos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --bg:#030712; --bg-card:#0f172a; --bg-soft:#111827; --border:#1f2937;
+    --amber:#f59e0b; --amber-light:#fbbf24;
+    --green:#10b981; --red:#ef4444; --orange:#fb923c; --blue:#3b82f6; --purple:#a855f7;
+    --text:#e5e7eb; --muted:#9ca3af; --mute2:#6b7280;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;padding:40px 24px}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font-size:2.4em;margin:0 0 6px;letter-spacing:-0.02em;line-height:1.1}
+  h1 .accent{color:var(--amber)}
+  h2{font-size:1.5em;margin:48px 0 14px;letter-spacing:-0.01em;border-bottom:1px solid var(--border);padding-bottom:10px}
+  h3{font-size:1.15em;margin:24px 0 10px;color:var(--amber-light)}
+  h4{font-size:1em;margin:16px 0 6px;color:#f3f4f6;text-transform:uppercase;letter-spacing:0.05em;font-size:0.8em}
+  p{margin:0 0 10px}
+  .sub{color:var(--muted);font-size:1.05em;margin-bottom:30px}
+  .meta{display:flex;gap:16px;flex-wrap:wrap;font-size:0.85em;color:var(--mute2);margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+  .meta span strong{color:var(--amber)}
+  .grid{display:grid;gap:14px}
+  .grid-2{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}
+  .grid-3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .grid-4{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+  .card-sm{background:var(--bg-soft);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:0.93em}
+  .kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+  .kpi .n{font-size:2em;font-weight:700;color:var(--amber);display:block;line-height:1}
+  .kpi .l{font-size:0.75em;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:6px;display:block}
+  .badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:0.72em;font-weight:600;text-transform:uppercase;letter-spacing:0.04em}
+  .b-ok{background:rgba(16,185,129,0.15);color:var(--green)}
+  .b-wip{background:rgba(251,191,36,0.15);color:var(--amber-light)}
+  .b-todo{background:rgba(156,163,175,0.12);color:var(--muted)}
+  .b-block{background:rgba(239,68,68,0.15);color:var(--red)}
+  .b-soon{background:rgba(59,130,246,0.15);color:var(--blue)}
+  ul.clean{list-style:none;padding:0;margin:0}
+  ul.clean li{padding:6px 0;border-bottom:1px dashed var(--border);display:flex;align-items:flex-start;gap:10px}
+  ul.clean li:last-child{border-bottom:none}
+  ul.clean li .icon{flex:0 0 auto;width:18px;text-align:center;font-size:0.95em}
+  .check{color:var(--green)}
+  .dot{color:var(--amber)}
+  .warn{color:var(--red)}
+  code{background:#1a2030;color:var(--amber-light);padding:1px 6px;border-radius:4px;font-size:0.88em;font-family:"JetBrains Mono","Fira Code",monospace}
+  pre{background:#0a0f1c;border:1px solid var(--border);border-radius:8px;padding:14px;overflow-x:auto;font-size:0.83em;line-height:1.5;color:#cbd5e1}
+  .arch{background:linear-gradient(180deg,#0f172a 0%,#0a1020 100%);border:1px solid var(--border);border-radius:14px;padding:26px;font-family:"JetBrains Mono","Fira Code",monospace;font-size:0.85em;overflow-x:auto;white-space:pre;color:#cbd5e1}
+  .banner{padding:16px 20px;border-radius:10px;margin:16px 0}
+  .banner-block{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3)}
+  .banner-info{background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25)}
+  .banner h4{margin:0 0 8px;color:inherit}
+  table{width:100%;border-collapse:collapse;font-size:0.9em;margin:8px 0 4px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--amber);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;font-size:0.75em;border-bottom-color:#2a3548}
+  tr:hover td{background:rgba(255,255,255,0.02)}
+  .priority-1{border-left:3px solid var(--red)}
+  .priority-2{border-left:3px solid var(--orange)}
+  .priority-3{border-left:3px solid var(--amber)}
+  .priority-4{border-left:3px solid var(--muted)}
+  .track-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .track-head .num{width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:700;font-family:"JetBrains Mono",monospace}
+  .track-head h2{border:none;padding:0;margin:0;font-size:1.35em}
+  .track-head .prog{margin-left:auto;font-size:0.8em;color:var(--muted)}
+  .track-head .prog .bar{display:inline-block;width:120px;height:6px;background:#1f2937;border-radius:3px;overflow:hidden;vertical-align:middle;margin-left:8px}
+  .track-head .prog .fill{display:block;height:100%;background:var(--amber);border-radius:3px}
+  .done-list li .icon{color:var(--green)}
+  .pending-list li .icon{color:var(--amber)}
+  .block-list li .icon{color:var(--red)}
+  .tag{display:inline-block;font-size:0.72em;background:#1a2030;color:var(--muted);padding:1px 7px;border-radius:4px;margin-right:4px;font-family:"JetBrains Mono",monospace}
+  .bloq-card{background:linear-gradient(135deg,rgba(239,68,68,0.08) 0%,rgba(239,68,68,0.02) 100%);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:18px 20px;margin:10px 0}
+  .bloq-card h4{color:#fca5a5;margin:0 0 6px;font-size:1em;text-transform:none;letter-spacing:0}
+  .bloq-card .why{color:var(--muted);font-size:0.9em;margin:0 0 8px}
+  .bloq-card .how{font-size:0.9em}
+  .cta{background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:#000;padding:14px 24px;border-radius:10px;display:inline-block;font-weight:700;text-decoration:none;margin:8px 6px 0 0}
+  hr{border:none;border-top:1px solid var(--border);margin:40px 0}
+  .small{font-size:0.85em;color:var(--muted)}
+  .emoji{font-size:1.1em;margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Caza<span class="accent">Vuelos</span> · Integración</h1>
+<p class="sub">Estado real del proyecto, pendientes integrados entre tracks y bloqueos priorizados por lo que necesitas desbloquear tú.</p>
+
+<div class="meta">
+  <span><strong>Fecha:</strong> 2026-04-18</span>
+  <span><strong>Dominio:</strong> tripcazador.com</span>
+  <span><strong>Fase:</strong> Track 1-4 esqueleto listo · Track 5 sin arrancar</span>
+  <span><strong>Coste infra MVP:</strong> ~12-20 €/mes</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SNAPSHOT -->
+<!-- ══════════════════════════════════════════════════════ -->
+<h2>1. Snapshot global</h2>
+
+<div class="grid grid-4">
+  <div class="kpi"><span class="n">70%</span><span class="l">Motor</span></div>
+  <div class="kpi"><span class="n">55%</span><span class="l">Web</span></div>
+  <div class="kpi"><span class="n">5%</span><span class="l">Testing</span></div>
+  <div class="kpi"><span class="n">60%</span><span class="l">Infra</span></div>
+  <div class="kpi"><span class="n">0%</span><span class="l">Marca</span></div>
+  <div class="kpi"><span class="n">0%</span><span class="l">Marketing</span></div>
+  <div class="kpi"><span class="n">0 €</span><span class="l">Ingresos</span></div>
+  <div class="kpi"><span class="n">7</span><span class="l">APIs conectadas</span></div>
+</div>
+
+<div class="banner banner-info">
+  <h4>💡 Resumen en una frase</h4>
+  <p>El esqueleto técnico <strong>funciona end-to-end en local</strong> (motor → JSON → API → web), pero nada está desplegado, el dominio no apunta a nada, no hay marca visual ni canal público, y el motor todavía no genera comisiones porque falta el <code>TP_MARKER</code> de Travelpayouts.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- ARQUITECTURA -->
+<!-- ══════════════════════════════════════════════════════ -->
+<h2>2. Arquitectura integrada</h2>
+<p class="small">Esta es la arquitectura que ya existe en código. Cada bloque mapea 1:1 a un directorio o servicio del repositorio.</p>
+
+<div class="arch">
+                              ┌─────────────────────────────┐
+                              │   Usuario (hispano DACH)     │
+                              │  busca "vuelos baratos BSL"  │
+                              └──────────────┬──────────────┘
+                                             │ HTTPS
+                                             ▼
+                    ┌──────────────────────────────────────────┐
+                    │  tripcazador.com  (Vercel · Next.js 14)    │   ← Track 2 (web)
+                    │  · /               Home + top deals      │
+                    │  · /deals          Lista filtrable        │
+                    │  · /destinos/:slug SEO guías             │
+                    │  · /blog/:slug     artículos (VACÍO)     │
+                    └──────────────┬──────────────────────────┘
+                                   │ fetch() ISR 5 min
+                                   ▼
+                    ┌──────────────────────────────────────────┐
+                    │  api.tripcazador.com  (FastAPI · Hetzner)  │   ← Track 1/4 (API)
+                    │  · GET /api/deals      (con filtros)      │
+                    │  · GET /api/deals/top  (landing)          │
+                    │  · GET /api/stats      (hero numbers)     │
+                    │  · GET /api/health     (UptimeRobot)     │
+                    └──────────────┬──────────────────────────┘
+                                   │ lee deals.json (cache 5min)
+                                   ▼
+              ┌────────────────────────────────────────────────┐
+              │  output/deals.json  (schema v4.1 unificado)    │
+              └────────────────────┬───────────────────────────┘
+                                   │ genera cada 6h
+                                   ▼
+                ┌──────────────────────────────────────────┐
+                │  tripcazador_worker  (Docker · cron 6h)   │   ← Track 1 (motor)
+                │                                           │
+                │  main.py orchestrates engines →           │
+                │   ├─ kiwi_engine.py       (anywhere)     │
+                │   ├─ ryanair_engine.py    (Ryanair)      │
+                │   ├─ vueling_engine.py    (Vueling)      │
+                │   ├─ serpapi_engine.py    (Google Flts)  │
+                │   ├─ rapidapi_engine.py   (Skyscanner)   │
+                │   └─ travelpayouts_engine (ofertas base) │
+                │                                           │
+                │  detector.py  → 8 técnicas · score 0-100 │
+                │  deal_enricher.py → geo, imgs, booking   │
+                │  deals_exporter.py → JSON unificado      │
+                │  notifier.py  → Telegram push            │
+                └──────────────────────┬───────────────────┘
+                                       │ persistencia
+                                       ▼
+               ┌─────────────────────────────────────────────┐
+               │  PostgreSQL 15  (Docker · volumen local)    │   ← Track 4 (infra)
+               │  · flights, anomalies, deals                │
+               │  · price_history  (baseline histórico)      │
+               │  · user_alerts, notification_log            │
+               │  · Vistas: top_deals_today, price_stats     │
+               └─────────────────────────────────────────────┘
+</div>
+
+<div class="banner banner-info">
+  <h4>🔎 Qué falta conectar en la arquitectura</h4>
+  <ol style="margin:0 0 0 18px;padding:0">
+    <li>El motor <strong>escribe JSON plano</strong> pero aún <em>no graba en Postgres</em> — <code>db.py</code> existe en SQLite, hay que migrar.</li>
+    <li>La API <strong>lee del JSON</strong>, no de Postgres — correcto para el MVP, pero bloquea métricas históricas y alertas de usuario.</li>
+    <li>El cron worker <strong>no envía aún a Telegram</strong> deals individuales — el código existe en <code>notifier.py</code>, falta cablearlo al export.</li>
+    <li>No hay <strong>CDN de imágenes</strong> — las tarjetas cargan Unsplash directo (riesgo de rate limit).</li>
+  </ol>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TRACK 1 · MOTOR -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="track-head">
+  <div class="num">01</div>
+  <h2>Track 1 · Motor de búsqueda</h2>
+  <div class="prog">70% <span class="bar"><span class="fill" style="width:70%"></span></span></div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3 style="margin-top:0">✅ Hecho</h3>
+    <ul class="clean done-list">
+      <li><span class="icon">✓</span><div><strong>7 engines integrados</strong> <span class="tag">kiwi</span><span class="tag">ryanair</span><span class="tag">vueling</span><span class="tag">serpapi</span><span class="tag">rapidapi</span><span class="tag">travelpayouts</span> + Amadeus archivado (cerrado)</div></li>
+      <li><span class="icon">✓</span><div><strong>Detector avanzado de anomalías</strong> · 8 técnicas (T0-T7) con IQR, Z-score, flash drops, ratio Business/Economy</div></li>
+      <li><span class="icon">✓</span><div><strong>Scoring 0-100</strong> con clasificación CRÍTICO / ERROR / ANOMALÍA / OFERTA</div></li>
+      <li><span class="icon">✓</span><div><strong>Enrichment</strong> · geo (30KB de datos de ciudad/país/región), imágenes por destino, booking URLs con afiliación</div></li>
+      <li><span class="icon">✓</span><div><strong>Dedupe cross-source</strong> · mismo vuelo en varias APIs → 1 deal <code>verified=true</code></div></li>
+      <li><span class="icon">✓</span><div><strong>Export unificado</strong> <code>deals.json v4.1</code> listo para la API + <code>deals_log.jsonl</code> para histórico</div></li>
+      <li><span class="icon">✓</span><div><strong>Notifier Telegram</strong> con deduplicación (<code>.sent_alerts.json</code>)</div></li>
+      <li><span class="icon">✓</span><div><strong>Cron runner</strong> <code>cron_runner.py</code> loop cada 6h con APScheduler</div></li>
+      <li><span class="icon">✓</span><div><strong>Afiliación Travelpayouts</strong> integrada como fallback en <code>airline_links.py</code> (falta MARKER)</div></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">🟡 Pendiente</h3>
+    <ul class="clean pending-list">
+      <li><span class="icon">●</span><div><strong>Migrar SQLite → PostgreSQL</strong> · <code>db.py</code> todavía apunta a <code>flights_v4.db</code>. Usar <code>DATABASE_URL</code> de docker-compose</div></li>
+      <li><span class="icon">●</span><div><strong>Escribir a tabla <code>deals</code></strong> en paralelo al JSON — necesario para métricas e historial</div></li>
+      <li><span class="icon">●</span><div><strong>Cablear Telegram al export</strong> — <code>deals_exporter.py</code> tiene <code>send_telegram_alerts()</code> pero no se llama desde <code>main.py</code></div></li>
+      <li><span class="icon">●</span><div><strong>Motor de hoteles</strong> · <code>hotel_hunter/</code> existe, falta integrar output al JSON unificado (schema ya soporta <code>type:"hotel"</code>)</div></li>
+      <li><span class="icon">●</span><div><strong>Rate limiting / circuit breakers</strong> por engine (si SerpAPI falla no romper todo)</div></li>
+      <li><span class="icon">●</span><div><strong>Retry con back-off</strong> en errores HTTP 429/5xx</div></li>
+      <li><span class="icon">●</span><div><strong>Deduplicación histórica</strong> — si el mismo error fare sale 6h después, no re-notificar</div></li>
+    </ul>
+  </div>
+</div>
+
+<h4 style="margin-top:18px">🚧 Bloqueos desde Ernesto</h4>
+<table>
+  <thead><tr><th>#</th><th>Bloqueo</th><th>Para qué</th><th>Cómo resolverlo</th></tr></thead>
+  <tbody>
+    <tr class="priority-1"><td><span class="badge b-block">P1</span></td><td><strong>TP_MARKER</strong> de Travelpayouts</td><td>Activar comisiones afiliación desde día 1</td><td>Login en travelpayouts.com → copiar ID numérico → añadirlo a <code>.env</code> como <code>TP_MARKER=123456</code></td></tr>
+    <tr class="priority-2"><td><span class="badge b-block">P2</span></td><td>Decidir si activar <strong>hotel_hunter</strong> ahora o después</td><td>Duplica el inventario de deals y abre comisión Booking</td><td>Decisión rápida: sí/no. Si sí, necesitas cuenta Booking Affiliate (gratis, ~1 semana approval)</td></tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TRACK 2 · WEB -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="track-head">
+  <div class="num">02</div>
+  <h2>Track 2 · Web Next.js</h2>
+  <div class="prog">55% <span class="bar"><span class="fill" style="width:55%"></span></span></div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3 style="margin-top:0">✅ Hecho</h3>
+    <ul class="clean done-list">
+      <li><span class="icon">✓</span><div><strong>Next.js 14 App Router</strong> con TypeScript + Tailwind + Inter font</div></li>
+      <li><span class="icon">✓</span><div><strong>Layout global</strong> navbar + footer + dark theme + OpenGraph + metadata SEO</div></li>
+      <li><span class="icon">✓</span><div><strong>Home page</strong> con hero, stats dinámicas, deal destacado y grid de top 9 deals</div></li>
+      <li><span class="icon">✓</span><div><strong>/deals</strong> lista filtrable por clasificación, cabina y región</div></li>
+      <li><span class="icon">✓</span><div><strong>DealCard + DealRow</strong> components con tracking GA4 (<code>gtag</code>), badges y hover</div></li>
+      <li><span class="icon">✓</span><div><strong>/destinos/:slug</strong> con 6 destinos (Tanzania, Japón, Maldivas, NY, Bali, BA) — copy SEO + deals en vivo</div></li>
+      <li><span class="icon">✓</span><div><strong>API client</strong> <code>lib/api.ts</code> con ISR 5 min y fallback a <code>/public/deals.json</code> estático</div></li>
+      <li><span class="icon">✓</span><div><strong>vercel.json</strong> con headers de seguridad (HSTS, X-Frame, CSP básico), cache rules y rewrites API</div></li>
+      <li><span class="icon">✓</span><div><strong>GitHub Actions deploy</strong> workflow listo</div></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">🟡 Pendiente</h3>
+    <ul class="clean pending-list">
+      <li><span class="icon">●</span><div><strong>/blog/:slug</strong> existe la carpeta pero está <em>vacía</em> — 0 artículos publicados</div></li>
+      <li><span class="icon">●</span><div><strong>/blog</strong> (índice) — no existe el <code>page.tsx</code></div></li>
+      <li><span class="icon">●</span><div><strong>/destinos</strong> (índice) — hay detalles pero no hay página lista</div></li>
+      <li><span class="icon">●</span><div><strong>Sitemap.xml + robots.txt</strong> · <code>next-sitemap</code> ya en dependencies, falta config</div></li>
+      <li><span class="icon">●</span><div><strong>RSS feed</strong> para agregadores / Telegram auto-post</div></li>
+      <li><span class="icon">●</span><div><strong>Opengraph images</strong> dinámicas por deal (usar <code>@vercel/og</code>)</div></li>
+      <li><span class="icon">●</span><div><strong>Newsletter signup</strong> (Beehiiv embed) en footer + página <code>/alertas</code></div></li>
+      <li><span class="icon">●</span><div><strong>Favicon + app icons</strong> — <code>public/</code> está vacío</div></li>
+      <li><span class="icon">●</span><div><strong>Schema.org structured data</strong> (Offer, FlightReservation) para rich snippets</div></li>
+      <li><span class="icon">●</span><div><strong>Analytics</strong> — el código dispara <code>gtag('event')</code> pero no hay script GA4 cargado</div></li>
+      <li><span class="icon">●</span><div><strong>Página legal</strong> (aviso, privacidad, cookies, afiliación — obligatorio por DSGVO/RGPD)</div></li>
+    </ul>
+  </div>
+</div>
+
+<h4 style="margin-top:18px">🚧 Bloqueos desde Ernesto</h4>
+<table>
+  <thead><tr><th>#</th><th>Bloqueo</th><th>Para qué</th><th>Cómo resolverlo</th></tr></thead>
+  <tbody>
+    <tr class="priority-1"><td><span class="badge b-block">P1</span></td><td>Comprar <strong>tripcazador.com</strong></td><td>Sin dominio no hay SSL, ni SEO, ni credibilidad</td><td>Namecheap / Porkbun / Cloudflare Registrar (~10€/año). Luego Vercel connect</td></tr>
+    <tr class="priority-1"><td><span class="badge b-block">P1</span></td><td>Cuenta <strong>Vercel</strong> (free tier)</td><td>Deployment de la web</td><td>Login con GitHub → New Project → repo → listo. Gratis hasta ~100GB/mes</td></tr>
+    <tr class="priority-2"><td><span class="badge b-block">P2</span></td><td><strong>GA4 Property ID</strong></td><td>Medir tráfico real desde día 1</td><td>Google Analytics → crear propiedad "TripCazador" → copiar <code>G-XXXXXXXXXX</code></td></tr>
+    <tr class="priority-2"><td><span class="badge b-block">P2</span></td><td>Decisión: <strong>¿Vercel o Cloudflare Pages?</strong></td><td>Hosting web</td><td>Recomiendo Vercel por ISR nativo de Next.js. Cloudflare Pages rinde mejor en Asia pero ISR es worker-based</td></tr>
+    <tr class="priority-3"><td><span class="badge b-block">P3</span></td><td>Texto legal (<strong>aviso + privacidad + cookies</strong>)</td><td>Obligatorio por RGPD, Google AdSense lo exige</td><td>Usar generator (iubenda o similar) — yo puedo redactar un draft si me das: razón social, email contacto, país fiscal</td></tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TRACK 3 · SEGURIDAD -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="track-head">
+  <div class="num">03</div>
+  <h2>Track 3 · Seguridad y testing</h2>
+  <div class="prog">5% <span class="bar"><span class="fill" style="width:5%"></span></span></div>
+</div>
+
+<div class="banner banner-block">
+  <h4>⚠️ Track completamente sin arrancar</h4>
+  <p>No hay <strong>ningún test unitario ni de integración</strong> en el repo. Los secrets están en <code>.env.example</code> pero no hay auditoría de que no se estén filtrando a logs o al git history.</p>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3 style="margin-top:0">✅ Hecho</h3>
+    <ul class="clean done-list">
+      <li><span class="icon">✓</span><div><strong>CORS</strong> restringido a tripcazador.com + localhost en la API</div></li>
+      <li><span class="icon">✓</span><div><strong>Security headers</strong> en <code>vercel.json</code> (HSTS, X-Frame, Referrer-Policy)</div></li>
+      <li><span class="icon">✓</span><div><strong>.env.example</strong> con keys dummy, no secretos reales</div></li>
+      <li><span class="icon">✓</span><div><strong>rel="nofollow"</strong> en todos los links de afiliación (buena praxis SEO)</div></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">🟡 Pendiente (todo)</h3>
+    <ul class="clean pending-list">
+      <li><span class="icon">●</span><div><strong>pytest suite</strong> para cada engine (mock HTTP con <code>responses</code>)</div></li>
+      <li><span class="icon">●</span><div><strong>Tests del detector</strong> con fixtures de precios (IQR, Z-score edge cases)</div></li>
+      <li><span class="icon">●</span><div><strong>Tests de integración</strong> API (FastAPI TestClient)</div></li>
+      <li><span class="icon">●</span><div><strong>Playwright E2E</strong> de la web (home, deals, click afiliado)</div></li>
+      <li><span class="icon">●</span><div><strong>Secrets audit</strong> · <code>gitleaks</code> sobre todo el repo antes del primer push</div></li>
+      <li><span class="icon">●</span><div><strong>Rate limiting</strong> en la API (slowapi middleware)</div></li>
+      <li><span class="icon">●</span><div><strong>Input validation</strong> estricta en query params</div></li>
+      <li><span class="icon">●</span><div><strong>Backup automático</strong> de Postgres (cron + Hetzner Storage Box o S3)</div></li>
+      <li><span class="icon">●</span><div><strong>Monitoreo</strong> Sentry (frontend + backend) + UptimeRobot</div></li>
+      <li><span class="icon">●</span><div><strong>CI en GitHub Actions</strong> que corra pytest en cada PR</div></li>
+    </ul>
+  </div>
+</div>
+
+<h4 style="margin-top:18px">🚧 Bloqueos desde Ernesto</h4>
+<p class="small">Ninguno crítico — este track puedo hacerlo todo yo cuando lo desbloquees en el roadmap. Solo necesito tu <strong>OK para crear el repo de GitHub</strong> (no puedo hacerlo sin cuenta tuya).</p>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TRACK 4 · INFRA -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="track-head">
+  <div class="num">04</div>
+  <h2>Track 4 · Infraestructura y deploy</h2>
+  <div class="prog">60% <span class="bar"><span class="fill" style="width:60%"></span></span></div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3 style="margin-top:0">✅ Hecho</h3>
+    <ul class="clean done-list">
+      <li><span class="icon">✓</span><div><strong>docker-compose.yml</strong> con 3 servicios: <code>db</code> (Postgres), <code>api</code> (FastAPI), <code>worker</code> (cron)</div></li>
+      <li><span class="icon">✓</span><div><strong>Dockerfile API</strong> y <strong>Dockerfile worker</strong></div></li>
+      <li><span class="icon">✓</span><div><strong>Schema SQL</strong> completo · 9 tablas + 2 vistas + triggers <code>updated_at</code> + seed de aerolíneas</div></li>
+      <li><span class="icon">✓</span><div><strong>Healthcheck</strong> en API y DB para orquestación</div></li>
+      <li><span class="icon">✓</span><div><strong>Volume compartido</strong> <code>output_data</code> entre worker y api</div></li>
+      <li><span class="icon">✓</span><div><strong>GitHub Actions deploy</strong> Vercel para la web</div></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">🟡 Pendiente</h3>
+    <ul class="clean pending-list">
+      <li><span class="icon">●</span><div><strong>Servidor</strong> · VPS Hetzner CX22 sin alquilar aún (4.15€/mes)</div></li>
+      <li><span class="icon">●</span><div><strong>Subdominio <code>api.tripcazador.com</code></strong> → apuntar a IP del VPS</div></li>
+      <li><span class="icon">●</span><div><strong>Reverse proxy</strong> Caddy (auto-SSL con Let's Encrypt) delante de la API</div></li>
+      <li><span class="icon">●</span><div><strong>Firewall</strong> Hetzner: solo 80/443 al exterior, 22 con SSH key</div></li>
+      <li><span class="icon">●</span><div><strong>GitHub Actions deploy</strong> del backend (push → SSH + <code>docker-compose pull && up -d</code>)</div></li>
+      <li><span class="icon">●</span><div><strong>CDN / cache</strong> · Cloudflare delante de la API (gratis, cache edge)</div></li>
+      <li><span class="icon">●</span><div><strong>Log aggregation</strong> (Loki + Grafana o simplemente <code>docker logs</code> + papertrail)</div></li>
+      <li><span class="icon">●</span><div><strong>Backup</strong> de <code>deals.json</code> y DB a S3/Hetzner Storage Box diario</div></li>
+    </ul>
+  </div>
+</div>
+
+<h4 style="margin-top:18px">🚧 Bloqueos desde Ernesto</h4>
+<table>
+  <thead><tr><th>#</th><th>Bloqueo</th><th>Para qué</th><th>Cómo resolverlo</th></tr></thead>
+  <tbody>
+    <tr class="priority-1"><td><span class="badge b-block">P1</span></td><td>Alquilar <strong>VPS Hetzner CX22</strong></td><td>Host del backend (API + worker + DB)</td><td>hetzner.com/cloud → CX22 Nuremberg → Ubuntu 24.04 → SSH key. 4.15€/mes</td></tr>
+    <tr class="priority-1"><td><span class="badge b-block">P1</span></td><td><strong>Cloudflare</strong> o DNS del registrar</td><td>DNS para apex y <code>api.</code> subdominio</td><td>Mover DNS a Cloudflare (gratis, mejor caché y protección DDoS)</td></tr>
+    <tr class="priority-2"><td><span class="badge b-block">P2</span></td><td>Decisión <strong>GitHub / GitLab</strong></td><td>Repo y CI/CD</td><td>Recomiendo GitHub (integración Vercel directa). ¿Repo público o privado?</td></tr>
+    <tr class="priority-3"><td><span class="badge b-block">P3</span></td><td>Servicio de <strong>backups</strong></td><td>Seguridad ante pérdida de datos</td><td>Hetzner Storage Box (3.81€/mes, 1TB) o backblaze B2 (5GB gratis)</td></tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TRACK 5 · MARCA + MARKETING -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="track-head">
+  <div class="num">05</div>
+  <h2>Track 5 · Marca, diseño y marketing</h2>
+  <div class="prog">0% <span class="bar"><span class="fill" style="width:0%"></span></span></div>
+</div>
+
+<div class="banner banner-block">
+  <h4>🚨 Track completamente en cero</h4>
+  <p>No existen assets visuales (logo, iconos, OG images), ni canales sociales abiertos, ni contenido SEO publicado, ni newsletter. <strong>Sin marketing el motor funciona pero no entra tráfico</strong> — la web sin visitantes no genera comisiones aunque haya 100 deals activos.</p>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3 style="margin-top:0">🎨 Identidad visual — pendiente</h3>
+    <ul class="clean pending-list">
+      <li><span class="icon">●</span><div><strong>Logotipo primario</strong> — tipografía + símbolo (ej. ave rapaz estilizada o radar)</div></li>
+      <li><span class="icon">●</span><div><strong>Isotipo</strong> (cuadrado para favicon, app icon, avatar redes)</div></li>
+      <li><span class="icon">●</span><div><strong>Paleta oficial documentada</strong> — actualmente en Tailwind: <code>#030712</code> fondo, <code>#f59e0b</code> ámbar, <code>#fbbf24</code> ámbar claro. Falta codificarla en brand guide</div></li>
+      <li><span class="icon">●</span><div><strong>Tipografía</strong> · Inter (ya en uso) + JetBrains Mono (para códigos IATA/datos)</div></li>
+      <li><span class="icon">●</span><div><strong>OG card</strong> (1200×630) genérica y plantilla dinámica por deal</div></li>
+      <li><span class="icon">●</span><div><strong>Templates redes</strong> · Instagram (1080×1350), TikTok (1080×1920), Twitter (1600×900)</div></li>
+      <li><span class="icon">●</span><div><strong>Brand guide PDF</strong> con usos correctos/incorrectos</div></li>
+    </ul>
+    <p class="small" style="margin-top:12px">💡 Puedo generar la identidad completa con la skill <code>canvas-design</code> cuando me confirmes la dirección estética: ¿prefieres algo más tech/data o más travel/aventura?</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">📢 Canales + marketing — pendiente</h3>
+    <ul class="clean pending-list">
+      <li><span class="icon">●</span><div><strong>Telegram canal gratuito</strong> @tripcazador (automatizado con <code>notifier.py</code>)</div></li>
+      <li><span class="icon">●</span><div><strong>Telegram Premium</strong> (~7€/mes) — canal secundario con error fares crema, salidas anticipadas</div></li>
+      <li><span class="icon">●</span><div><strong>Instagram</strong> · @tripcazador con bot de posteo diario (reels automatizados)</div></li>
+      <li><span class="icon">●</span><div><strong>Newsletter Beehiiv</strong> · plantilla, formulario embed en la web, primer send</div></li>
+      <li><span class="icon">●</span><div><strong>Contenido SEO inicial</strong> — 10 artículos largos (2000+ palabras) para cubrir los 6 destinos + 4 guías genéricas ("cómo cazar error fares", etc.)</div></li>
+      <li><span class="icon">●</span><div><strong>Backlinks iniciales</strong> · Reddit r/Viajes, foros expats alemanes, menciones en X</div></li>
+      <li><span class="icon">●</span><div><strong>Google Search Console</strong> + Bing Webmaster — submit sitemap</div></li>
+      <li><span class="icon">●</span><div><strong>Product Hunt launch</strong> (día de lanzamiento oficial, mes 2)</div></li>
+    </ul>
+  </div>
+</div>
+
+<h4 style="margin-top:18px">🚧 Bloqueos desde Ernesto</h4>
+<table>
+  <thead><tr><th>#</th><th>Bloqueo</th><th>Para qué</th><th>Cómo resolverlo</th></tr></thead>
+  <tbody>
+    <tr class="priority-1"><td><span class="badge b-block">P1</span></td><td>Dirección estética del <strong>logo</strong></td><td>Generar logo + OG card + favicon</td><td>Elige 1: (a) <em>tech/data</em> oscuro + ámbar minimal, (b) <em>aventura/travel</em> con textura, (c) <em>híbrido</em> ave+datos</td></tr>
+    <tr class="priority-1"><td><span class="badge b-block">P1</span></td><td>Abrir <strong>canal Telegram</strong> @tripcazador</td><td>Canal de tráfico orgánico más rápido</td><td>Telegram → Crear canal → público → @tripcazador → darme admin al bot</td></tr>
+    <tr class="priority-1"><td><span class="badge b-block">P1</span></td><td><strong>Bot de Telegram</strong> via @BotFather</td><td>Enviar alertas al canal</td><td>/newbot → TripCazadorBot → copiar token → a <code>.env</code> como <code>TELEGRAM_BOT_TOKEN</code></td></tr>
+    <tr class="priority-2"><td><span class="badge b-block">P2</span></td><td>Cuenta <strong>Instagram</strong> @tripcazador</td><td>Canal social visual</td><td>Crear cuenta business (permite programación vía Meta API)</td></tr>
+    <tr class="priority-2"><td><span class="badge b-block">P2</span></td><td>Cuenta <strong>Beehiiv</strong> (free tier)</td><td>Newsletter</td><td>beehiiv.com → TripCazador → tema oscuro. Gratis hasta 2.500 subs</td></tr>
+    <tr class="priority-3"><td><span class="badge b-block">P3</span></td><td>¿Haces <strong>fotos propias</strong> o usamos Unsplash?</td><td>Imágenes de destinos en tarjetas y OG</td><td>Opción A: solo Unsplash (gratis, rápido). Opción B: fotos tuyas (más auténtico). Opción C: generar con IA (licencia comercial)</td></tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- MONETIZACIÓN -->
+<!-- ══════════════════════════════════════════════════════ -->
+<h2>3. Monetización — orden de activación</h2>
+
+<table>
+  <thead><tr><th>#</th><th>Canal</th><th>Estado</th><th>Lo que falta</th><th>Ingresos esperados</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td><td><strong>Travelpayouts</strong> (afiliación vuelos)</td>
+      <td><span class="badge b-wip">Integrado</span></td>
+      <td>Solo falta <code>TP_MARKER</code> en <code>.env</code></td>
+      <td>Día 1</td>
+    </tr>
+    <tr>
+      <td>2</td><td><strong>Booking.com</strong> (afiliación hoteles)</td>
+      <td><span class="badge b-todo">Sin abrir</span></td>
+      <td>Aplicar a Booking Affiliate (necesita web viva, 1-2 semanas aprob.)</td>
+      <td>Mes 1</td>
+    </tr>
+    <tr>
+      <td>3</td><td><strong>Telegram Premium</strong> (~7€/mes)</td>
+      <td><span class="badge b-todo">Sin abrir</span></td>
+      <td>Canal público activo 1 mes → lanzar premium paralelo con Stripe/TelegramPay</td>
+      <td>Mes 2-3</td>
+    </tr>
+    <tr>
+      <td>4</td><td><strong>Newsletter Beehiiv</strong> (ads dentro)</td>
+      <td><span class="badge b-todo">Sin abrir</span></td>
+      <td>1.000+ subs → elegibles para ad network de Beehiiv</td>
+      <td>Mes 3-4</td>
+    </tr>
+    <tr>
+      <td>5</td><td><strong>AdSense → Mediavine</strong></td>
+      <td><span class="badge b-todo">Sin abrir</span></td>
+      <td>Traffic 50k sesiones/mes para aplicar a Mediavine (AdSense antes)</td>
+      <td>Mes 4+</td>
+    </tr>
+    <tr>
+      <td>6</td><td><strong>Contenido patrocinado</strong></td>
+      <td><span class="badge b-todo">Sin abrir</span></td>
+      <td>Audiencia &gt; 10k en cualquier canal</td>
+      <td>Mes 6+</td>
+    </tr>
+    <tr>
+      <td>7</td><td><strong>API B2B white-label</strong></td>
+      <td><span class="badge b-todo">Sin abrir</span></td>
+      <td>Motor estable + auth + pricing (Stripe)</td>
+      <td>Año 2</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- BLOQUEOS AGREGADOS -->
+<!-- ══════════════════════════════════════════════════════ -->
+<h2>4. Bloqueos agregados — lo que necesito de ti</h2>
+<p class="small">Ordenado por prioridad. <strong>Los 4 P1 son lo único que impide el primer deploy público y las primeras comisiones.</strong></p>
+
+<div class="bloq-card priority-1">
+  <h4>🔴 P1 · Dominio <strong>tripcazador.com</strong></h4>
+  <p class="why">Sin dominio no hay web, ni SEO, ni SSL, ni email profesional.</p>
+  <p class="how"><strong>Cómo:</strong> Porkbun o Cloudflare Registrar. ~10€/año. 15 minutos.</p>
+</div>
+
+<div class="bloq-card priority-1">
+  <h4>🔴 P1 · <code>TP_MARKER</code> de Travelpayouts</h4>
+  <p class="why">Sin marker, todas las URLs de afiliación redirigen sin tu ID y no se paga comisión.</p>
+  <p class="how"><strong>Cómo:</strong> login en travelpayouts.com → Profile → copy "Marker ID" numérico. 2 minutos.</p>
+</div>
+
+<div class="bloq-card priority-1">
+  <h4>🔴 P1 · VPS <strong>Hetzner CX22</strong> + cuenta <strong>Vercel</strong></h4>
+  <p class="why">Hosting del backend (API, worker, DB) y del frontend respectivamente.</p>
+  <p class="how"><strong>Cómo:</strong> Hetzner Cloud → CX22 Ubuntu 24.04 Nuremberg (4.15€/mes). Vercel free con login GitHub.</p>
+</div>
+
+<div class="bloq-card priority-1">
+  <h4>🔴 P1 · Canal <strong>Telegram @tripcazador</strong> + bot via @BotFather</h4>
+  <p class="why">Es el primer canal de distribución orgánica (más rápido que SEO).</p>
+  <p class="how"><strong>Cómo:</strong> Telegram → Crear canal público @tripcazador. Luego @BotFather → /newbot → "TripCazadorBot" → copiar token y chat_id del canal.</p>
+</div>
+
+<div class="bloq-card priority-2">
+  <h4>🟠 P2 · Dirección estética del logo</h4>
+  <p class="why">Sin logo no puedo generar favicon, OG images ni posts sociales.</p>
+  <p class="how"><strong>Cómo:</strong> responde con 1 palabra — <em>tech</em>, <em>aventura</em> o <em>híbrido</em> — y yo genero 3 variaciones con canvas-design.</p>
+</div>
+
+<div class="bloq-card priority-2">
+  <h4>🟠 P2 · Repo GitHub + GA4 Property ID</h4>
+  <p class="why">Necesarios para CI/CD y analytics desde día 1.</p>
+  <p class="how"><strong>Cómo:</strong> GitHub → New repo "tripcazador" (privado). Google Analytics → crear propiedad → copiar <code>G-XXXXXXXXXX</code>.</p>
+</div>
+
+<div class="bloq-card priority-2">
+  <h4>🟠 P2 · Decisión: ¿activamos hoteles ahora o después?</h4>
+  <p class="why">Duplica el inventario de deals pero añade complejidad (scraper Booking + credenciales afiliado).</p>
+  <p class="how"><strong>Cómo:</strong> decide sí/no. Si sí, abrir cuenta Booking Affiliate en paralelo (no bloquea).</p>
+</div>
+
+<div class="bloq-card priority-3">
+  <h4>🟡 P3 · Datos para textos legales</h4>
+  <p class="why">RGPD y AdSense exigen aviso legal, política de privacidad y cookies.</p>
+  <p class="how"><strong>Cómo:</strong> dime nombre completo o razón social, email contacto, país fiscal. Yo genero los textos.</p>
+</div>
+
+<div class="bloq-card priority-3">
+  <h4>🟡 P3 · Instagram + Beehiiv (cuentas)</h4>
+  <p class="why">Canales de marketing secundarios. No bloquean el MVP.</p>
+  <p class="how"><strong>Cómo:</strong> Instagram business @tripcazador. Beehiiv free tier.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PRÓXIMOS PASOS -->
+<!-- ══════════════════════════════════════════════════════ -->
+<h2>5. Próximos pasos concretos — sprint 14 días</h2>
+
+<h3>Semana 1 · Desbloqueo y primer deploy</h3>
+<div class="grid grid-3">
+  <div class="card-sm">
+    <h4 style="color:var(--amber)">Tú (Ernesto)</h4>
+    <ul class="clean" style="font-size:0.9em">
+      <li><span class="icon">▸</span>Comprar dominio tripcazador.com</li>
+      <li><span class="icon">▸</span>Crear VPS Hetzner + SSH key</li>
+      <li><span class="icon">▸</span>Crear cuenta Vercel (GitHub login)</li>
+      <li><span class="icon">▸</span>Conseguir TP_MARKER</li>
+      <li><span class="icon">▸</span>Abrir @tripcazador en Telegram + bot</li>
+      <li><span class="icon">▸</span>Decidir dirección estética del logo</li>
+    </ul>
+  </div>
+  <div class="card-sm">
+    <h4 style="color:var(--green)">Yo (Claude)</h4>
+    <ul class="clean" style="font-size:0.9em">
+      <li><span class="icon">▸</span>Generar logo + favicon + OG card (3 variaciones)</li>
+      <li><span class="icon">▸</span>Configurar sitemap.xml + robots.txt</li>
+      <li><span class="icon">▸</span>Escribir textos legales (draft)</li>
+      <li><span class="icon">▸</span>Cablear Telegram notifier al export</li>
+      <li><span class="icon">▸</span>Añadir script GA4 al layout</li>
+      <li><span class="icon">▸</span>/blog y /destinos índices</li>
+    </ul>
+  </div>
+  <div class="card-sm">
+    <h4 style="color:var(--blue)">Ambos juntos</h4>
+    <ul class="clean" style="font-size:0.9em">
+      <li><span class="icon">▸</span>Deploy web a Vercel</li>
+      <li><span class="icon">▸</span>Deploy API a Hetzner (docker-compose up -d)</li>
+      <li><span class="icon">▸</span>Configurar DNS apex + api. en Cloudflare</li>
+      <li><span class="icon">▸</span>Validar Telegram → canal público</li>
+      <li><span class="icon">▸</span>Primer post oficial anunciando lanzamiento</li>
+    </ul>
+  </div>
+</div>
+
+<h3 style="margin-top:28px">Semana 2 · Contenido y testing</h3>
+<div class="grid grid-3">
+  <div class="card-sm">
+    <h4 style="color:var(--amber)">Tú (Ernesto)</h4>
+    <ul class="clean" style="font-size:0.9em">
+      <li><span class="icon">▸</span>Aplicar a Booking Affiliate</li>
+      <li><span class="icon">▸</span>Crear Beehiiv TripCazador</li>
+      <li><span class="icon">▸</span>Crear Instagram business</li>
+      <li><span class="icon">▸</span>Revisar logos, elegir uno</li>
+      <li><span class="icon">▸</span>Añadir claims personales a los blog posts</li>
+    </ul>
+  </div>
+  <div class="card-sm">
+    <h4 style="color:var(--green)">Yo (Claude)</h4>
+    <ul class="clean" style="font-size:0.9em">
+      <li><span class="icon">▸</span>Redactar 5 artículos SEO largos (2000+ palabras)</li>
+      <li><span class="icon">▸</span>Escribir pytest suite Track 3</li>
+      <li><span class="icon">▸</span>Integrar motor → Postgres</li>
+      <li><span class="icon">▸</span>Configurar Sentry + UptimeRobot</li>
+      <li><span class="icon">▸</span>OG images dinámicas por deal</li>
+    </ul>
+  </div>
+  <div class="card-sm">
+    <h4 style="color:var(--blue)">Ambos juntos</h4>
+    <ul class="clean" style="font-size:0.9em">
+      <li><span class="icon">▸</span>Submit sitemap a Google Search Console</li>
+      <li><span class="icon">▸</span>Primer envío de newsletter (&gt;0 subs)</li>
+      <li><span class="icon">▸</span>Publicar canal Telegram en redes</li>
+      <li><span class="icon">▸</span>Revisar primeras comisiones TP</li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- LO QUE PUEDO EMPEZAR YA -->
+<!-- ══════════════════════════════════════════════════════ -->
+<h2>6. Lo que puedo empezar ya sin esperar nada</h2>
+<p class="small">Mientras desbloqueas lo P1, estas tareas ya las puedo ejecutar yo:</p>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h4 style="color:var(--amber-light);margin-top:0">🛠️ Código / backend</h4>
+    <ul class="clean" style="font-size:0.93em">
+      <li><span class="icon">▸</span>Cablear <code>notifier.py</code> al pipeline de export</li>
+      <li><span class="icon">▸</span>Migrar <code>db.py</code> de SQLite a Postgres</li>
+      <li><span class="icon">▸</span>Añadir rate limiting + circuit breakers a engines</li>
+      <li><span class="icon">▸</span>Escribir pytest suite completa</li>
+      <li><span class="icon">▸</span>Integrar <code>hotel_hunter</code> al JSON unificado</li>
+      <li><span class="icon">▸</span>Sanity-check: buscar secrets en git history</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4 style="color:var(--amber-light);margin-top:0">📝 Contenido / web</h4>
+    <ul class="clean" style="font-size:0.93em">
+      <li><span class="icon">▸</span>5-10 artículos SEO largos</li>
+      <li><span class="icon">▸</span>Página /blog y /destinos índices</li>
+      <li><span class="icon">▸</span>Textos legales (aviso, privacidad, cookies)</li>
+      <li><span class="icon">▸</span>OG images dinámicas plantilla</li>
+      <li><span class="icon">▸</span>Sitemap + robots.txt configurado</li>
+      <li><span class="icon">▸</span>Copy alternativos A/B para landing</li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+
+<p style="text-align:center;color:var(--muted);font-size:0.85em;margin-top:30px">
+  TripCazador · Integración completa · 2026-04-18<br>
+  <span style="color:var(--amber-light)">Para arrancar de verdad solo necesitas desbloquear los 4 P1 rojos.</span>
+</p>
+
+</div>
+</body>
+</html>

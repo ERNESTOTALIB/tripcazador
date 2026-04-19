@@ -1,0 +1,66 @@
+name: Deploy API → VPS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "api/**"
+      - "flight_hunter_v4/**"
+      - ".github/workflows/deploy-api.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: SSH deploy a VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: []
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 "${VPS_USER}@${VPS_HOST}" bash -euo pipefail <<'EOF'
+            cd /opt/tripcazador
+            git fetch --all --tags --prune
+            git reset --hard origin/main
+            # Rebuild + restart del stack docker-compose (unit tripcazador.service)
+            sudo /usr/bin/docker compose -f /opt/tripcazador/docker-compose.yml build --pull api worker
+            sudo systemctl restart tripcazador
+            sleep 5
+            sudo systemctl is-active --quiet tripcazador
+          EOF
+
+      - name: Smoke check tras deploy
+        run: |
+          sleep 5
+          curl -fsS --max-time 10 https://api.tripcazador.com/api/health | grep -q '"status":"ok"'
+
+      - name: Notify Telegram
+        if: always()
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          STATUS: ${{ job.status }}
+        run: |
+          if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
+            ICON="✅"
+            [ "$STATUS" != "success" ] && ICON="🚨"
+            curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              -d chat_id="${TG_CHAT}" \
+              -d parse_mode=HTML \
+              --data-urlencode text="${ICON} <b>Deploy API: ${STATUS}</b>
+Commit: ${{ github.sha }}
+Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" || true
+          fi

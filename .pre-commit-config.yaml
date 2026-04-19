@@ -1,0 +1,75 @@
+# Pre-commit hooks para TripCazador
+# =================================
+# Instalación (una sola vez, en la VM o local):
+#   pip install pre-commit detect-secrets --break-system-packages
+#   pre-commit install
+#
+# Ejecutar manualmente sobre todo el repo:
+#   pre-commit run --all-files
+#
+# Actualizar hooks a la última versión:
+#   pre-commit autoupdate
+#
+# Los hooks bloquean el commit si detectan:
+#   • Secretos hardcodeados (API keys, tokens, passwords)
+#   • Archivos grandes sin LFS
+#   • Trailing whitespace, EOF sin newline
+#   • YAML/JSON/TOML mal formados
+#   • Merge conflicts sin resolver
+#   • Claves privadas (.pem, .key)
+
+repos:
+  # ── 1. Hooks nativos pre-commit ────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.(md|txt)$
+      - id: end-of-file-fixer
+        exclude: \.(svg|png|jpg|jpeg|ico|pdf|woff2?)$
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-json
+      - id: check-toml
+      - id: check-added-large-files
+        args: ['--maxkb=1024']   # 1 MB — evitar binarios grandes
+      - id: check-merge-conflict
+      - id: detect-private-key   # .pem, .ppk, ssh keys privadas
+      - id: mixed-line-ending
+      - id: check-case-conflict
+
+  # ── 2. detect-secrets: bloquea API keys hardcodeadas ─────────────
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args:
+          - '--baseline'
+          - '.secrets.baseline'
+          - '--exclude-files'
+          - '.*\.lock$|package-lock\.json$|poetry\.lock$|yarn\.lock$|.*\.ipynb$|flights_v4\.db$|price_history_v4\.db$|deals_log\.jsonl$|results_.*\.json$'
+        exclude: ^(flight_hunter_v4/.*\.db|.*\.jsonl|.*\.ipynb|branding/.*\.png|branding/.*\.pdf)$
+
+  # ── 3. Python (ruff: lint + format rápido) ───────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.0
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fixes]
+        exclude: ^(flight_hunter|hotel_hunter|travel_hunter)/
+      - id: ruff-format
+        exclude: ^(flight_hunter|hotel_hunter|travel_hunter)/
+
+  # ── 4. Bash shellcheck ────────────────────────────────────────────
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        args: [-e, SC2086, -e, SC2046]   # permitir variables sin quoting en scripts de deploy
+
+  # ── 5. Docker / docker-compose ───────────────────────────────────
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.13.0-beta
+    hooks:
+      - id: hadolint-docker
+        args: [--ignore, DL3008, --ignore, DL3013]   # permitir apt sin version pinning

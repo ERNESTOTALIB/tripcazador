@@ -1,0 +1,117 @@
+version: "3.9"
+
+# TripCazador — Docker Compose
+# ============================================================
+# Servicios:
+#   api      → FastAPI en puerto 8000
+#   worker   → Python scraper con cron (cada 6h)
+#   db       → PostgreSQL para historial de deals
+#
+# La web Next.js está en Vercel (no necesita Docker).
+#
+# Uso:
+#   cp .env.example .env.production
+#   # editar .env.production con tus API keys
+#   docker-compose --env-file .env.production up -d
+#
+# Logs:
+#   docker-compose logs -f api
+#   docker-compose logs -f worker
+
+services:
+
+  # ── PostgreSQL ─────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: tripcazador_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tripcazador}
+      POSTGRES_USER: ${POSTGRES_USER:-tripcazador}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD requerido en .env}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    # Puerto 5432 solo accesible desde la red interna del compose.
+    # Para desarrollo local, usa `docker-compose.override.yml` con el mapeo.
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tripcazador}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI Backend ─────────────────────────────────────
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: tripcazador_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Base
+      DEALS_DIR: /app/output
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tripcazador}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-tripcazador}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      # API keys (cargadas desde .env.production)
+      KIWI_API_KEY: ${KIWI_API_KEY}
+      SERPAPI_KEY: ${SERPAPI_KEY}
+      RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+      DUFFEL_TOKEN: ${DUFFEL_TOKEN}
+      TRAVELPAYOUTS_TOKEN: ${TRAVELPAYOUTS_TOKEN}
+      TP_MARKER: ${TP_MARKER}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+    volumes:
+      - output_data:/app/output    # Compartido con worker
+    # Publicar solo en loopback (Caddy del host hace reverse-proxy a 127.0.0.1:8000).
+    # Evita que el puerto 8000 quede expuesto en la IP pública de la VM.
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ── Worker (Cron de búsqueda) ──────────────────────────
+  worker:
+    build:
+      context: ./flight_hunter_v4
+      dockerfile: Dockerfile
+    container_name: tripcazador_worker
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Base
+      OUTPUT_DIR: /app/output
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tripcazador}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-tripcazador}
+      ENVIRONMENT: production
+      # Intervalo de cron (en segundos, default: 6h)
+      CRON_INTERVAL: ${CRON_INTERVAL:-21600}
+      # API keys
+      KIWI_API_KEY: ${KIWI_API_KEY}
+      SERPAPI_KEY: ${SERPAPI_KEY}
+      RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+      DUFFEL_TOKEN: ${DUFFEL_TOKEN}
+      TRAVELPAYOUTS_TOKEN: ${TRAVELPAYOUTS_TOKEN}
+      TP_MARKER: ${TP_MARKER}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+    volumes:
+      - output_data:/app/output    # Compartido con api
+
+volumes:
+  db_data:
+    driver: local
+  output_data:
+    driver: local

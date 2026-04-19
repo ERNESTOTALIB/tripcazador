@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🏖️ Vuelos a Egipto — Octubre 2026</title>
+<style>
+  :root {
+    --bg: #0a0f1e; --card: #111827; --card2: #1a2436;
+    --accent: #f59e0b; --green: #10b981; --yellow: #f59e0b;
+    --red: #ef4444; --blue: #3b82f6; --text: #f1f5f9; --text2: #94a3b8;
+    --border: #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+  
+  header { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); padding: 40px 24px; text-align: center; border-bottom: 1px solid #1e3a5f; }
+  header h1 { font-size: 2.2em; font-weight: 700; }
+  header p { color: var(--text2); margin-top: 8px; font-size: 1.05em; }
+  
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 16px; }
+  
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.85em; color: var(--text2); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  
+  h2 { font-size: 1.3em; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  
+  .card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid var(--border); transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .card.highlight { border-color: var(--green); }
+  .card.highlight::before { content: '✅ CUMPLE 2 SEMANAS'; position: absolute; top: 10px; right: 10px; background: var(--green); color: #000; font-size: 0.65em; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+  .card.near { border-color: var(--yellow); }
+  .card.near::before { content: 'Duración corta'; position: absolute; top: 10px; right: 10px; background: var(--yellow); color: #000; font-size: 0.65em; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+  
+  .route { font-size: 1.6em; font-weight: 700; margin-bottom: 4px; }
+  .route span { color: var(--text2); margin: 0 4px; }
+  .dest-name { color: var(--text2); font-size: 0.9em; margin-bottom: 12px; }
+  
+  .price { font-size: 2.4em; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+  .price sup { font-size: 0.5em; color: var(--text2); }
+  
+  .details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .detail { background: var(--card2); border-radius: 8px; padding: 8px 12px; }
+  .detail label { font-size: 0.7em; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 2px; }
+  .detail value { font-size: 0.95em; font-weight: 600; }
+  
+  .airline-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--card2); border-radius: 20px; padding: 4px 12px; font-size: 0.85em; margin-top: 12px; }
+  .airline-dot { width: 8px; height: 8px; border-radius: 50%; }
+  
+  .nights-bar { margin-top: 12px; }
+  .nights-label { font-size: 0.75em; color: var(--text2); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .bar { background: var(--card2); border-radius: 4px; height: 8px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+  
+  .info-box { background: var(--card); border: 1px solid #1e3a5f; border-radius: 12px; padding: 20px; margin-bottom: 32px; }
+  .info-box h3 { margin-bottom: 10px; color: var(--yellow); }
+  .info-box p { color: var(--text2); line-height: 1.6; margin-bottom: 8px; }
+  .info-box ul { color: var(--text2); padding-left: 20px; }
+  .info-box li { margin-bottom: 4px; }
+  
+  .bari-box { background: linear-gradient(135deg, #1a0a2e, #2d1854); border: 1px solid #6b21a8; border-radius: 12px; padding: 20px; margin-bottom: 32px; }
+  .bari-box h3 { color: #c084fc; margin-bottom: 10px; }
+  .bari-box p { color: #e9d5ff; line-height: 1.6; margin-bottom: 6px; }
+  .bari-box .link { color: #a78bfa; text-decoration: none; }
+  
+  .summary-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .summary-table th { background: var(--card2); padding: 10px 12px; text-align: left; font-size: 0.8em; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+  .summary-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 0.9em; }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table tr:hover td { background: var(--card2); }
+  
+  footer { text-align: center; padding: 32px; color: var(--text2); font-size: 0.8em; border-top: 1px solid var(--border); margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏖️ Vuelos a Egipto — Octubre 2026</h1>
+  <p>Desde Stuttgart · Estrasburgo · Frankfurt · Baden-Baden · Basel · Zürich · Ginebra · ~2 semanas</p>
+</header>
+
+<div class="container">
+
+  <!-- Best options meeting 2 weeks -->
+  <h2>🟢 Opciones que cumplen ~2 semanas</h2>
+  <div class="grid">
+
+    <div class="card highlight">
+      <div class="route">STR <span>→</span> SSH</div>
+      <div class="dest-name">Stuttgart/Estrasburgo → Sharm el Sheikh</div>
+      <div class="price">259€ <sup>por persona ida y vuelta</sup></div>
+      <div class="airline-badge">
+        <span class="airline-dot" style="background:#5c3d8f"></span>
+        Eurowings (EW)
+      </div>
+      <div class="details">
+        <div class="detail"><label>Salida</label><value>2026-09-27</value></div>
+        <div class="detail"><label>Vuelta</label><value>2026-10-11</value></div>
+      </div>
+      <div class="nights-bar">
+        <div class="nights-label"><span>14 noches</span><span>objetivo: 14</span></div>
+        <div class="bar"><div class="bar-fill" style="width:100%;background:#10b981"></div></div>
+      </div>
+    </div>
+
+    <div class="card highlight">
+      <div class="route">GVA <span>→</span> SSH</div>
+      <div class="dest-name">Ginebra → Sharm el Sheikh</div>
+      <div class="price">298€ <sup>por persona ida y vuelta</sup></div>
+      <div class="airline-badge">
+        <span class="airline-dot" style="background:#003366"></span>
+        Volare (VF)
+      </div>
+      <div class="details">
+        <div class="detail"><label>Salida</label><value>2026-10-11</value></div>
+        <div class="detail"><label>Vuelta</label><value>2026-10-24</value></div>
+      </div>
+      <div class="nights-bar">
+        <div class="nights-label"><span>13 noches</span><span>objetivo: 14</span></div>
+        <div class="bar"><div class="bar-fill" style="width:92%;background:#10b981"></div></div>
+      </div>
+    </div>
+
+    <div class="card highlight">
+      <div class="route">ZRH <span>→</span> HRG</div>
+      <div class="dest-name">Zürich → Hurghada</div>
+      <div class="price">463€ <sup>por persona ida y vuelta</sup></div>
+      <div class="airline-badge">
+        <span class="airline-dot" style="background:#2e86c1"></span>
+        Air Serbia (JU)
+      </div>
+      <div class="details">
+        <div class="detail"><label>Salida</label><value>2026-10-10</value></div>
+        <div class="detail"><label>Vuelta</label><value>2026-10-24</value></div>
+      </div>
+      <div class="nights-bar">
+        <div class="nights-label"><span>14 noches</span><span>objetivo: 14</span></div>
+        <div class="bar"><div class="bar-fill" style="width:100%;background:#10b981"></div></div>
+      </div>
+    </div>
+
+    <div class="card highlight">
+      <div class="route">GVA <span>→</span> HRG</div>
+      <div class="dest-name">Ginebra → Hurghada</div>
+      <div class="price">473€ <sup>por persona ida y vuelta</sup></div>
+      <div class="airline-badge">
+        <span class="airline-dot" style="background:#1a5276"></span>
+        Pegasus (PC)
+      </div>
+      <div class="details">
+        <div class="detail"><label>Salida</label><value>2026-10-11</value></div>
+        <div class="detail"><label>Vuelta</label><value>2026-10-24</value></div>
+      </div>
+      <div class="nights-bar">
+        <div class="nights-label"><span>13 noches</span><span>objetivo: 14</span></div>
+        <div class="bar"><div class="bar-fill" style="width:92%;background:#10b981"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Near-miss options -->
+  <h2>🟡 Opciones cercanas (duración más corta)</h2>
+  <div class="grid">
+
+    <div class="card near">
+      <div class="route">CDG <span>→</span> SSH</div>
+      <div class="dest-name">París CDG → Sharm el Sheikh</div>
+      <div class="price">196€ <sup>por persona ida y vuelta</sup></div>
+      <div class="airline-badge">
+        <span class="airline-dot" style="background:#FF6600"></span>
+        easyJet (U2)
+      </div>
+      <div class="details">
+        <div class="detail"><label>Salida</label><value>2026-10-02</value></div>
+        <div class="detail"><label>Vuelta</label><value>2026-10-12</value></div>
+      </div>
+      <div class="nights-bar">
+        <div class="nights-label"><span>10 noches</span><span>objetivo: 14</span></div>
+        <div class="bar"><div class="bar-fill" style="width:71%;background:#f59e0b"></div></div>
+      </div>
+    </div>
+
+    <div class="card near">
+      <div class="route">FRA <span>→</span> SSH</div>
+      <div class="dest-name">Frankfurt → Sharm el Sheikh</div>
+      <div class="price">207€ <sup>por persona ida y vuelta</sup></div>
+      <div class="airline-badge">
+        <span class="airline-dot" style="background:#FF6600"></span>
+        easyJet (U2)
+      </div>
+      <div class="details">
+        <div class="detail"><label>Salida</label><value>2026-10-21</value></div>
+        <div class="detail"><label>Vuelta</label><value>2026-10-29</value></div>
+      </div>
+      <div class="nights-bar">
+        <div class="nights-label"><span>8 noches</span><span>objetivo: 14</span></div>
+        <div class="bar"><div class="bar-fill" style="width:57%;background:#ef4444"></div></div>
+      </div>
+    </div>
+
+    <div class="card near">
+      <div class="route">BSL <span>→</span> HRG</div>
+      <div class="dest-name">Basel → Hurghada</div>
+      <div class="price">347€ <sup>por persona ida y vuelta</sup></div>
+      <div class="airline-badge">
+        <span class="airline-dot" style="background:#1a5276"></span>
+        Pegasus (PC)
+      </div>
+      <div class="details">
+        <div class="detail"><label>Salida</label><value>2026-10-12</value></div>
+        <div class="detail"><label>Vuelta</label><value>2026-10-18</value></div>
+      </div>
+      <div class="nights-bar">
+        <div class="nights-label"><span>6 noches</span><span>objetivo: 14</span></div>
+        <div class="bar"><div class="bar-fill" style="width:42%;background:#ef4444"></div></div>
+      </div>
+    </div>
+
+    <div class="card near">
+      <div class="route">FRA <span>→</span> HRG</div>
+      <div class="dest-name">Frankfurt → Hurghada</div>
+      <div class="price">420€ <sup>por persona ida y vuelta</sup></div>
+      <div class="airline-badge">
+        <span class="airline-dot" style="background:#9b59b6"></span>
+        Wizz Air (W6)
+      </div>
+      <div class="details">
+        <div class="detail"><label>Salida</label><value>2026-10-17</value></div>
+        <div class="detail"><label>Vuelta</label><value>2026-10-24</value></div>
+      </div>
+      <div class="nights-bar">
+        <div class="nights-label"><span>7 noches</span><span>objetivo: 14</span></div>
+        <div class="bar"><div class="bar-fill" style="width:50%;background:#ef4444"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bari connection -->
+  <div class="bari-box">
+    <h3>🔴 Opción vía Bari (BRI) → Egipto</h3>
+    <p>Se encontró: <strong>FRA → BRI 132€ con Ryanair</strong> (salida 20 Oct). Sin embargo, <strong>no hay datos disponibles de BRI → Egipto</strong> en las APIs de precios cacheados.</p>
+    <p>Esto no significa que no existan vuelos — son chárters de temporada que no siempre aparecen en agregadores de precio anticipado. Se recomienda buscar directamente:</p>
+    <ul style="list-style:disc; padding-left:20px; color:#e9d5ff; margin-top:8px; line-height:2">
+      <li><a class="link" href="https://www.ryanair.com" target="_blank">Ryanair.com</a> — ruta BRI→SSH/HRG en temporada alta</li>
+      <li><a class="link" href="https://www.volotea.com" target="_blank">Volotea.com</a> — opera rutas desde Italia meridional</li>
+      <li><a class="link" href="https://www.noleggiato.it" target="_blank">Noleggiato.it</a> — chárters italianos Bari→Hurghada</li>
+      <li><a class="link" href="https://www.edreams.es" target="_blank">eDreams.es</a> — buscar BRI→HRG/SSH octubre 2026</li>
+    </ul>
+  </div>
+
+  <!-- Table summary -->
+  <h2>📊 Resumen completo</h2>
+  <div class="info-box" style="padding:0; overflow:hidden">
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Ruta</th>
+          <th>Destino</th>
+          <th>Precio</th>
+          <th>Aerolínea</th>
+          <th>Salida</th>
+          <th>Vuelta</th>
+          <th>Noches</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><strong>CDG → SSH</strong></td>
+          <td>Sharm el Sheikh</td>
+          <td><strong style="color:var(--accent)">196€</strong></td>
+          <td>easyJet</td>
+          <td>2026-10-02</td>
+          <td>2026-10-12</td>
+          <td>10</td>
+          <td style="color:var(--yellow)">⚠️ 10n</td>
+        </tr>
+
+        <tr>
+          <td><strong>FRA → SSH</strong></td>
+          <td>Sharm el Sheikh</td>
+          <td><strong style="color:var(--accent)">207€</strong></td>
+          <td>easyJet</td>
+          <td>2026-10-21</td>
+          <td>2026-10-29</td>
+          <td>8</td>
+          <td style="color:var(--red)">⚠️ 8n</td>
+        </tr>
+
+        <tr>
+          <td><strong>STR → SSH</strong></td>
+          <td>Sharm el Sheikh</td>
+          <td><strong style="color:var(--accent)">259€</strong></td>
+          <td>Eurowings</td>
+          <td>2026-09-27</td>
+          <td>2026-10-11</td>
+          <td>14</td>
+          <td style="color:var(--green)">✅ 2 semanas</td>
+        </tr>
+
+        <tr>
+          <td><strong>GVA → SSH</strong></td>
+          <td>Sharm el Sheikh</td>
+          <td><strong style="color:var(--accent)">298€</strong></td>
+          <td>Volare</td>
+          <td>2026-10-11</td>
+          <td>2026-10-24</td>
+          <td>13</td>
+          <td style="color:var(--green)">✅ 2 semanas</td>
+        </tr>
+
+        <tr>
+          <td><strong>BSL → HRG</strong></td>
+          <td>Hurghada</td>
+          <td><strong style="color:var(--accent)">347€</strong></td>
+          <td>Pegasus</td>
+          <td>2026-10-12</td>
+          <td>2026-10-18</td>
+          <td>6</td>
+          <td style="color:var(--red)">⚠️ 6n</td>
+        </tr>
+
+        <tr>
+          <td><strong>FRA → HRG</strong></td>
+          <td>Hurghada</td>
+          <td><strong style="color:var(--accent)">420€</strong></td>
+          <td>Wizz Air</td>
+          <td>2026-10-17</td>
+          <td>2026-10-24</td>
+          <td>7</td>
+          <td style="color:var(--red)">⚠️ 7n</td>
+        </tr>
+
+        <tr>
+          <td><strong>ZRH → HRG</strong></td>
+          <td>Hurghada</td>
+          <td><strong style="color:var(--accent)">463€</strong></td>
+          <td>Air Serbia</td>
+          <td>2026-10-10</td>
+          <td>2026-10-24</td>
+          <td>14</td>
+          <td style="color:var(--green)">✅ 2 semanas</td>
+        </tr>
+
+        <tr>
+          <td><strong>GVA → HRG</strong></td>
+          <td>Hurghada</td>
+          <td><strong style="color:var(--accent)">473€</strong></td>
+          <td>Pegasus</td>
+          <td>2026-10-11</td>
+          <td>2026-10-24</td>
+          <td>13</td>
+          <td style="color:var(--green)">✅ 2 semanas</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Notes -->
+  <div class="info-box">
+    <h3>📋 Notas importantes</h3>
+    <p>• Precios por persona, ida y vuelta, en clase económica. No incluyen equipaje facturado.</p>
+    <p>• Estos precios son los mínimos encontrados en el rango de octubre 2026. Pueden variar al buscar.</p>
+    <p>• <strong>Vuelos a Egipto suelen ser chárters</strong> (Eurowings, Condor, TUIfly, Pegasus, Air Serbia). No siempre aparecen con antelación en agregadores — conviene re-buscar en agosto/septiembre.</p>
+    <p>• Para activar cobertura de <strong>Eurowings, Condor y TUIfly</strong> en el buscador automático, registra credenciales en <a href="https://developers.amadeus.com" style="color:var(--blue)">developers.amadeus.com</a> (gratis).</p>
+  </div>
+
+</div>
+
+<footer>
+  🔍 Flight Hunter v4 — Resultados Egipto Octubre 2026 | Datos: Travelpayouts API
+</footer>
+
+</body>
+</html>

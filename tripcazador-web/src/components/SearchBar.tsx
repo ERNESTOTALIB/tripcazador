@@ -1,0 +1,481 @@
+"use client";
+/**
+ * TripCazador — SearchBar
+ * Buscador en vivo (origen/destino/fechas/precio). Llama a /api/search
+ * del FastAPI y renderiza los resultados debajo.
+ *
+ * Uso:
+ *   <SearchBar />                // anywhere → anywhere
+ *   <SearchBar defaultOrigin="BSL" />
+ */
+
+import { useState, useMemo, useEffect, useRef } from "react";
+import Link from "next/link";
+import {
+  searchDeals,
+  getAirports,
+  formatDate,
+  getCabinLabel,
+  type Deal,
+  type SearchParams,
+  type Airport,
+} from "@/lib/api";
+
+// Aeropuertos más buscados por el público objetivo (DACH hispanohablante).
+// Orden = prioridad en el autocomplete.
+const TOP_AIRPORTS: Array<{ iata: string; city: string; country: string }> = [
+  // DACH hub origins
+  { iata: "BSL", city: "Basilea/Mulhouse", country: "Suiza/Francia" },
+  { iata: "ZRH", city: "Zúrich", country: "Suiza" },
+  { iata: "GVA", city: "Ginebra", country: "Suiza" },
+  { iata: "BRN", city: "Berna", country: "Suiza" },
+  { iata: "FRA", city: "Fráncfort", country: "Alemania" },
+  { iata: "MUC", city: "Múnich", country: "Alemania" },
+  { iata: "BER", city: "Berlín", country: "Alemania" },
+  { iata: "HAM", city: "Hamburgo", country: "Alemania" },
+  { iata: "DUS", city: "Düsseldorf", country: "Alemania" },
+  { iata: "STR", city: "Stuttgart", country: "Alemania" },
+  { iata: "VIE", city: "Viena", country: "Austria" },
+  { iata: "SZG", city: "Salzburgo", country: "Austria" },
+  // España
+  { iata: "MAD", city: "Madrid", country: "España" },
+  { iata: "BCN", city: "Barcelona", country: "España" },
+  { iata: "AGP", city: "Málaga", country: "España" },
+  { iata: "VLC", city: "Valencia", country: "España" },
+  { iata: "SVQ", city: "Sevilla", country: "España" },
+  { iata: "BIO", city: "Bilbao", country: "España" },
+  { iata: "PMI", city: "Palma de Mallorca", country: "España" },
+  { iata: "TFS", city: "Tenerife", country: "España" },
+  { iata: "LPA", city: "Gran Canaria", country: "España" },
+  // Hubs grandes para comparar precios
+  { iata: "CDG", city: "París CDG", country: "Francia" },
+  { iata: "AMS", city: "Ámsterdam", country: "Países Bajos" },
+  { iata: "LHR", city: "Londres Heathrow", country: "Reino Unido" },
+  { iata: "LGW", city: "Londres Gatwick", country: "Reino Unido" },
+  { iata: "FCO", city: "Roma", country: "Italia" },
+  { iata: "MXP", city: "Milán", country: "Italia" },
+  { iata: "LIS", city: "Lisboa", country: "Portugal" },
+  { iata: "OPO", city: "Oporto", country: "Portugal" },
+  { iata: "ATH", city: "Atenas", country: "Grecia" },
+  // Long-haul populares
+  { iata: "JFK", city: "Nueva York", country: "EEUU" },
+  { iata: "LAX", city: "Los Ángeles", country: "EEUU" },
+  { iata: "MIA", city: "Miami", country: "EEUU" },
+  { iata: "DXB", city: "Dubái", country: "EAU" },
+  { iata: "BKK", city: "Bangkok", country: "Tailandia" },
+  { iata: "NRT", city: "Tokio", country: "Japón" },
+  { iata: "SIN", city: "Singapur", country: "Singapur" },
+  { iata: "GRU", city: "São Paulo", country: "Brasil" },
+  { iata: "EZE", city: "Buenos Aires", country: "Argentina" },
+  { iata: "SCL", city: "Santiago", country: "Chile" },
+  { iata: "MEX", city: "Ciudad de México", country: "México" },
+  { iata: "CUN", city: "Cancún", country: "México" },
+  { iata: "HAV", city: "La Habana", country: "Cuba" },
+  { iata: "SDQ", city: "Santo Domingo", country: "Rep. Dominicana" },
+  // África / Asia menos habitual (valor añadido vs. competencia)
+  { iata: "ZNZ", city: "Zanzíbar", country: "Tanzania" },
+  { iata: "NBO", city: "Nairobi", country: "Kenia" },
+  { iata: "MBA", city: "Mombasa", country: "Kenia" },
+  { iata: "CAI", city: "El Cairo", country: "Egipto" },
+  { iata: "HRG", city: "Hurgada", country: "Egipto" },
+  { iata: "CMN", city: "Casablanca", country: "Marruecos" },
+  { iata: "RAK", city: "Marrakech", country: "Marruecos" },
+  { iata: "DEL", city: "Nueva Delhi", country: "India" },
+  { iata: "CMB", city: "Colombo", country: "Sri Lanka" },
+  { iata: "MLE", city: "Malé", country: "Maldivas" },
+  { iata: "HKT", city: "Phuket", country: "Tailandia" },
+  { iata: "DPS", city: "Bali", country: "Indonesia" },
+];
+
+interface Props {
+  defaultOrigin?: string;
+  defaultDestination?: string;
+  compact?: boolean;
+}
+
+export default function SearchBar({
+  defaultOrigin = "",
+  defaultDestination = "",
+  compact = false,
+}: Props) {
+  const [origin, setOrigin] = useState(defaultOrigin);
+  const [destination, setDestination] = useState(defaultDestination);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [maxPrice, setMaxPrice] = useState<number | "">("");
+  const [cabin, setCabin] = useState("");
+  const [results, setResults] = useState<Deal[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searched, setSearched] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [originFocus, setOriginFocus] = useState(false);
+  const [destFocus, setDestFocus] = useState(false);
+
+  // Catálogo dinámico cargado del backend (/api/airports). Se fusiona
+  // con TOP_AIRPORTS priorizando estos últimos en el orden del dropdown.
+  const [remoteAirports, setRemoteAirports] = useState<Airport[]>([]);
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getAirports({ limit: 600 })
+      .then((list) => {
+        if (!cancelled) setRemoteAirports(list);
+      })
+      .catch(() => {
+        /* silencio: si falla, usamos solo TOP_AIRPORTS */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Autocomplete: filtra TOP_AIRPORTS por el texto actual, extendido con
+  // el catálogo remoto (si cargó) para que cualquier IATA del backend aparezca.
+  const originMatches = useMemo(
+    () => filterAirports(origin, remoteAirports),
+    [origin, remoteAirports],
+  );
+  const destMatches = useMemo(
+    () => filterAirports(destination, remoteAirports),
+    [destination, remoteAirports],
+  );
+
+  async function handleSubmit(e?: React.FormEvent) {
+    e?.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSearched(true);
+
+    const params: SearchParams = {
+      origin: origin || undefined,
+      destination: destination || undefined,
+      date_from: dateFrom || undefined,
+      date_to: dateTo || undefined,
+      max_price: maxPrice === "" ? undefined : Number(maxPrice),
+      cabin: cabin || undefined,
+      limit: 30,
+    };
+
+    try {
+      const data = await searchDeals(params);
+      setResults(data);
+      if (data.length === 0) {
+        setError("No encontramos ofertas con esos filtros. Prueba con fechas más amplias o quita el precio máximo.");
+      }
+    } catch (err) {
+      setError("No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.");
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Atajo: Enter en cualquier input envía el form.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Enter" && formRef.current && document.activeElement?.closest("form") === formRef.current) {
+        handleSubmit();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [origin, destination, dateFrom, dateTo, maxPrice, cabin]);
+
+  return (
+    <section className={compact ? "w-full" : "w-full max-w-6xl mx-auto"}>
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className="bg-slate-900/70 backdrop-blur ring-1 ring-slate-700/50 rounded-2xl p-4 md:p-6 shadow-xl"
+        aria-label="Buscador de vuelos"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
+          {/* Origen */}
+          <div className="md:col-span-2 relative">
+            <label
+              htmlFor="search-origin"
+              className="block text-xs uppercase tracking-wider text-slate-300 mb-1"
+            >
+              Desde
+            </label>
+            <input
+              id="search-origin"
+              type="text"
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value.toUpperCase().slice(0, 40))}
+              onFocus={() => setOriginFocus(true)}
+              onBlur={() => setTimeout(() => setOriginFocus(false), 150)}
+              placeholder="Ciudad o IATA (BSL, MAD...)"
+              className="w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
+              autoComplete="off"
+              role="combobox"
+              aria-expanded={originFocus && originMatches.length > 0}
+              aria-controls="origin-listbox"
+              aria-autocomplete="list"
+            />
+            {originFocus && originMatches.length > 0 && (
+              <AutocompleteList
+                id="origin-listbox"
+                items={originMatches}
+                onPick={(code) => setOrigin(code)}
+              />
+            )}
+          </div>
+
+          {/* Destino */}
+          <div className="md:col-span-2 relative">
+            <label
+              htmlFor="search-destination"
+              className="block text-xs uppercase tracking-wider text-slate-300 mb-1"
+            >
+              A
+            </label>
+            <input
+              id="search-destination"
+              type="text"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value.toUpperCase().slice(0, 40))}
+              onFocus={() => setDestFocus(true)}
+              onBlur={() => setTimeout(() => setDestFocus(false), 150)}
+              placeholder="Cualquier sitio, país o IATA"
+              className="w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
+              autoComplete="off"
+              role="combobox"
+              aria-expanded={destFocus && destMatches.length > 0}
+              aria-controls="dest-listbox"
+              aria-autocomplete="list"
+            />
+            {destFocus && destMatches.length > 0 && (
+              <AutocompleteList
+                id="dest-listbox"
+                items={destMatches}
+                onPick={(code) => setDestination(code)}
+              />
+            )}
+          </div>
+
+          {/* Fechas */}
+          <div>
+            <label
+              htmlFor="search-date-from"
+              className="block text-xs uppercase tracking-wider text-slate-300 mb-1"
+            >
+              Salida desde
+            </label>
+            <input
+              id="search-date-from"
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="search-date-to"
+              className="block text-xs uppercase tracking-wider text-slate-300 mb-1"
+            >
+              Hasta
+            </label>
+            <input
+              id="search-date-to"
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            />
+          </div>
+        </div>
+
+        {/* Segunda fila: precio + cabina + botón */}
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-6 gap-3">
+          <div className="md:col-span-2">
+            <label
+              htmlFor="search-max-price"
+              className="block text-xs uppercase tracking-wider text-slate-300 mb-1"
+            >
+              Precio máximo (€)
+            </label>
+            <input
+              id="search-max-price"
+              type="number"
+              min="0"
+              step="10"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value === "" ? "" : Number(e.target.value))}
+              placeholder="Sin límite"
+              className="w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label
+              htmlFor="search-cabin"
+              className="block text-xs uppercase tracking-wider text-slate-300 mb-1"
+            >
+              Cabina
+            </label>
+            <select
+              id="search-cabin"
+              value={cabin}
+              onChange={(e) => setCabin(e.target.value)}
+              className="w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            >
+              <option value="">Cualquiera</option>
+              <option value="economy">Economy</option>
+              <option value="premium_economy">Premium Economy</option>
+              <option value="business">Business</option>
+              <option value="first">First</option>
+            </select>
+          </div>
+          <div className="md:col-span-2 flex items-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-amber-400 hover:bg-amber-300 disabled:bg-slate-600 text-slate-900 font-semibold px-4 py-2 transition"
+            >
+              {loading ? "Buscando..." : "Buscar ofertas"}
+            </button>
+          </div>
+        </div>
+      </form>
+
+      {/* Resultados */}
+      {searched && (
+        <div className="mt-6" aria-live="polite" aria-atomic="true">
+          {error ? (
+            <p role="alert" className="text-amber-300">{error}</p>
+          ) : results.length > 0 ? (
+            <>
+              <p className="text-slate-300 mb-3 text-sm">
+                {results.length} {results.length === 1 ? "oferta" : "ofertas"} coinciden con tu búsqueda.
+              </p>
+              <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {results.map((d) => (
+                  <SearchResultCard key={d.id} deal={d} />
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────
+// Subcomponentes
+// ──────────────────────────────────────────────────────────────
+
+function normalize(s: string): string {
+  // Accent-insensitive: NFD + remove combining marks (U+0300..U+036F)
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function filterAirports(
+  query: string,
+  remote: Airport[] = [],
+): Array<{ iata: string; city: string; country: string }> {
+  const q = normalize(query.trim());
+
+  // Merge: TOP_AIRPORTS primero (prioridad), luego el catálogo remoto sin
+  // duplicar códigos IATA.
+  const seen = new Set(TOP_AIRPORTS.map((a) => a.iata));
+  const merged: Array<{ iata: string; city: string; country: string }> = [
+    ...TOP_AIRPORTS,
+  ];
+  for (const a of remote) {
+    if (!seen.has(a.iata)) {
+      merged.push({ iata: a.iata, city: a.city, country: a.country });
+      seen.add(a.iata);
+    }
+  }
+
+  if (!q) return merged.slice(0, 8);
+
+  return merged
+    .filter(
+      (a) =>
+        normalize(a.iata).includes(q) ||
+        normalize(a.city).includes(q) ||
+        normalize(a.country).includes(q),
+    )
+    .slice(0, 8);
+}
+
+function AutocompleteList({
+  id,
+  items,
+  onPick,
+}: {
+  id?: string;
+  items: Array<{ iata: string; city: string; country: string }>;
+  onPick: (code: string) => void;
+}) {
+  return (
+    <ul
+      id={id}
+      className="absolute z-20 mt-1 w-full max-h-64 overflow-auto rounded-lg bg-slate-800 border border-slate-600 shadow-2xl"
+      role="listbox"
+    >
+      {items.map((a) => (
+        <li key={a.iata} role="option" aria-selected="false">
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              onPick(a.iata);
+            }}
+            aria-label={`Seleccionar ${a.city}, ${a.country} (${a.iata})`}
+            className="w-full text-left px-3 py-2 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+          >
+            <span className="font-mono font-semibold text-amber-300">{a.iata}</span>{" "}
+            <span className="text-slate-200">{a.city}</span>{" "}
+            <span className="text-slate-400 text-sm">· {a.country}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function SearchResultCard({ deal }: { deal: Deal }) {
+  const savings = deal.savings_pct ? `-${Math.round(deal.savings_pct)}%` : "";
+  return (
+    <li className="rounded-xl bg-slate-900/60 ring-1 ring-slate-700/60 hover:ring-amber-400/60 transition overflow-hidden">
+      <Link href={`/deals/${deal.id}`} className="block p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="font-mono text-xs text-slate-400">
+              {deal.origin} → {deal.destination}
+            </p>
+            <h3 className="mt-1 text-base font-semibold text-white truncate">
+              {deal.city_to || deal.destination}
+            </h3>
+            <p className="text-xs text-slate-500">{deal.country_to}</p>
+          </div>
+          <div className="text-right shrink-0">
+            <p className="text-2xl font-bold text-amber-300">
+              {Math.round(deal.price_eur)}€
+            </p>
+            {savings && (
+              <p className="text-xs text-emerald-400 font-semibold">{savings}</p>
+            )}
+          </div>
+        </div>
+        <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
+          <span>{formatDate(deal.date_out)}</span>
+          <span>
+            {deal.airline_name || deal.airline} · {getCabinLabel(deal.cabin)}
+          </span>
+        </div>
+      </Link>
+    </li>
+  );
+}

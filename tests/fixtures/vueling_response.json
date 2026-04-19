@@ -1,0 +1,16 @@
+{
+  "flights": [
+    {
+      "arrivalStation": "FCO",
+      "amount": 45.99,
+      "departureDate": "2026-05-10T06:30:00",
+      "flightNumber": "VY1234"
+    },
+    {
+      "arrivalStation": "FCO",
+      "amount": 89.50,
+      "departureDate": "2026-05-12T18:20:00",
+      "flightNumber": "VY1236"
+    }
+  ]
+}

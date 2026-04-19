@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Flight Hunter V4 — 2026-04-17 13:25</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+<style>
+:root {
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --header-bg: #1a1a2e;
+  --text: #1a202c;
+  --text2: #718096;
+  --border: #e2e8f0;
+  --accent: #4C72B0;
+  --critico: #e53e3e;
+  --error: #dd6b20;
+  --anomalia: #d69e2e;
+  --oferta: #38a169;
+  --gap: 16px;
+  --radius: 10px;
+  --shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+[data-theme="dark"] {
+  --bg: #0f172a; --card: #1e293b; --header-bg: #0f172a;
+  --text: #f1f5f9; --text2: #94a3b8; --border: #334155;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+/* HEADER */
+.header { background: var(--header-bg); color: #fff; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.header h1 { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.header .meta { font-size: .8rem; opacity: .7; margin-top: 2px; }
+.header .params { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.badge { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); color: #fff; padding: 3px 10px; border-radius: 20px; font-size: .75rem; }
+.theme-btn { background: rgba(255,255,255,.15); border: none; color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: .8rem; }
+.theme-btn:hover { background: rgba(255,255,255,.25); }
+
+/* KPI ROW */
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(155px,1fr)); gap: var(--gap); padding: 20px 28px; background: var(--card); border-bottom: 1px solid var(--border); }
+.kpi-card { background: var(--bg); border-radius: var(--radius); padding: 16px 18px; border-left: 4px solid; }
+.kpi-card.critico { border-color: var(--critico); }
+.kpi-card.error { border-color: var(--error); }
+.kpi-card.anomalia { border-color: var(--anomalia); }
+.kpi-card.oferta { border-color: var(--oferta); }
+.kpi-card.info { border-color: var(--accent); }
+.kpi-card.biz { border-color: #7c3aed; }
+.kpi-label { font-size: .72rem; color: var(--text2); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+.kpi-value { font-size: 1.9rem; font-weight: 800; color: var(--text); }
+.kpi-sub { font-size: .75rem; color: var(--text2); margin-top: 2px; }
+
+/* CHARTS */
+.charts-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: var(--gap); padding: 20px 28px; }
+.chart-card { background: var(--card); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow); }
+.chart-card h3 { font-size: .85rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 14px; }
+.chart-card canvas { max-height: 260px; }
+
+/* BEST DEALS CARDS */
+.hero-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: var(--gap); padding: 4px 28px 20px; }
+.deal-card { background: var(--card); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); border-top: 4px solid var(--accent); position: relative; overflow: hidden; }
+.deal-card.critico { border-top-color: var(--critico); }
+.deal-card.biz { border-top-color: #7c3aed; }
+.deal-card .ribbon { position: absolute; top: 12px; right: -4px; background: var(--critico); color: #fff; font-size: .65rem; font-weight: 800; padding: 2px 12px 2px 8px; text-transform: uppercase; letter-spacing: .05em; border-radius: 2px 0 0 2px; }
+.deal-card .ribbon.biz-r { background: #7c3aed; }
+.deal-card .route { font-size: 1rem; font-weight: 700; }
+.deal-card .price { font-size: 1.8rem; font-weight: 900; color: #38a169; margin: 4px 0; }
+.deal-card .det { font-size: .78rem; color: var(--text2); line-height: 1.8; }
+.deal-card .book { display: inline-block; margin-top: 10px; background: var(--accent); color: #fff; padding: 5px 14px; border-radius: 6px; text-decoration: none; font-size: .78rem; font-weight: 600; }
+.deal-card .book:hover { opacity: .85; }
+
+/* CONTROLS */
+.controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 14px 28px; background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 20; }
+.controls input, .controls select {
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  padding: 7px 12px; border-radius: 7px; font-size: .82rem; outline: none;
+  transition: border-color .15s;
+}
+.controls input:focus, .controls select:focus { border-color: var(--accent); }
+.controls input[type=text] { width: 200px; }
+.count-tag { background: var(--accent); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: .8rem; font-weight: 700; margin-left: auto; }
+.csv-btn { background: #38a169; color: #fff; border: none; padding: 7px 14px; border-radius: 7px; cursor: pointer; font-size: .8rem; font-weight: 600; }
+.csv-btn:hover { background: #2f855a; }
+
+/* TABLE */
+.table-wrap { padding: 0 28px 40px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; margin-top: 16px; }
+thead th {
+  background: var(--card); padding: 10px 12px; text-align: left;
+  font-size: .72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--text2); cursor: pointer;
+  border-bottom: 2px solid var(--border); white-space: nowrap; user-select: none;
+}
+thead th:hover { color: var(--text); }
+thead th.s-desc::after { content: ' ↓'; color: var(--accent); }
+thead th.s-asc::after { content: ' ↑'; color: var(--accent); }
+tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+tbody tr:hover { background: var(--bg); }
+tbody td { padding: 9px 12px; vertical-align: middle; white-space: nowrap; }
+.pill { display: inline-flex; padding: 2px 8px; border-radius: 20px; font-size: .7rem; font-weight: 700; text-transform: uppercase; }
+.pill.CRÍTICO  { background: #fff5f5; color: var(--critico); }
+.pill.ERROR    { background: #fffaf0; color: var(--error); }
+.pill.ANOMALÍA { background: #fffff0; color: var(--anomalia); }
+.pill.OFERTA   { background: #f0fff4; color: var(--oferta); }
+.price-cell { font-size: .95rem; font-weight: 800; color: #38a169; }
+.cabin-biz { color: #7c3aed; font-weight: 700; }
+.cabin-eco { color: var(--accent); font-weight: 600; }
+.ratio-alert { color: var(--critico); font-weight: 700; }
+.score-wrap { display: flex; align-items: center; gap: 6px; }
+.score-bar { height: 5px; width: 60px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.score-fill { height: 100%; background: linear-gradient(90deg, #38a169, #d69e2e, #e53e3e); }
+.book-btn { background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 5px; text-decoration: none; font-size: .72rem; font-weight: 700; }
+.book-btn:hover { opacity: .8; }
+.no-res { text-align: center; padding: 50px; color: var(--text2); font-size: 1rem; display: none; }
+
+/* PAGINATION */
+.pagination { display: flex; gap: 6px; align-items: center; padding: 12px 28px; justify-content: center; }
+.page-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: .8rem; }
+.page-btn:hover, .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.page-info { color: var(--text2); font-size: .8rem; }
+
+@media(max-width:768px) {
+  .charts-row { grid-template-columns: 1fr; }
+  .kpi-row { grid-template-columns: repeat(2,1fr); }
+  .controls, .header, .hero-row, .charts-row, .table-wrap { padding-left: 12px; padding-right: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>✈️ Flight Hunter V4<span style="font-size:.85rem;font-weight:400;opacity:.7"> — Error Fares &amp; Business at Economy Prices</span></h1>
+    <div class="meta">Generado: 2026-04-17 13:25</div>
+    <div class="params">
+      <span class="badge">🛫 MAD</span>
+      <span class="badge">📅 2026-07-01 → 2026-07-31</span>
+      <span class="badge">💺 economy</span>
+      <span class="badge">🔍 test</span>
+    </div>
+  </div>
+  <button class="theme-btn" onclick="toggleTheme()">🌙 Dark</button>
+</div>
+
+<!-- KPI CARDS -->
+<div class="kpi-row">
+  <div class="kpi-card critico">
+    <div class="kpi-label">🚨 Críticos</div>
+    <div class="kpi-value" id="kpi-critico">2</div>
+    <div class="kpi-sub">Error fares confirmados</div>
+  </div>
+  <div class="kpi-card error">
+    <div class="kpi-label">❌ Errores</div>
+    <div class="kpi-value" id="kpi-error">0</div>
+    <div class="kpi-sub">Posibles error fares</div>
+  </div>
+  <div class="kpi-card anomalia">
+    <div class="kpi-label">⚠️ Anomalías</div>
+    <div class="kpi-value" id="kpi-anomalia">0</div>
+    <div class="kpi-sub">Precio inusualmente bajo</div>
+  </div>
+  <div class="kpi-card oferta">
+    <div class="kpi-label">💰 Ofertas</div>
+    <div class="kpi-value" id="kpi-oferta">4</div>
+    <div class="kpi-sub">Precio muy competitivo</div>
+  </div>
+  <div class="kpi-card biz">
+    <div class="kpi-label">👑 Business mín.</div>
+    <div class="kpi-value" id="kpi-biz">310€</div>
+    <div class="kpi-sub">1 deals Business</div>
+  </div>
+  <div class="kpi-card info">
+    <div class="kpi-label">💵 Ahorro medio</div>
+    <div class="kpi-value" id="kpi-saving">333€</div>
+    <div class="kpi-sub">41 vuelos scrapeados</div>
+  </div>
+</div>
+
+<!-- GRÁFICOS -->
+<div class="charts-row">
+  <div class="chart-card">
+    <h3>Distribución por clasificación</h3>
+    <canvas id="chartClass"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3>Top 10 Business más baratos (€)</h3>
+    <canvas id="chartBiz"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3>Precio medio Economy vs Business por región</h3>
+    <canvas id="chartRegion"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3>Distribución de scores de anomalía (0-100)</h3>
+    <canvas id="chartScore"></canvas>
+  </div>
+</div>
+
+<!-- HERO DEALS -->
+<div class="hero-row">
+<div class="deal-card critico">
+  <div class="ribbon ">🏆 MEJOR DEAL</div>
+  <div class="route">MAD → New York, USA</div>
+  <div class="price">89€</div>
+  <div class="det">economy · IB · 2026-07-12<br>Directo<br><span style='color:#38a169'>Ahorro: -361€ (80%)</span><br>Score: 100/100</div>
+  <a href="https://kiwi.com/test-error" target="_blank" class="book">🔖 Reservar</a>
+</div>
+<div class="deal-card critico">
+  <div class="ribbon biz-r">👑 BUSINESS</div>
+  <div class="route">MAD → New York, USA</div>
+  <div class="price">310€</div>
+  <div class="det">business · IB · 2026-07-20<br>Directo<br>Ratio B/E: <strong>3.5x</strong><br><span style='color:#38a169'>Ahorro: -1540€ (83%)</span><br>Score: 100/100</div>
+  <a href="https://kiwi.com/biz-error" target="_blank" class="book">🔖 Reservar</a>
+</div>
+<div class="deal-card critico">
+  <div class="ribbon ">💡 RATIO 3.5x</div>
+  <div class="route">MAD → New York, USA</div>
+  <div class="price">310€</div>
+  <div class="det">business · IB · 2026-07-20<br>Directo<br>Ratio B/E: <strong>3.5x</strong><br><span style='color:#38a169'>Ahorro: -1540€ (83%)</span><br>Score: 100/100</div>
+  <a href="https://kiwi.com/biz-error" target="_blank" class="book">🔖 Reservar</a>
+</div>
+</div>
+
+<!-- CONTROLES / FILTROS -->
+<div class="controls">
+  <input type="text" id="srch" placeholder="🔍 Destino, aerolínea, ciudad..." oninput="dash.applyFilters()">
+  <select id="fCls" onchange="dash.applyFilters()">
+    <option value="">Todas las clases</option>
+    <option value="CRÍTICO">🚨 Crítico</option>
+    <option value="ERROR">❌ Error fare</option>
+    <option value="ANOMALÍA">⚠️ Anomalía</option>
+    <option value="OFERTA">💰 Oferta</option>
+  </select>
+  <select id="fCabin" onchange="dash.applyFilters()">
+    <option value="">Todas las cabinas</option>
+    <option value="Economy">Economy</option>
+    <option value="Business">Business</option>
+    <option value="First">First</option>
+  </select>
+  <label style="font-size:.8rem;color:var(--text2)">Precio máx:
+    <input type="number" id="fPrice" placeholder="€€€" style="width:85px" oninput="dash.applyFilters()">
+  </label>
+  <select id="fRatio" onchange="dash.applyFilters()">
+    <option value="">Todo ratio B/E</option>
+    <option value="3">Ratio ≤ 3x</option>
+    <option value="2">Ratio ≤ 2x (error)</option>
+  </select>
+  <button class="csv-btn" onclick="dash.exportCSV()">⬇️ CSV</button>
+  <span class="count-tag" id="countTag">6 resultados</span>
+</div>
+
+<!-- TABLA -->
+<div class="table-wrap">
+<table id="tbl">
+<thead><tr>
+  <th onclick="dash.sort('final_score')" id="th_final_score">Score</th>
+  <th onclick="dash.sort('classification')" id="th_classification">Tipo</th>
+  <th onclick="dash.sort('origin')" id="th_origin">Origen</th>
+  <th onclick="dash.sort('destination')" id="th_destination">Destino</th>
+  <th onclick="dash.sort('city_to')" id="th_city_to">Ciudad</th>
+  <th onclick="dash.sort('cabin')" id="th_cabin">Cabina</th>
+  <th onclick="dash.sort('price_eur')" id="th_price_eur">Precio</th>
+  <th onclick="dash.sort('t4_ratio')" id="th_t4_ratio">Ratio B/E</th>
+  <th onclick="dash.sort('savings_eur')" id="th_savings_eur">Ahorro est.</th>
+  <th onclick="dash.sort('airline')" id="th_airline">Aerolínea</th>
+  <th onclick="dash.sort('date_out')" id="th_date_out">Salida</th>
+  <th onclick="dash.sort('stops')" id="th_stops">Escalas</th>
+  <th>Reservar</th>
+</tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+<div class="no-res" id="noRes">Sin resultados para los filtros seleccionados</div>
+</div>
+<div class="pagination" id="pagWrap"></div>
+
+<script>
+// ── Datos embebidos ────────────────────────────────
+const FLIGHTS = [{"origin": "MAD", "destination": "JFK", "city_to": "New York", "country_to": "USA", "price_eur": 89.0, "cabin_code": 1, "cabin": "economy", "airline": "IB", "date_out": "2026-07-12", "date_ret": "2026-07-26", "stops": 0, "booking_url": "https://kiwi.com/test-error", "distance_category": "largo", "t0_triggered": true, "t0_score": 40.33333333333333, "t0_reason": "Precio 89€ por debajo de umbral absoluto 150€ (41% por debajo)", "t1_triggered": true, "t1_score": 35, "t1_reason": "Precio 84% por debajo de la mediana (541€) para esta ruta", "t1b_triggered": true, "t1b_score": 35, "t1b_reason": "Outlier IQR: 89€ < límite inferior 265€ (mediana: 551€, media: 527€)", "t1c_triggered": true, "t1c_score": 32.34653593301689, "t1c_reason": "Z-score extremo: -4.04σ (precio 4.0σ por debajo de la media)", "t1c_zscore": -4.04, "t4_triggered": false, "t4_score": 0, "t4_reason": "", "t4_ratio": null, "t4_eco_price": null, "t5_triggered": false, "t5_score": 0, "t5_reason": "", "t5_baseline": null, "t6_triggered": false, "t6_score": 0, "t6_reason": "", "t7_triggered": true, "t7_score": 15, "t7_reason": "IB tiene historial de error fares frecuentes", "final_score": 100, "classification": "CRÍTICO", "techniques_triggered": ["t0", "t1", "t1b", "t1c", "t7"], "n_techniques": 5, "reasons": ["Precio 89€ por debajo de umbral absoluto 150€ (41% por debajo)", "Precio 84% por debajo de la mediana (541€) para esta ruta", "Outlier IQR: 89€ < límite inferior 265€ (mediana: 551€, media: 527€)", "Z-score extremo: -4.04σ (precio 4.0σ por debajo de la media)", "IB tiene historial de error fares frecuentes"], "main_reason": "Precio 89€ por debajo de umbral absoluto 150€ (41% por debajo)", "estimated_normal_price": 450.0, "savings_eur": 361.0, "savings_pct": 80.2}, {"origin": "MAD", "destination": "JFK", "city_to": "New York", "country_to": "USA", "price_eur": 310.0, "cabin_code": 3, "cabin": "business", "airline": "IB", "date_out": "2026-07-20", "date_ret": "2026-07-30", "stops": 0, "booking_url": "https://kiwi.com/biz-error", "distance_category": "largo", "t0_triggered": true, "t0_score": 31.25, "t0_reason": "Precio 310€ por debajo de umbral absoluto 400€ (22% por debajo)", "t1_triggered": true, "t1_score": 35, "t1_reason": "Precio 88% por debajo de la mediana (2666€) para esta ruta", "t1b_triggered": true, "t1b_score": 35, "t1b_reason": "Outlier IQR: 310€ < límite inferior 1990€ (mediana: 2666€, media: 2303€)", "t1c_triggered": false, "t1c_score": 0, "t1c_reason": "", "t1c_zscore": null, "t4_triggered": true, "t4_score": 12, "t4_reason": "Ratio B/E 3.5x — Business a buen precio", "t4_ratio": 3.48, "t4_eco_price": 89.0, "t5_triggered": false, "t5_score": 0, "t5_reason": "", "t5_baseline": null, "t6_triggered": false, "t6_score": 0, "t6_reason": "", "t7_triggered": true, "t7_score": 20, "t7_reason": "IB tiene historial de error fares frecuentes | IB ofrece Business premium — deal de máximo valor", "final_score": 100, "classification": "CRÍTICO", "techniques_triggered": ["t0", "t1", "t1b", "t4", "t7"], "n_techniques": 5, "reasons": ["Precio 310€ por debajo de umbral absoluto 400€ (22% por debajo)", "Precio 88% por debajo de la mediana (2666€) para esta ruta", "Outlier IQR: 310€ < límite inferior 1990€ (mediana: 2666€, media: 2303€)", "Ratio B/E 3.5x — Business a buen precio", "IB tiene historial de error fares frecuentes | IB ofrece Business premium — deal de máximo valor"], "main_reason": "Precio 310€ por debajo de umbral absoluto 400€ (22% por debajo)", "estimated_normal_price": 1850.0, "savings_eur": 1540.0, "savings_pct": 83.2}, {"origin": "MAD", "destination": "JFK", "city_to": "New York", "country_to": "USA", "price_eur": 426.50279635789343, "cabin_code": 1, "cabin": "economy", "airline": "IB", "date_out": "2026-07-10", "date_ret": "2026-07-25", "stops": 0, "booking_url": "https://kiwi.com/test", "distance_category": "largo", "t0_triggered": false, "t0_score": 0, "t0_reason": "", "t1_triggered": true, "t1_score": 10, "t1_reason": "Precio 21% por debajo de la mediana", "t1b_triggered": true, "t1b_score": 8, "t1b_reason": "Precio en percentil <25% de la ruta (Q1=472€)", "t1c_triggered": false, "t1c_score": 0, "t1c_reason": "", "t1c_zscore": -0.93, "t4_triggered": false, "t4_score": 0, "t4_reason": "", "t4_ratio": null, "t4_eco_price": null, "t5_triggered": false, "t5_score": 0, "t5_reason": "", "t5_baseline": null, "t6_triggered": false, "t6_score": 0, "t6_reason": "", "t7_triggered": false, "t7_score": 0, "t7_reason": "", "final_score": 18.2, "classification": "OFERTA", "techniques_triggered": ["t1", "t1b"], "n_techniques": 2, "reasons": ["Precio 21% por debajo de la mediana", "Precio en percentil <25% de la ruta (Q1=472€)"], "main_reason": "Precio 21% por debajo de la mediana", "estimated_normal_price": 450.0, "savings_eur": 23.0, "savings_pct": 5.2}, {"origin": "MAD", "destination": "JFK", "city_to": "New York", "country_to": "USA", "price_eur": 427.7472770538983, "cabin_code": 1, "cabin": "economy", "airline": "IB", "date_out": "2026-07-10", "date_ret": "2026-07-25", "stops": 0, "booking_url": "https://kiwi.com/test", "distance_category": "largo", "t0_triggered": false, "t0_score": 0, "t0_reason": "", "t1_triggered": true, "t1_score": 10, "t1_reason": "Precio 21% por debajo de la mediana", "t1b_triggered": true, "t1b_score": 8, "t1b_reason": "Precio en percentil <25% de la ruta (Q1=472€)", "t1c_triggered": false, "t1c_score": 0, "t1c_reason": "", "t1c_zscore": -0.92, "t4_triggered": false, "t4_score": 0, "t4_reason": "", "t4_ratio": null, "t4_eco_price": null, "t5_triggered": false, "t5_score": 0, "t5_reason": "", "t5_baseline": null, "t6_triggered": false, "t6_score": 0, "t6_reason": "", "t7_triggered": false, "t7_score": 0, "t7_reason": "", "final_score": 18.2, "classification": "OFERTA", "techniques_triggered": ["t1", "t1b"], "n_techniques": 2, "reasons": ["Precio 21% por debajo de la mediana", "Precio en percentil <25% de la ruta (Q1=472€)"], "main_reason": "Precio 21% por debajo de la mediana", "estimated_normal_price": 450.0, "savings_eur": 22.0, "savings_pct": 4.9}, {"origin": "MAD", "destination": "JFK", "city_to": "New York", "country_to": "USA", "price_eur": 426.89935211780454, "cabin_code": 1, "cabin": "economy", "airline": "IB", "date_out": "2026-07-10", "date_ret": "2026-07-25", "stops": 0, "booking_url": "https://kiwi.com/test", "distance_category": "largo", "t0_triggered": false, "t0_score": 0, "t0_reason": "", "t1_triggered": true, "t1_score": 10, "t1_reason": "Precio 21% por debajo de la mediana", "t1b_triggered": true, "t1b_score": 8, "t1b_reason": "Precio en percentil <25% de la ruta (Q1=472€)", "t1c_triggered": false, "t1c_score": 0, "t1c_reason": "", "t1c_zscore": -0.93, "t4_triggered": false, "t4_score": 0, "t4_reason": "", "t4_ratio": null, "t4_eco_price": null, "t5_triggered": false, "t5_score": 0, "t5_reason": "", "t5_baseline": null, "t6_triggered": false, "t6_score": 0, "t6_reason": "", "t7_triggered": false, "t7_score": 0, "t7_reason": "", "final_score": 18.2, "classification": "OFERTA", "techniques_triggered": ["t1", "t1b"], "n_techniques": 2, "reasons": ["Precio 21% por debajo de la mediana", "Precio en percentil <25% de la ruta (Q1=472€)"], "main_reason": "Precio 21% por debajo de la mediana", "estimated_normal_price": 450.0, "savings_eur": 23.0, "savings_pct": 5.1}, {"origin": "MAD", "destination": "JFK", "city_to": "New York", "country_to": "USA", "price_eur": 421.6896775162959, "cabin_code": 1, "cabin": "economy", "airline": "IB", "date_out": "2026-07-10", "date_ret": "2026-07-25", "stops": 0, "booking_url": "https://kiwi.com/test", "distance_category": "largo", "t0_triggered": false, "t0_score": 0, "t0_reason": "", "t1_triggered": true, "t1_score": 10, "t1_reason": "Precio 22% por debajo de la mediana", "t1b_triggered": true, "t1b_score": 8, "t1b_reason": "Precio en percentil <25% de la ruta (Q1=472€)", "t1c_triggered": false, "t1c_score": 0, "t1c_reason": "", "t1c_zscore": -0.97, "t4_triggered": false, "t4_score": 0, "t4_reason": "", "t4_ratio": null, "t4_eco_price": null, "t5_triggered": false, "t5_score": 0, "t5_reason": "", "t5_baseline": null, "t6_triggered": false, "t6_score": 0, "t6_reason": "", "t7_triggered": false, "t7_score": 0, "t7_reason": "", "final_score": 18.2, "classification": "OFERTA", "techniques_triggered": ["t1", "t1b"], "n_techniques": 2, "reasons": ["Precio 22% por debajo de la mediana", "Precio en percentil <25% de la ruta (Q1=472€)"], "main_reason": "Precio 22% por debajo de la mediana", "estimated_normal_price": 450.0, "savings_eur": 28.0, "savings_pct": 6.3}];
+const CHART_DATA = {"class_labels": ["CRÍTICO", "OFERTA"], "class_data": [2, 4], "biz_labels": ["MAD→JFK (IB)"], "biz_prices": [310.0], "regions": ["Transoceánico"], "eco_avgs": [527], "biz_avgs": [2303], "score_labels": ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"], "score_buckets": [0, 4, 0, 0, 0, 0, 0, 0, 0, 2], "airline_labels": ["IB"], "airline_counts": [6]};
+const PAGE_SIZE = 50;
+
+// ── Colores Chart.js ───────────────────────────────
+const COLORS = ['#4C72B0','#DD8452','#55A868','#C44E52','#8172B3','#937860','#DA8BC3','#8C8C8C'];
+const CLS_COLORS = {'CRÍTICO':'#e53e3e','ERROR':'#dd6b20','ANOMALÍA':'#d69e2e','OFERTA':'#38a169'};
+
+// ── Format helpers ──────────────────────────────────
+function fmt(v, type) {
+  if (v == null || v === '') return '—';
+  if (type === 'eur') return v.toFixed(0) + '€';
+  if (type === 'pct') return v.toFixed(1) + '%';
+  if (type === 'ratio') return v.toFixed(1) + 'x';
+  return String(v);
+}
+
+// ── Dashboard class ─────────────────────────────────
+class Dashboard {
+  constructor(data) {
+    this.raw = data;
+    this.filtered = [...data];
+    this.sortCol = 'final_score';
+    this.sortAsc = false;
+    this.page = 0;
+    this.charts = {};
+    this.buildCharts();
+    this.applyFilters();
+  }
+
+  buildCharts() {
+    const cd = CHART_DATA;
+
+    // 1. Doughnut — clasificación
+    this.charts.cls = new Chart(document.getElementById('chartClass'), {
+      type: 'doughnut',
+      data: {
+        labels: cd.class_labels,
+        datasets: [{
+          data: cd.class_data,
+          backgroundColor: cd.class_labels.map(l => CLS_COLORS[l] || '#999'),
+          borderColor: '#fff', borderWidth: 3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '60%',
+        plugins: {
+          legend: { position: 'right', labels: { usePointStyle: true, padding: 14, font: { size: 12 } } },
+          tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} (${((ctx.parsed/cd.class_data.reduce((a,b)=>a+b,0))*100).toFixed(0)}%)` } }
+        }
+      }
+    });
+
+    // 2. Bar horizontal — Top Business
+    if (cd.biz_labels.length > 0) {
+      this.charts.biz = new Chart(document.getElementById('chartBiz'), {
+        type: 'bar',
+        data: {
+          labels: cd.biz_labels,
+          datasets: [{ label: 'Precio Business (€)', data: cd.biz_prices,
+            backgroundColor: '#8172B3CC', borderColor: '#8172B3', borderWidth: 1, borderRadius: 4 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+          plugins: { legend: { display: false },
+            tooltip: { callbacks: { label: ctx => fmt(ctx.parsed.x, 'eur') } } },
+          scales: { x: { beginAtZero: true, ticks: { callback: v => fmt(v,'eur') } }, y: { ticks: { font: { size: 10 } } } }
+        }
+      });
+    }
+
+    // 3. Bar agrupado — Eco vs Biz por región
+    if (cd.regions.length > 0) {
+      this.charts.region = new Chart(document.getElementById('chartRegion'), {
+        type: 'bar',
+        data: {
+          labels: cd.regions,
+          datasets: [
+            { label: 'Economy', data: cd.eco_avgs, backgroundColor: '#4C72B0CC', borderColor: '#4C72B0', borderWidth: 1, borderRadius: 4 },
+            { label: 'Business', data: cd.biz_avgs, backgroundColor: '#8172B3CC', borderColor: '#8172B3', borderWidth: 1, borderRadius: 4 },
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'top', labels: { usePointStyle: true } },
+            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmt(ctx.parsed.y,'eur')}` } } },
+          scales: { x: { grid: { display: false } }, y: { ticks: { callback: v => fmt(v,'eur') } } }
+        }
+      });
+    }
+
+    // 4. Line — distribución scores
+    this.charts.score = new Chart(document.getElementById('chartScore'), {
+      type: 'line',
+      data: {
+        labels: cd.score_labels,
+        datasets: [{
+          label: 'Número de deals',
+          data: cd.score_buckets,
+          borderColor: '#55A868', backgroundColor: '#55A86820',
+          borderWidth: 2, fill: true, tension: 0.3, pointRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+      }
+    });
+  }
+
+  applyFilters() {
+    const srch  = document.getElementById('srch').value.toLowerCase();
+    const fCls  = document.getElementById('fCls').value;
+    const fCab  = document.getElementById('fCabin').value;
+    const fPx   = parseFloat(document.getElementById('fPrice').value) || Infinity;
+    const fRat  = parseFloat(document.getElementById('fRatio').value) || Infinity;
+
+    this.filtered = this.raw.filter(f => {
+      const txt = [f.destination,f.city_to,f.country_to,f.origin,f.airline].join(' ').toLowerCase();
+      if (srch && !txt.includes(srch)) return false;
+      if (fCls && f.classification !== fCls) return false;
+      if (fCab && f.cabin !== fCab) return false;
+      if ((f.price_eur || 0) > fPx) return false;
+      if (fRat < Infinity && f.t4_ratio && f.t4_ratio > fRat) return false;
+      return true;
+    });
+
+    this.sortFiltered();
+    this.updateKPIs();
+  }
+
+  updateKPIs() {
+    const d = this.filtered;
+    document.getElementById('countTag').textContent = d.length + ' resultados';
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('kpi-critico',  d.filter(x=>x.classification==='CRÍTICO').length);
+    set('kpi-error',    d.filter(x=>x.classification==='ERROR').length);
+    set('kpi-anomalia', d.filter(x=>x.classification==='ANOMALÍA').length);
+    set('kpi-oferta',   d.filter(x=>x.classification==='OFERTA').length);
+    const biz = d.filter(x=>x.cabin_code===3||x.cabin_code===4);
+    const bizMin = biz.length ? Math.min(...biz.map(x=>x.price_eur)) : 0;
+    set('kpi-biz', biz.length ? bizMin.toFixed(0)+'€' : '—');
+    const avgS = d.length ? Math.round(d.reduce((a,x)=>a+(x.savings_eur||0),0)/d.length) : 0;
+    set('kpi-saving', avgS+'€');
+  }
+
+  sort(col) {
+    if (this.sortCol === col) { this.sortAsc = !this.sortAsc; }
+    else { this.sortCol = col; this.sortAsc = false; }
+    document.querySelectorAll('thead th').forEach(th => th.classList.remove('s-asc','s-desc'));
+    const th = document.getElementById('th_' + col);
+    if (th) th.classList.add(this.sortAsc ? 's-asc' : 's-desc');
+    this.sortFiltered();
+  }
+
+  sortFiltered() {
+    const col = this.sortCol, asc = this.sortAsc;
+    this.filtered.sort((a, b) => {
+      let va = a[col], vb = b[col];
+      if (va == null) va = asc ? Infinity : -Infinity;
+      if (vb == null) vb = asc ? Infinity : -Infinity;
+      if (typeof va === 'string') va = va.toLowerCase();
+      if (typeof vb === 'string') vb = vb.toLowerCase();
+      return asc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+    });
+    this.page = 0;
+    this.renderTable();
+    this.renderPagination();
+  }
+
+  renderTable() {
+    const tbody = document.getElementById('tbody');
+    const noRes = document.getElementById('noRes');
+    if (!this.filtered.length) {
+      tbody.innerHTML = ''; noRes.style.display = 'block'; return;
+    }
+    noRes.style.display = 'none';
+    const start = this.page * PAGE_SIZE;
+    const rows = this.filtered.slice(start, start + PAGE_SIZE);
+    tbody.innerHTML = rows.map(f => {
+      const cls = f.classification || 'NORMAL';
+      const cabClass = f.cabin_code===3?'cabin-biz':f.cabin_code===4?'cabin-biz':'cabin-eco';
+      const ratio = f.t4_ratio;
+      const ratioHtml = ratio
+        ? `<span class="${ratio<2?'ratio-alert':''}">${ratio.toFixed(1)}x</span>`
+        : '—';
+      const savings = (f.savings_eur||0) > 0
+        ? `<span style="color:#38a169">-${(f.savings_eur).toFixed(0)}€ (${(f.savings_pct||0).toFixed(0)}%)</span>`
+        : '—';
+      const book = f.booking_url
+        ? `<a href="${f.booking_url}" target="_blank" class="book-btn">Reservar →</a>`
+        : '—';
+      const score = (f.final_score || 0);
+      const stops = f.stops===0 ? '✈️ Directo' : `${f.stops||0} escala${f.stops>1?'s':''}`;
+      const title = (f.reasons||[]).join(' | ');
+      return `<tr title="${title}">
+        <td><div class="score-wrap"><div class="score-bar"><div class="score-fill" style="width:${score}%"></div></div><span style="font-size:.75rem;color:var(--text2)">${score.toFixed(0)}</span></div></td>
+        <td><span class="pill ${cls}">${cls}</span></td>
+        <td style="font-weight:600">${f.origin||''}</td>
+        <td style="font-weight:600">${f.destination||''}</td>
+        <td style="color:var(--text2)">${f.city_to||f.destination||''}${f.country_to?', '+f.country_to:''}</td>
+        <td><span class="${cabClass}">${f.cabin||'Economy'}</span></td>
+        <td class="price-cell">${(f.price_eur||0).toFixed(0)}€</td>
+        <td>${ratioHtml}</td>
+        <td>${savings}</td>
+        <td>${f.airline||'—'}</td>
+        <td>${f.date_out||'—'} <span style="font-size:.72rem;color:var(--text2)">${f.date_ret?'↩'+f.date_ret:''}</span></td>
+        <td>${stops}</td>
+        <td>${book}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  renderPagination() {
+    const total = this.filtered.length;
+    const pages = Math.ceil(total / PAGE_SIZE);
+    const wrap = document.getElementById('pagWrap');
+    if (pages <= 1) { wrap.innerHTML = ''; return; }
+    const p = this.page;
+    let btns = `<span class="page-info">Mostrando ${p*PAGE_SIZE+1}-${Math.min((p+1)*PAGE_SIZE,total)} de ${total}</span>`;
+    if (p > 0) btns += `<button class="page-btn" onclick="dash.goPage(${p-1})">← Anterior</button>`;
+    for (let i=0; i<pages; i++) {
+      if (i===0||i===pages-1||Math.abs(i-p)<=1)
+        btns += `<button class="page-btn${i===p?' active':''}" onclick="dash.goPage(${i})">${i+1}</button>`;
+      else if (Math.abs(i-p)===2) btns += `<span class="page-info">…</span>`;
+    }
+    if (p < pages-1) btns += `<button class="page-btn" onclick="dash.goPage(${p+1})">Siguiente →</button>`;
+    wrap.innerHTML = btns;
+  }
+
+  goPage(n) {
+    this.page = n;
+    this.renderTable();
+    this.renderPagination();
+    document.getElementById('tbl').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  exportCSV() {
+    const headers = ['Score','Tipo','Origen','Destino','Ciudad','País','Cabina','Precio EUR','Ratio B/E','Ahorro EUR','Ahorro %','Aerolínea','Fecha Salida','Fecha Vuelta','Escalas','URL Reserva','Razón principal'];
+    const rows = this.filtered.map(f => [
+      f.final_score||'', f.classification||'', f.origin||'', f.destination||'',
+      f.city_to||'', f.country_to||'', f.cabin||'', f.price_eur||'',
+      f.t4_ratio||'', f.savings_eur||'', f.savings_pct||'', f.airline||'',
+      f.date_out||'', f.date_ret||'', f.stops||0, f.booking_url||'',
+      (f.main_reason||'').replace(/,/g,' ')
+    ]);
+    const csv = [headers,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'flight_hunter_v4.csv';
+    a.click();
+  }
+}
+
+// ── Dark mode ─────────────────────────────────────
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+  document.querySelector('.theme-btn').textContent = isDark ? '🌙 Dark' : '☀️ Light';
+}
+
+// ── Init ──────────────────────────────────────────
+document.getElementById('th_final_score').classList.add('s-desc');
+const dash = new Dashboard(FLIGHTS);
+</script>
+</body>
+</html>

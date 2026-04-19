@@ -1,0 +1,24 @@
+# Flight Hunter V4 — Dependencias
+# Instalar con: pip install -r requirements.txt --break-system-packages
+#
+# APIs en uso:
+#   Kiwi Tequila — aiohttp (REST directo, no requiere librería)
+#   Travelpayouts — aiohttp (REST directo)
+#   SerpAPI — aiohttp (REST directo, no requiere librería)
+#   RapidAPI — aiohttp (REST directo)
+#   Duffel — aiohttp (REST directo)
+#   Amadeus — aiohttp (REST directo)
+#   Ryanair — aiohttp (scraper directo)
+#   Vueling — aiohttp (scraper directo)
+
+# HTTP asíncrono — motor principal de todas las APIs
+aiohttp>=3.9.0
+
+# Informes Excel con formato, estilos y gráficos
+openpyxl>=3.1.0
+
+# Variables de entorno desde .env (alternativa a hardcodear credenciales en config.py)
+python-dotenv>=1.0.0
+
+# Notificaciones Telegram — descomenta si usas el bot de alertas
+# python-telegram-bot>=20.0

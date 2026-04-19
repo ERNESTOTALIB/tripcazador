@@ -1,0 +1,15 @@
+# Travel Hunter — Dependencias
+# Instalar con: pip install -r requirements.txt --break-system-packages
+# Después instalar los navegadores: playwright install chromium
+
+# Scraping con navegador automatizado (Chromium headless)
+playwright>=1.40.0
+
+# Anti-detección avanzada para evitar bloqueos
+playwright-stealth>=1.0.6
+
+# HTTP síncrono — API Tequila (Kiwi.com) y llamadas REST generales
+requests>=2.31.0
+
+# Variables de entorno desde .env
+python-dotenv>=1.0.0

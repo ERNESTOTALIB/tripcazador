@@ -1,0 +1,41 @@
+# TripCazador — logrotate config
+#
+# Copiar a /etc/logrotate.d/tripcazador en la VM:
+#   sudo cp infra/logrotate/tripcazador /etc/logrotate.d/tripcazador
+#   sudo logrotate -d /etc/logrotate.d/tripcazador   # dry-run
+#
+# Afecta a los logs de Caddy (access+error) y a backups de .env/.env.backup.*.
+# Los containers Docker usan json-file driver con rotation configurada en
+# docker-compose.prod.yml (max-size 50m, max-file 10), no hace falta aquí.
+
+/var/log/caddy/*.log {
+    daily
+    rotate 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    sharedscripts
+    postrotate
+        systemctl reload caddy > /dev/null 2>&1 || true
+    endscript
+}
+
+/var/log/tripcazador/*.log {
+    daily
+    rotate 30
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+}
+
+# Rotación de backups viejos de .env (del script rotate_admin_token.sh)
+# Mantiene los últimos 20; borra los más antiguos.
+/opt/tripcazador/.env.backup.* {
+    weekly
+    rotate 20
+    missingok
+    notifempty
+}

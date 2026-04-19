@@ -1,0 +1,61 @@
+# TripCazador — fail2ban jails
+#
+# Copia a /etc/fail2ban/jail.d/tripcazador.conf en la VM y recarga:
+#   sudo cp infra/fail2ban/jail.local /etc/fail2ban/jail.d/tripcazador.conf
+#   sudo systemctl reload fail2ban
+#
+# Los filtros personalizados deben copiarse a /etc/fail2ban/filter.d/:
+#   sudo cp infra/fail2ban/filter.d/tripcazador-*.conf /etc/fail2ban/filter.d/
+
+[DEFAULT]
+# Excepciones globales para no bloquearnos a nosotros mismos
+ignoreip = 127.0.0.1/8 ::1
+# Tras 5 fallos en 10 min, baneo de 1 hora
+bantime  = 3600
+findtime = 600
+maxretry = 5
+# Backend: usar el systemd journal para leer logs de los containers
+backend  = systemd
+
+# ---------------------------------------------------------------
+# SSH — trae configuración por defecto, sólo la habilitamos
+# ---------------------------------------------------------------
+[sshd]
+enabled  = true
+port     = ssh
+
+# ---------------------------------------------------------------
+# TripCazador API: 429 repetidos = abuso del rate limiter
+# ---------------------------------------------------------------
+[tripcazador-api-429]
+enabled  = true
+filter   = tripcazador-api-429
+port     = http,https
+logpath  = /var/log/tripcazador/api.log
+maxretry = 10
+findtime = 300
+bantime  = 1800
+
+# ---------------------------------------------------------------
+# /admin: 401/403 repetidos = brute force sobre ADMIN_TOKEN
+# ---------------------------------------------------------------
+[tripcazador-admin-bruteforce]
+enabled  = true
+filter   = tripcazador-admin-bruteforce
+port     = http,https
+logpath  = /var/log/tripcazador/api.log
+maxretry = 3
+findtime = 600
+bantime  = 86400   # 24h — brute force sobre admin es serio
+
+# ---------------------------------------------------------------
+# Caddy: patrones habituales de scanner (phpmyadmin, wp-login, etc)
+# ---------------------------------------------------------------
+[tripcazador-caddy-scanner]
+enabled  = true
+filter   = tripcazador-caddy-scanner
+port     = http,https
+logpath  = /var/log/caddy/access.log
+maxretry = 3
+findtime = 600
+bantime  = 604800  # 7 días — los scanners no son legítimos

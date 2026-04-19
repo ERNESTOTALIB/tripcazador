@@ -1,0 +1,40 @@
+{
+  "best_flights": [
+    {
+      "price": 385,
+      "total_duration": 720,
+      "layovers": [],
+      "flights": [
+        {
+          "airline": "Iberia",
+          "airline_logo": "https://serpapi.com/logos/IB.png",
+          "flight_number": "IB6251",
+          "departure_airport": {
+            "id": "MAD",
+            "time": "2026-08-12 12:45"
+          },
+          "arrival_airport": {
+            "id": "JFK",
+            "time": "2026-08-12 15:30"
+          }
+        }
+      ]
+    }
+  ],
+  "other_flights": [
+    {
+      "price": 520,
+      "total_duration": 900,
+      "layovers": [{"id": "LHR", "duration": 120}],
+      "flights": [
+        {
+          "airline": "British Airways",
+          "airline_logo": "https://serpapi.com/logos/BA.png",
+          "flight_number": "BA478",
+          "departure_airport": {"id": "MAD", "time": "2026-08-12 08:00"},
+          "arrival_airport": {"id": "JFK", "time": "2026-08-12 17:00"}
+        }
+      ]
+    }
+  ]
+}

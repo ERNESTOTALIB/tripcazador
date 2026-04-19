@@ -1,0 +1,76 @@
+# TripCazador — Docker Compose overlay específico de producción
+# ============================================================
+# Se combina con docker-compose.yml para endurecer prod:
+#   - logging driver json-file con rotation (evita llenar el disco)
+#   - restart: always (upgrade de unless-stopped a siempre-reiniciar)
+#   - read_only filesystem donde se puede (api/worker montan /tmp tmpfs)
+#   - no-new-privileges para anular setuid tricks
+#   - cap_drop ALL + cap_add mínimas
+#
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Nota: docker-compose.override.yml se carga automáticamente en dev. En prod
+# NO queremos que se cargue el override; pasamos los archivos explícitamente.
+
+version: "3.9"
+
+services:
+
+  db:
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+    security_opt:
+      - no-new-privileges:true
+
+  api:
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+        labels: "service,env"
+    labels:
+      service: "tripcazador-api"
+      env: "production"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE   # uvicorn en 8000 (>1024, no haría falta pero por consistencia)
+    tmpfs:
+      - /tmp:size=100M,mode=1777   # filesystem efímero para multipart uploads, caches
+    read_only: true
+    volumes:
+      # Re-declaramos output_data como rw (el read_only anterior no afecta a volúmenes)
+      - output_data:/app/output
+    environment:
+      # Identifica entorno (útil para Sentry tags)
+      ENVIRONMENT: "production"
+      SENTRY_ENVIRONMENT: "production"
+
+  worker:
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=200M,mode=1777
+    read_only: true
+    volumes:
+      - output_data:/app/output
+    environment:
+      ENVIRONMENT: "production"
+      SENTRY_ENVIRONMENT: "production"

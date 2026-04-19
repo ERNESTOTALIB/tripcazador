@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --amber: #f59e0b;
+  --amber-dark: #d97706;
+  --amber-light: #fbbf24;
+  --ink: #030712;
+  --ink-soft: #0a0f1e;
+}
+
+/* Dark theme base */
+html {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-gray-950 text-gray-100;
+  min-height: 100vh;
+  /* Fondo con dos capas:
+   * 1) Grid de líneas de meridianos/paralelos (SVG inline, mínimo peso)
+   * 2) Gradientes radiales ámbar tenues en esquinas (luces de "radar")
+   * Todo fijo para no saltar en scroll y sin costes extra (no carga assets).
+   */
+  background-color: #030712;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(245, 158, 11, 0.10), transparent 45%),
+    radial-gradient(circle at 88% 72%, rgba(245, 158, 11, 0.07), transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.06), transparent 55%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><defs><pattern id='grid' width='40' height='40' patternUnits='userSpaceOnUse'><path d='M 40 0 L 0 0 0 40' fill='none' stroke='%23f59e0b' stroke-width='0.4' opacity='0.08'/></pattern><radialGradient id='dot' cx='0.5' cy='0.5' r='0.5'><stop offset='0%25' stop-color='%23f59e0b' stop-opacity='0.35'/><stop offset='100%25' stop-color='%23f59e0b' stop-opacity='0'/></radialGradient></defs><rect width='120' height='120' fill='url(%23grid)'/><circle cx='60' cy='60' r='1.2' fill='url(%23dot)'/></svg>");
+  background-attachment: fixed;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+  background-size: auto, auto, auto, 120px 120px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-gray-900;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(245, 158, 11, 0.5);
+}
+
+/* Amber glow utility */
+.glow-amber {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+/* Glass / cristal — fondos semi-transparentes para las tarjetas
+ * sobre el fondo radar. Suficiente contraste WCAG AAA en texto principal.
+ */
+.glass {
+  background-color: rgba(17, 24, 39, 0.78);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  border: 1px solid rgba(75, 85, 99, 0.35);
+}
+.glass-strong {
+  background-color: rgba(10, 15, 30, 0.92);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  border: 1px solid rgba(75, 85, 99, 0.45);
+}
+
+/* Panel destacado para secciones hero/empty-state */
+.panel {
+  background:
+    linear-gradient(145deg, rgba(245, 158, 11, 0.04), rgba(3, 7, 18, 0.0) 60%),
+    rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  border-radius: 1rem;
+}
+
+/* Hero map background — solo en la landing */
+.hero-map {
+  position: relative;
+  isolation: isolate;
+}
+.hero-map::before {
+  content: "";
+  position: absolute;
+  inset: -2rem -2rem auto -2rem;
+  height: 120%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500' preserveAspectRatio='xMidYMid slice'><g fill='none' stroke='%23f59e0b' stroke-width='0.6' opacity='0.32'><ellipse cx='500' cy='250' rx='480' ry='235'/><ellipse cx='500' cy='250' rx='380' ry='180'/><ellipse cx='500' cy='250' rx='280' ry='130'/><ellipse cx='500' cy='250' rx='180' ry='80'/><ellipse cx='500' cy='250' rx='80' ry='35'/><line x1='20' y1='250' x2='980' y2='250'/><line x1='500' y1='15' x2='500' y2='485'/><line x1='500' y1='250' x2='940' y2='90' opacity='0.6'/><line x1='500' y1='250' x2='940' y2='410' opacity='0.6'/><line x1='500' y1='250' x2='60' y2='90' opacity='0.6'/><line x1='500' y1='250' x2='60' y2='410' opacity='0.6'/></g><g fill='%23f59e0b' opacity='0.6'><circle cx='500' cy='250' r='4'/><circle cx='380' cy='160' r='2.5'/><circle cx='680' cy='340' r='2.5'/><circle cx='260' cy='310' r='2'/><circle cx='780' cy='180' r='2'/><circle cx='150' cy='220' r='1.5'/><circle cx='860' cy='280' r='1.5'/></g><g stroke='%23f59e0b' stroke-width='0.5' stroke-dasharray='3 4' opacity='0.55' fill='none'><path d='M380 160 Q 500 100 680 340'/><path d='M260 310 Q 460 240 780 180'/><path d='M150 220 Q 500 380 860 280'/></g></svg>");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
+}
+
+/* Gradiente borde animado para CTAs premium */
+.btn-gradient {
+  background: linear-gradient(135deg, var(--amber-light), var(--amber), var(--amber-dark));
+  background-size: 200% 200%;
+  animation: amber-shift 6s ease infinite;
+}
+@keyframes amber-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Pulse suave para el "motor activo" */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.55); }
+  80%, 100% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+}
+.pulse-ring {
+  animation: pulse-ring 2.1s cubic-bezier(0.66, 0, 0, 1) infinite;
+}
+
+/* Card hover — sutil elevación */
+.card-hover {
+  transition: transform 220ms cubic-bezier(.2,.7,.2,1), border-color 220ms, box-shadow 220ms;
+  will-change: transform;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 10px 30px -12px rgba(245, 158, 11, 0.25);
+}
+
+/* Respeto movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-ring,
+  .btn-gradient,
+  .card-hover {
+    animation: none !important;
+    transition: none !important;
+  }
+}

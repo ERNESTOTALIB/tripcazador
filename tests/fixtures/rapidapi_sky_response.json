@@ -1,0 +1,29 @@
+{
+  "data": {
+    "itineraries": [
+      {
+        "legs": [
+          {
+            "origin": {"displayCode": "MAD", "city": "Madrid"},
+            "destination": {"displayCode": "BKK", "city": "Bangkok", "country": "Tailandia"},
+            "departure": "2026-09-10T11:30:00",
+            "arrival": "2026-09-11T06:15:00",
+            "durationInMinutes": 945,
+            "stopCount": 1,
+            "carriers": {
+              "marketing": [
+                {"alternateId": "TG", "name": "Thai Airways"}
+              ]
+            }
+          }
+        ],
+        "price": {"raw": 612.5, "formatted": "612,50 €"},
+        "carriers": {
+          "marketing": [
+            {"alternateId": "TG", "name": "Thai Airways"}
+          ]
+        }
+      }
+    ]
+  }
+}
