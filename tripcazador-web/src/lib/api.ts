@@ -253,6 +253,49 @@ export async function searchDeals(params: SearchParams): Promise<Deal[]> {
   }
 }
 
+// ──────────────────────────────────────────────
+// Live search — llama a RapidAPI + Ryanair en caliente vía FastAPI
+// ──────────────────────────────────────────────
+export interface LiveSearchParams {
+  origin: string;        // IATA (MAD, JFK…)
+  destination: string;   // IATA
+  date_out: string;      // YYYY-MM-DD
+  cabin?: "economy" | "premium_economy" | "business" | "first";
+  limit?: number;
+}
+
+/**
+ * Llama a /api/search/live del FastAPI. El backend orquesta RapidAPI Sky
+ * Scrapper + Ryanair en paralelo, cachea 15 min y devuelve top-N por precio.
+ * Timeout de cliente: 25s (el server corta a 18s, dejamos margen para red).
+ */
+export async function searchDealsLive(params: LiveSearchParams): Promise<Deal[]> {
+  const query = new URLSearchParams({
+    origin: params.origin.toUpperCase(),
+    destination: params.destination.toUpperCase(),
+    date_out: params.date_out,
+    cabin: params.cabin ?? "economy",
+    limit: String(params.limit ?? 20),
+  });
+
+  const url = `${API_BASE}/api/search/live?${query.toString()}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+
+  try {
+    const res = await fetch(url, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export async function getDeal(id: string): Promise<Deal | null> {
   try {
     const res = await fetch(`${API_BASE}/api/deals/${encodeURIComponent(id)}`, {

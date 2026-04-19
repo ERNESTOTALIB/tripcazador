@@ -13,6 +13,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   searchDeals,
+  searchDealsLive,
   getAirports,
   formatDate,
   getCabinLabel,
@@ -149,21 +150,60 @@ export default function SearchBar({
     setError(null);
     setSearched(true);
 
-    const params: SearchParams = {
-      origin: origin || undefined,
-      destination: destination || undefined,
-      date_from: dateFrom || undefined,
-      date_to: dateTo || undefined,
-      max_price: maxPrice === "" ? undefined : Number(maxPrice),
-      cabin: cabin || undefined,
-      limit: 30,
-    };
+    // Decisión: si hay origen, destino y fecha → búsqueda en caliente (RapidAPI+Ryanair).
+    // Si falta algo → fallback al search sobre deals.json indexados.
+    const hasLiveShape = !!(origin && destination && dateFrom);
 
     try {
-      const data = await searchDeals(params);
+      let data: Deal[] = [];
+
+      if (hasLiveShape) {
+        data = await searchDealsLive({
+          origin,
+          destination,
+          date_out: dateFrom,
+          cabin: (cabin || "economy") as "economy" | "premium_economy" | "business" | "first",
+          limit: 20,
+        });
+
+        // Filtro cliente: max_price (el endpoint live no lo aplica)
+        if (maxPrice !== "" && data.length > 0) {
+          data = data.filter((d) => d.price_eur <= Number(maxPrice));
+        }
+
+        // Si live devuelve 0, intentamos el fallback sobre deals.json para que
+        // el usuario al menos vea ofertas indexadas relacionadas.
+        if (data.length === 0) {
+          data = await searchDeals({
+            origin,
+            destination,
+            date_from: dateFrom,
+            date_to: dateTo || dateFrom,
+            max_price: maxPrice === "" ? undefined : Number(maxPrice),
+            cabin: cabin || undefined,
+            limit: 30,
+          });
+        }
+      } else {
+        const params: SearchParams = {
+          origin: origin || undefined,
+          destination: destination || undefined,
+          date_from: dateFrom || undefined,
+          date_to: dateTo || undefined,
+          max_price: maxPrice === "" ? undefined : Number(maxPrice),
+          cabin: cabin || undefined,
+          limit: 30,
+        };
+        data = await searchDeals(params);
+      }
+
       setResults(data);
       if (data.length === 0) {
-        setError("No encontramos ofertas con esos filtros. Prueba con fechas más amplias o quita el precio máximo.");
+        setError(
+          hasLiveShape
+            ? "No encontramos vuelos ahora mismo para esa combinación. Prueba otra fecha o ruta."
+            : "Añade origen, destino y fecha para búsqueda en vivo, o prueba con filtros más amplios."
+        );
       }
     } catch (err) {
       setError("No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.");
@@ -172,6 +212,33 @@ export default function SearchBar({
       setLoading(false);
     }
   }
+
+  // API pública: permite a la home prellenar el buscador desde fuera y disparar
+  // la búsqueda (usado por los chips "Madrid → NYC" etc). Expuesto vía un
+  // CustomEvent global para evitar acoplar el ref de form con los padres.
+  useEffect(() => {
+    function onPrefill(e: Event) {
+      const detail = (e as CustomEvent).detail as {
+        origin?: string;
+        destination?: string;
+        date_from?: string;
+        cabin?: string;
+      };
+      if (detail?.origin) setOrigin(detail.origin.toUpperCase());
+      if (detail?.destination) setDestination(detail.destination.toUpperCase());
+      if (detail?.date_from) setDateFrom(detail.date_from);
+      if (detail?.cabin) setCabin(detail.cabin);
+      // Scroll al form para UX clara
+      requestAnimationFrame(() => {
+        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Disparar submit en el siguiente tick para que los setState se apliquen
+        setTimeout(() => handleSubmit(), 50);
+      });
+    }
+    window.addEventListener("tripcazador:prefill-search", onPrefill);
+    return () => window.removeEventListener("tripcazador:prefill-search", onPrefill);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Atajo: Enter en cualquier input envía el form.
   useEffect(() => {
@@ -337,7 +404,13 @@ export default function SearchBar({
               disabled={loading}
               className="w-full rounded-lg bg-amber-400 hover:bg-amber-300 disabled:bg-slate-600 text-slate-900 font-semibold px-4 py-2 transition"
             >
-              {loading ? "Buscando..." : "Buscar ofertas"}
+              {loading
+                ? origin && destination && dateFrom
+                  ? "Buscando en vivo…"
+                  : "Buscando…"
+                : origin && destination && dateFrom
+                  ? "Buscar en vivo"
+                  : "Buscar ofertas"}
             </button>
           </div>
         </div>

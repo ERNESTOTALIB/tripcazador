@@ -870,6 +870,254 @@ async def get_airports(
 
 
 # ────────────────────────────────────────────────
+# Live search (en caliente) — llama a los engines en tiempo real
+# ────────────────────────────────────────────────
+#
+# Por qué un endpoint aparte:
+#   /api/search filtra deals.json (rápido pero limitado a lo que el worker
+#   haya indexado). Cuando el usuario busca "Madrid → NYC 2026-07-15" no hay
+#   manera de cubrir todas las combinaciones posibles por adelantado, así
+#   que consultamos a RapidAPI (Sky Scrapper) y Ryanair en caliente.
+#
+# Cache: 15 min por tupla (origin, destination, date_out, cabin). Protege el
+# tier gratis de RapidAPI (500 req/mes) y acelera búsquedas repetidas.
+#
+# Timeout duro 18s. Si los engines tardan más, devuelve lo que haya llegado.
+
+import asyncio as _asyncio
+from hashlib import md5 as _md5
+
+_LIVE_CACHE: dict = {}
+_LIVE_CACHE_TTL = 900  # 15 minutos
+_LIVE_CACHE_MAX_ENTRIES = 500  # evita crecimiento ilimitado
+
+_STRONG_RYANAIR_HUBS = {
+    "STN", "DUB", "BGY", "CRL", "HHN", "NYO", "VRN", "AGP", "ALC", "BCN",
+    "MAD", "PMI", "TFS", "LPA", "VLC", "SVQ", "BIO", "PMO", "FCO", "PSA",
+    "BRI", "NAP", "VIE", "BRU", "CGN", "HAM", "NUE", "MXP", "OPO", "FKB",
+    "BRE", "DTM", "BLQ", "BTS", "BUD", "PRG", "KRK", "WRO", "WAW", "GDN",
+    "BSL", "BVA", "STR", "MRS",
+}
+
+
+def _live_cache_key(origin: str, destination: str, date_out: str, cabin: str) -> str:
+    raw = f"{origin.upper()}|{destination.upper()}|{date_out}|{cabin.lower()}"
+    return _md5(raw.encode()).hexdigest()
+
+
+def _live_cache_get(key: str) -> Optional[List[dict]]:
+    entry = _LIVE_CACHE.get(key)
+    if not entry:
+        return None
+    if time.time() - entry["at"] > _LIVE_CACHE_TTL:
+        _LIVE_CACHE.pop(key, None)
+        return None
+    return entry["deals"]
+
+
+def _live_cache_put(key: str, deals: List[dict]) -> None:
+    if len(_LIVE_CACHE) >= _LIVE_CACHE_MAX_ENTRIES:
+        # Evict más viejo
+        oldest = min(_LIVE_CACHE.items(), key=lambda kv: kv[1]["at"])[0]
+        _LIVE_CACHE.pop(oldest, None)
+    _LIVE_CACHE[key] = {"at": time.time(), "deals": deals}
+
+
+def _ensure_engines_on_path() -> None:
+    """Inserta flight_hunter_v4 en sys.path para poder importar los engines."""
+    import sys as _sys
+    _here = Path(__file__).resolve().parent
+    for c in [_here.parent / "flight_hunter_v4", _here.parent.parent / "flight_hunter_v4"]:
+        if c.exists() and str(c) not in _sys.path:
+            _sys.path.insert(0, str(c))
+
+
+def _engine_dict_to_deal(f: dict, origin: str, destination: str) -> dict:
+    """
+    Convierte la salida estándar de los engines (formato V4 de flight_hunter)
+    a un Deal pydantic-compatible que la web ya sabe renderizar.
+    Añade campos mínimos: id estable, headline, classification, expires_at, score.
+    """
+    price = float(f.get("price_eur", 0) or 0)
+    date_out = f.get("date_out", "") or ""
+    airline = f.get("airline", "") or ""
+    dest = f.get("destination", destination).upper()
+    orig = f.get("origin", origin).upper()
+
+    # id estable y determinístico: permite que el frontend haga keys + dedup
+    raw_id = f"{f.get('source','live')}:{orig}-{dest}-{date_out}-{airline}-{int(price*100)}"
+    deal_id = _md5(raw_id.encode()).hexdigest()[:16]
+
+    headline = f.get("headline") or (
+        f"{f.get('city_to') or dest} desde {int(round(price))}€ "
+        f"({orig}→{dest}, {date_out or 'fecha libre'})"
+    )
+
+    # Clasificación rápida por precio/distancia (sin llamar al detector completo)
+    dist = (f.get("distance_category") or "").lower()
+    if dist in ("long", "long_haul", "ultra_long") and price < 400:
+        classification = "ERROR"
+    elif dist in ("long", "long_haul", "ultra_long") and price < 600:
+        classification = "ANOMALÍA"
+    elif price < 80:
+        classification = "OFERTA"
+    else:
+        classification = "NORMAL"
+
+    # expires_at: las búsquedas live no expiran — pero damos 6h como válido
+    expires_at = (datetime.now() + __import__("datetime").timedelta(hours=6)).isoformat()
+
+    return {
+        "id": deal_id,
+        "type": "flight",
+        "headline": headline,
+        "origin": orig,
+        "destination": dest,
+        "city_from": f.get("origin_full", "") or orig,
+        "city_to": f.get("city_to", "") or dest,
+        "country_to": f.get("country_to", "") or "",
+        "region": "",
+        "price_eur": round(price, 2),
+        "savings_pct": 0,
+        "savings_eur": 0,
+        "nights": 0,
+        "price_per_night": None,
+        "date_out": date_out,
+        "date_ret": f.get("date_ret", "") or "",
+        "cabin": f.get("cabin", "economy") or "economy",
+        "airline": airline,
+        "airline_name": f.get("airline_name", "") or airline,
+        "stops": int(f.get("stops", 0) or 0),
+        "duration_min": int(f.get("duration_min", 0) or 0),
+        "distance_category": f.get("distance_category", "") or "",
+        "score": 0,
+        "classification": classification,
+        "tags": ["live"],
+        "image_url": "",
+        "booking_url": f.get("booking_url", "") or "",
+        "verified": False,
+        "sources": [f.get("source", "live")],
+        "found_at": datetime.now().isoformat(),
+        "expires_at": expires_at,
+        "lat": None,
+        "lon": None,
+        "main_reason": None,
+        "t4_ratio": None,
+    }
+
+
+@app.get("/api/search/live", response_model=List[Deal])
+async def search_live(
+    origin: str = Query(..., min_length=3, max_length=4, description="IATA origen, ej. MAD"),
+    destination: str = Query(..., min_length=3, max_length=4, description="IATA destino, ej. JFK"),
+    date_out: str = Query(..., description="Fecha salida YYYY-MM-DD"),
+    cabin: str = Query("economy", description="economy | premium_economy | business | first"),
+    limit: int = Query(20, ge=1, le=50),
+):
+    """
+    Busca vuelos en caliente llamando a RapidAPI (Sky Scrapper) y Ryanair en
+    paralelo. Cache en memoria 15 min por (origen, destino, fecha, cabina).
+
+    Ejemplo:
+        /api/search/live?origin=MAD&destination=JFK&date_out=2026-07-15
+    """
+    # Validación simple: fecha no en el pasado
+    try:
+        out_date = datetime.strptime(date_out, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="date_out inválida, usa YYYY-MM-DD")
+    if out_date < datetime.now().date():
+        raise HTTPException(status_code=400, detail="date_out está en el pasado")
+
+    origin = origin.upper().strip()
+    destination = destination.upper().strip()
+    cabin = cabin.lower().strip() or "economy"
+
+    # Cache hit
+    cache_key = _live_cache_key(origin, destination, date_out, cabin)
+    cached = _live_cache_get(cache_key)
+    if cached is not None:
+        return cached[:limit]
+
+    _ensure_engines_on_path()
+
+    # Lazy imports: cuando el endpoint no se usa, no pagamos el import
+    rapid_task = None
+    ryan_task = None
+    try:
+        from rapidapi_engine import RapidAPIEngine  # type: ignore
+        rapid = RapidAPIEngine()
+        if rapid.available:
+            rapid_task = rapid.search_skyscrapper_cheapest(
+                origin=origin,
+                destination=destination,
+                date_out=date_out,
+                cabin=cabin,
+            )
+    except Exception as e:
+        print(f"[live-search] rapidapi import/init error: {e}")
+
+    try:
+        from ryanair_engine import RyanairEngine  # type: ignore
+        # Ryanair solo tiene sentido si el origen es un hub que opera
+        if origin in _STRONG_RYANAIR_HUBS:
+            ryan = RyanairEngine()
+            if ryan.available:
+                ryan_task = ryan.search_oneway_multi(
+                    origins=[origin],
+                    date_from=date_out,
+                    date_to=date_out,
+                )
+    except Exception as e:
+        print(f"[live-search] ryanair import/init error: {e}")
+
+    # Sin engines disponibles: fallback al search de deals.json
+    if not rapid_task and not ryan_task:
+        return []
+
+    tasks = [t for t in (rapid_task, ryan_task) if t is not None]
+    try:
+        results = await _asyncio.wait_for(
+            _asyncio.gather(*tasks, return_exceptions=True),
+            timeout=18.0,
+        )
+    except _asyncio.TimeoutError:
+        results = []
+
+    combined: List[dict] = []
+    for r in results:
+        if isinstance(r, list):
+            combined.extend(r)
+        # Silenciosamente ignora excepciones — ya están en los logs del motor
+
+    # Filtrar por destino (Ryanair devuelve desde origen a muchos destinos)
+    filtered = [f for f in combined if (f.get("destination", "").upper() == destination)]
+
+    # Si filtrado vacío, devuelve lo que hubo (útil para rutas que no matcheen)
+    if not filtered and combined:
+        filtered = combined
+
+    # Dedup por (airline, date_out, price_eur redondeado)
+    seen = set()
+    unique = []
+    for f in filtered:
+        key = (f.get("airline"), f.get("date_out"), round(float(f.get("price_eur", 0) or 0), 2))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(f)
+
+    unique.sort(key=lambda x: float(x.get("price_eur", 99999) or 99999))
+    unique = unique[:limit]
+
+    # Normalizar al schema Deal
+    deals = [_engine_dict_to_deal(f, origin, destination) for f in unique]
+
+    _live_cache_put(cache_key, deals)
+    return deals
+
+
+# ────────────────────────────────────────────────
 # Live search — busca sobre los deals indexados
 # ────────────────────────────────────────────────
 

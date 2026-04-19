@@ -4,6 +4,7 @@ import { DealCard } from "@/components/DealCard";
 import SearchBar from "@/components/SearchBar";
 import { DestinationCard } from "@/components/DestinationCard";
 import { Testimonials } from "@/components/Testimonials";
+import { PopularSearches } from "@/components/PopularSearches";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -182,8 +183,9 @@ export default async function HomePage() {
       </section>
 
       {/* Buscador en vivo (client component) */}
-      <section className="px-4">
+      <section className="px-4 space-y-6">
         <SearchBar />
+        <PopularSearches />
       </section>
 
       {/* Top Deals */}
