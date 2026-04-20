@@ -14,19 +14,17 @@ describe("track()", () => {
     // Simulamos el objeto window para el código que corre en el browser.
     // En Node puro, `typeof window === "undefined"` y track() retorna temprano
     // sin tocar nada — ese camino también queremos validarlo.
-    // @ts-expect-error – seteamos window solo para testing
-    globalThis.window = { } as Window & typeof globalThis;
+    (globalThis as any).window = {} as Window & typeof globalThis;
   });
 
   afterEach(() => {
-    // @ts-expect-error – limpiamos para no filtrar entre tests
-    delete globalThis.window;
+    // Limpiamos para no filtrar entre tests
+    delete (globalThis as any).window;
     vi.restoreAllMocks();
   });
 
   it("es no-op si window no existe (SSR / Node)", async () => {
-    // @ts-expect-error
-    delete globalThis.window;
+    delete (globalThis as any).window;
     const { track } = await import("./analytics");
     // No debe lanzar
     expect(() =>

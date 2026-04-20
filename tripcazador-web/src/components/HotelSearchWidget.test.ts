@@ -78,7 +78,9 @@ describe("buildBookingUrl", () => {
 });
 
 describe("shiftDate", () => {
-  beforeEach(() => vi.resetModules());
+  beforeEach(() => {
+    vi.resetModules();
+  });
 
   it("suma días correctamente atravesando mes", async () => {
     const { shiftDate } = await import("./HotelSearchWidget");
