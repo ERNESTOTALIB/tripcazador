@@ -1373,6 +1373,393 @@ async def subscribe(payload: SubscribeRequest, request: Request):
 
 
 # ────────────────────────────────────────────────
+# Price alerts: crear + listar + cancelar con token HMAC
+# ────────────────────────────────────────────────
+#
+# Cómo funciona:
+#   · POST /api/price-alerts          → crea alerta, devuelve id + cancel_token
+#   · GET  /api/price-alerts/cancel   → cancela por ?id=...&token=...
+#                                        (el link va en el email)
+#
+# Persistencia: JSON plano en disco (igual que subscribers) — simple,
+# atómico para los volúmenes que vamos a manejar (<10k alertas). Si
+# crecemos, migramos a Postgres reutilizando la conexión del worker.
+#
+# Matching: lo hace el cron del worker (scripts/match_price_alerts.py)
+# que cruza deals.json vs alertas activas y dispara Telegram cuando
+# aparece una oferta que cumple target_price.
+
+import hmac
+
+_ALERTS_PATH = pathlib.Path(os.getenv("PRICE_ALERTS_PATH", "/data/price_alerts.json"))
+_ALERT_SECRET = os.getenv("PRICE_ALERT_SECRET", os.getenv("SECRET_KEY", "tripcazador-dev-only"))
+
+
+class PriceAlertRequest(BaseModel):
+    """Payload aceptado por POST /api/price-alerts.
+
+    Al menos uno de {origin, destination, deal_id} debe estar presente.
+    target_price es opcional (si None → "avísame cuando aparezca
+    cualquier deal nuevo para esta ruta").
+    """
+    email: EmailStr
+    origin: Optional[str] = Field(None, min_length=3, max_length=3)
+    destination: Optional[str] = Field(None, min_length=3, max_length=3)
+    target_price: Optional[float] = Field(None, gt=0, le=100000)
+    deal_id: Optional[str] = Field(None, max_length=64)
+
+
+def _load_price_alerts() -> list[dict]:
+    try:
+        if _ALERTS_PATH.exists():
+            return json.loads(_ALERTS_PATH.read_text())
+    except Exception:
+        pass
+    return []
+
+
+def _save_price_alerts(items: list[dict]) -> None:
+    _ALERTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    tmp = _ALERTS_PATH.with_suffix(".tmp")
+    tmp.write_text(json.dumps(items, indent=2, ensure_ascii=False))
+    tmp.replace(_ALERTS_PATH)
+
+
+def _alert_cancel_token(alert_id: str) -> str:
+    """HMAC-SHA256 truncado a 32 hex chars del id de la alerta.
+
+    No es reversible y está firmado con PRICE_ALERT_SECRET, así que solo
+    quien conozca la secret puede generar tokens válidos. El link de
+    cancelación va embebido en el email y no expira (es permanente).
+    """
+    sig = hmac.new(_ALERT_SECRET.encode(), alert_id.encode(), hashlib.sha256).hexdigest()
+    return sig[:32]
+
+
+@app.post("/api/price-alerts")
+@limiter.limit("5/minute")
+async def create_price_alert(payload: PriceAlertRequest, request: Request):
+    """Crea una alerta de precio.
+
+    Valida:
+      - email (Pydantic EmailStr)
+      - IATAs en mayúsculas y 3 letras
+      - Al menos uno de {origin, destination, deal_id}
+      - target_price > 0 y ≤ 100000
+
+    Dedupe: si existe una alerta idéntica activa para el mismo email + ruta + precio,
+    no la duplicamos (idempotente para evitar spam si el usuario hace doble click).
+    """
+    client_ip = request.client.host if request.client else "unknown"
+
+    # Fallback in-memory si slowapi no está disponible
+    if not _LIMITER_AVAILABLE and not _rate_limit_ok(client_ip):
+        raise HTTPException(status_code=429, detail="Demasiadas peticiones, prueba en un minuto")
+
+    origin = payload.origin.upper() if payload.origin else None
+    destination = payload.destination.upper() if payload.destination else None
+
+    if not origin and not destination and not payload.deal_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Necesitas indicar al menos origen, destino o un deal_id",
+        )
+
+    # Validación IATA extra (Pydantic ya fuerza la longitud, aquí además
+    # confirmamos que son letras A-Z — evita "123" o símbolos)
+    for code in (origin, destination):
+        if code and not re.match(r"^[A-Z]{3}$", code):
+            raise HTTPException(status_code=400, detail=f"Código IATA inválido: {code}")
+
+    items = _load_price_alerts()
+    email_norm = payload.email.lower().strip()
+
+    # Dedupe por (email, origen, destino, precio, deal_id) activo
+    for existing in items:
+        if (
+            existing.get("status") == "active"
+            and existing.get("email") == email_norm
+            and existing.get("origin") == origin
+            and existing.get("destination") == destination
+            and existing.get("target_price") == payload.target_price
+            and existing.get("deal_id") == payload.deal_id
+        ):
+            # Ya existe — devolvemos el id existente (idempotencia)
+            return {
+                "status": "already_exists",
+                "id": existing["id"],
+                "cancel_token": _alert_cancel_token(existing["id"]),
+            }
+
+    # Genera id único: timestamp + hash corto de email+ruta (determinista ligeramente)
+    now_ts = int(time.time())
+    key = f"{email_norm}|{origin}|{destination}|{payload.target_price}|{payload.deal_id}|{now_ts}"
+    alert_id = hashlib.sha256(key.encode()).hexdigest()[:12]
+
+    items.append({
+        "id": alert_id,
+        "email": email_norm,
+        "origin": origin,
+        "destination": destination,
+        "target_price": payload.target_price,
+        "deal_id": payload.deal_id,
+        "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "status": "active",
+        "last_notified_at": None,
+        "ip_hash": _stable_ip_hash(client_ip),
+    })
+    _save_price_alerts(items)
+
+    return {
+        "status": "ok",
+        "id": alert_id,
+        "cancel_token": _alert_cancel_token(alert_id),
+    }
+
+
+@app.get("/api/price-alerts/cancel")
+async def cancel_price_alert(id: str = Query(..., max_length=64), token: str = Query(..., max_length=64)):
+    """Cancela una alerta con un token firmado.
+
+    Devuelve 200 siempre que el token sea válido, aunque la alerta ya
+    estuviera cancelada (idempotente — evita confundir al usuario si
+    hace click dos veces en el email).
+    """
+    expected = _alert_cancel_token(id)
+    if not hmac.compare_digest(expected, token):
+        raise HTTPException(status_code=403, detail="Token de cancelación inválido")
+
+    items = _load_price_alerts()
+    found = False
+    for it in items:
+        if it.get("id") == id:
+            found = True
+            if it.get("status") == "active":
+                it["status"] = "cancelled"
+                it["cancelled_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+            break
+
+    if not found:
+        raise HTTPException(status_code=404, detail="Alerta no encontrada")
+
+    _save_price_alerts(items)
+    return {"status": "cancelled", "id": id}
+
+
+@app.get("/api/price-alerts/_debug")
+async def debug_price_alerts(request: Request):
+    """Recuento de alertas activas (solo metadato, nunca emails).
+
+    Protegido por el token de admin si está configurado; si no, devuelve
+    404 para no filtrar la existencia del endpoint.
+    """
+    admin_token = os.getenv("ADMIN_TOKEN", "").strip()
+    if not admin_token:
+        raise HTTPException(status_code=404)
+    given = request.headers.get("x-admin-token", "")
+    if not hmac.compare_digest(admin_token, given):
+        raise HTTPException(status_code=403)
+    items = _load_price_alerts()
+    active = [i for i in items if i.get("status") == "active"]
+    return {
+        "total": len(items),
+        "active": len(active),
+        "cancelled": len(items) - len(active),
+        "by_route": {
+            f"{i.get('origin') or '*'}-{i.get('destination') or '*'}": 1
+            for i in active
+        },
+    }
+
+
+# ────────────────────────────────────────────────
+# Matcher — admin trigger (llamado por el worker GH Action tras subir deals)
+# ────────────────────────────────────────────────
+#
+# Cruza price_alerts.json × deals.json y envía email vía SMTP (si hay creds).
+# Dedupe con `.sent_matches.json` para no spamear con el mismo match.
+# SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS / SMTP_FROM vía env (Fly.io secrets).
+# SITE_URL para construir links (cancel + deal detail).
+
+import smtplib as _smtplib
+from email.message import EmailMessage as _EmailMessage
+
+_SENT_MATCHES_PATH = pathlib.Path(os.getenv("SENT_MATCHES_PATH", "/data/.sent_matches.json"))
+
+
+def _deal_matches_alert(deal: dict, alert: dict) -> bool:
+    """True si `deal` cumple todos los criterios presentes en `alert` (AND)."""
+    if alert.get("deal_id") and deal.get("id") != alert["deal_id"]:
+        return False
+    if alert.get("origin") and (deal.get("origin") or "").upper() != alert["origin"]:
+        return False
+    if alert.get("destination") and (deal.get("destination") or "").upper() != alert["destination"]:
+        return False
+    target = alert.get("target_price")
+    if target is not None and float(deal.get("price_eur", 1e12)) > float(target):
+        return False
+    return True
+
+
+def _build_alert_email(alert: dict, deal: dict, site_url: str) -> tuple[str, str]:
+    origin = deal.get("origin", "?")
+    dest = deal.get("destination", "?")
+    price = deal.get("price_eur", "?")
+    city_to = deal.get("city_to") or dest
+    country_to = deal.get("country_to", "")
+    airline = deal.get("airline_name") or deal.get("airline", "?")
+    date_out = deal.get("date_out", "")
+    deal_url = f"{site_url}/deals/{deal.get('id', '')}"
+    cancel_url = f"{site_url}/api/price-alerts/cancel?id={alert['id']}&token={_alert_cancel_token(alert['id'])}"
+
+    subject = f"✈ {origin} → {city_to} por {price} € — TripCazador"
+    html = f"""
+    <div style="font-family:system-ui,sans-serif;background:#0b1220;color:#e5e7eb;padding:24px;">
+      <h2 style="color:#fbbf24;margin:0 0 12px">¡Hay una oferta que cumple tu alerta!</h2>
+      <p>Detectamos un vuelo que cumple el criterio que pediste:</p>
+      <div style="background:#111827;border:1px solid #374151;border-radius:12px;padding:16px;margin:16px 0">
+        <div style="font-size:20px;font-weight:700">{origin} → {city_to} <span style="color:#fbbf24">{price} €</span></div>
+        <div style="color:#9ca3af;margin-top:6px">{airline} · {date_out or 'fecha variable'} · {country_to}</div>
+      </div>
+      <p>
+        <a href="{deal_url}" style="display:inline-block;padding:12px 20px;background:#f59e0b;color:#000;border-radius:10px;font-weight:600;text-decoration:none">
+          Ver el chollo
+        </a>
+      </p>
+      <hr style="border:none;border-top:1px solid #374151;margin:24px 0">
+      <p style="color:#9ca3af;font-size:13px">
+        Si ya no te interesa esta alerta, puedes
+        <a href="{cancel_url}" style="color:#fbbf24">cancelarla aquí</a> (un solo click, sin login).
+      </p>
+      <p style="color:#6b7280;font-size:11px">
+        TripCazador · Si no reconoces esta alerta, ignora el email.
+      </p>
+    </div>
+    """
+    return subject, html
+
+
+def _send_alert_email(to_addr: str, subject: str, html_body: str) -> bool:
+    """Envía email vía SMTP. Devuelve True si OK, False si falta config o falla."""
+    host = os.getenv("SMTP_HOST", "").strip()
+    port = int(os.getenv("SMTP_PORT", "587"))
+    user = os.getenv("SMTP_USER", "").strip()
+    password = os.getenv("SMTP_PASS", "").strip()
+    sender = os.getenv("SMTP_FROM", user).strip()
+    if not (host and sender):
+        return False
+
+    msg = _EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = sender
+    msg["To"] = to_addr
+    msg.set_content("Tu cliente de email no soporta HTML. Abre el email en otra app para ver el chollo.")
+    msg.add_alternative(html_body, subtype="html")
+
+    try:
+        if port == 465:
+            with _smtplib.SMTP_SSL(host, port, timeout=15) as s:
+                if user:
+                    s.login(user, password)
+                s.send_message(msg)
+        else:
+            with _smtplib.SMTP(host, port, timeout=15) as s:
+                s.ehlo()
+                s.starttls()
+                if user:
+                    s.login(user, password)
+                s.send_message(msg)
+        return True
+    except Exception as e:
+        print(f"[price-alerts] SMTP error enviando a {to_addr}: {e}")
+        return False
+
+
+@app.post("/api/admin/match-price-alerts")
+async def match_price_alerts_endpoint(request: Request, dry_run: bool = Query(False)):
+    """Cruza price_alerts × deals y envía emails. Protegido por ADMIN_TOKEN.
+
+    Respuesta:
+      {"matches": N, "sent": M, "skipped_dedupe": K, "dry_run": bool}
+
+    Se invoca desde el workflow del worker tras subir deals.json.
+    """
+    admin_token = os.getenv("ADMIN_TOKEN", "").strip()
+    if not admin_token:
+        raise HTTPException(status_code=404)
+    given = request.headers.get("x-admin-token", "")
+    if not hmac.compare_digest(admin_token, given):
+        raise HTTPException(status_code=403)
+
+    alerts = _load_price_alerts()
+    active = [a for a in alerts if a.get("status") == "active"]
+    if not active:
+        return {"matches": 0, "sent": 0, "skipped_dedupe": 0, "dry_run": dry_run, "note": "no active alerts"}
+
+    # Deals: priorizamos el cache en memoria si está cargado; si no, leemos de disco
+    deals_data = _cache.get("data") if "_cache" in globals() else None
+    if not deals_data:
+        deals_file = Path(os.getenv("DEALS_DIR", "Viajes")) / "deals.json"
+        if not deals_file.exists():
+            return {"matches": 0, "sent": 0, "skipped_dedupe": 0, "dry_run": dry_run, "note": "no deals.json"}
+        deals_data = json.loads(deals_file.read_text(encoding="utf-8"))
+    deals = deals_data.get("deals", []) if isinstance(deals_data, dict) else []
+    if not deals:
+        return {"matches": 0, "sent": 0, "skipped_dedupe": 0, "dry_run": dry_run, "note": "empty deals"}
+
+    # Dedupe
+    try:
+        sent_state = json.loads(_SENT_MATCHES_PATH.read_text()) if _SENT_MATCHES_PATH.exists() else {"hashes": []}
+    except Exception:
+        sent_state = {"hashes": []}
+    sent_set: set[str] = set(sent_state.get("hashes", []))
+
+    site_url = os.getenv("SITE_URL", "https://tripcazador.com").rstrip("/")
+
+    pairs: list[tuple[dict, dict]] = []
+    for alert in active:
+        for deal in deals:
+            if _deal_matches_alert(deal, alert):
+                pairs.append((alert, deal))
+
+    sent_count = 0
+    skipped = 0
+    for alert, deal in pairs:
+        key = f"{alert['id']}|{deal.get('id', '')}"
+        if key in sent_set:
+            skipped += 1
+            continue
+        if dry_run:
+            continue
+        subject, html = _build_alert_email(alert, deal, site_url)
+        ok = _send_alert_email(alert["email"], subject, html)
+        if ok:
+            sent_count += 1
+            sent_set.add(key)
+            alert["last_notified_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+
+    # Persistimos estado si hubo envíos reales
+    if not dry_run and sent_count > 0:
+        try:
+            _SENT_MATCHES_PATH.parent.mkdir(parents=True, exist_ok=True)
+            tmp = _SENT_MATCHES_PATH.with_suffix(".tmp")
+            tmp.write_text(json.dumps({"hashes": sorted(sent_set)[-5000:]}, indent=2), encoding="utf-8")
+            tmp.replace(_SENT_MATCHES_PATH)
+            _save_price_alerts(alerts)
+        except Exception as e:
+            print(f"[price-alerts] No se pudo persistir sent_matches/alerts: {e}")
+
+    return {
+        "matches": len(pairs),
+        "sent": sent_count,
+        "skipped_dedupe": skipped,
+        "dry_run": dry_run,
+        "active_alerts": len(active),
+        "deals_scanned": len(deals),
+    }
+
+
+# ────────────────────────────────────────────────
 # Dev server
 # ────────────────────────────────────────────────
 

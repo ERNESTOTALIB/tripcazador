@@ -122,6 +122,31 @@ jobs:
           fi
           echo "✅ Upload OK — HTTP $HTTP"
 
+      - name: Trigger price-alert matcher
+        # Cruza price_alerts.json (server-side) con los deals recién subidos
+        # y envía emails a usuarios con alertas que hacen match. SMTP_* vars
+        # están configuradas en Fly.io como secrets.
+        continue-on-error: true
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          if [ -z "$ADMIN_TOKEN" ]; then
+            echo "::warning::ADMIN_TOKEN no configurado — skip matcher"
+            exit 0
+          fi
+          HTTP=$(curl -sS -o /tmp/match.json -w "%{http_code}" \
+            -X POST https://api.tripcazador.com/api/admin/match-price-alerts \
+            -H "X-Admin-Token: $ADMIN_TOKEN")
+          cat /tmp/match.json || true
+          echo ""
+          if [ "$HTTP" = "404" ]; then
+            echo "::warning::Matcher no disponible (endpoint o token mal) — skip"
+          elif [ "$HTTP" != "200" ]; then
+            echo "::warning::Matcher devolvió HTTP $HTTP"
+          else
+            echo "✅ Matcher OK"
+          fi
+
       - name: Archive deals.json as artifact
         if: always()
         uses: actions/upload-artifact@v4
