@@ -118,26 +118,69 @@ export default async function DealDetailPage({
   const isCritical =
     deal.classification === "CRÍTICO" || deal.classification === "ERROR";
 
-  // JSON-LD: Producto + Oferta (para rich snippets en Google)
-  const jsonLd = {
+  // URLs absolutas requeridas por los validators de Google Rich Results.
+  const SITE = "https://tripcazador.com";
+  const dealCanonical = `${SITE}/deals/${deal.id}`;
+
+  // JSON-LD: Product + Offer (esquema bendecido por Google para rich
+  // snippets de productos/ofertas con precio). Incluimos sku, seller,
+  // itemCondition y priceValidUntil para cumplir con los requisitos
+  // obligatorios + recomendados.
+  const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Product",
+    "@id": dealCanonical,
     name: `Vuelo ${deal.city_from} → ${deal.city_to}`,
     description: deal.headline || `Vuelo ${deal.origin} → ${deal.destination}`,
-    image: deal.image_url,
+    sku: deal.id,
     brand: {
       "@type": "Brand",
       name: deal.airline_name || deal.airline,
     },
+    category: "Travel > Flights",
     offers: {
       "@type": "Offer",
-      url: deal.booking_url,
+      url: dealCanonical,
       priceCurrency: "EUR",
       price: deal.price_eur.toFixed(2),
       availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
       validFrom: deal.found_at,
       validThrough: deal.expires_at,
+      priceValidUntil: deal.expires_at,
+      seller: {
+        "@type": "Organization",
+        name: deal.airline_name || deal.airline,
+      },
     },
+  };
+  if (deal.image_url) {
+    (jsonLd as { image?: string }).image = deal.image_url;
+  }
+
+  // Schema Flight complementario — ayuda a motores de búsqueda a entender
+  // que esto es un vuelo específico entre dos aeropuertos.
+  const flightLd = {
+    "@context": "https://schema.org",
+    "@type": "Flight",
+    flightNumber: undefined, // no lo tenemos granular; omitido intencionalmente
+    provider: {
+      "@type": "Airline",
+      name: deal.airline_name || deal.airline,
+      iataCode: deal.airline,
+    },
+    departureAirport: {
+      "@type": "Airport",
+      iataCode: deal.origin,
+      name: deal.city_from,
+    },
+    arrivalAirport: {
+      "@type": "Airport",
+      iataCode: deal.destination,
+      name: deal.city_to,
+    },
+    departureTime: deal.date_out,
+    arrivalTime: deal.date_ret || undefined,
   };
 
   const breadcrumbLd = {
@@ -148,26 +191,26 @@ export default async function DealDetailPage({
         "@type": "ListItem",
         position: 1,
         name: "Inicio",
-        item: "/",
+        item: `${SITE}/`,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Deals",
-        item: "/deals",
+        item: `${SITE}/deals`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: `${deal.city_from} → ${deal.city_to}`,
-        item: `/deals/${deal.id}`,
+        item: dealCanonical,
       },
     ],
   };
 
   return (
     <div className="space-y-10">
-      <JsonLd data={[jsonLd, breadcrumbLd]} />
+      <JsonLd data={[jsonLd, flightLd, breadcrumbLd]} />
 
       {/* ─────────── Breadcrumb ─────────── */}
       <nav className="text-xs text-gray-500" aria-label="Breadcrumb">

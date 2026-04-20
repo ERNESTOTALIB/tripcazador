@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   /** Path relativo (ej: "/deals/abc123") o URL absoluta. */
@@ -9,6 +9,17 @@ interface Props {
   title: string;
   /** Etiqueta ARIA descriptiva para accesibilidad. */
   label?: string;
+}
+
+/** `navigator.share` está disponible en móviles (iOS Safari / Android Chrome)
+ * pero no en desktop. Lo detectamos sólo en cliente tras montar para evitar
+ * hydration mismatch. */
+function useNativeShareSupport() {
+  const [supported, setSupported] = useState(false);
+  useEffect(() => {
+    setSupported(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
+  return supported;
 }
 
 const BASE_URL = "https://tripcazador.com";
@@ -25,6 +36,7 @@ function absolute(url: string): string {
  */
 export function ShareButtons({ url, title, label = "Compartir oferta" }: Props) {
   const [copied, setCopied] = useState(false);
+  const nativeShare = useNativeShareSupport();
   const shareUrl = absolute(url);
   const encodedUrl = encodeURIComponent(shareUrl);
   const encodedText = encodeURIComponent(title);
@@ -44,6 +56,18 @@ export function ShareButtons({ url, title, label = "Compartir oferta" }: Props) 
     }
   };
 
+  const handleNativeShare = async () => {
+    try {
+      await navigator.share({ title, text: title, url: shareUrl });
+    } catch (err) {
+      // Si el usuario cancela (AbortError) silencioso. Si falla por otra razón,
+      // caemos al copiar que es el siguiente mejor UX.
+      if ((err as Error)?.name !== "AbortError") {
+        void handleCopy();
+      }
+    }
+  };
+
   return (
     <div
       className="flex flex-wrap items-center gap-2"
@@ -54,6 +78,25 @@ export function ShareButtons({ url, title, label = "Compartir oferta" }: Props) 
       <span role="status" aria-live="polite" className="sr-only">
         {copied ? "Enlace copiado al portapapeles" : ""}
       </span>
+
+      {nativeShare && (
+        <button
+          type="button"
+          onClick={handleNativeShare}
+          aria-label="Compartir con…"
+          title="Compartir con…"
+          className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 transition-colors"
+        >
+          {/* Generic share icon */}
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+        </button>
+      )}
 
       <a
         href={whatsapp}
