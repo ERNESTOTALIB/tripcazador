@@ -23,6 +23,12 @@ import {
   type Airport,
 } from "@/lib/api";
 import { track } from "@/lib/analytics";
+import {
+  AIRPORT_GROUPS,
+  matchGroupInput,
+  fuzzyDistance,
+  type AirportGroup,
+} from "@/lib/search-groups";
 
 // ──────────────────────────────────────────────────────────────
 // Alternativas cuando la búsqueda en vivo no devuelve nada.
@@ -54,190 +60,15 @@ const ALT_ORIGINS: Record<string, string[]> = {
   VIE: ["MUC", "BUD", "SZG"],
 };
 
-// ──────────────────────────────────────────────────────────────
-// Grupos: "España", "DACH"... — expanden a varios IATAs.
-// Cuando el usuario elige un grupo del autocomplete, el input guarda el
-// formato `GRP:<slug>` y en submit lanzamos N búsquedas en paralelo.
-// ──────────────────────────────────────────────────────────────
-type AirportGroup = {
-  slug: string;          // id estable (ES, DE, DACH…)
-  label: string;         // lo que ve el usuario ("España (9 aeropuertos)")
-  short: string;         // prefijo para el input (ES, DACH…)
-  aliases: string[];     // lo que escribe el usuario (debe normalizarse)
-  iatas: string[];       // aeropuertos reales para la búsqueda
-};
-
-const AIRPORT_GROUPS: AirportGroup[] = [
-  {
-    slug: "ES",
-    label: "España — todos los aeropuertos principales",
-    short: "España",
-    aliases: ["espana", "spain", "esp", "iberia", "peninsula iberica"],
-    iatas: ["MAD", "BCN", "AGP", "VLC", "SVQ", "BIO", "PMI", "IBZ", "TFS", "LPA", "ALC"],
-  },
-  {
-    slug: "DE",
-    label: "Alemania — FRA/MUC/BER/HAM/DUS/STR",
-    short: "Alemania",
-    aliases: ["alemania", "germany", "deutschland", "ger"],
-    iatas: ["FRA", "MUC", "BER", "HAM", "DUS", "STR", "CGN"],
-  },
-  {
-    slug: "CH",
-    label: "Suiza — ZRH/GVA/BSL/BRN",
-    short: "Suiza",
-    aliases: ["suiza", "switzerland", "schweiz", "helvetia"],
-    iatas: ["ZRH", "GVA", "BSL", "BRN"],
-  },
-  {
-    slug: "AT",
-    label: "Austria — VIE/SZG/INN",
-    short: "Austria",
-    aliases: ["austria", "osterreich", "wien"],
-    iatas: ["VIE", "SZG", "INN"],
-  },
-  {
-    slug: "DACH",
-    label: "DACH — Alemania + Austria + Suiza",
-    short: "DACH",
-    aliases: ["dach", "centroeuropa", "central europe"],
-    iatas: ["FRA", "MUC", "ZRH", "VIE", "BER", "HAM", "GVA", "BSL", "SZG", "BRN", "STR"],
-  },
-  {
-    slug: "IT",
-    label: "Italia — FCO/MXP/BLQ/VCE/NAP",
-    short: "Italia",
-    aliases: ["italia", "italy", "italiano"],
-    iatas: ["FCO", "MXP", "LIN", "BLQ", "VCE", "NAP", "BRI"],
-  },
-  {
-    slug: "FR",
-    label: "Francia — CDG/ORY/NCE/LYS/MRS",
-    short: "Francia",
-    aliases: ["francia", "france", "paris"],
-    iatas: ["CDG", "ORY", "NCE", "LYS", "MRS", "TLS", "BOD"],
-  },
-  {
-    slug: "PT",
-    label: "Portugal — LIS/OPO/FAO",
-    short: "Portugal",
-    aliases: ["portugal", "lisboa"],
-    iatas: ["LIS", "OPO", "FAO"],
-  },
-  {
-    slug: "UK",
-    label: "Reino Unido — LHR/LGW/STN/LTN/MAN/EDI",
-    short: "Reino Unido",
-    aliases: ["uk", "inglaterra", "england", "britain", "reino unido", "londres", "london"],
-    iatas: ["LHR", "LGW", "STN", "LTN", "MAN", "EDI", "BHX"],
-  },
-  {
-    slug: "NL",
-    label: "Países Bajos — AMS/EIN/RTM",
-    short: "Países Bajos",
-    aliases: ["paises bajos", "holanda", "netherlands", "ams"],
-    iatas: ["AMS", "EIN", "RTM"],
-  },
-  {
-    slug: "SCAN",
-    label: "Escandinavia — CPH/ARN/OSL/HEL",
-    short: "Escandinavia",
-    aliases: ["escandinavia", "nordic", "nordicos", "paises nordicos", "scandinavia"],
-    iatas: ["CPH", "ARN", "OSL", "HEL", "GOT", "BGO"],
-  },
-  {
-    slug: "GR",
-    label: "Grecia — ATH/HER/SKG/JMK/JTR",
-    short: "Grecia",
-    aliases: ["grecia", "greece", "greek", "islas griegas", "cycladas"],
-    iatas: ["ATH", "HER", "SKG", "JMK", "JTR", "RHO", "CFU"],
-  },
-  {
-    slug: "US",
-    label: "EEUU — JFK/LAX/MIA/ORD/SFO/BOS",
-    short: "EEUU",
-    aliases: ["eeuu", "usa", "united states", "estados unidos"],
-    iatas: ["JFK", "EWR", "LAX", "MIA", "ORD", "SFO", "BOS", "IAD", "DFW", "SEA"],
-  },
-  {
-    slug: "SEA",
-    label: "Sudeste asiático — BKK/HKT/SIN/DPS/KUL",
-    short: "Sudeste asiático",
-    aliases: ["sudeste asiatico", "asia sudeste", "sea", "southeast asia", "tailandia", "bali", "indonesia"],
-    iatas: ["BKK", "HKT", "DMK", "SIN", "DPS", "CGK", "KUL"],
-  },
-  {
-    slug: "JP",
-    label: "Japón — NRT/HND/KIX/NGO",
-    short: "Japón",
-    aliases: ["japon", "japan", "nippon", "tokio", "tokyo"],
-    iatas: ["NRT", "HND", "KIX", "NGO", "FUK"],
-  },
-  {
-    slug: "CARIB",
-    label: "Caribe — HAV/SDQ/PUJ/CUN/MBJ",
-    short: "Caribe",
-    aliases: ["caribe", "caribbean", "cuba", "republica dominicana", "riviera maya"],
-    iatas: ["HAV", "SDQ", "PUJ", "CUN", "MBJ", "NAS"],
-  },
-  {
-    slug: "MA",
-    label: "Marruecos — CMN/RAK/FEZ/AGA",
-    short: "Marruecos",
-    aliases: ["marruecos", "morocco", "marrakech", "casablanca"],
-    iatas: ["CMN", "RAK", "FEZ", "AGA", "TNG"],
-  },
-  {
-    slug: "SAM",
-    label: "Sudamérica — EZE/SCL/GRU/BOG/LIM",
-    short: "Sudamérica",
-    aliases: ["sudamerica", "latinoamerica", "south america", "latam"],
-    iatas: ["EZE", "SCL", "GRU", "GIG", "BOG", "LIM", "UIO", "MVD"],
-  },
-];
+// Grupos, matchGroupInput y fuzzyDistance extraídos a @/lib/search-groups
+// para testear sin montar React. SuggestionItem se queda aquí porque solo
+// lo consume este componente.
 
 // Item "unificado" que usa el autocomplete — puede ser un aeropuerto
 // concreto o un grupo expansible.
 type SuggestionItem =
   | { kind: "airport"; iata: string; city: string; country: string }
   | { kind: "group"; group: AirportGroup };
-
-// Detecta si el contenido de un input es un grupo y devuelve su definición
-function matchGroupInput(input: string): AirportGroup | null {
-  if (!input) return null;
-  const trimmed = input.trim();
-  if (trimmed.startsWith("GRP:")) {
-    const slug = trimmed.slice(4);
-    return AIRPORT_GROUPS.find((g) => g.slug === slug) ?? null;
-  }
-  return null;
-}
-
-// Distancia de Levenshtein truncada (máx 3) — suficiente para corregir typos
-// de 1-2 caracteres en nombres de ciudades sin pagar el coste del algoritmo
-// completo en cada tecla.
-function fuzzyDistance(a: string, b: string, max = 2): number {
-  if (a === b) return 0;
-  if (Math.abs(a.length - b.length) > max) return max + 1;
-  const m = a.length;
-  const n = b.length;
-  if (m === 0) return n;
-  if (n === 0) return m;
-  let prev = Array.from({ length: n + 1 }, (_, i) => i);
-  let curr = new Array(n + 1).fill(0);
-  for (let i = 1; i <= m; i++) {
-    curr[0] = i;
-    let rowMin = curr[0];
-    for (let j = 1; j <= n; j++) {
-      const cost = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
-      curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
-      if (curr[j] < rowMin) rowMin = curr[j];
-    }
-    if (rowMin > max) return max + 1;
-    [prev, curr] = [curr, prev];
-  }
-  return prev[n];
-}
 
 function shiftDate(iso: string, days: number): string {
   const d = new Date(iso);

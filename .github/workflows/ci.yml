@@ -1,4 +1,4 @@
-name: CI — pytest
+name: CI — pytest + vitest
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   pytest:
-    name: Tests (unit + engines + api + integration)
+    name: Backend tests (pytest)
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -64,7 +64,51 @@ jobs:
           TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
-            MSG=$(printf '🚨 <b>CI fallo</b>\nRepo: %s\nBranch: %s\nCommit: %s\nRun: https://github.com/%s/actions/runs/%s' \
+            MSG=$(printf '🚨 <b>CI fallo pytest</b>\nRepo: %s\nBranch: %s\nCommit: %s\nRun: https://github.com/%s/actions/runs/%s' \
+              "${{ github.repository }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "${{ github.run_id }}")
+            curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              -d chat_id="${TG_CHAT}" \
+              -d parse_mode=HTML \
+              --data-urlencode "text=${MSG}" || true
+          fi
+
+  vitest:
+    name: Frontend tests (vitest + tsc)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tripcazador-web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: tripcazador-web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check (tsc --noEmit)
+        # Bloqueante: un error de tipos en un componente rompería el build en Vercel;
+        # prefiero romper el PR a romper producción.
+        run: npx tsc --noEmit
+
+      - name: Unit tests (vitest)
+        run: npm test
+
+      - name: Notify Telegram on failure
+        if: failure()
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
+            MSG=$(printf '🚨 <b>CI fallo vitest</b>\nRepo: %s\nBranch: %s\nCommit: %s\nRun: https://github.com/%s/actions/runs/%s' \
               "${{ github.repository }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "${{ github.run_id }}")
             curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
               -d chat_id="${TG_CHAT}" \

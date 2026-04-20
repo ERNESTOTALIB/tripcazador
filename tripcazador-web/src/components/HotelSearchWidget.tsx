@@ -45,7 +45,9 @@ function todayPlusDays(days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-function buildBookingUrl(params: {
+// Exportada para test: validar que todos los parámetros esperados (ss,
+// checkin/checkout, group_adults, aid si procede) llegan en la query string.
+export function buildBookingUrl(params: {
   destination: string;
   checkin: string;
   checkout: string;
@@ -254,7 +256,9 @@ export default function HotelSearchWidget() {
   );
 }
 
-function shiftDate(iso: string, days: number): string {
+// Exportada para test: valida que el incremento de días no rompa con
+// strings ISO malformadas (devuelve el input en ese caso, defensivo).
+export function shiftDate(iso: string, days: number): string {
   const d = new Date(iso);
   if (isNaN(d.getTime())) return iso;
   d.setDate(d.getDate() + days);
