@@ -9,6 +9,18 @@
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+// Build-time warning: si NEXT_PUBLIC_BOOKING_AID no está seteado en Vercel,
+// cada click a Booking.com desde /hoteles va sin affiliate ID → comisión cero.
+// Es un warning (no error) porque queremos que el site se pueda levantar en
+// local / PRs sin obligar a tener el aid puesto.
+if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_BOOKING_AID) {
+  console.warn(
+    "\n⚠️  NEXT_PUBLIC_BOOKING_AID no está seteado.\n" +
+    "    Los deep-links a Booking.com irán sin aid — no hay comisión.\n" +
+    "    Añádelo en Vercel → Project Settings → Environment Variables.\n"
+  );
+}
+
 // CSP en producción. En dev Next.js necesita 'unsafe-eval' para HMR — diferenciamos.
 const isDev = process.env.NODE_ENV !== "production";
 

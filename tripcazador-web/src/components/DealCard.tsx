@@ -3,6 +3,7 @@
 import { Deal, formatDate, formatDuration, getCabinLabel, getClassificationColor } from "@/lib/api";
 import { Plane, Clock, Star, ExternalLink, CheckCircle } from "lucide-react";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
+import { track } from "@/lib/analytics";
 
 interface DealCardProps {
   deal: Deal;
@@ -209,15 +210,27 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
               : "bg-gray-700 hover:bg-gray-600 text-white"}
           `}
           onClick={() => {
-            // Track click para analytics
-            if (typeof window !== "undefined" && (window as any).gtag) {
-              (window as any).gtag("event", "deal_click", {
+            // Evento tipado — emite tanto a GA4 como a Plausible si están presentes.
+            // `result_clicked` captura el id + posición en la lista; `booking_url_opened`
+            // captura la salida del funnel de conversión (click hacia Booking/aerolínea).
+            track({
+              name: "result_clicked",
+              params: {
                 deal_id: deal.id,
-                destination: destination,
-                price: price_eur,
-                classification: classification,
-              });
-            }
+                origin,
+                destination,
+                price_eur,
+              },
+            });
+            track({
+              name: "booking_url_opened",
+              params: {
+                source: "deal_card",
+                destination,
+                price_eur,
+                airline: airline_name || undefined,
+              },
+            });
           }}
         >
           Ver oferta
@@ -302,6 +315,21 @@ export function DealRow({ deal }: { deal: Deal }) {
         target="_blank"
         rel="noopener noreferrer nofollow"
         className="flex items-center gap-1 px-3 py-2 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm rounded-lg transition-all shrink-0"
+        onClick={() => {
+          track({
+            name: "result_clicked",
+            params: { deal_id: deal.id, origin, destination, price_eur },
+          });
+          track({
+            name: "booking_url_opened",
+            params: {
+              source: "deal_card",
+              destination,
+              price_eur,
+              airline: airline_name || undefined,
+            },
+          });
+        }}
       >
         Ver
         <ExternalLink size={12} />

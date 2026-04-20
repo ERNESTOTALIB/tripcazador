@@ -62,8 +62,14 @@ export default function BlogPostPage({ params }: { params: Params }) {
   const post = getPostBySlug(params.slug);
   if (!post) notFound();
 
-  // JSON-LD Article structured data
-  const jsonLd = {
+  // Word count aproximado — contar palabras separadas por whitespace del
+  // contenido markdown (incluye algo de ruido de los delimitadores pero
+  // sirve para el schema.org, que solo pide un entero razonable).
+  const wordCount = (post.content.match(/\S+/g) || []).length;
+
+  // JSON-LD Article structured data — con wordCount para el Rich Result
+  // test de Google (algunos resultados enriquecidos lo usan).
+  const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
@@ -85,6 +91,36 @@ export default function BlogPostPage({ params }: { params: Params }) {
       "@id": `https://tripcazador.com/blog/${post.slug}`,
     },
     keywords: post.tags.join(", "),
+    wordCount,
+    inLanguage: "es-ES",
+    articleSection: post.tags[0] || "Viajes",
+  };
+
+  // Breadcrumb JSON-LD — ayuda al rich result de Google a mostrar la
+  // migaja "Inicio › Blog › <título>" en los resultados orgánicos.
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Inicio",
+        item: "https://tripcazador.com/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: "https://tripcazador.com/blog",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: `https://tripcazador.com/blog/${post.slug}`,
+      },
+    ],
   };
 
   return (
@@ -92,7 +128,12 @@ export default function BlogPostPage({ params }: { params: Params }) {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">

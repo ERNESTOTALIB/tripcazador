@@ -18,6 +18,7 @@
  */
 
 import { useMemo, useState } from "react";
+import { track } from "@/lib/analytics";
 
 const BOOKING_AID = process.env.NEXT_PUBLIC_BOOKING_AID || "";
 
@@ -201,7 +202,21 @@ export default function HotelSearchWidget() {
             rel="noopener noreferrer nofollow"
             aria-disabled={!canSearch}
             onClick={(e) => {
-              if (!canSearch) e.preventDefault();
+              if (!canSearch) {
+                e.preventDefault();
+                return;
+              }
+              // Emitimos el evento antes de navegar: GA4 usa sendBeacon internamente,
+              // así que el navegador suele completar la emisión incluso al cambiar de tab.
+              track({
+                name: "booking_url_opened",
+                params: {
+                  source: "hotel_widget",
+                  destination: destination.trim(),
+                  checkin,
+                  checkout,
+                },
+              });
             }}
             className={`block text-center w-full rounded-lg font-semibold px-4 py-2.5 transition ${
               canSearch

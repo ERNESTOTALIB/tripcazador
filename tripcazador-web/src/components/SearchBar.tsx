@@ -22,6 +22,7 @@ import {
   type SearchParams,
   type Airport,
 } from "@/lib/api";
+import { track } from "@/lib/analytics";
 
 // ──────────────────────────────────────────────────────────────
 // Alternativas cuando la búsqueda en vivo no devuelve nada.
@@ -397,6 +398,22 @@ export default function SearchBar({
     setAlternatives(null);
     setDateWarning(null);
     setSearched(true);
+
+    // Analytics: top del embudo. El caller con grupo se marca como "group"
+    // para poder separar en GA4 los dos caminos (broad discovery vs ruta
+    // concreta).
+    const hasGroup = !!matchGroupInput(origin) || !!matchGroupInput(destination);
+    track({
+      name: "search_submitted",
+      params: {
+        origin: origin || "(any)",
+        destination: destination || "(any)",
+        date_out: dateFrom || undefined,
+        flex_days: flexDates ? 3 : 0,
+        direct_only: directOnly,
+        search_type: hasGroup ? "group" : "airport",
+      },
+    });
 
     // Validación UX: si "hasta" es anterior a "desde" lo auto-corregimos
     // en memoria (no mutamos el input salvo aviso visible).

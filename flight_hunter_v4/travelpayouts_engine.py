@@ -26,6 +26,7 @@ from collections import defaultdict
 import config
 from airline_links import get_booking_url, get_airline_name
 from circuit_breaker import get_breaker
+from response_cache import ResponseCache
 
 BASE_V1 = "https://api.travelpayouts.com/v1"
 BASE_V2 = "https://api.travelpayouts.com/v2"
@@ -34,6 +35,11 @@ BASE_V2 = "https://api.travelpayouts.com/v2"
 _BREAKER = get_breaker("travelpayouts")
 
 TOKEN = config.TRAVELPAYOUTS_TOKEN
+
+# TTL del cache de respuestas Travelpayouts. La API devuelve datos
+# "cacheados" por Aviasales (se actualizan varias veces al día), así que
+# 30 min de cache local no introducen staleness material vs. el upstream.
+_CACHE_TTL_SECONDS = 1800
 
 
 def _tp_to_dict(
@@ -142,6 +148,10 @@ class TravelpayoutsEngine:
         self._semaphore = asyncio.Semaphore(6)  # 6 peticiones concurrentes
         if not self.available:
             print("⚠️  TRAVELPAYOUTS_TOKEN no configurado.")
+        # Cache de respuestas — single chokepoint en _get() cubre los 4
+        # endpoints (cheap, direct, month-matrix, latest). Namespace _v1
+        # para invalidar en bloque si cambia el formato upstream.
+        self._cache = ResponseCache("travelpayouts_v1")
 
     def _headers(self) -> Dict:
         return {"X-Access-Token": self.token}
@@ -156,6 +166,15 @@ class TravelpayoutsEngine:
         # Circuit breaker: si Travelpayouts falla repetido, cooldown 15 min
         if not _BREAKER.allow():
             return None
+
+        # Cache check — el token forma parte de la autenticación pero no
+        # debe formar parte de la clave (si cambia, no queremos invalidar
+        # todo el cache; los datos son los mismos).
+        cache_params = {k: v for k, v in params.items() if k != "token"}
+        cache_key = self._cache.make_key(url=url, **cache_params)
+        cached = self._cache.get(cache_key, ttl_seconds=_CACHE_TTL_SECONDS)
+        if cached is not None:
+            return cached
 
         async with self._semaphore:
             try:
@@ -174,6 +193,11 @@ class TravelpayoutsEngine:
                         return None
                     data = await resp.json()
                     _BREAKER.record_success()
+                    # Sólo cacheamos respuestas con contenido útil. Un dict
+                    # vacío puede ser una ruta sin inventario pero también
+                    # una respuesta degradada — preferimos revalidar.
+                    if data:
+                        self._cache.set(cache_key, data)
                     return data
             except Exception as e:
                 _BREAKER.record_failure(e)

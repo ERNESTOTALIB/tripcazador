@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
 import { getDeals } from "@/lib/api";
+import { getAllPosts } from "@/lib/blog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -10,15 +11,6 @@ const DESTINOS = [
   "tanzania", "japon", "maldivas", "nueva-york", "bali", "buenos-aires",
   "tailandia", "sudafrica", "islandia", "marruecos", "vietnam", "costa-rica",
 ];
-
-function getBlogSlugs(): string[] {
-  const dir = path.join(process.cwd(), "src/content/blog");
-  if (!fs.existsSync(dir)) return [];
-  return fs
-    .readdirSync(dir)
-    .filter((f) => f.endsWith(".mdx"))
-    .map((f) => f.replace(/\.mdx$/, ""));
-}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -40,9 +32,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const blogPages: MetadataRoute.Sitemap = getBlogSlugs().map((slug) => ({
-    url: `${BASE_URL}/blog/${slug}`,
-    lastModified: now,
+  // Blog posts — usamos publishedAt como lastmod para que Google sepa
+  // cuándo recrawlear. Con `now` fuerza recrawl constante pero pierde
+  // señal de "qué ha cambiado de verdad".
+  const blogPages: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
+    url: `${BASE_URL}/blog/${post.slug}`,
+    lastModified: post.publishedAt ? new Date(post.publishedAt) : now,
     changeFrequency: "monthly",
     priority: 0.6,
   }));
