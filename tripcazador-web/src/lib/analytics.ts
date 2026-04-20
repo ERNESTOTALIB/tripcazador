@@ -58,6 +58,13 @@ export type AnalyticsEvent =
         destination: string;
         target_price: number | null;
       };
+    }
+  | {
+      // Usuario marca/desmarca un deal como favorito (corazón en DealCard).
+      name: "favorite_added" | "favorite_removed";
+      params: {
+        deal_id: string;
+      };
     };
 
 // Shape de gtag en runtime. No exponemos el tipo completo para no acoplarnos

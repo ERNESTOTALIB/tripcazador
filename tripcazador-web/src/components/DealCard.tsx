@@ -3,6 +3,7 @@
 import { Deal, formatDate, formatDuration, getCabinLabel, getClassificationColor } from "@/lib/api";
 import { Plane, Clock, Star, ExternalLink, CheckCircle } from "lucide-react";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { track } from "@/lib/analytics";
 
 interface DealCardProps {
@@ -80,15 +81,16 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
           </span>
         </div>
 
-        {/* Badge verificado */}
-        {verified && (
-          <div className="absolute top-3 right-3">
+        {/* Badges esquina superior derecha: verificado + favorito */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+          {verified && (
             <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">
               <CheckCircle size={10} />
               2+ fuentes
             </span>
-          </div>
-        )}
+          )}
+          <FavoriteButton dealId={deal.id} size={14} />
+        </div>
 
         {/* Score */}
         <div className="absolute bottom-3 right-3">
@@ -309,31 +311,34 @@ export function DealRow({ deal }: { deal: Deal }) {
         )}
       </div>
 
-      {/* CTA */}
-      <a
-        href={booking_url}
-        target="_blank"
-        rel="noopener noreferrer nofollow"
-        className="flex items-center gap-1 px-3 py-2 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm rounded-lg transition-all shrink-0"
-        onClick={() => {
-          track({
-            name: "result_clicked",
-            params: { deal_id: deal.id, origin, destination, price_eur },
-          });
-          track({
-            name: "booking_url_opened",
-            params: {
-              source: "deal_card",
-              destination,
-              price_eur,
-              airline: airline_name || undefined,
-            },
-          });
-        }}
-      >
-        Ver
-        <ExternalLink size={12} />
-      </a>
+      {/* Favorito + CTA */}
+      <div className="flex items-center gap-2 shrink-0">
+        <FavoriteButton dealId={deal.id} size={14} />
+        <a
+          href={booking_url}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          className="flex items-center gap-1 px-3 py-2 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm rounded-lg transition-all"
+          onClick={() => {
+            track({
+              name: "result_clicked",
+              params: { deal_id: deal.id, origin, destination, price_eur },
+            });
+            track({
+              name: "booking_url_opened",
+              params: {
+                source: "deal_card",
+                destination,
+                price_eur,
+                airline: airline_name || undefined,
+              },
+            });
+          }}
+        >
+          Ver
+          <ExternalLink size={12} />
+        </a>
+      </div>
       </div>
     </div>
   );

@@ -254,6 +254,8 @@ export default function RootLayout({
             <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500 flex-wrap">
               <a href="/estadisticas" className="hover:text-amber-400 transition-colors">Estadísticas</a>
               <span className="text-gray-700">·</span>
+              <a href="/favoritos" className="hover:text-amber-400 transition-colors">Favoritos</a>
+              <span className="text-gray-700">·</span>
               <a href="/telegram" className="hover:text-amber-400 transition-colors">Telegram</a>
               <span className="text-gray-700">·</span>
               <a href="/legal" className="hover:text-amber-400 transition-colors">Aviso legal</a>
