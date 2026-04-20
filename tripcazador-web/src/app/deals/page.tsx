@@ -178,7 +178,7 @@ export default async function DealsPage({
         </div>
       ) : (
         <div className="text-center py-20 text-gray-500">
-          <p className="text-lg">Sin deals con estos filtros</p>
+          <p className="text-lg">Sin resultados — no hay ofertas con estos filtros</p>
           <a href="/deals" className="text-amber-400 hover:underline mt-2 block">
             Ver todos los deals →
           </a>

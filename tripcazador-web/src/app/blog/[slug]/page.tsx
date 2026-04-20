@@ -9,6 +9,10 @@ import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 
 type Params = { slug: string };
 
+// Cualquier slug fuera de generateStaticParams devuelve 404 automáticamente
+// (sin entrar al componente), asegurando que Next responde con status 404.
+export const dynamicParams = false;
+
 export async function generateStaticParams(): Promise<Params[]> {
   return getAllPostSlugs().map((slug) => ({ slug }));
 }
