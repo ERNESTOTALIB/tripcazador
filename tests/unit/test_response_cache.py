@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pytest
 
-from flight_hunter_v4.response_cache import ResponseCache, dedup_by_route
+from response_cache import ResponseCache, dedup_by_route
 
 
 @pytest.fixture

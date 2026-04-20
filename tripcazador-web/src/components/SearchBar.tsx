@@ -725,9 +725,9 @@ export default function SearchBar({
 
             <div className="text-xs text-slate-400 leading-relaxed md:col-span-1">
               <p className="text-slate-300 font-semibold text-sm mb-1">Tip</p>
-              Puedes escribir <span className="text-amber-300">"España"</span>,{" "}
-              <span className="text-amber-300">"DACH"</span> o{" "}
-              <span className="text-amber-300">"Caribe"</span> en origen/destino: el
+              Puedes escribir <span className="text-amber-300">&ldquo;España&rdquo;</span>,{" "}
+              <span className="text-amber-300">&ldquo;DACH&rdquo;</span> o{" "}
+              <span className="text-amber-300">&ldquo;Caribe&rdquo;</span> en origen/destino: el
               buscador expande a todos los aeropuertos del grupo.
             </div>
           </div>
