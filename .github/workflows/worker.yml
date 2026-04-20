@@ -1,0 +1,150 @@
+name: Worker — Flight Hunter (cron 6h)
+
+# Alternativa gratuita al worker en VM (e2-micro no tiene RAM para correr
+# worker + api + postgres a la vez). Corre en runners de GitHub (2000 min/mes
+# free en repos privados) cada 6h, genera deals.json y lo sube al API vía
+# POST /api/admin/deals.
+#
+# Presupuesto estimado: 4 runs/día × ~8 min/run = ~1000 min/mes (dentro del free tier).
+
+on:
+  schedule:
+    # UTC — corre a las 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Modo del hunter"
+        required: false
+        default: "all"
+        type: choice
+        options: [all, business-hunter, error-hunter, matrix]
+      origins:
+        description: "Preset de orígenes"
+        required: false
+        default: "tier1"
+      window_start:
+        description: "Días en el futuro (inicio)"
+        required: false
+        default: "45"
+      window_end:
+        description: "Días en el futuro (fin)"
+        required: false
+        default: "120"
+
+jobs:
+  hunt:
+    name: Buscar chollos + publicar deals.json
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r flight_hunter_v4/requirements.txt
+          # Extras opcionales (si algún motor los importa perezosamente)
+          pip install requests
+
+      - name: Compute date window
+        id: dates
+        run: |
+          WS="${{ github.event.inputs.window_start || '45' }}"
+          WE="${{ github.event.inputs.window_end || '120' }}"
+          DATE_FROM=$(date -u -d "+${WS} days" +%Y-%m-%d)
+          DATE_TO=$(date -u -d "+${WE} days" +%Y-%m-%d)
+          echo "from=$DATE_FROM" >> $GITHUB_OUTPUT
+          echo "to=$DATE_TO" >> $GITHUB_OUTPUT
+          echo "Ventana: $DATE_FROM → $DATE_TO"
+
+      - name: Run Flight Hunter
+        env:
+          # API keys (añadir todas como secrets en GitHub · Settings → Secrets)
+          KIWI_API_KEY:        ${{ secrets.KIWI_API_KEY }}
+          SERPAPI_KEY:         ${{ secrets.SERPAPI_KEY }}
+          RAPIDAPI_KEY:        ${{ secrets.RAPIDAPI_KEY }}
+          TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
+          TP_MARKER:           ${{ secrets.TP_MARKER }}
+          DUFFEL_TOKEN:        ${{ secrets.DUFFEL_TOKEN }}
+          # Telegram alerts (opcional)
+          TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          cd flight_hunter_v4
+          python main.py \
+            --mode "${{ github.event.inputs.mode || 'all' }}" \
+            --origins "${{ github.event.inputs.origins || 'tier1' }}" \
+            --date-from "${{ steps.dates.outputs.from }}" \
+            --date-to "${{ steps.dates.outputs.to }}" \
+            --quiet || echo "::warning::Hunter terminó con código != 0"
+          # main.py escribe deals.json en report_dir (= parent dir, raíz del repo)
+          ls -la ../deals.json || true
+
+      - name: Verify deals.json exists
+        id: verify
+        run: |
+          if [ ! -f deals.json ]; then
+            echo "::error::deals.json no se generó en la raíz del repo"
+            exit 1
+          fi
+          SIZE=$(wc -c < deals.json)
+          TOTAL=$(python -c "import json; print(json.load(open('deals.json')).get('total_deals', 0))")
+          echo "size=$SIZE" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "✅ deals.json: $TOTAL deals, $SIZE bytes"
+
+      - name: Upload to API (/api/admin/deals)
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          if [ -z "$ADMIN_TOKEN" ]; then
+            echo "::error::ADMIN_TOKEN secret no configurado"
+            exit 1
+          fi
+          HTTP=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
+            -X POST https://api.tripcazador.com/api/admin/deals \
+            -H "X-Admin-Token: $ADMIN_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary @deals.json)
+          cat /tmp/resp.json
+          echo ""
+          if [ "$HTTP" != "200" ]; then
+            echo "::error::Upload falló con HTTP $HTTP"
+            exit 1
+          fi
+          echo "✅ Upload OK — HTTP $HTTP"
+
+      - name: Archive deals.json as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deals-${{ github.run_id }}
+          path: deals.json
+          retention-days: 7
+
+      - name: Notify Telegram
+        if: always()
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT:  ${{ secrets.TELEGRAM_CHAT_ID }}
+          STATUS:   ${{ job.status }}
+          TOTAL:    ${{ steps.verify.outputs.total }}
+        run: |
+          if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
+            ICON="✅"
+            [ "$STATUS" != "success" ] && ICON="🚨"
+            curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              -d chat_id="${TG_CHAT}" \
+              -d parse_mode=HTML \
+              --data-urlencode text="${ICON} <b>Worker: ${STATUS}</b>
+Deals encontrados: ${TOTAL:-?}
+Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" || true
+          fi

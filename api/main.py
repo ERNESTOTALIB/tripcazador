@@ -662,6 +662,67 @@ async def admin_digest(
 
 
 # ────────────────────────────────────────────────
+# Admin · Upload deals.json (GitHub Actions worker)
+# ────────────────────────────────────────────────
+@app.post("/api/admin/deals")
+async def admin_upload_deals(request: Request, token: Optional[str] = Query(None)):
+    """
+    Recibe un deals.json generado por el worker externo (GitHub Actions)
+    y lo escribe en DEALS_JSON, invalidando la caché en memoria.
+
+    Uso:
+        curl -X POST https://api.tripcazador.com/api/admin/deals \
+             -H "X-Admin-Token: $ADMIN_TOKEN" \
+             -H "Content-Type: application/json" \
+             --data @deals.json
+
+    Valida que el payload tenga la forma mínima ({schema_version, deals:[...]})
+    y que `deals` sea una lista. Escribe atómicamente (fichero .tmp + rename).
+    """
+    _require_admin(request, token)
+
+    try:
+        payload = await request.json()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"JSON inválido: {e}")
+
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=422, detail="Payload debe ser un objeto JSON")
+    if "deals" not in payload or not isinstance(payload.get("deals"), list):
+        raise HTTPException(status_code=422, detail="Falta clave 'deals' (lista)")
+
+    # Normaliza metadata para que coincida con deals_exporter.py
+    payload.setdefault("schema_version", "4.1")
+    payload.setdefault("generated_at", datetime.now().isoformat())
+    payload.setdefault("total_deals", len(payload["deals"]))
+
+    DEALS_DIR.mkdir(parents=True, exist_ok=True)
+    tmp_path = DEALS_JSON.with_suffix(".tmp")
+    try:
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
+        tmp_path.replace(DEALS_JSON)
+    except Exception as e:
+        if tmp_path.exists():
+            try:
+                tmp_path.unlink()
+            except Exception:
+                pass
+        raise HTTPException(status_code=500, detail=f"Error escribiendo deals.json: {e}")
+
+    # Invalidar caché para que el próximo GET vea los nuevos deals
+    _cache["data"] = None
+    _cache["loaded_at"] = None
+
+    return {
+        "status": "ok",
+        "total_deals": payload["total_deals"],
+        "bytes": DEALS_JSON.stat().st_size,
+        "path": str(DEALS_JSON),
+    }
+
+
+# ────────────────────────────────────────────────
 # Hotel deals (adaptador a hotel_hunter SQLite)
 # ────────────────────────────────────────────────
 @app.get("/api/hotels/top")
