@@ -1,0 +1,62 @@
+name: Lighthouse CI — Core Web Vitals
+
+# Corre Lighthouse contra el build de producción en cada PR y en push a main.
+# Falla el job si las métricas clave bajan del umbral configurado en
+# `tripcazador-web/lighthouserc.json`. Complementa a las señales de
+# `useReportWebVitals` en runtime (src/components/WebVitals.tsx), pero aquí
+# la medición es sintética, reproducible y previa a merge.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tripcazador-web/**"
+      - ".github/workflows/lighthouse.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "tripcazador-web/**"
+      - ".github/workflows/lighthouse.yml"
+  # Permite correrlo a mano desde Actions (útil tras tocar el worker o
+  # cambiar políticas de CSP).
+  workflow_dispatch: {}
+
+jobs:
+  lighthouse:
+    name: Lighthouse CI (home + /deals + /destinos)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: tripcazador-web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: tripcazador-web/package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build (static + ISR snapshot)
+        env:
+          # Sin API real en CI — las rutas dinámicas deben degradar con gracia.
+          # `getDeals` cae al JSON estático incluido en el repo si el fetch falla.
+          NEXT_PUBLIC_API_URL: "https://api.tripcazador.com"
+          NEXT_PUBLIC_SITE_URL: "http://localhost:3000"
+        run: npm run build
+
+      - name: Install Lighthouse CI
+        run: npm i -g @lhci/cli@0.14.x
+
+      - name: Run Lighthouse CI
+        env:
+          # Opcional: si se configura, el action sube a Temporary Public Storage
+          # y publica el link en el output del job.
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        run: lhci autorun --config=./lighthouserc.json
