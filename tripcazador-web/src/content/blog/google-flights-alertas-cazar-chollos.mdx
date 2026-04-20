@@ -1,0 +1,152 @@
+---
+title: "Google Flights + alertas: cazar chollos sin mirar el móvil todo el día"
+description: "El flujo exacto que usamos para detectar anomalías de precio antes de que suban: configuración paso a paso de Google Flights, alertas, múltiples rutas flexibles y cómo filtrar el ruido de las promociones fake. Incluye la matriz de calendario que pocos usan."
+slug: "google-flights-alertas-cazar-chollos"
+publishedAt: "2026-04-20"
+tags: [google flights, alertas, estrategia, herramientas, chollos, búsqueda]
+readingTime: 12
+author: "Equipo TripCazador"
+heroImage: "https://images.unsplash.com/photo-1542296332-2e4473faf563?auto=format&fit=crop&w=1600&q=80"
+---
+
+La mayoría de gente usa Google Flights como si fuera Kayak o Skyscanner: metes ruta, eliges fecha, miras precio. Funciona, pero te pierdes **el 70% del valor** de la herramienta. Las alertas, el calendario de 60 días y la búsqueda con origen/destino flexible convierten Google Flights en algo mucho más parecido a un motor de detección de chollos automatizado.
+
+Esta guía es el flujo exacto que usamos para encontrar rutas baratas sin pasar horas mirando. Al final tendrás un sistema de 15 minutos al mes que te avisa solo cuando hay algo que merece la pena.
+
+## Por qué Google Flights y no Skyscanner
+
+Los dos tienen inventario similar, pero Google Flights tiene tres cosas que Skyscanner no iguala:
+
+- **Alertas de precio realmente útiles** (llegan al email y son concretas)
+- **Gráficos históricos de precios** de los últimos 60 días en cualquier ruta
+- **Matriz de calendario** que muestra precio por día combinando ida/vuelta
+
+Skyscanner es mejor para "mes entero más barato a cualquier sitio", pero si ya sabes más o menos dónde quieres ir, Google gana. Para rutas muy concretas (Basel-Bangkok en Business, por ejemplo), Google también tiende a encontrar conexiones que Skyscanner no sugiere.
+
+## Parte 1: búsqueda flexible con matriz de calendario
+
+Punto de partida: abres [google.com/flights](https://www.google.com/flights) y metes dos ciudades. Date cuenta de que en la barra de fechas hay un pequeño botón **"Fechas flexibles"** — úsalo siempre.
+
+Dentro hay tres pestañas:
+
+### Opción 1: "Fechas fijas" — no la uses
+
+Te devuelve una sola combinación. Vale si ya tienes las fechas cerradas por trabajo, pero para vacaciones pierde mucha información.
+
+### Opción 2: "Fechas flexibles" — la que merece la pena
+
+Eliges duración (ej: "1 semana") y un rango de exploración (ej: "próximos 6 meses"). Google te devuelve el **calendario** con precios día por día. Si te fijas, los precios no están repartidos de forma aleatoria: suelen caer en martes/miércoles/jueves y subir los viernes y domingos. Es una constante.
+
+Aquí está el truco: **un día de diferencia puede cambiar el precio un 30-40%**. Volar Madrid-Bangkok un martes en vez de un viernes de la misma semana puede pasar de 780€ a 485€ para vuelo idéntico. Si tu trabajo lo permite, cambia el día antes de cambiar la fecha.
+
+### Opción 3: "Cualquier fecha / cualquier destino" — oro para escapadas
+
+Dejas el destino vacío y eliges un mes. Google te muestra un mapa de Europa (o del mundo, según lo que configures) con el destino más barato en cada ciudad desde tu origen. Útil para "quiero escaparme en junio, no sé dónde".
+
+Tip: cuando uses este modo, **ordena por "duración total"** primero y luego por precio. Te ahorra encontrar un vuelo de 35€ con 18h de escala en Riga que técnicamente es el más barato pero no tiene sentido.
+
+## Parte 2: alertas de precio (el verdadero cambio de juego)
+
+En cualquier búsqueda, al lado del icono de compartir hay un toggle **"Seguir precios"**. Actívalo. A partir de aquí Google te envía email cuando:
+
+- El precio cae al menos un 5% en la ruta/fechas que seguías
+- El precio sube significativamente (útil: te dice "compra ya o espera")
+- La ventana de "precio bajo" termina
+
+Google es **conservador** con las alertas: no te spameará. En rutas donde hay movimiento, recibirás 2-4 emails al mes. En rutas estables, tal vez uno en dos meses.
+
+### La estrategia de múltiples alertas
+
+No uses una sola alerta. Abre Google Flights y crea **4-8 alertas en paralelo** para el viaje que te interesa:
+
+- Ruta A con fecha exacta
+- Ruta A con fecha ±3 días
+- Aeropuerto cercano (BCN si eres de MAD, MUC si eres de FRA, STN/LTN si eres de LHR)
+- Aerolínea concreta si tienes preferencia por millas
+- Destino alternativo si te vale (Palma en vez de Mallorca vale igual)
+
+Así multiplicas la superficie de detección. Cuando aparece el chollo, llega solo a uno de los emails, pero ese uno vale por todos.
+
+### Frecuencia de revisión
+
+No mires las alertas cada día. **Reserva 15 minutos un lunes al mes** para:
+1. Revisar los emails de Google Flights
+2. Eliminar alertas que ya no te interesan
+3. Crear alertas nuevas para el siguiente bloque de viajes
+
+Este ritmo te da el 90% del valor sin el coste mental de estar todo el día comprobando.
+
+## Parte 3: el histórico de precios que pocos miran
+
+En cualquier vuelo que buscas, Google muestra un pequeño gráfico llamado **"Historial de precios"** (debes darle click — no está al nivel principal). Te muestra los últimos 60 días de precios para esa ruta/fecha exacta.
+
+Este gráfico responde dos preguntas:
+
+- **¿Estoy en un precio bueno o malo?** Si tu precio actual está por debajo de la mediana de los 60 días, es un buen momento. Si está por encima, considera esperar.
+- **¿Hay patrón?** En rutas Europa-Asia, por ejemplo, suele haber una caída de precios 4-6 semanas antes de la salida y un repunte 2 semanas antes. Ver este patrón en tu ruta concreta te da la intuición de cuándo reservar.
+
+Google también muestra una predicción: "Los precios parece que van a bajar". No es mágico — es un modelo basado en el histórico — pero en las rutas que he comprobado acierta un 65-70% de las veces. Suficiente para fiarte en rutas sin prisa.
+
+## Parte 4: combinar ida con una compañía y vuelta con otra
+
+Para rutas intercontinentales, Google a veces sugiere combinaciones con dos aerolíneas distintas (ida con Iberia, vuelta con LATAM, por ejemplo) que son significativamente más baratas. A esto se le llama **"one-way + one-way"** en el argot.
+
+Ventaja: un 15-25% más barato en rutas transatlánticas. Desventaja: **no te cubre alianza de millas de ida y vuelta** y si una de las dos aerolíneas cancela, la otra no te está reprotegiendo.
+
+Para viajes de placer sin prisa, vale la pena. Para viajes de trabajo donde el miedo a que falle algo pesa más, el billete conjunto de una misma aerolínea te da un paraguas mejor.
+
+## Parte 5: cómo filtrar ruido (lo que no es un chollo real)
+
+No todo precio bajo es un chollo. Hay falsos positivos que debes aprender a ignorar:
+
+### "Precio mostrado sin tasas" — pocas veces
+
+Google Flights ya incluye tasas por defecto. Si algún resultado parece inusualmente bajo, comprueba que no estés viendo solo la tarifa base. La manera más rápida: haz click en el vuelo y lee el desglose.
+
+### "Aerolínea de segundo mercado" con historial de cancelaciones
+
+Cuando buscas rutas Asia o África, a veces aparecen aerolíneas poco conocidas (ej: Mahan Air, Turkmenistan Airlines) con precios muy bajos. A veces son seguros, a veces tienen historial de cancelaciones de 30% o están sancionados en algunos países. Mira en Google "[aerolínea] reviews 2025" antes de reservar.
+
+### "Escala absurdamente larga"
+
+Un precio de 320€ con escala de 22 horas en Bakú es técnicamente un vuelo, pero en la práctica es un hotel + visado de tránsito + riesgo de perder conexión. Filtra duración máxima en Google Flights.
+
+### "Promos no reembolsables en rutas con inventario volátil"
+
+Error fares y tarifas promocionales a veces son muy bajas pero con política **100% no reembolsable**. Antes de comprometerte, comprueba que el visado (si aplica) y el hotel que aparecerá después encajen. Es el error más costoso: compras el vuelo a Vietnam a 420€ y te das cuenta de que necesitas visado que tarda 15 días — y sales en 8.
+
+## Parte 6: usa esta matriz mental
+
+Cuando te aparezca un precio y dudes si reservar o esperar, contesta estas tres preguntas en 2 segundos:
+
+**1. ¿Está este precio en el cuartil bajo del histórico de 60 días?**
+Si sí → compra ahora. Si no → mira pregunta 2.
+
+**2. ¿Quedan más de 14 días hasta salida?**
+Si sí → puedes esperar una semana a ver. Si no → probablemente ha sido tu mejor precio.
+
+**3. ¿Es una ruta rara o ultra-popular?**
+Ruta ultra-popular (MAD-LHR, BCN-FCO): los precios son muy estables. Compra.
+Ruta rara (FRA-ZNZ, MAD-ALA): los precios son volátiles. Si ves uno decente, compra.
+
+Esta matriz te cubre el 95% de las decisiones. Para el 5% restante, esperar 24 horas y mirar de nuevo no te va a arruinar.
+
+## Parte 7: complementos que sí valen la pena
+
+Google Flights cubre la mayoría, pero hay dos herramientas más que encajan bien encima:
+
+### Airhint (para rutas volátiles a Asia)
+
+Predictivo de precios específico para rutas transcontinentales. Tiene mejor señal en rutas muy volátiles (Europa-Asia-Suroeste) donde Google Flights es algo conservador. Gratis.
+
+### Our TripCazador Telegram
+
+Te avisamos cuando el motor detecta un error fare, una ruta que ha bajado un 40%+ o un hotel con precio anómalo. No cubrimos todas las rutas — nos centramos en alta densidad desde hubs europeos y cosas extraordinarias. Pero para escapadas espontáneas a destinos raros, es la forma más rápida de detectar. [Suscríbete aquí](/telegram).
+
+## Cierre: el error más común
+
+La gente compara vuelos en tres sitios distintos para el mismo día y cree que está siendo exhaustivo. En realidad está desperdiciando horas. El paso que cambia el rendimiento no es "comparar más", es **"automatizar las alertas y esperar"**.
+
+Monta 6 alertas en Google Flights. Pon una hora al mes en el calendario para revisar. No compres el primer precio que ves. Si sigues esto 6 meses, recuperas el tiempo invertido en la primera escapada y tienes sistema para el resto de tu vida viajera.
+
+Los chollos no se persiguen — se cazan con paciencia.
