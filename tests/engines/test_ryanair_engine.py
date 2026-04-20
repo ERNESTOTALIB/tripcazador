@@ -15,10 +15,19 @@ from ryanair_engine import RYANAIR_STRONG_HUBS, _flight_to_dict, _trip_to_dict
 
 def _make_flight(
     origin="BSL", destination="PMI", price=29.99,
-    departure_offset_days=30, duration_min=120,
+    departure_offset_days=30, duration_min=120, base_time=None,
 ):
-    """Construye un objeto Flight fake compatible con ryanair-py."""
-    dep = datetime.now() + timedelta(days=departure_offset_days)
+    """Construye un objeto Flight fake compatible con ryanair-py.
+
+    Si `base_time` se pasa, se usa como referencia fija (para que múltiples
+    llamadas en un mismo test compartan el mismo "ahora" y no se rompa por
+    cruce de medianoche entre invocaciones consecutivas).
+    """
+    now = base_time if base_time is not None else datetime.now()
+    # Normalizamos a mediodía para evitar que sumar la duración del vuelo
+    # cruce una frontera de día y altere el cálculo de `nights`.
+    now = now.replace(hour=12, minute=0, second=0, microsecond=0)
+    dep = now + timedelta(days=departure_offset_days)
     arr = dep + timedelta(minutes=duration_min)
     return SimpleNamespace(
         origin=origin,
@@ -33,9 +42,12 @@ def _make_flight(
 
 
 def _make_trip(out_price=30, in_price=35):
-    out = _make_flight(departure_offset_days=30)
+    # Compartimos un mismo `base_time` entre outbound e inbound para que la
+    # diferencia de fechas sea exactamente la esperada por el test.
+    base = datetime.now()
+    out = _make_flight(departure_offset_days=30, base_time=base)
     ret = _make_flight(origin=out.destination, destination=out.origin,
-                       departure_offset_days=37)
+                       departure_offset_days=37, base_time=base)
     out.price = out_price
     ret.price = in_price
     return SimpleNamespace(

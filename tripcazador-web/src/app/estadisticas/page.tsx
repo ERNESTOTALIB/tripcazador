@@ -22,7 +22,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
  */
 
 export const metadata: Metadata = {
-  title: "Estadísticas del motor — TripCazador",
+  title: "Estadísticas del motor",
   description:
     "Cuántos vuelos baratos está detectando TripCazador ahora mismo, savings medios, top destinos activos y distribución por región. Datos en vivo del radar.",
   alternates: { canonical: "/estadisticas" },

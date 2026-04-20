@@ -198,36 +198,38 @@ export default function HotelSearchWidget() {
         </div>
 
         <div className="md:col-span-4">
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            aria-disabled={!canSearch}
-            onClick={(e) => {
-              if (!canSearch) {
-                e.preventDefault();
-                return;
-              }
-              // Emitimos el evento antes de navegar: GA4 usa sendBeacon internamente,
-              // así que el navegador suele completar la emisión incluso al cambiar de tab.
-              track({
-                name: "booking_url_opened",
-                params: {
-                  source: "hotel_widget",
-                  destination: destination.trim(),
-                  checkin,
-                  checkout,
-                },
-              });
-            }}
-            className={`block text-center w-full rounded-lg font-semibold px-4 py-2.5 transition ${
-              canSearch
-                ? "bg-amber-400 hover:bg-amber-300 text-slate-900"
-                : "bg-slate-700 text-slate-400 cursor-not-allowed"
-            }`}
-          >
-            Buscar en Booking.com →
-          </a>
+          {canSearch ? (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              onClick={() => {
+                // Emitimos el evento antes de navegar: GA4 usa sendBeacon internamente,
+                // así que el navegador suele completar la emisión incluso al cambiar de tab.
+                track({
+                  name: "booking_url_opened",
+                  params: {
+                    source: "hotel_widget",
+                    destination: destination.trim(),
+                    checkin,
+                    checkout,
+                  },
+                });
+              }}
+              className="block text-center w-full rounded-lg font-semibold px-4 py-2.5 transition bg-amber-400 hover:bg-amber-300 text-slate-900"
+            >
+              Buscar en Booking.com →
+            </a>
+          ) : (
+            <button
+              type="button"
+              disabled
+              aria-label="Rellena el destino y las fechas para buscar en Booking.com"
+              className="block text-center w-full rounded-lg font-semibold px-4 py-2.5 transition bg-slate-700 text-slate-400 cursor-not-allowed"
+            >
+              Buscar en Booking.com →
+            </button>
+          )}
         </div>
       </div>
 

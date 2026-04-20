@@ -228,9 +228,9 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const dest = DESTINATIONS[params.slug];
-  if (!dest) return { title: "Destino no encontrado | TripCazador" };
+  if (!dest) return { title: "Destino no encontrado" };
   return {
-    title: `Vuelos baratos a ${dest.name} — TripCazador`,
+    title: `Vuelos baratos a ${dest.name}`,
     description: `Encuentra los mejores chollos de vuelo a ${dest.name}. ${dest.description}`,
     openGraph: {
       title: `${dest.emoji} Vuelos baratos a ${dest.name} | TripCazador`,

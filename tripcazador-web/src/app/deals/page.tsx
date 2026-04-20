@@ -5,7 +5,7 @@ import { JsonLd } from "@/components/JsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Todos los deals — TripCazador",
+  title: "Todos los deals",
   description:
     "Filtra y explora todos los chollos de vuelo activos: error fares, Business barato, por región, precio y más.",
   alternates: { canonical: "/deals" },

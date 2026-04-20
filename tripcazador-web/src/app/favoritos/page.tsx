@@ -10,7 +10,7 @@ import { FavoritesClient } from "./FavoritesClient";
  */
 
 export const metadata: Metadata = {
-  title: "Mis favoritos — TripCazador",
+  title: "Mis favoritos",
   description:
     "Los chollos de vuelos que has guardado. Se almacenan en tu navegador — no necesitas cuenta.",
   alternates: { canonical: "/favoritos" },

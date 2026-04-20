@@ -7,12 +7,12 @@ import { JsonLd } from "@/components/JsonLd";
 export const revalidate = 900; // 15 minutos
 
 export const metadata: Metadata = {
-  title: "Hoteles baratos y chollos de hotel — TripCazador",
+  title: "Hoteles baratos y chollos de hotel",
   description:
     "Busca hoteles en cualquier destino con el mejor precio de Booking.com y mira los chollos que nuestro motor detecta cada pocas horas: Phuket, Bali, Grecia, Tailandia, Caribe y más.",
   alternates: { canonical: "/hoteles" },
   openGraph: {
-    title: "Hoteles baratos y chollos de hotel — TripCazador",
+    title: "Hoteles baratos y chollos de hotel",
     description:
       "Buscador de hoteles + chollos detectados automáticamente. Sin recargos, sin ruido.",
     url: "/hoteles",
