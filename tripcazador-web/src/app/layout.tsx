@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Inter } from "next/font/google";
 import { CookieBanner } from "@/components/CookieBanner";
 import { JsonLd } from "@/components/JsonLd";
+import { WebVitals } from "@/components/WebVitals";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -89,6 +90,17 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <head>
+        {/* Network hints — acortan TTFB del LCP (Unsplash en /, /destinos,
+            /blog/[slug]) y de GA4. `dns-prefetch` para dominios secundarios. */}
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        {GA_ID && (
+          <>
+            <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+          </>
+        )}
+        <link rel="dns-prefetch" href="https://www.booking.com" />
         <JsonLd
           data={[
             {
@@ -256,6 +268,7 @@ export default function RootLayout({
         </footer>
 
         <CookieBanner />
+        {GA_ID && <WebVitals />}
       </body>
     </html>
   );
