@@ -33,6 +33,13 @@ from typing import List, Dict, Optional
 from collections import defaultdict
 import config
 from circuit_breaker import get_breaker
+from response_cache import ResponseCache
+
+# TTL de cache para respuestas RapidAPI.
+# 30 min es el sweet spot: suficientemente largo para evitar llamadas duplicadas
+# en el mismo batch (cron itera ~65 orígenes × 40 destinos), suficientemente
+# corto para no devolver precios stale en ventanas de reserva.
+_CACHE_TTL_SECONDS = 1800
 
 # RapidAPI key — se carga exclusivamente desde config/env (ver config.py
 # que hace load_dotenv). NO hardcoded para no filtrar secretos en git.
@@ -344,6 +351,11 @@ class RapidAPIEngine:
             print("     → Suscríbete a 'Sky Scrapper' (free tier)")
             print("     → export RAPIDAPI_KEY=tu_key")
         self._semaphore = asyncio.Semaphore(3)  # max 3 requests concurrentes
+        # Cache de respuestas normalizadas. Clave incluye endpoint + params,
+        # así sky-scrapper y flight-fare no colisionan aunque compartan ruta.
+        # El namespace "rapidapi_v1" permite invalidar todo el cache bumping
+        # el sufijo si cambia el formato de _normalize_*.
+        self._cache = ResponseCache("rapidapi_v1")
 
     async def _get_entity_id(self, session: aiohttp.ClientSession, iata: str) -> Dict:
         """
@@ -427,6 +439,19 @@ class RapidAPIEngine:
         if not self.available:
             return []
 
+        # Cache check — mismo (origen, destino, fecha, cabina) en el mismo batch
+        # devuelve el resultado normalizado sin tocar Sky Scrapper.
+        cache_key = self._cache.make_key(
+            endpoint="sky_cheapest",
+            origin=origin.upper(),
+            destination=destination.upper(),
+            date_out=date_out,
+            cabin=cabin,
+        )
+        cached = self._cache.get(cache_key, ttl_seconds=_CACHE_TTL_SECONDS)
+        if cached is not None:
+            return cached
+
         async def _do_search(sess: aiohttp.ClientSession) -> List[Dict]:
             # Resolver entity IDs (tabla estática → cache → lookup dinámico)
             orig_ids = await self._get_entity_id(sess, origin)
@@ -463,9 +488,17 @@ class RapidAPIEngine:
             return flights
 
         if session:
-            return await _do_search(session)
-        async with aiohttp.ClientSession() as sess:
-            return await _do_search(sess)
+            result = await _do_search(session)
+        else:
+            async with aiohttp.ClientSession() as sess:
+                result = await _do_search(sess)
+
+        # Sólo cacheamos respuestas con datos. Un [] puede venir de un 429,
+        # circuit breaker abierto o ruta sin inventario real; guardarlo
+        # nos bloquearía revalidar durante 30 min.
+        if result:
+            self._cache.set(cache_key, result)
+        return result
 
     async def search_fare_oneway(
         self,
@@ -479,6 +512,16 @@ class RapidAPIEngine:
         """
         if not self.available:
             return []
+
+        cache_key = self._cache.make_key(
+            endpoint="fare_oneway",
+            origin=origin.upper(),
+            destination=destination.upper(),
+            date_out=date_out,
+        )
+        cached = self._cache.get(cache_key, ttl_seconds=_CACHE_TTL_SECONDS)
+        if cached is not None:
+            return cached
 
         async with aiohttp.ClientSession() as session:
             params = {
@@ -499,6 +542,8 @@ class RapidAPIEngine:
                 f = _normalize_fare_flight(item, origin)
                 if f and f["price_eur"] > 0:
                     flights.append(f)
+            if flights:
+                self._cache.set(cache_key, flights)
             return flights
 
     async def search_multi_routes(
