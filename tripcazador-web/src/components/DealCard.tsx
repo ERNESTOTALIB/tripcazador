@@ -1,8 +1,7 @@
 "use client";
 
 import { Deal, formatDate, formatDuration, getCabinLabel, getClassificationColor } from "@/lib/api";
-import { Plane, Clock, MapPin, Star, ExternalLink, CheckCircle } from "lucide-react";
-import Image from "next/image";
+import { Plane, Clock, Star, ExternalLink, CheckCircle } from "lucide-react";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 
 interface DealCardProps {
@@ -53,21 +52,27 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
       `}
     >
       {/* Imagen de fondo */}
-      <div className="relative h-36 overflow-hidden">
+      <div className={`relative overflow-hidden ${featured ? "h-56" : "h-44"}`}>
         {image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={image_url}
-            alt={city_to}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 opacity-70"
+            alt={`${city_to}${country_to ? ", " + country_to : ""}`}
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.08]"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900" />
+          <div className="w-full h-full bg-gradient-to-br from-gray-800 via-gray-850 to-gray-900 flex items-center justify-center">
+            <Plane size={48} className="text-gray-700 rotate-45" />
+          </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
+        {/* Overlay degradado + tinte cálido */}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/55 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-amber-900/20 mix-blend-multiply" />
 
         {/* Badge de clasificación */}
         <div className="absolute top-3 left-3">
-          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${classColor}`}>
+          <span className={`px-2.5 py-1 rounded-full text-xs font-bold backdrop-blur-md ${classColor}`}>
             {classification === "CRÍTICO" ? "🔥 Error Fare" :
              classification === "ERROR" ? "⚡ Posible Error" :
              classification === "ANOMALÍA" ? "⚠️ Anomalía" : "💰 Oferta"}
@@ -225,13 +230,33 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
 
 // Versión lista (horizontal) para la página /deals
 export function DealRow({ deal }: { deal: Deal }) {
-  const { origin, destination, city_to, price_eur, savings_pct, date_out, date_ret,
-          cabin, airline_name, stops, classification, score, booking_url, verified } = deal;
+  const { origin, destination, city_to, country_to, price_eur, savings_pct, date_out, date_ret,
+          cabin, airline_name, stops, classification, score, booking_url, verified, image_url } = deal;
 
   const classColor = getClassificationColor(classification);
 
   return (
-    <div className="flex items-center gap-4 p-4 rounded-xl glass card-hover border border-gray-800 group">
+    <div className="flex items-stretch gap-0 rounded-xl glass card-hover border border-gray-800 group overflow-hidden">
+      {/* Thumbnail */}
+      <div className="relative w-24 sm:w-32 shrink-0 overflow-hidden bg-gray-900">
+        {image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={image_url}
+            alt={city_to}
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+            <Plane size={22} className="text-gray-600 rotate-45" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-gray-900/60 pointer-events-none" />
+      </div>
+
+      {/* Contenido */}
+      <div className="flex flex-1 items-center gap-4 p-4 min-w-0">
       {/* Ruta */}
       <div className="flex items-center gap-2 min-w-[140px]">
         <span className="font-mono text-amber-400 font-bold text-sm">{origin}</span>
@@ -241,8 +266,10 @@ export function DealRow({ deal }: { deal: Deal }) {
 
       {/* Ciudad + clase */}
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-white truncate">{city_to}</div>
-        <div className="text-xs text-gray-400">
+        <div className="font-semibold text-white truncate">
+          {city_to}{country_to && <span className="text-gray-400 font-normal"> · {country_to}</span>}
+        </div>
+        <div className="text-xs text-gray-400 truncate">
           {getCabinLabel(cabin)} · {stops === 0 ? "Directo" : `${stops} escala`}
           {airline_name && ` · ${airline_name}`}
         </div>
@@ -279,6 +306,7 @@ export function DealRow({ deal }: { deal: Deal }) {
         Ver
         <ExternalLink size={12} />
       </a>
+      </div>
     </div>
   );
 }
