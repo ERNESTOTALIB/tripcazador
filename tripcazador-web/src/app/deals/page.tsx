@@ -64,9 +64,25 @@ export default async function DealsPage({
   const deals = data.deals;
   const stats = data.stats;
 
+  // ItemList de los primeros 20 deals visibles. Google necesita position + url
+  // en cada ListItem para Rich Results en buscador. Las Offer aquí son
+  // ligeras (sin Flight) porque el detalle ya está en /deals/[id].
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListOrder: "https://schema.org/ItemListUnordered",
+    numberOfItems: deals.length,
+    itemListElement: deals.slice(0, 20).map((d, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${SITE_URL}/deals/${d.id}`,
+      name: `${d.city_from} → ${d.city_to} desde ${Math.round(d.price_eur)}€`,
+    })),
+  };
+
   return (
     <div className="space-y-8">
-      <JsonLd data={BREADCRUMB_JSONLD} />
+      <JsonLd data={[BREADCRUMB_JSONLD, itemListJsonLd]} />
 
       {/* Breadcrumbs visibles */}
       <nav aria-label="Migas de pan" className="flex items-center gap-2 text-sm text-gray-400">

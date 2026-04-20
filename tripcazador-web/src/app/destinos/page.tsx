@@ -142,9 +142,23 @@ export default async function DestinosIndexPage() {
     (d) => typeof d.lat === "number" && typeof d.lon === "number",
   );
 
+  // ItemList con los 12 destinos para que Google entienda la página como
+  // un índice navegable. Los nombres aparecen tal cual en los rich results.
+  const destinosJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    numberOfItems: DESTINATIONS.length,
+    itemListElement: DESTINATIONS.map((d, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${SITE_URL}/destinos/${d.slug}`,
+      name: d.name,
+    })),
+  };
+
   return (
     <div className="space-y-10">
-      <JsonLd data={BREADCRUMB_JSONLD} />
+      <JsonLd data={[BREADCRUMB_JSONLD, destinosJsonLd]} />
       <header className="space-y-4">
         <nav aria-label="Migas de pan" className="flex items-center gap-2 text-sm text-gray-400">
           <a href="/" className="hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded px-1">
