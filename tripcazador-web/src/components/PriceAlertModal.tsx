@@ -15,8 +15,53 @@
  * romper el flujo mientras se despliega la parte backend.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
+
+// Validadores compartidos (también se usan en los tests)
+export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const IATA_RE = /^[A-Z]{3}$/;
+
+export interface AlertValidationErrors {
+  email?: string;
+  origin?: string;
+  destination?: string;
+  targetPrice?: string;
+  form?: string;
+}
+
+export function validateAlert(input: {
+  email: string;
+  origin: string;
+  destination: string;
+  targetPrice: string;
+  dealId?: string;
+}): AlertValidationErrors {
+  const errors: AlertValidationErrors = {};
+  const email = input.email.trim();
+  if (!email) errors.email = "Falta tu email.";
+  else if (!EMAIL_RE.test(email)) errors.email = "Email no parece válido.";
+
+  const origin = input.origin.trim().toUpperCase();
+  if (origin && !IATA_RE.test(origin))
+    errors.origin = "Código IATA debe ser 3 letras (ej. MAD).";
+
+  const destination = input.destination.trim().toUpperCase();
+  if (destination && !IATA_RE.test(destination))
+    errors.destination = "Código IATA debe ser 3 letras (ej. JFK).";
+
+  if (input.targetPrice) {
+    const n = Number(input.targetPrice);
+    if (!Number.isFinite(n) || n <= 0)
+      errors.targetPrice = "Precio debe ser > 0.";
+    else if (n > 100000) errors.targetPrice = "Precio máximo 100 000 €.";
+  }
+
+  if (!origin && !destination && !input.dealId) {
+    errors.form = "Indica al menos un origen o destino.";
+  }
+  return errors;
+}
 
 export interface PriceAlertPrefill {
   origin?: string;
@@ -42,7 +87,27 @@ export function PriceAlertModal({ open, onClose, prefill }: PriceAlertModalProps
   );
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const dialogRef = useRef<HTMLDivElement | null>(null);
+  const emailRef = useRef<HTMLInputElement | null>(null);
+  // Guardamos el elemento que tenía el foco antes de abrir para devolvérselo
+  // al cerrar — importante para a11y (lector de pantalla + teclado).
+  const prevFocus = useRef<HTMLElement | null>(null);
+
+  // Errores client-side — se recalculan sobre cada tecla y se muestran solo
+  // para campos que el usuario ya tocó (o tras intentar enviar).
+  const errors = useMemo(
+    () =>
+      validateAlert({
+        email,
+        origin,
+        destination,
+        targetPrice,
+        dealId: prefill?.dealId,
+      }),
+    [email, origin, destination, targetPrice, prefill?.dealId],
+  );
+  const hasErrors = Object.keys(errors).length > 0;
 
   // Reseteamos al abrir para que los prefill se apliquen cada vez
   useEffect(() => {
@@ -52,14 +117,44 @@ export function PriceAlertModal({ open, onClose, prefill }: PriceAlertModalProps
       setTargetPrice(prefill?.targetPrice ? String(prefill.targetPrice) : "");
       setStatus("idle");
       setErrorMsg(null);
+      setTouched({});
+      // Focus en el primer campo al abrir (defer para que el DOM esté listo)
+      prevFocus.current = (document.activeElement as HTMLElement) ?? null;
+      const t = setTimeout(() => emailRef.current?.focus(), 20);
+      return () => clearTimeout(t);
+    } else if (prevFocus.current) {
+      // Restaura el foco al cerrar
+      prevFocus.current.focus?.();
+      prevFocus.current = null;
     }
   }, [open, prefill]);
 
-  // Cierra con ESC
+  // ESC cierra + focus trap con Tab / Shift+Tab dentro del diálogo
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      const enabled = Array.from(focusable).filter(
+        (el) => !el.hasAttribute("disabled") && el.offsetParent !== null,
+      );
+      if (enabled.length === 0) return;
+      const first = enabled[0];
+      const last = enabled[enabled.length - 1];
+      const current = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && current === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && current === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -67,6 +162,10 @@ export function PriceAlertModal({ open, onClose, prefill }: PriceAlertModalProps
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // Marcamos todo como tocado para que errores client-side aparezcan
+    setTouched({ email: true, origin: true, destination: true, targetPrice: true, form: true });
+    if (hasErrors) return;
+
     setStatus("loading");
     setErrorMsg(null);
 
@@ -157,13 +256,24 @@ export function PriceAlertModal({ open, onClose, prefill }: PriceAlertModalProps
               </label>
               <input
                 id="alert-email"
+                ref={emailRef}
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                 placeholder="tu@email.com"
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                aria-invalid={Boolean(touched.email && errors.email)}
+                aria-describedby={touched.email && errors.email ? "alert-email-error" : undefined}
+                className={`w-full px-3 py-2 bg-gray-800 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 ${
+                  touched.email && errors.email ? "border-red-500/70" : "border-gray-700"
+                }`}
               />
+              {touched.email && errors.email && (
+                <p id="alert-email-error" className="text-xs text-red-300 mt-1">
+                  {errors.email}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -177,9 +287,16 @@ export function PriceAlertModal({ open, onClose, prefill }: PriceAlertModalProps
                   maxLength={3}
                   value={origin}
                   onChange={(e) => setOrigin(e.target.value.toUpperCase())}
+                  onBlur={() => setTouched((t) => ({ ...t, origin: true }))}
                   placeholder="MAD"
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 uppercase"
+                  aria-invalid={Boolean(touched.origin && errors.origin)}
+                  className={`w-full px-3 py-2 bg-gray-800 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 uppercase ${
+                    touched.origin && errors.origin ? "border-red-500/70" : "border-gray-700"
+                  }`}
                 />
+                {touched.origin && errors.origin && (
+                  <p className="text-xs text-red-300 mt-1">{errors.origin}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="alert-destination" className="block text-xs text-gray-400 uppercase tracking-wider mb-1">
@@ -191,11 +308,23 @@ export function PriceAlertModal({ open, onClose, prefill }: PriceAlertModalProps
                   maxLength={3}
                   value={destination}
                   onChange={(e) => setDestination(e.target.value.toUpperCase())}
+                  onBlur={() => setTouched((t) => ({ ...t, destination: true }))}
                   placeholder="JFK"
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 uppercase"
+                  aria-invalid={Boolean(touched.destination && errors.destination)}
+                  className={`w-full px-3 py-2 bg-gray-800 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 uppercase ${
+                    touched.destination && errors.destination ? "border-red-500/70" : "border-gray-700"
+                  }`}
                 />
+                {touched.destination && errors.destination && (
+                  <p className="text-xs text-red-300 mt-1">{errors.destination}</p>
+                )}
               </div>
             </div>
+            {touched.form && errors.form && (
+              <p role="alert" className="text-xs text-red-300 -mt-2">
+                {errors.form}
+              </p>
+            )}
 
             <div>
               <label htmlFor="alert-price" className="block text-xs text-gray-400 uppercase tracking-wider mb-1">
@@ -205,11 +334,19 @@ export function PriceAlertModal({ open, onClose, prefill }: PriceAlertModalProps
                 id="alert-price"
                 type="number"
                 min={1}
+                max={100000}
                 value={targetPrice}
                 onChange={(e) => setTargetPrice(e.target.value)}
+                onBlur={() => setTouched((t) => ({ ...t, targetPrice: true }))}
                 placeholder="500"
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                aria-invalid={Boolean(touched.targetPrice && errors.targetPrice)}
+                className={`w-full px-3 py-2 bg-gray-800 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 ${
+                  touched.targetPrice && errors.targetPrice ? "border-red-500/70" : "border-gray-700"
+                }`}
               />
+              {touched.targetPrice && errors.targetPrice && (
+                <p className="text-xs text-red-300 mt-1">{errors.targetPrice}</p>
+              )}
               <p className="text-xs text-gray-500 mt-1">
                 Te avisamos si encontramos un vuelo por debajo de este precio.
               </p>
@@ -232,7 +369,7 @@ export function PriceAlertModal({ open, onClose, prefill }: PriceAlertModalProps
               </button>
               <button
                 type="submit"
-                disabled={status === "loading" || !email}
+                disabled={status === "loading" || !email || hasErrors}
                 className="flex-1 px-5 py-2.5 btn-gradient text-black font-semibold rounded-lg disabled:opacity-60 disabled:cursor-not-allowed cta-lift"
               >
                 {status === "loading" ? "Creando alerta…" : "Crear alerta"}

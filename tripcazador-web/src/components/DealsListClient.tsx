@@ -17,7 +17,7 @@
  * enlaces compartibles con el orden elegido.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { DealRow } from "@/components/DealCard";
 import {
   DealsFiltersSidebar,
@@ -28,7 +28,58 @@ import {
 import { PriceCalendar } from "@/components/PriceCalendar";
 import type { Deal } from "@/lib/api";
 
-type SortKey = "best" | "cheap" | "fast" | "direct";
+export type SortKey = "best" | "cheap" | "fast" | "direct";
+
+/** Parseo puro de un hash (`"#orden=baratos"` o `"orden=baratos"`) al SortKey
+ * correspondiente. Exportado para que los tests puedan verificar sin tocar
+ * window.location. */
+export function parseSortHash(hash: string): SortKey {
+  const raw = hash.replace(/^#/, "");
+  const params = new URLSearchParams(raw);
+  const value = params.get("orden");
+  if (value === "baratos") return "cheap";
+  if (value === "rapidos") return "fast";
+  if (value === "directos") return "direct";
+  return "best";
+}
+
+/** Inversa de parseSortHash — SortKey → fragmento querystring (sin `#`).
+ * "best" devuelve null (la default no necesita hash). */
+export function sortKeyToHashParam(key: SortKey): string | null {
+  if (key === "best") return null;
+  const mapping: Record<Exclude<SortKey, "best">, string> = {
+    cheap: "baratos",
+    fast: "rapidos",
+    direct: "directos",
+  };
+  return `orden=${mapping[key]}`;
+}
+
+/** Ordena los deals según el tab activo. Pura para facilitar tests.
+ * - `fast` usa MAX_SAFE_INTEGER para empujar deals sin duración al final.
+ * - `direct` filtra `stops === 0` y después ordena por precio asc.
+ */
+export function sortDeals<T extends { price_eur: number; duration_min: number; stops: number; score: number }>(
+  deals: T[],
+  key: SortKey,
+): T[] {
+  const copy = [...deals];
+  switch (key) {
+    case "cheap":
+      return copy.sort((a, b) => a.price_eur - b.price_eur);
+    case "fast":
+      return copy.sort((a, b) => {
+        const da = a.duration_min || Number.MAX_SAFE_INTEGER;
+        const db = b.duration_min || Number.MAX_SAFE_INTEGER;
+        return da - db;
+      });
+    case "direct":
+      return copy.filter((d) => d.stops === 0).sort((a, b) => a.price_eur - b.price_eur);
+    case "best":
+    default:
+      return copy.sort((a, b) => b.score - a.score);
+  }
+}
 
 interface TabDef {
   key: SortKey;
@@ -47,31 +98,14 @@ const TABS: TabDef[] = [
 /** Lee el hash inicial solo una vez en cliente; SSR devuelve "best". */
 function readHash(): SortKey {
   if (typeof window === "undefined") return "best";
-  const raw = window.location.hash.replace(/^#/, "");
-  const params = new URLSearchParams(raw);
-  const value = params.get("orden");
-  if (value === "baratos") return "cheap";
-  if (value === "rapidos") return "fast";
-  if (value === "directos") return "direct";
-  return "best";
+  return parseSortHash(window.location.hash);
 }
 
 function writeHash(key: SortKey) {
   if (typeof window === "undefined") return;
-  if (key === "best") {
-    history.replaceState(null, "", window.location.pathname + window.location.search);
-    return;
-  }
-  const mapping: Record<Exclude<SortKey, "best">, string> = {
-    cheap: "baratos",
-    fast: "rapidos",
-    direct: "directos",
-  };
-  history.replaceState(
-    null,
-    "",
-    `${window.location.pathname}${window.location.search}#orden=${mapping[key]}`,
-  );
+  const param = sortKeyToHashParam(key);
+  const base = window.location.pathname + window.location.search;
+  history.replaceState(null, "", param ? `${base}#${param}` : base);
 }
 
 export function DealsListClient({ deals }: { deals: Deal[] }) {
@@ -80,11 +114,19 @@ export function DealsListClient({ deals }: { deals: Deal[] }) {
   // Filtro "solo deals con esta date_out" — accionable desde el calendario.
   const [dateFilter, setDateFilter] = useState<string | null>(null);
 
+  // Ref para saltar el primer run del writeHash-effect. Sin esto, el efecto
+  // de sincronización escribe el hash con el valor inicial "best" ANTES de
+  // que el efecto de lectura haya procesado el hash real, provocando un
+  // "flash" que borra el parámetro que el usuario trajo en la URL.
+  const didInitFromHash = useRef(false);
+
   useEffect(() => {
     setActive(readHash());
+    didInitFromHash.current = true;
   }, []);
 
   useEffect(() => {
+    if (!didInitFromHash.current) return;
     writeHash(active);
   }, [active]);
 
@@ -100,26 +142,7 @@ export function DealsListClient({ deals }: { deals: Deal[] }) {
     [filteredDeals],
   );
 
-  const sorted = useMemo(() => {
-    const copy = [...filteredDeals];
-    switch (active) {
-      case "cheap":
-        return copy.sort((a, b) => a.price_eur - b.price_eur);
-      case "fast":
-        return copy.sort((a, b) => {
-          const da = a.duration_min || Number.MAX_SAFE_INTEGER;
-          const db = b.duration_min || Number.MAX_SAFE_INTEGER;
-          return da - db;
-        });
-      case "direct":
-        return copy
-          .filter((d) => d.stops === 0)
-          .sort((a, b) => a.price_eur - b.price_eur);
-      case "best":
-      default:
-        return copy.sort((a, b) => b.score - a.score);
-    }
-  }, [filteredDeals, active]);
+  const sorted = useMemo(() => sortDeals(filteredDeals, active), [filteredDeals, active]);
 
   if (deals.length === 0) {
     return (
