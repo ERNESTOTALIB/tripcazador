@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { DestinationCard } from "@/components/DestinationCard";
 import { JsonLd } from "@/components/JsonLd";
+import { DestinosMapClient } from "@/components/DestinosMapClient";
+import { getDeals } from "@/lib/api";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -132,7 +134,14 @@ const DESTINATIONS: Destination[] = [
   },
 ];
 
-export default function DestinosIndexPage() {
+export default async function DestinosIndexPage() {
+  // Cargamos deals para el mapa interactivo. `getDeals` ya hace fallback a
+  // deals.json estático si la API falla → la build nunca rompe.
+  const dealsResp = await getDeals({ limit: 250 });
+  const dealsForMap = dealsResp.deals.filter(
+    (d) => typeof d.lat === "number" && typeof d.lon === "number",
+  );
+
   return (
     <div className="space-y-10">
       <JsonLd data={BREADCRUMB_JSONLD} />
@@ -219,6 +228,23 @@ export default function DestinosIndexPage() {
           ))}
         </ul>
       </section>
+
+      {/* Mapa interactivo — muestra los deals actuales por ubicación */}
+      {dealsForMap.length > 0 && (
+        <section aria-labelledby="destinos-map-heading" className="space-y-4">
+          <div className="flex items-end justify-between flex-wrap gap-2">
+            <div>
+              <h2 id="destinos-map-heading" className="text-2xl font-bold text-white">
+                Mapa de ofertas
+              </h2>
+              <p className="text-gray-400 text-sm">
+                {dealsForMap.length} destino{dealsForMap.length === 1 ? "" : "s"} con precio activo ahora mismo. Click en un punto para ver detalles.
+              </p>
+            </div>
+          </div>
+          <DestinosMapClient deals={dealsForMap} />
+        </section>
+      )}
 
       <section className="panel p-8">
         <h2 className="text-xl font-bold text-white mb-2">¿Echas en falta un destino?</h2>

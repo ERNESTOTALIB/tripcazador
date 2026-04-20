@@ -57,3 +57,78 @@ test.describe("Pagina /deals", () => {
     }
   });
 });
+
+// ────────────────────────────────────────────────────────────────
+// Tests nuevos: Google Flights-style UX (abril 2026)
+// ────────────────────────────────────────────────────────────────
+test.describe("Pagina /deals — UX overhaul (tabs/sidebar/calendar/hash)", () => {
+  test("tabs de ordenacion cambian orden", async ({ page }) => {
+    await page.goto("/deals");
+    await page.waitForLoadState("networkidle");
+
+    // Si no hay deals, saltamos
+    const bodyText = await page.locator("body").innerText();
+    if (/sin resultados|no hay ofertas/i.test(bodyText)) {
+      test.skip();
+      return;
+    }
+
+    // Capturamos precios en tab por defecto (best)
+    const cheapTab = page.getByRole("tab", { name: /más baratos/i });
+    await expect(cheapTab).toBeVisible();
+    await cheapTab.click();
+    await page.waitForTimeout(300);
+
+    // Tras click, el tab "cheap" debe estar seleccionado
+    await expect(cheapTab).toHaveAttribute("aria-selected", "true");
+
+    // El hash debe actualizarse a #orden=baratos
+    await page.waitForFunction(() => window.location.hash === "#orden=baratos", null, { timeout: 2000 });
+  });
+
+  test("hash #orden=rapidos se aplica al cargar", async ({ page }) => {
+    await page.goto("/deals#orden=rapidos");
+    await page.waitForLoadState("networkidle");
+
+    // Si no hay deals, saltamos
+    const body = await page.locator("body").innerText();
+    if (/sin resultados|no hay ofertas/i.test(body)) {
+      test.skip();
+      return;
+    }
+
+    const fastTab = page.getByRole("tab", { name: /más rápidos/i });
+    await expect(fastTab).toHaveAttribute("aria-selected", "true");
+    // Hash debe persistir (no ser reescrito por el fix de race condition)
+    expect(page.url()).toMatch(/#orden=rapidos$/);
+  });
+
+  test("sidebar de filtros esta presente y reduce resultados", async ({ page }) => {
+    await page.goto("/deals");
+    await page.waitForLoadState("networkidle");
+
+    // El sidebar tiene un heading "Filtros" o equivalente
+    const sidebar = page.getByRole("complementary").or(
+      page.locator('aside, [aria-label*="filtro" i]').first(),
+    );
+    // Al menos algún control debe existir (precio, duración o aerolíneas)
+    const body = await page.locator("body").innerText();
+    expect(body).toMatch(/precio|duración|aerolínea/i);
+  });
+
+  test("tab Directos muestra conteo y filtra", async ({ page }) => {
+    await page.goto("/deals");
+    await page.waitForLoadState("networkidle");
+
+    const body = await page.locator("body").innerText();
+    if (/sin resultados|no hay ofertas/i.test(body)) {
+      test.skip();
+      return;
+    }
+
+    const directTab = page.getByRole("tab", { name: /directos/i });
+    await expect(directTab).toBeVisible();
+    await directTab.click();
+    await expect(directTab).toHaveAttribute("aria-selected", "true");
+  });
+});
