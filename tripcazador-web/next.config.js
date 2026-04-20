@@ -31,8 +31,12 @@ const cspDirectives = [
   "style-src 'self' 'unsafe-inline'", // Tailwind requiere inline styles
   "img-src 'self' data: https: blob:", // data: para SVG inline, https: para OG/unsplash
   "font-src 'self' data:",
-  `connect-src 'self' ${API_URL} https://www.google-analytics.com https://plausible.io https://tile.openstreetmap.org`,
+  // *.ingest.sentry.io: endpoint donde el SDK de Sentry envía errores/replays.
+  // Inerte si NEXT_PUBLIC_SENTRY_DSN no está setada (el SDK no hace ninguna request).
+  `connect-src 'self' ${API_URL} https://www.google-analytics.com https://plausible.io https://tile.openstreetmap.org https://*.ingest.sentry.io`,
   "frame-src 'self' https://www.openstreetmap.org", // embed de mapa en detalle de deal
+  "worker-src 'self' blob:", // Sentry Session Replay lanza un Web Worker desde blob
+  "child-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
