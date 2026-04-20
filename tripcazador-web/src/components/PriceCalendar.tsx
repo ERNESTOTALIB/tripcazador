@@ -19,6 +19,7 @@
 
 import { useMemo, useState } from "react";
 import type { Deal } from "@/lib/api";
+import { toLocalISO, percentileSorted } from "@/lib/date-utils";
 
 interface PriceCalendarProps {
   deals: Deal[];
@@ -26,21 +27,6 @@ interface PriceCalendarProps {
   onSelect?: (iso: string) => void;
   /** Día actualmente filtrado (si lo hay). */
   selectedDate?: string | null;
-}
-
-function toISO(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
-
-/** Percentil barato usando interpolación lineal simple. */
-function percentile(sorted: number[], p: number): number {
-  if (sorted.length === 0) return 0;
-  const idx = (p / 100) * (sorted.length - 1);
-  const lo = Math.floor(idx);
-  const hi = Math.ceil(idx);
-  if (lo === hi) return sorted[lo];
-  const frac = idx - lo;
-  return sorted[lo] * (1 - frac) + sorted[hi] * frac;
 }
 
 const WEEKDAYS = ["L", "M", "X", "J", "V", "S", "D"]; // es-ES, lunes inicio
@@ -66,8 +52,8 @@ export function PriceCalendar({ deals, onSelect, selectedDate }: PriceCalendarPr
     [priceByDay],
   );
 
-  const p33 = useMemo(() => percentile(prices, 33), [prices]);
-  const p66 = useMemo(() => percentile(prices, 66), [prices]);
+  const p33 = useMemo(() => percentileSorted(prices, 33), [prices]);
+  const p66 = useMemo(() => percentileSorted(prices, 66), [prices]);
 
   // Genera 30 días a partir de hoy (incluye hoy)
   const days = useMemo(() => {
@@ -79,7 +65,7 @@ export function PriceCalendar({ deals, onSelect, selectedDate }: PriceCalendarPr
       d.setDate(d.getDate() + i);
       // Weekday en formato L=0 ... D=6 (Spain)
       const wd = (d.getDay() + 6) % 7;
-      out.push({ iso: toISO(d), day: d.getDate(), weekday: wd });
+      out.push({ iso: toLocalISO(d), day: d.getDate(), weekday: wd });
     }
     return out;
   }, []);

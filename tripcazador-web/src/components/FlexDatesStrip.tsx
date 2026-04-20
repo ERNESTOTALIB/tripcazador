@@ -19,6 +19,7 @@
 
 import { useMemo } from "react";
 import type { Deal } from "@/lib/api";
+import { parseLocalISO, shiftLocalISO } from "@/lib/date-utils";
 
 interface FlexDatesStripProps {
   /** Fecha base ISO (YYYY-MM-DD) seleccionada por el usuario. */
@@ -29,26 +30,19 @@ interface FlexDatesStripProps {
   onSelect: (iso: string) => void;
 }
 
-function shiftDate(iso: string, days: number): string {
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return iso;
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
-}
-
 /** "lun 14" — abreviatura ES, sin punto. */
 function formatShort(iso: string): { dow: string; day: string } {
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return { dow: "—", day: "—" };
-  const dow = d.toLocaleDateString("es-ES", { weekday: "short" }).replace(".", "");
-  const day = d.toLocaleDateString("es-ES", { day: "numeric" });
+  const date = parseLocalISO(iso);
+  if (!date) return { dow: "—", day: "—" };
+  const dow = date.toLocaleDateString("es-ES", { weekday: "short" }).replace(".", "");
+  const day = date.toLocaleDateString("es-ES", { day: "numeric" });
   return { dow, day };
 }
 
 export function FlexDatesStrip({ dateFrom, results, onSelect }: FlexDatesStripProps) {
   const days = useMemo(() => {
     return [-3, -2, -1, 0, 1, 2, 3].map((offset) => {
-      const iso = shiftDate(dateFrom, offset);
+      const iso = shiftLocalISO(dateFrom, offset);
       const sameDay = results.filter((d) => d.date_out === iso);
       const hintPrice = sameDay.length
         ? Math.min(...sameDay.map((d) => d.price_eur))
