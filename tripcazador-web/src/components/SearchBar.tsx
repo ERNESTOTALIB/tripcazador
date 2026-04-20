@@ -15,12 +15,50 @@ import {
   searchDeals,
   searchDealsLive,
   getAirports,
+  getDeals,
   formatDate,
   getCabinLabel,
   type Deal,
   type SearchParams,
   type Airport,
 } from "@/lib/api";
+
+// ──────────────────────────────────────────────────────────────
+// Alternativas cuando la búsqueda en vivo no devuelve nada.
+// Tres niveles (orden de relevancia para el usuario):
+//   1) Mismas rutas, fechas cercanas (±3 días) — suele ser la causa real
+//   2) Mismo destino desde otros hubs cercanos (p. ej. MAD vs. BCN)
+//   3) Chollos trending del día, ordenados por score
+// ──────────────────────────────────────────────────────────────
+type AlternativesBlock = {
+  nearbyDates: Deal[];       // mismas IATAs, fechas ±3
+  sameDestination: Deal[];   // mismo destino, cualquier origen
+  trending: Deal[];          // lo más llamativo ahora mismo
+};
+
+// Hubs alternativos para rutas españolas/DACH (los más comunes)
+const ALT_ORIGINS: Record<string, string[]> = {
+  MAD: ["BCN", "VLC", "SVQ", "AGP", "BIO"],
+  BCN: ["MAD", "VLC", "PMI", "AGP"],
+  AGP: ["MAD", "BCN", "SVQ"],
+  VLC: ["MAD", "BCN", "AGP"],
+  BIO: ["MAD", "BCN", "SDR"],
+  SVQ: ["MAD", "BCN", "AGP"],
+  PMI: ["MAD", "BCN", "VLC"],
+  BSL: ["ZRH", "GVA", "FRA", "MUC"],
+  ZRH: ["BSL", "GVA", "MUC"],
+  GVA: ["BSL", "ZRH", "CDG"],
+  FRA: ["MUC", "STR", "DUS"],
+  MUC: ["FRA", "STR", "VIE"],
+  VIE: ["MUC", "BUD", "SZG"],
+};
+
+function shiftDate(iso: string, days: number): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
 
 // Aeropuertos más buscados por el público objetivo (DACH hispanohablante).
 // Orden = prioridad en el autocomplete.
@@ -106,9 +144,11 @@ export default function SearchBar({
   const [maxPrice, setMaxPrice] = useState<number | "">("");
   const [cabin, setCabin] = useState("");
   const [results, setResults] = useState<Deal[]>([]);
+  const [alternatives, setAlternatives] = useState<AlternativesBlock | null>(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dateWarning, setDateWarning] = useState<string | null>(null);
 
   const [originFocus, setOriginFocus] = useState(false);
   const [destFocus, setDestFocus] = useState(false);
@@ -148,7 +188,19 @@ export default function SearchBar({
     e?.preventDefault();
     setLoading(true);
     setError(null);
+    setAlternatives(null);
+    setDateWarning(null);
     setSearched(true);
+
+    // Validación UX: si "hasta" es anterior a "desde" lo auto-corregimos
+    // en memoria (no mutamos el input salvo aviso visible).
+    let effectiveDateTo = dateTo;
+    if (dateFrom && dateTo && dateTo < dateFrom) {
+      effectiveDateTo = shiftDate(dateFrom, 7);
+      setDateWarning(
+        `Tu fecha "hasta" era anterior a "desde". Buscamos hasta ${effectiveDateTo} (7 días después).`,
+      );
+    }
 
     // Decisión: si hay origen, destino y fecha → búsqueda en caliente (RapidAPI+Ryanair).
     // Si falta algo → fallback al search sobre deals.json indexados.
@@ -178,7 +230,7 @@ export default function SearchBar({
             origin,
             destination,
             date_from: dateFrom,
-            date_to: dateTo || dateFrom,
+            date_to: effectiveDateTo || dateFrom,
             max_price: maxPrice === "" ? undefined : Number(maxPrice),
             cabin: cabin || undefined,
             limit: 30,
@@ -189,7 +241,7 @@ export default function SearchBar({
           origin: origin || undefined,
           destination: destination || undefined,
           date_from: dateFrom || undefined,
-          date_to: dateTo || undefined,
+          date_to: effectiveDateTo || undefined,
           max_price: maxPrice === "" ? undefined : Number(maxPrice),
           cabin: cabin || undefined,
           limit: 30,
@@ -198,12 +250,31 @@ export default function SearchBar({
       }
 
       setResults(data);
+
+      // Si no hay resultados, cargamos alternativas en cascada para
+      // que el usuario nunca vea una pantalla vacía sin opciones.
       if (data.length === 0) {
-        setError(
-          hasLiveShape
-            ? "No encontramos vuelos ahora mismo para esa combinación. Prueba otra fecha o ruta."
-            : "Añade origen, destino y fecha para búsqueda en vivo, o prueba con filtros más amplios."
-        );
+        const alts = await buildAlternatives({
+          origin,
+          destination,
+          dateFrom,
+          cabin: cabin || undefined,
+          maxPrice: maxPrice === "" ? undefined : Number(maxPrice),
+        });
+        setAlternatives(alts);
+
+        const hasAnyAlt =
+          alts.nearbyDates.length + alts.sameDestination.length + alts.trending.length > 0;
+
+        if (hasAnyAlt) {
+          setError(null); // el error "duro" se reemplaza por el panel de alternativas
+        } else {
+          setError(
+            hasLiveShape
+              ? "No encontramos vuelos para esa combinación ni alternativas cercanas. Prueba otra ruta."
+              : "Añade origen, destino y fecha para búsqueda en vivo, o prueba con filtros más amplios.",
+          );
+        }
       }
     } catch (err) {
       setError("No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.");
@@ -211,6 +282,85 @@ export default function SearchBar({
     } finally {
       setLoading(false);
     }
+  }
+
+  // ──────────────────────────────────────────────
+  // Constructor de alternativas (se ejecuta sólo si la búsqueda primaria
+  // devuelve 0 resultados). Todas las queries van contra el índice indexado
+  // (/api/search) para que sean rápidas y estén siempre disponibles.
+  // ──────────────────────────────────────────────
+  async function buildAlternatives(opts: {
+    origin: string;
+    destination: string;
+    dateFrom: string;
+    cabin?: string;
+    maxPrice?: number;
+  }): Promise<AlternativesBlock> {
+    const { origin: o, destination: d, dateFrom: df, cabin: c, maxPrice: mp } = opts;
+
+    // 1) Fechas cercanas: ventana ancha alrededor de la fecha pedida
+    let nearbyDatesPromise: Promise<Deal[]> = Promise.resolve([]);
+    if (o && d && df) {
+      nearbyDatesPromise = searchDeals({
+        origin: o,
+        destination: d,
+        date_from: shiftDate(df, -14),
+        date_to: shiftDate(df, 30),
+        cabin: c,
+        max_price: mp,
+        limit: 12,
+      });
+    }
+
+    // 2) Mismo destino, otros hubs de salida (cualquier fecha, ordenadas por score)
+    let sameDestinationPromise: Promise<Deal[]> = Promise.resolve([]);
+    if (d) {
+      // Lanzamos una búsqueda sin origen fijado para captar todos los chollos
+      // al destino, y después quitamos la combinación original del usuario.
+      // Los hubs "preferidos" (ALT_ORIGINS) se priorizan dentro del orden final.
+      const preferred = o ? new Set(ALT_ORIGINS[o] || []) : new Set<string>();
+      sameDestinationPromise = searchDeals({
+        destination: d,
+        cabin: c,
+        max_price: mp,
+        limit: 20,
+      }).then((list) => {
+        const filtered = list.filter((x) => x.origin !== o);
+        // Primero los que están en ALT_ORIGINS, luego el resto — preservando orden original
+        const head = filtered.filter((x) => preferred.has(x.origin));
+        const tail = filtered.filter((x) => !preferred.has(x.origin));
+        return [...head, ...tail].slice(0, 8);
+      });
+    }
+
+    // 3) Trending: chollos del día (score alto, cualquier ruta)
+    const trendingPromise = getDeals({ limit: 12 })
+      .then((r) => r.deals || [])
+      .catch(() => [] as Deal[]);
+
+    const [nearbyDates, sameDestination, trending] = await Promise.all([
+      nearbyDatesPromise,
+      sameDestinationPromise,
+      trendingPromise,
+    ]);
+
+    // Dedup entre secciones: si un deal ya está en nearbyDates, no lo repetimos en
+    // sameDestination; y si está en cualquiera de las dos, tampoco en trending.
+    const seen = new Set<string>();
+    const uniq = (list: Deal[]) => {
+      const out: Deal[] = [];
+      for (const x of list) {
+        if (seen.has(x.id)) continue;
+        seen.add(x.id);
+        out.push(x);
+      }
+      return out;
+    };
+    return {
+      nearbyDates: uniq(nearbyDates).slice(0, 6),
+      sameDestination: uniq(sameDestination).slice(0, 6),
+      trending: uniq(trending).slice(0, 6),
+    };
   }
 
   // API pública: permite a la home prellenar el buscador desde fuera y disparar
@@ -416,12 +566,17 @@ export default function SearchBar({
         </div>
       </form>
 
+      {/* Aviso ligero de fecha auto-corregida (no es un error) */}
+      {dateWarning && (
+        <p className="mt-3 text-xs text-amber-300/80" role="status">
+          ⚠︎ {dateWarning}
+        </p>
+      )}
+
       {/* Resultados */}
       {searched && (
         <div className="mt-6" aria-live="polite" aria-atomic="true">
-          {error ? (
-            <p role="alert" className="text-amber-300">{error}</p>
-          ) : results.length > 0 ? (
+          {results.length > 0 ? (
             <>
               <p className="text-slate-300 mb-3 text-sm">
                 {results.length} {results.length === 1 ? "oferta" : "ofertas"} coinciden con tu búsqueda.
@@ -432,9 +587,138 @@ export default function SearchBar({
                 ))}
               </ul>
             </>
+          ) : alternatives && (
+              alternatives.nearbyDates.length +
+                alternatives.sameDestination.length +
+                alternatives.trending.length >
+              0
+            ) ? (
+            <NoResultsWithAlternatives
+              origin={origin}
+              destination={destination}
+              dateFrom={dateFrom}
+              block={alternatives}
+              onRetry={(patch) => {
+                if (patch.dateFrom !== undefined) setDateFrom(patch.dateFrom);
+                if (patch.origin !== undefined) setOrigin(patch.origin);
+                if (patch.destination !== undefined) setDestination(patch.destination);
+                // dejar que el siguiente frame aplique los setState y relanzar
+                requestAnimationFrame(() => setTimeout(() => handleSubmit(), 40));
+              }}
+            />
+          ) : error ? (
+            <p role="alert" className="text-amber-300">
+              {error}
+            </p>
           ) : null}
         </div>
       )}
+    </section>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────
+// Panel "no hay resultados, aquí tienes alternativas"
+// ──────────────────────────────────────────────────────────────
+function NoResultsWithAlternatives({
+  origin,
+  destination,
+  dateFrom,
+  block,
+  onRetry,
+}: {
+  origin: string;
+  destination: string;
+  dateFrom: string;
+  block: AlternativesBlock;
+  onRetry: (patch: { origin?: string; destination?: string; dateFrom?: string }) => void;
+}) {
+  const { nearbyDates, sameDestination, trending } = block;
+  const routeLabel =
+    origin && destination ? `${origin} → ${destination}` : origin || destination || "esa búsqueda";
+
+  return (
+    <div className="space-y-8">
+      <div className="rounded-xl bg-slate-900/60 ring-1 ring-slate-700/60 p-4 md:p-5">
+        <h3 className="text-white font-semibold">
+          No hay match exacto para {routeLabel}
+          {dateFrom && <> el {formatDate(dateFrom)}</>}
+        </h3>
+        <p className="text-slate-300 text-sm mt-1">
+          Te enseñamos chollos parecidos para que no salgas de vacío. La búsqueda en vivo
+          cubre 48 h hacia delante; para fechas más lejanas, lo mejor suele ser esta lista.
+        </p>
+      </div>
+
+      {nearbyDates.length > 0 && (
+        <AltSection
+          title="Mismas rutas, fechas cercanas"
+          subtitle={
+            origin && destination
+              ? `${origin} → ${destination} con fecha flexible ±2 semanas`
+              : "Fechas cercanas con precio conocido"
+          }
+          deals={nearbyDates}
+          footerCta={
+            dateFrom ? (
+              <button
+                type="button"
+                onClick={() => onRetry({ dateFrom: shiftDate(dateFrom, 7) })}
+                className="text-amber-300 hover:text-amber-200 text-sm font-medium underline underline-offset-4"
+              >
+                Reintentar en vivo con la fecha +7 días →
+              </button>
+            ) : null
+          }
+        />
+      )}
+
+      {sameDestination.length > 0 && (
+        <AltSection
+          title="Mismo destino desde otros aeropuertos"
+          subtitle={
+            destination
+              ? `Chollos hacia ${destination} desde hubs cercanos`
+              : "Alternativas de destino"
+          }
+          deals={sameDestination}
+        />
+      )}
+
+      {trending.length > 0 && (
+        <AltSection
+          title="Chollos destacados ahora mismo"
+          subtitle="Las mejores anomalías de precio que el motor está siguiendo"
+          deals={trending}
+        />
+      )}
+    </div>
+  );
+}
+
+function AltSection({
+  title,
+  subtitle,
+  deals,
+  footerCta,
+}: {
+  title: string;
+  subtitle?: string;
+  deals: Deal[];
+  footerCta?: React.ReactNode;
+}) {
+  return (
+    <section>
+      <header className="mb-3">
+        <h4 className="text-white font-semibold">{title}</h4>
+        {subtitle && <p className="text-slate-400 text-xs mt-0.5">{subtitle}</p>}
+      </header>
+      <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        {deals.map((d) => (
+          <SearchResultCard key={d.id} deal={d} />
+        ))}
+      </ul>
+      {footerCta && <div className="mt-3">{footerCta}</div>}
     </section>
   );
 }
