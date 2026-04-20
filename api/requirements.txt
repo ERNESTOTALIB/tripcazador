@@ -5,3 +5,7 @@ python-dotenv>=1.0.0
 sentry-sdk[fastapi]>=2.3.0
 email-validator>=2.1.0
 slowapi>=0.1.9
+# Necesario para el endpoint /api/search/live que orquesta
+# los motores rapidapi_engine + ryanair_engine (ambos del worker).
+aiohttp>=3.9.0
+ryanair-py>=2.3.0

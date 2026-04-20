@@ -924,10 +924,22 @@ def _live_cache_put(key: str, deals: List[dict]) -> None:
 
 
 def _ensure_engines_on_path() -> None:
-    """Inserta flight_hunter_v4 en sys.path para poder importar los engines."""
+    """
+    Inserta en sys.path los directorios donde pueden vivir los engines.
+
+    - En la imagen Docker de la API los engines se copian a /app/ directamente
+      (mismo dir que main.py), por lo que basta con tener el dir actual.
+    - En desarrollo local (sin Docker) los engines siguen en ../flight_hunter_v4
+      o ../../flight_hunter_v4 (según dónde se arranque uvicorn).
+    """
     import sys as _sys
     _here = Path(__file__).resolve().parent
-    for c in [_here.parent / "flight_hunter_v4", _here.parent.parent / "flight_hunter_v4"]:
+    candidates = [
+        _here,                                   # /app dentro del contenedor
+        _here.parent / "flight_hunter_v4",       # repo local: api/ vecino a flight_hunter_v4/
+        _here.parent.parent / "flight_hunter_v4",
+    ]
+    for c in candidates:
         if c.exists() and str(c) not in _sys.path:
             _sys.path.insert(0, str(c))
 

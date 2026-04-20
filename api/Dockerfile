@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY api/requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 
@@ -45,7 +45,14 @@ RUN groupadd --system --gid 1001 app \
 COPY --from=builder /opt/venv /opt/venv
 
 WORKDIR /app
-COPY --chown=app:app . .
+# Código de la API (main.py + todo lo de api/)
+COPY --chown=app:app api/ /app/
+# Motores de búsqueda que el endpoint /api/search/live necesita importar.
+# Se copian aislados para mantener la imagen ligera (no traemos todo el worker).
+COPY --chown=app:app flight_hunter_v4/rapidapi_engine.py /app/rapidapi_engine.py
+COPY --chown=app:app flight_hunter_v4/ryanair_engine.py /app/ryanair_engine.py
+COPY --chown=app:app flight_hunter_v4/config.py /app/config.py
+COPY --chown=app:app flight_hunter_v4/circuit_breaker.py /app/circuit_breaker.py
 
 USER app
 

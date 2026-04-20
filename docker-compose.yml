@@ -45,8 +45,8 @@ services:
   # ── FastAPI Backend ─────────────────────────────────────
   api:
     build:
-      context: ./api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: api/Dockerfile
     container_name: tripcazador_api
     restart: unless-stopped
     depends_on:
