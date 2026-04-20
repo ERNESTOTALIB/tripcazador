@@ -70,3 +70,6 @@ backups/
 # Tests
 htmlcov/
 .coverage.*
+
+# Next.js typecheck cache
+tripcazador-web/tsconfig.tsbuildinfo
