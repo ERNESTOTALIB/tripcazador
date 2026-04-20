@@ -222,18 +222,43 @@ def load_deals() -> dict:
         return _cache["data"]
 
     if not DEALS_JSON.exists():
-        empty = {
-            "schema_version": "4.1",
-            "generated_at": now.isoformat(),
-            "total_deals": 0,
-            "stats": {
-                "total": 0, "flights": 0, "hotels": 0,
-                "by_classification": {}, "by_region": {}, "by_cabin": {},
-                "price_min": 0, "price_max": 0, "price_avg": 0, "verified_count": 0,
-            },
-            "deals": [],
-        }
-        return empty
+        # Fallback: serve a small, realistic seed set rather than an empty
+        # list. Primer deploy / rate-limit transitorio del worker no deberían
+        # dejar la UI vacía. El dataset real sobrescribe al seed en cuanto
+        # llega. Deshabilitable con SEED_DEALS_DISABLE=1 (p.ej. para tests
+        # que asumen dataset vacío).
+        if os.getenv("SEED_DEALS_DISABLE") == "1":
+            return {
+                "schema_version": "4.1",
+                "generated_at": now.isoformat(),
+                "total_deals": 0,
+                "stats": {
+                    "total": 0, "flights": 0, "hotels": 0,
+                    "by_classification": {}, "by_region": {}, "by_cabin": {},
+                    "price_min": 0, "price_max": 0, "price_avg": 0, "verified_count": 0,
+                },
+                "deals": [],
+            }
+        try:
+            from seed_deals import build_seed_payload  # type: ignore
+            data = build_seed_payload()
+            _cache["data"] = data
+            _cache["loaded_at"] = now
+            return data
+        except Exception:
+            # Si el seed falla por algún motivo, volvemos al dataset vacío
+            # canónico — mejor eso que tirar 500 al frontend.
+            return {
+                "schema_version": "4.1",
+                "generated_at": now.isoformat(),
+                "total_deals": 0,
+                "stats": {
+                    "total": 0, "flights": 0, "hotels": 0,
+                    "by_classification": {}, "by_region": {}, "by_cabin": {},
+                    "price_min": 0, "price_max": 0, "price_avg": 0, "verified_count": 0,
+                },
+                "deals": [],
+            }
 
     with open(DEALS_JSON, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -273,11 +298,17 @@ async def health():
         except Exception:
             deals_age_min = None
 
+    # Marca cuando `/api/deals` está devolviendo la semilla (fallback). Útil
+    # para monitoreo: UptimeRobot puede alertar si el campo es true
+    # demasiado tiempo, señal de que el worker no está generando datos.
+    serving_seed = (not deals_exists) and os.getenv("SEED_DEALS_DISABLE") != "1"
+
     return {
         "status": "ok",
         "deals_file": str(DEALS_JSON),
         "deals_exists": deals_exists,
         "deals_age_minutes": deals_age_min,
+        "serving_seed": serving_seed,
         "timestamp": datetime.now().isoformat(),
         "breakers": breakers_status,
     }

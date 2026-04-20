@@ -29,6 +29,7 @@ import {
   fuzzyDistance,
   type AirportGroup,
 } from "@/lib/search-groups";
+import { TOP_AIRPORTS, type AirportEntry } from "@/lib/airports";
 import { DealCardSkeletonGrid } from "@/components/DealCardSkeleton";
 import { FlexDatesStrip } from "@/components/FlexDatesStrip";
 
@@ -80,70 +81,8 @@ function shiftDate(iso: string, days: number): string {
 }
 
 // Aeropuertos más buscados por el público objetivo (DACH hispanohablante).
-// Orden = prioridad en el autocomplete.
-const TOP_AIRPORTS: Array<{ iata: string; city: string; country: string }> = [
-  // DACH hub origins
-  { iata: "BSL", city: "Basilea/Mulhouse", country: "Suiza/Francia" },
-  { iata: "ZRH", city: "Zúrich", country: "Suiza" },
-  { iata: "GVA", city: "Ginebra", country: "Suiza" },
-  { iata: "BRN", city: "Berna", country: "Suiza" },
-  { iata: "FRA", city: "Fráncfort", country: "Alemania" },
-  { iata: "MUC", city: "Múnich", country: "Alemania" },
-  { iata: "BER", city: "Berlín", country: "Alemania" },
-  { iata: "HAM", city: "Hamburgo", country: "Alemania" },
-  { iata: "DUS", city: "Düsseldorf", country: "Alemania" },
-  { iata: "STR", city: "Stuttgart", country: "Alemania" },
-  { iata: "VIE", city: "Viena", country: "Austria" },
-  { iata: "SZG", city: "Salzburgo", country: "Austria" },
-  // España
-  { iata: "MAD", city: "Madrid", country: "España" },
-  { iata: "BCN", city: "Barcelona", country: "España" },
-  { iata: "AGP", city: "Málaga", country: "España" },
-  { iata: "VLC", city: "Valencia", country: "España" },
-  { iata: "SVQ", city: "Sevilla", country: "España" },
-  { iata: "BIO", city: "Bilbao", country: "España" },
-  { iata: "PMI", city: "Palma de Mallorca", country: "España" },
-  { iata: "TFS", city: "Tenerife", country: "España" },
-  { iata: "LPA", city: "Gran Canaria", country: "España" },
-  // Hubs grandes para comparar precios
-  { iata: "CDG", city: "París CDG", country: "Francia" },
-  { iata: "AMS", city: "Ámsterdam", country: "Países Bajos" },
-  { iata: "LHR", city: "Londres Heathrow", country: "Reino Unido" },
-  { iata: "LGW", city: "Londres Gatwick", country: "Reino Unido" },
-  { iata: "FCO", city: "Roma", country: "Italia" },
-  { iata: "MXP", city: "Milán", country: "Italia" },
-  { iata: "LIS", city: "Lisboa", country: "Portugal" },
-  { iata: "OPO", city: "Oporto", country: "Portugal" },
-  { iata: "ATH", city: "Atenas", country: "Grecia" },
-  // Long-haul populares
-  { iata: "JFK", city: "Nueva York", country: "EEUU" },
-  { iata: "LAX", city: "Los Ángeles", country: "EEUU" },
-  { iata: "MIA", city: "Miami", country: "EEUU" },
-  { iata: "DXB", city: "Dubái", country: "EAU" },
-  { iata: "BKK", city: "Bangkok", country: "Tailandia" },
-  { iata: "NRT", city: "Tokio", country: "Japón" },
-  { iata: "SIN", city: "Singapur", country: "Singapur" },
-  { iata: "GRU", city: "São Paulo", country: "Brasil" },
-  { iata: "EZE", city: "Buenos Aires", country: "Argentina" },
-  { iata: "SCL", city: "Santiago", country: "Chile" },
-  { iata: "MEX", city: "Ciudad de México", country: "México" },
-  { iata: "CUN", city: "Cancún", country: "México" },
-  { iata: "HAV", city: "La Habana", country: "Cuba" },
-  { iata: "SDQ", city: "Santo Domingo", country: "Rep. Dominicana" },
-  // África / Asia menos habitual (valor añadido vs. competencia)
-  { iata: "ZNZ", city: "Zanzíbar", country: "Tanzania" },
-  { iata: "NBO", city: "Nairobi", country: "Kenia" },
-  { iata: "MBA", city: "Mombasa", country: "Kenia" },
-  { iata: "CAI", city: "El Cairo", country: "Egipto" },
-  { iata: "HRG", city: "Hurgada", country: "Egipto" },
-  { iata: "CMN", city: "Casablanca", country: "Marruecos" },
-  { iata: "RAK", city: "Marrakech", country: "Marruecos" },
-  { iata: "DEL", city: "Nueva Delhi", country: "India" },
-  { iata: "CMB", city: "Colombo", country: "Sri Lanka" },
-  { iata: "MLE", city: "Malé", country: "Maldivas" },
-  { iata: "HKT", city: "Phuket", country: "Tailandia" },
-  { iata: "DPS", city: "Bali", country: "Indonesia" },
-];
+// Catálogo importado desde `@/lib/airports` para reutilizar en otros sitios
+// y mantener los alias (multi-idioma) en un único lugar.
 
 interface Props {
   defaultOrigin?: string;
@@ -936,11 +875,10 @@ function filterSuggestions(
   const q = normalize(query.trim());
 
   // Merge: TOP_AIRPORTS primero (prioridad), luego el catálogo remoto sin
-  // duplicar códigos IATA.
+  // duplicar códigos IATA. Mantenemos el tipo AirportEntry para que `alt`
+  // sobreviva en el merge (el backend no envía alt pero los del catálogo sí).
   const seen = new Set(TOP_AIRPORTS.map((a) => a.iata));
-  const mergedAirports: Array<{ iata: string; city: string; country: string }> = [
-    ...TOP_AIRPORTS,
-  ];
+  const mergedAirports: AirportEntry[] = [...TOP_AIRPORTS];
   for (const a of remote) {
     if (!seen.has(a.iata)) {
       mergedAirports.push({ iata: a.iata, city: a.city, country: a.country });
@@ -974,19 +912,30 @@ function filterSuggestions(
     if (hit) matchedGroups.push({ kind: "group", group: g });
   }
 
-  // 2) Aeropuertos por substring (rápido)
-  const substring: Array<{ iata: string; city: string; country: string; score: number }> = [];
+  // 2) Aeropuertos por substring (rápido).
+  //    Ahora también matcheamos contra `alt` — p.ej. "new york" encuentra
+  //    JFK aunque el nombre mostrado sea "Nueva York JFK", "munich" encuentra
+  //    MUC ("Múnich"), "lisbon" encuentra LIS ("Lisboa"), etc.
+  const substring: Array<AirportEntry & { score: number }> = [];
   for (const a of mergedAirports) {
     const iataN = normalize(a.iata);
     const cityN = normalize(a.city);
     const countryN = normalize(a.country);
+    const alts = a.alt ?? [];
+    const altStartsWith = alts.some((s) => normalize(s).startsWith(q));
+    const altIncludes = alts.some((s) => normalize(s).includes(q));
     if (iataN === q) {
       substring.push({ ...a, score: 0 });
     } else if (iataN.startsWith(q)) {
       substring.push({ ...a, score: 1 });
-    } else if (cityN.startsWith(q)) {
+    } else if (cityN.startsWith(q) || altStartsWith) {
       substring.push({ ...a, score: 2 });
-    } else if (iataN.includes(q) || cityN.includes(q) || countryN.includes(q)) {
+    } else if (
+      iataN.includes(q) ||
+      cityN.includes(q) ||
+      countryN.includes(q) ||
+      altIncludes
+    ) {
       substring.push({ ...a, score: 3 });
     }
   }
@@ -1000,7 +949,10 @@ function filterSuggestions(
           .map((a) => {
             const d1 = fuzzyDistance(normalize(a.city), q);
             const d2 = fuzzyDistance(normalize(a.country), q);
-            return { ...a, d: Math.min(d1, d2) };
+            const d3 = (a.alt ?? [])
+              .map((s) => fuzzyDistance(normalize(s), q))
+              .reduce((m, v) => Math.min(m, v), 99);
+            return { ...a, d: Math.min(d1, d2, d3) };
           })
           .filter((a) => a.d <= 2 && !substring.some((s) => s.iata === a.iata))
           .sort((x, y) => x.d - y.d)

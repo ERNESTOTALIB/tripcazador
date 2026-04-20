@@ -52,9 +52,17 @@ class TestInMemoryCache:
 
 
 class TestMissingDealsFile:
-    def test_returns_empty_response_not_crash(self, tmp_path, monkeypatch):
-        # Apuntamos a un dir SIN deals.json
+    """
+    Cuando no hay deals.json la API sirve un set de semilla (seed) para
+    que el front no se vea vacío. El comportamiento previo (lista vacía)
+    se mantiene con `SEED_DEALS_DISABLE=1`.
+    Ver también: tests/api/test_api_seed_fallback.py
+    """
+    def test_does_not_crash_without_deals_json(self, tmp_path, monkeypatch):
+        # Apuntamos a un dir SIN deals.json y desactivamos el seed para
+        # aislar el contrato: "si no hay datos, no crashea, devuelve lista".
         monkeypatch.setenv("DEALS_DIR", str(tmp_path))
+        monkeypatch.setenv("SEED_DEALS_DISABLE", "1")
         import importlib
         import main as api_main  # type: ignore
         importlib.reload(api_main)
