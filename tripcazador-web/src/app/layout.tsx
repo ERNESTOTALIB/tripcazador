@@ -239,7 +239,11 @@ export default function RootLayout({
             <p className="mt-2 text-xs text-gray-600">
               Algunos enlaces son de afiliado. Si reservas a través de ellos, recibimos una pequeña comisión sin coste adicional para ti.
             </p>
-            <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500">
+            <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500 flex-wrap">
+              <a href="/estadisticas" className="hover:text-amber-400 transition-colors">Estadísticas</a>
+              <span className="text-gray-700">·</span>
+              <a href="/telegram" className="hover:text-amber-400 transition-colors">Telegram</a>
+              <span className="text-gray-700">·</span>
               <a href="/legal" className="hover:text-amber-400 transition-colors">Aviso legal</a>
               <span className="text-gray-700">·</span>
               <a href="/legal#privacidad" className="hover:text-amber-400 transition-colors">Privacidad</a>
