@@ -6,6 +6,7 @@ import SearchBar from "@/components/SearchBar";
 import { DestinationCard } from "@/components/DestinationCard";
 import { Testimonials } from "@/components/Testimonials";
 import { PopularSearches } from "@/components/PopularSearches";
+import { EmptyRadar } from "@/components/EmptyRadar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -54,42 +55,23 @@ async function TopDeals() {
   const deals = await getTopDeals(9);
   if (!deals || deals.length === 0) {
     return (
-      <div className="panel text-center py-16 px-6">
-        <div className="mx-auto w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-4">
-          <svg
-            className="w-8 h-8 text-amber-400 animate-spin"
-            style={{ animationDuration: "3s" }}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" />
-          </svg>
-        </div>
-        <p className="text-lg text-gray-200 mt-2">
-          El motor está rastreando en este momento.
-        </p>
-        <p className="text-sm text-gray-400 mt-2 max-w-md mx-auto">
-          Estamos comprobando 80 aeropuertos europeos y 750+ aerolíneas. Vuelve
-          en unas horas o suscríbete al canal de Telegram para no perderte el próximo chollo.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <a
-            href="/telegram"
-            className="px-5 py-2.5 btn-gradient text-black font-semibold rounded-xl transition-all shadow-lg shadow-amber-500/20"
-          >
-            Unirme al Telegram
-          </a>
-          <a
-            href="/destinos"
-            className="px-5 py-2.5 glass text-white font-semibold rounded-xl hover:border-amber-500/40 transition-colors"
-          >
-            Ver destinos
-          </a>
-        </div>
-      </div>
+      <EmptyRadar
+        title="El motor está rastreando en este momento."
+        subtitle="Estamos comprobando 80 aeropuertos europeos y cientos de aerolíneas. Vuelve en unas horas o suscríbete al canal de Telegram para no perderte el próximo chollo."
+      >
+        <a
+          href="/telegram"
+          className="cta-lift px-5 py-2.5 btn-gradient text-black font-semibold rounded-xl transition-all shadow-lg shadow-amber-500/20"
+        >
+          Unirme al Telegram
+        </a>
+        <a
+          href="/destinos"
+          className="px-5 py-2.5 glass text-white font-semibold rounded-xl hover:border-amber-500/40 transition-colors"
+        >
+          Ver destinos
+        </a>
+      </EmptyRadar>
     );
   }
 
@@ -223,7 +205,7 @@ export default async function HomePage() {
           </svg>
         </div>
 
-        <div className="text-center py-20 sm:py-28 px-6 space-y-5">
+        <div className="hero-entrance text-center py-20 sm:py-28 px-6 space-y-5">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-medium backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
             Motor activo — rastreando aeropuertos en tiempo real
@@ -246,7 +228,7 @@ export default async function HomePage() {
           <div className="flex flex-wrap justify-center gap-3 pt-2">
             <a
               href="/deals"
-              className="px-6 py-3 btn-gradient text-black font-semibold rounded-xl transition-all shadow-lg shadow-amber-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+              className="cta-lift px-6 py-3 btn-gradient text-black font-semibold rounded-xl transition-all shadow-lg shadow-amber-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
             >
               Ver todos los deals →
             </a>
@@ -406,7 +388,7 @@ export default async function HomePage() {
             {
               n: "01",
               t: "Rastreo 24/7",
-              d: "El motor busca cada 6 horas en Kiwi, SkyScanner, Ryanair, Travelpayouts y RapidAPI.",
+              d: "Rastreamos cientos de aerolíneas y agregadores cada 6 horas, sin descanso.",
               icon: (
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
                   <circle cx="12" cy="12" r="9" />

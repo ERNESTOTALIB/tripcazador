@@ -254,7 +254,7 @@ export async function searchDeals(params: SearchParams): Promise<Deal[]> {
 }
 
 // ──────────────────────────────────────────────
-// Live search — llama a RapidAPI + Ryanair en caliente vía FastAPI
+// Live search — busca en caliente contra varios proveedores vía FastAPI
 // ──────────────────────────────────────────────
 export interface LiveSearchParams {
   origin: string;        // IATA (MAD, JFK…)
@@ -265,8 +265,8 @@ export interface LiveSearchParams {
 }
 
 /**
- * Llama a /api/search/live del FastAPI. El backend orquesta RapidAPI Sky
- * Scrapper + Ryanair en paralelo, cachea 15 min y devuelve top-N por precio.
+ * Llama a /api/search/live del FastAPI. El backend orquesta varios proveedores
+ * en paralelo, cachea 15 min y devuelve top-N por precio.
  * Timeout de cliente: 25s (el server corta a 18s, dejamos margen para red).
  */
 export async function searchDealsLive(params: LiveSearchParams): Promise<Deal[]> {

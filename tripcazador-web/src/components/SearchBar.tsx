@@ -29,6 +29,8 @@ import {
   fuzzyDistance,
   type AirportGroup,
 } from "@/lib/search-groups";
+import { DealCardSkeletonGrid } from "@/components/DealCardSkeleton";
+import { FlexDatesStrip } from "@/components/FlexDatesStrip";
 
 // ──────────────────────────────────────────────────────────────
 // Alternativas cuando la búsqueda en vivo no devuelve nada.
@@ -744,7 +746,31 @@ export default function SearchBar({
       {/* Resultados */}
       {searched && (
         <div className="mt-6" aria-live="polite" aria-atomic="true">
-          {results.length > 0 ? (
+          {/* Fechas flexibles: tira de ±3 días solo con fecha concreta + flex activo.
+              Al click reescribimos dateFrom y relanzamos handleSubmit en el
+              siguiente frame para que el setState haya propagado. */}
+          {!loading && flexDates && dateFrom && (
+            <div className="mb-4">
+              <p className="text-xs uppercase tracking-wider text-slate-500 mb-2">
+                Fechas cercanas
+              </p>
+              <FlexDatesStrip
+                dateFrom={dateFrom}
+                results={results}
+                onSelect={(iso) => {
+                  if (iso === dateFrom) return;
+                  setDateFrom(iso);
+                  requestAnimationFrame(() => setTimeout(() => handleSubmit(), 40));
+                }}
+              />
+            </div>
+          )}
+
+          {loading ? (
+            // Skeletons mientras cargan. Nos evita el flash de "0 ofertas"
+            // cuando la búsqueda tarda 5-10s (live search).
+            <DealCardSkeletonGrid count={6} />
+          ) : results.length > 0 ? (
             <>
               <p className="text-slate-300 mb-3 text-sm">
                 {results.length} {results.length === 1 ? "oferta" : "ofertas"} coinciden con tu búsqueda.

@@ -61,7 +61,7 @@ export function PopularSearches() {
           Prueba una búsqueda
         </h2>
         <p className="text-sm text-gray-400 mt-1">
-          Precios reales en vivo (RapidAPI + Ryanair). Tarda unos 5-10 segundos.
+          Precios reales en vivo entre cientos de aerolíneas. Tarda 5-10 segundos.
         </p>
       </div>
       <div

@@ -47,6 +47,17 @@ export type AnalyticsEvent =
         checkin?: string;
         checkout?: string;
       };
+    }
+  | {
+      // Creación de una alerta de precio (modal /components/PriceAlertModal).
+      // Usamos el mismo modelo de destination "(any)" que search_submitted
+      // para separar alertas por ruta vs "quiero cualquier chollo".
+      name: "price_alert_created";
+      params: {
+        origin: string;
+        destination: string;
+        target_price: number | null;
+      };
     };
 
 // Shape de gtag en runtime. No exponemos el tipo completo para no acoplarnos

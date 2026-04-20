@@ -1,5 +1,6 @@
 import { getDeals } from "@/lib/api";
-import { DealRow } from "@/components/DealCard";
+import { DealsListClient } from "@/components/DealsListClient";
+import { PriceAlertButton } from "@/components/PriceAlertModal";
 import { JsonLd } from "@/components/JsonLd";
 import type { Metadata } from "next";
 
@@ -80,15 +81,21 @@ export default async function DealsPage({
       </nav>
 
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-white">Todos los deals</h1>
-        <p className="text-gray-400 mt-1">
-          {stats.total} deals activos · Actualizado hace{" "}
-          {Math.round(
-            (Date.now() - new Date(data.generated_at).getTime()) / 60000
-          )}{" "}
-          min
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Todos los deals</h1>
+          <p className="text-gray-400 mt-1">
+            {stats.total} deals activos · Actualizado hace{" "}
+            {Math.round(
+              (Date.now() - new Date(data.generated_at).getTime()) / 60000,
+            )}{" "}
+            min
+          </p>
+        </div>
+        <PriceAlertButton
+          className="self-start"
+          label="🔔 Avisarme cuando baje"
+        />
       </div>
 
       {/* Filtros */}
@@ -169,21 +176,8 @@ export default async function DealsPage({
         </div>
       </div>
 
-      {/* Lista de deals */}
-      {deals.length > 0 ? (
-        <div className="space-y-3">
-          {deals.map((deal) => (
-            <DealRow key={deal.id} deal={deal} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20 text-gray-500">
-          <p className="text-lg">Sin resultados — no hay ofertas con estos filtros</p>
-          <a href="/deals" className="text-amber-400 hover:underline mt-2 block">
-            Ver todos los deals →
-          </a>
-        </div>
-      )}
+      {/* Lista de deals con tabs de ordenación client-side */}
+      <DealsListClient deals={deals} />
     </div>
   );
 }
