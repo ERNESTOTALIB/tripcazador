@@ -1,0 +1,153 @@
+---
+title: "Cómo funciona un motor de chollos de vuelo: la anatomía de TripCazador"
+description: "Por qué detectar un error fare requiere más que mirar Google Flights. Explicamos en detalle cómo escaneamos, clasificamos y validamos cada oferta: arquitectura, fuentes de datos, clasificadores, circuit breakers y control de calidad."
+slug: "anatomia-motor-chollos-vuelos"
+publishedAt: "2026-04-20"
+tags: ["tripcazador", "motor", "tecnología", "error fares", "chollos"]
+readingTime: 17
+author: "Equipo TripCazador"
+heroImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80"
+---
+
+Detectar un chollo de vuelo a tiempo no es mirar Google Flights y decidir que 450 € a Nueva York está barato. Es mirar 400 rutas simultáneamente, comparar cada precio contra una base histórica de 90 días, filtrar el ruido de las promociones y las tarifas inválidas, y alertar en minutos cuando algo se sale del patrón. A escala, eso requiere un motor. Este artículo explica cómo está construido el nuestro.
+
+No es un pitch. Es ingeniería. Si ya has trabajado con APIs de viajes, reconocerás decisiones que hemos tomado y probablemente discreparás de algunas. Si nunca te has metido en las tripas de un sistema así, te vas con una imagen clara de qué implica construir uno que funcione 24/7 sin caer y sin generar falsos positivos que minen la credibilidad de las alertas.
+
+## Visión general
+
+El motor de TripCazador tiene cuatro componentes:
+
+**Un hunter**: el proceso que escanea APIs externas y sintetiza tarifas. Corre en un cron cada 6 horas (en GitHub Actions, para evitar pagar servidores dedicados) y también se puede invocar bajo demanda.
+
+**Un clasificador**: toma cada tarifa encontrada y decide si es un chollo (y de qué tipo) comparándola contra el histórico. Aquí es donde se decide si algo es CRÍTICO, ERROR, ANOMALÍA u OFERTA.
+
+**Un exportador**: genera `deals.json`, el archivo que consume el frontend y la API pública. Incluye ya todo lo necesario para rendering sin cálculos extra en runtime.
+
+**Un servidor de alertas**: cruza las tarifas nuevas contra las alertas configuradas por usuarios y dispara emails/Telegram.
+
+Los cuatro viven en repos separados para limitar el blast radius: si el hunter rompe, el resto del sistema sigue sirviendo los últimos `deals.json` válidos. Si la web rompe, las alertas siguen saliendo. Esta separación de responsabilidades cuesta un poco más de ingeniería, pero ha sido crucial para mantener la disponibilidad.
+
+## Fuentes de datos: de dónde salen los precios
+
+Ningún motor de chollos serio usa una única fuente. Los precios varían entre GDS y entre motores de búsqueda por razones que son parte técnicas, parte comerciales. Usamos cuatro fuentes en rotación:
+
+**Amadeus (a través de API de terceros)**. Es el GDS dominante en Europa y tiene la mayor cobertura de tarifas publicadas por aerolíneas europeas. Es caro por query, por lo que lo usamos con parsimonia y sobre rutas donde sabemos que aporta valor (largo radio europeo).
+
+**Travelpayouts**. Un agregador con API muy razonablemente precificada que indexa tarifas de múltiples fuentes. Es nuestra fuente de mayor volumen y la que usamos para rutas intra-europeas de corto radio. No siempre tiene la tarifa más baja, pero cubre mucho terreno por poco dinero.
+
+**RapidAPI (varios proveedores)**. Usamos dos endpoints en RapidAPI que dan tarifas de fuentes no indexadas por los GDS tradicionales, útiles para detectar error fares en aerolíneas asiáticas y africanas. Es la fuente más ruidosa y la que más validación requiere, pero también la que más error fares interesantes ha dado en los últimos 12 meses.
+
+**Ryanair directo**. Ryanair no publica sus tarifas a los GDS tradicionales (ni a Amadeus, ni a Sabre, ni a la mayoría de agregadores). Si quieres precios de Ryanair, tienes que ir a su API pública. La consumimos para corto radio intra-europeo.
+
+Tuvimos durante un tiempo integración con Kiwi.com y Duffel, pero las retiramos. Kiwi porque las tarifas que vendía eran combinaciones "virtual interlining" que las aerolíneas no respetaban si había cambios; Duffel porque su pricing no competía en volumen con Travelpayouts.
+
+### Por qué no SerpAPI ni Google Flights scraping
+
+La pregunta natural es: ¿por qué no simplemente scrapear Google Flights? Hay tres razones.
+
+La primera es operativa: Google es especialmente bueno detectando tráfico automatizado y bloquea muy rápido. Mantener un scraper estable cuesta más ingeniería de la que vale.
+
+La segunda es legal: los términos de servicio de Google prohíben el scraping sistemático, y aunque la frontera legal es gris, preferimos no caminar por ahí.
+
+La tercera y más importante: Google Flights no tiene los precios más bajos en muchos casos. Los error fares rara vez aparecen en Google Flights antes de aparecer en las fuentes directas. Si vas detrás de Google, siempre vas tarde.
+
+## El clasificador: de "tarifa" a "chollo"
+
+Esta es la parte más interesante y la que más hemos iterado. El input es una tarifa concreta: "BCN-JFK, 2026-07-15, 2026-07-25, Economy, Iberia, 520 €". El output es una clasificación: **¿es un chollo?** y si sí, ¿de qué tipo?
+
+### El percentil 10 como línea base
+
+Para cada ruta-cabina tenemos un histórico de tarifas de los últimos 90 días. Calculamos el percentil 10 de esos precios (p10). Ese es nuestro baseline. Una tarifa está "barata" si está por debajo del p10; cuán barata, define la clasificación:
+
+- **CRÍTICO**: precio < 30 % del p10 (≥70 % de ahorro sobre la línea "barata"). Esto es casi siempre un error fare real.
+- **ERROR**: precio entre 30 % y 50 % del p10. Posible error fare, o una oferta muy agresiva.
+- **ANOMALÍA**: precio entre 50 % y 70 % del p10. Significativamente bajo pero no catastrófico.
+- **OFERTA**: precio entre 70 % y 90 % del p10. Simplemente un buen precio.
+
+Usamos percentiles y no media porque la distribución de precios es muy asimétrica: hay muchos precios altos y pocos muy bajos, y la media está sesgada por la cola derecha. El p10 nos da una idea estable del suelo de la ruta.
+
+### Por qué 90 días y no 30 ni 365
+
+Con 30 días capturamos mal la estacionalidad, especialmente en rutas que cambian mucho entre alta y baja temporada. Con 365 días metemos ruido de temporadas antiguas cuando la estructura de precios ya ha cambiado. 90 días es un compromiso razonable: captura al menos un ciclo semanal completo y suele capturar la temporada actual.
+
+Para algunas rutas con estacionalidad muy fuerte (ej. Navidad, verano) deberíamos usar ventanas específicas, pero no lo hacemos todavía. Es una mejora pendiente.
+
+### El problema de las tarifas "fantasma"
+
+Una tarifa en la API no siempre significa que esa tarifa se pueda reservar. A veces el GDS devuelve un precio que, al intentar emitir el ticket, da error "class not available". Esto es especialmente frecuente con tarifas de last-seat en Business.
+
+Para filtrar esto, cuando una tarifa cruza el umbral de CRÍTICO (que es donde más daño haría un falso positivo), nuestro motor hace una segunda query con deep link a la web de la aerolínea o a la plataforma de reservas. Si la tarifa no aparece ahí, se marca como "unverified" y no se publica en la alerta de alto valor.
+
+Este paso añade latencia (unos 15-30 segundos por verificación), pero reduce drásticamente los falsos positivos en las alertas importantes. Para tarifas de ERROR o ANOMALÍA no hacemos esta verificación: la publicamos directamente con un badge "sin verificar" y que el usuario decida.
+
+## Circuit breakers: cómo sobrevivir a APIs que caen
+
+Las APIs externas caen. Mucho. Cualquiera que haya construido un sistema productivo basado en APIs de terceros sabe que hay que asumir fallos constantes y diseñar para ellos.
+
+Usamos un patrón de circuit breaker con tres estados:
+
+**Closed**: la API funciona normalmente, las llamadas pasan.
+
+**Open**: la API ha fallado repetidamente (ej. 3 errores 429 o 5xx en una ventana de 60 segundos). Dejamos de llamarla durante un periodo configurable (típicamente 15 minutos). Todas las llamadas durante este periodo se fallan rápido, sin latencia.
+
+**Half-open**: pasado el periodo, permitimos una sola llamada de prueba. Si funciona, volvemos a Closed. Si falla, volvemos a Open y duplicamos el periodo de espera (exponential backoff).
+
+Este patrón nos ha salvado varias veces. En febrero de 2026, RapidAPI empezó a devolver 429s de forma masiva (probablemente porque otro cliente suyo estaba atacando al endpoint). Sin circuit breaker, nuestro hunter se habría quedado bloqueado esperando timeouts, habría tardado horas en terminar un run y habría consumido todos los minutos de GitHub Actions. Con el breaker, detectó el problema en 60 segundos, dejó de llamar a esa fuente y siguió trabajando con las otras tres. El run completo en 8 minutos como siempre.
+
+### Fallback graceful
+
+Cuando un breaker abre, el hunter no falla: simplemente excluye esa fuente del run actual. Si tres de cuatro breakers están abiertos, el run genera un `deals.json` con menos cobertura pero válido. El frontend nunca sabe que una fuente cayó; solo ve que hay menos deals que de costumbre.
+
+Esto es crucial para la experiencia de usuario. Preferimos servir un `deals.json` parcial a servir un error 500 o una página en blanco.
+
+## El problema del cache y la staleness
+
+Los precios cambian en minutos. Nuestro cron corre cada 6 horas. ¿Cómo conciliamos eso?
+
+Cada tarifa lleva un `found_at` timestamp. El frontend muestra "Actualizado hace X minutos" para que el usuario sepa cuán fresca es la información. Para rutas de corto radio, donde los precios se mueven más rápido, el usuario debería asumir que hay un margen de error de ±15-20 %.
+
+Para las alertas de alto valor (CRÍTICO), el flujo es diferente. En cuanto el hunter detecta una, dispara un evento que genera una notificación inmediata. El usuario ve el deal en menos de 30 segundos desde que apareció. Si al cliquear ya no está, es porque la ventana se cerró — un riesgo inherente al juego.
+
+### Por qué no polling en tiempo real
+
+Una pregunta natural: ¿por qué no tener un hunter corriendo permanentemente en vez de cada 6 horas? La respuesta es económica.
+
+Cada run del hunter consume aproximadamente 40.000 llamadas a APIs de pago. A un coste promedio de 0,001 € por llamada, son 40 € por run. Al día, con cronogramas cada 6 horas, son 160 € diarios. Al mes, 4.800 €.
+
+Tener un hunter continuo costaría más de 20 veces esa cantidad. Para un proyecto bootstrapped, no es sostenible. Si en algún momento tuviéramos ingresos que lo justificasen, acortaríamos la frecuencia del cron. Por ahora, 6 horas es el mejor balance entre coste y timeliness.
+
+## Infraestructura y deploy
+
+**Hunter**: corre en GitHub Actions. 2.000 minutos/mes gratis en repos privados, suficiente para 4 runs/día de 8 minutos cada uno (~960 min/mes). Los secrets (API keys) viven en GitHub Secrets y nunca tocan logs.
+
+**API**: FastAPI + Python 3.11 sobre un contenedor Docker en una VM pequeña. La API solo sirve lectura de `deals.json`, que es un fichero plano actualizado por el hunter via POST autenticado. No hay base de datos transaccional en el path crítico de lectura.
+
+**Frontend**: Next.js 14 sobre Vercel. Server components para las páginas que hacen fetch a la API (deals, destinos, estadísticas) con ISR de 5 minutos. El coste de Vercel es cero mientras estemos en el plan hobby.
+
+**Observabilidad**: Sentry para errores de frontend y backend, Better Stack (Uptime) para health checks cada minuto, y un canal de Telegram privado donde el motor publica anomalías operativas (circuit breakers abiertos, latencias raras, errores de exportación).
+
+## Seguridad
+
+Tres cosas importantes:
+
+**Las API keys nunca están en el repo**. Vive todo en GitHub Secrets + Vercel env vars + Fly.io secrets. El repo tiene un pre-commit hook con `detect-secrets` que escanea antes de cada commit.
+
+**Rate limiting en la API pública**. Usamos SlowAPI con límite de 100 req/min por IP. Suficiente para uso legítimo y corta los bots agresivos.
+
+**HMAC para endpoints admin**. Los endpoints que modifican estado (subir deals.json, enviar alertas) requieren un token HMAC con timestamp. No basta con tener el token viejo; hay que firmar el request con uno actual.
+
+## Qué mejoraríamos si tuviéramos más tiempo
+
+Ningún sistema está terminado. Las tres cosas que sabemos que hay que mejorar:
+
+**Estacionalidad en el baseline**. Hoy usamos una ventana móvil de 90 días para todo. Debería ser ventana específica por ruta según su patrón estacional.
+
+**Machine learning para clasificación**. Los umbrales actuales (30 % / 50 % / 70 %) son heurísticos. Con suficiente data, un modelo aprendería umbrales óptimos por ruta.
+
+**Price history más profundo**. Guardamos 90 días para el baseline pero solo retenemos 30 días de histórico detallado. Para gráficas de precio por deal (que nos piden mucho) necesitaríamos retener más.
+
+## Por qué publicamos esta arquitectura
+
+La respuesta corta: transparencia. Construir un motor de chollos es relativamente fácil en demo; mantenerlo fiable y rentable es difícil. Queremos que los usuarios entiendan por qué confiar en nuestras alertas, y que los competidores puedan construir mejor lo que nosotros hacemos, porque eso al final beneficia a los viajeros.
+
+Si eres desarrollador y te interesa el código o tienes ideas para mejorar el clasificador, el repo es parcialmente público. Escríbenos y lo hablamos.
