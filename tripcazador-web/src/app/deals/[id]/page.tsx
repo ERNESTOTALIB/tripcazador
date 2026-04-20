@@ -61,15 +61,16 @@ export async function generateMetadata({
       description,
       url: canonical,
       type: "article",
-      images: deal.image_url
-        ? [{ url: deal.image_url, width: 1200, height: 630, alt: deal.city_to }]
-        : undefined,
+      // Nota: NO seteamos `images` aquí — dejamos que la convención de
+      // archivo `opengraph-image.tsx` en esta misma carpeta inyecte el PNG
+      // dinámico generado con next/og (precio grande, ciudades, ahorro).
+      // Mucho mejor CTR en WhatsApp/Telegram que una foto genérica.
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: deal.image_url ? [deal.image_url] : undefined,
+      // Igual que arriba: convención de archivo se encarga del image.
     },
     robots: {
       index: true,
