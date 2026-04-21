@@ -373,4 +373,165 @@ export const TOP_AIRPORTS: AirportEntry[] = [
   { iata: "CHC", city: "Christchurch", country: "Nueva Zelanda" },
   { iata: "NAN", city: "Nadi", country: "Fiyi", alt: ["fiji"] },
   { iata: "PPT", city: "Papeete", country: "Polinesia Francesa", alt: ["tahiti"] },
+  { iata: "HBA", city: "Hobart", country: "Australia", alt: ["tasmania"] },
+  { iata: "LST", city: "Launceston", country: "Australia" },
+  { iata: "OOL", city: "Gold Coast", country: "Australia", alt: ["coolangatta"] },
+  { iata: "MCY", city: "Sunshine Coast", country: "Australia", alt: ["maroochydore"] },
+
+  // ── Islas griegas + Balcanes (ampliación) ──
+  { iata: "ZTH", city: "Zante", country: "Grecia", alt: ["zakynthos"] },
+  { iata: "KGS", city: "Kos", country: "Grecia" },
+  { iata: "SMI", city: "Samos", country: "Grecia" },
+  { iata: "MJT", city: "Mitilene", country: "Grecia", alt: ["lesbos", "lesvos", "mytilene"] },
+  { iata: "PVK", city: "Preveza", country: "Grecia", alt: ["lefkada"] },
+  { iata: "CHQ", city: "La Canea", country: "Grecia", alt: ["chania", "creta", "crete"] },
+  { iata: "VAR", city: "Varna", country: "Bulgaria", alt: ["varna black sea"] },
+  { iata: "BOJ", city: "Burgas", country: "Bulgaria" },
+  { iata: "PRN", city: "Pristina", country: "Kosovo", alt: ["prishtina"] },
+  { iata: "TGD", city: "Podgorica", country: "Montenegro" },
+  { iata: "TIA", city: "Tirana", country: "Albania", alt: ["mother teresa"] },
+  { iata: "SJJ", city: "Sarajevo", country: "Bosnia y Herzegovina" },
+  { iata: "SKP", city: "Skopje", country: "Macedonia del Norte" },
+  { iata: "CLJ", city: "Cluj-Napoca", country: "Rumanía", alt: ["cluj"] },
+  { iata: "TSR", city: "Timișoara", country: "Rumanía" },
+
+  // ── Bálticos (ampliación) ──
+  { iata: "KUN", city: "Kaunas", country: "Lituania" },
+  { iata: "PLQ", city: "Palanga", country: "Lituania" },
+
+  // ── Cáucaso ──
+  { iata: "GYD", city: "Bakú", country: "Azerbaiyán", alt: ["baku", "heydar aliyev"] },
+  { iata: "EVN", city: "Ereván", country: "Armenia", alt: ["yerevan", "zvartnots"] },
+  { iata: "TBS", city: "Tiflis", country: "Georgia", alt: ["tbilisi"] },
+  { iata: "BUS", city: "Batumi", country: "Georgia" },
+
+  // ── Europa regional (rutas ERJ/Vueling) ──
+  { iata: "TRS", city: "Trieste", country: "Italia" },
+  { iata: "AGB", city: "Augsburgo", country: "Alemania", alt: ["augsburg"] },
+  { iata: "SPC", city: "La Palma", country: "España", alt: ["isla bonita", "canarias"] },
+
+  // ── Azores / Madeira (ampliación) ──
+  { iata: "TER", city: "Terceira", country: "Portugal", alt: ["lajes", "azores"] },
+
+  // ── Francia regional ──
+  { iata: "AJA", city: "Ajaccio", country: "Francia", alt: ["corcega", "corsica", "napoléon bonaparte"] },
+  { iata: "BZR", city: "Béziers", country: "Francia", alt: ["beziers"] },
+  { iata: "EBU", city: "Saint-Étienne", country: "Francia", alt: ["bouthéon"] },
+  { iata: "PGF", city: "Perpiñán", country: "Francia", alt: ["perpignan"] },
+  { iata: "BES", city: "Brest", country: "Francia", alt: ["bretagne"] },
+  { iata: "TLN", city: "Toulon", country: "Francia", alt: ["hyères", "costa azul sur"] },
+  { iata: "FNI", city: "Nîmes", country: "Francia", alt: ["nimes"] },
+  { iata: "LDE", city: "Lourdes", country: "Francia", alt: ["tarbes"] },
+  { iata: "RNS", city: "Rennes", country: "Francia" },
+  { iata: "LIL", city: "Lille", country: "Francia" },
+
+  // ── Reino Unido regional ──
+  { iata: "ABZ", city: "Aberdeen", country: "Reino Unido", alt: ["scotland"] },
+  { iata: "BFS", city: "Belfast Internacional", country: "Reino Unido", alt: ["northern ireland"] },
+  { iata: "BHD", city: "Belfast City", country: "Reino Unido" },
+  { iata: "LBA", city: "Leeds Bradford", country: "Reino Unido", alt: ["leeds"] },
+  { iata: "EMA", city: "East Midlands", country: "Reino Unido", alt: ["nottingham"] },
+  { iata: "SOU", city: "Southampton", country: "Reino Unido" },
+
+  // ── Islandia / Escandinavia ampliación ──
+  { iata: "MOL", city: "Molde", country: "Noruega" },
+  { iata: "TOS", city: "Tromsø", country: "Noruega", alt: ["tromso", "auroras boreales", "northern lights"] },
+  { iata: "KRS", city: "Kristiansand", country: "Noruega" },
+  { iata: "SVG", city: "Stavanger", country: "Noruega", alt: ["pulpit rock"] },
+  { iata: "AES", city: "Ålesund", country: "Noruega", alt: ["aalesund"] },
+  { iata: "LPI", city: "Linköping", country: "Suecia", alt: ["linkoping"] },
+  { iata: "UME", city: "Umeå", country: "Suecia", alt: ["umea"] },
+  { iata: "LLA", city: "Luleå", country: "Suecia", alt: ["lulea"] },
+  { iata: "KRN", city: "Kiruna", country: "Suecia", alt: ["ice hotel", "lappland"] },
+  { iata: "TKU", city: "Turku", country: "Finlandia" },
+  { iata: "OUL", city: "Oulu", country: "Finlandia" },
+  { iata: "TMP", city: "Tampere", country: "Finlandia" },
+  { iata: "RVN", city: "Rovaniemi", country: "Finlandia", alt: ["lapland", "santa claus", "laponia"] },
+  { iata: "IVL", city: "Ivalo", country: "Finlandia", alt: ["inari", "lapland"] },
+
+  // ── Rusia (hubs) ──
+  { iata: "SVO", city: "Moscú Sheremétyevo", country: "Rusia", alt: ["moscow sheremetyevo", "moscú"] },
+  { iata: "VKO", city: "Moscú Vnúkovo", country: "Rusia", alt: ["moscow vnukovo"] },
+  { iata: "LED", city: "San Petersburgo", country: "Rusia", alt: ["st petersburg", "pulkovo", "leningrad"] },
+  { iata: "KGD", city: "Kaliningrado", country: "Rusia", alt: ["kaliningrad"] },
+  { iata: "AER", city: "Sochi", country: "Rusia", alt: ["mar negro"] },
+
+  // ── EEUU (ampliación) ──
+  { iata: "HOU", city: "Houston Hobby", country: "EE. UU.", alt: ["texas"] },
+  { iata: "AUS", city: "Austin", country: "EE. UU.", alt: ["texas"] },
+  { iata: "MEM", city: "Memphis", country: "EE. UU.", alt: ["tennessee"] },
+  { iata: "ELP", city: "El Paso", country: "EE. UU." },
+  { iata: "SLC", city: "Salt Lake City", country: "EE. UU.", alt: ["utah"] },
+  { iata: "BOI", city: "Boise", country: "EE. UU.", alt: ["idaho"] },
+  { iata: "OKC", city: "Oklahoma City", country: "EE. UU." },
+  { iata: "RSW", city: "Fort Myers", country: "EE. UU.", alt: ["florida", "southwest florida"] },
+  { iata: "JAX", city: "Jacksonville", country: "EE. UU.", alt: ["florida"] },
+  { iata: "CHS", city: "Charleston", country: "EE. UU.", alt: ["south carolina"] },
+  { iata: "BTV", city: "Burlington", country: "EE. UU.", alt: ["vermont"] },
+  { iata: "BUF", city: "Búfalo", country: "EE. UU.", alt: ["buffalo", "niagara"] },
+  { iata: "RDU", city: "Raleigh-Durham", country: "EE. UU.", alt: ["north carolina", "research triangle"] },
+  { iata: "PNS", city: "Pensacola", country: "EE. UU.", alt: ["florida panhandle"] },
+  // ── México / Centroamérica (ampliación) ──
+  { iata: "HMO", city: "Hermosillo", country: "México" },
+  { iata: "MID", city: "Mérida", country: "México", alt: ["yucatán"] },
+  { iata: "OAX", city: "Oaxaca", country: "México" },
+  { iata: "SAL", city: "San Salvador", country: "El Salvador" },
+  { iata: "TGU", city: "Tegucigalpa", country: "Honduras" },
+  { iata: "SAP", city: "San Pedro Sula", country: "Honduras" },
+  { iata: "MGA", city: "Managua", country: "Nicaragua" },
+  { iata: "GEO", city: "Georgetown", country: "Guyana" },
+  { iata: "PBM", city: "Paramaribo", country: "Surinam" },
+
+  // ── Sudamérica (ampliación) ──
+  { iata: "MZA", city: "Mendoza", country: "Argentina", alt: ["aconcagua", "wine", "vino"] },
+  { iata: "BRC", city: "Bariloche", country: "Argentina" },
+  { iata: "FTE", city: "El Calafate", country: "Argentina", alt: ["perito moreno"] },
+  { iata: "AQP", city: "Arequipa", country: "Perú", alt: ["colca"] },
+  { iata: "SMR", city: "Santa Marta", country: "Colombia", alt: ["tayrona"] },
+  { iata: "CLO", city: "Cali", country: "Colombia" },
+  { iata: "BAQ", city: "Barranquilla", country: "Colombia" },
+
+  // ── Caribe (ampliación) ──
+  { iata: "AUA", city: "Aruba", country: "Aruba", alt: ["oranjestad"] },
+  { iata: "CUR", city: "Curazao", country: "Curazao", alt: ["curacao", "willemstad"] },
+  { iata: "BON", city: "Bonaire", country: "Países Bajos caribeños" },
+  { iata: "SXM", city: "San Martín", country: "San Martín", alt: ["st maarten", "sint maarten", "princess juliana"] },
+  { iata: "ANU", city: "Antigua", country: "Antigua y Barbuda" },
+  { iata: "SKB", city: "Saint Kitts", country: "San Cristóbal y Nieves", alt: ["basseterre"] },
+  { iata: "DOM", city: "Dominica", country: "Dominica", alt: ["roseau"] },
+  { iata: "GND", city: "Granada", country: "Granada (Caribe)" },
+  { iata: "FDF", city: "Fort-de-France", country: "Martinica", alt: ["martinique"] },
+  { iata: "PTP", city: "Pointe-à-Pitre", country: "Guadalupe", alt: ["guadeloupe"] },
+  { iata: "BGI", city: "Bridgetown", country: "Barbados" },
+  { iata: "POP", city: "Puerto Plata", country: "República Dominicana" },
+  { iata: "STI", city: "Santiago de los Caballeros", country: "República Dominicana" },
+  { iata: "LRM", city: "La Romana", country: "República Dominicana" },
+  { iata: "POS", city: "Puerto España", country: "Trinidad y Tobago", alt: ["port of spain"] },
+  { iata: "GCM", city: "Gran Caimán", country: "Islas Caimán", alt: ["grand cayman", "george town"] },
+  { iata: "PLS", city: "Providenciales", country: "Islas Turcas y Caicos", alt: ["turks and caicos"] },
+  { iata: "FPO", city: "Freeport", country: "Bahamas" },
+  { iata: "CAY", city: "Cayena", country: "Guayana Francesa", alt: ["cayenne"] },
+
+  // ── Japón y Corea (ampliación) ──
+  { iata: "SDJ", city: "Sendai", country: "Japón" },
+  { iata: "HIJ", city: "Hiroshima", country: "Japón" },
+  { iata: "FSZ", city: "Shizuoka", country: "Japón", alt: ["monte fuji"] },
+  { iata: "OKJ", city: "Okayama", country: "Japón" },
+  { iata: "CJU", city: "Jeju", country: "Corea del Sur", alt: ["cheju"] },
+  { iata: "PUS", city: "Busan", country: "Corea del Sur", alt: ["gimhae"] },
+  { iata: "TAE", city: "Daegu", country: "Corea del Sur" },
+
+  // ── Groenlandia ──
+  { iata: "GOH", city: "Nuuk", country: "Groenlandia", alt: ["godthåb"] },
+
+  // ── África (ampliación) ──
+  { iata: "TSE", city: "Astaná", country: "Kazajistán", alt: ["astana", "nur-sultan"] },
+  { iata: "DLA", city: "Duala", country: "Camerún", alt: ["douala"] },
+  { iata: "NSI", city: "Yaundé", country: "Camerún", alt: ["yaounde"] },
+  { iata: "LBV", city: "Libreville", country: "Gabón" },
+  { iata: "EBB", city: "Entebbe", country: "Uganda", alt: ["kampala"] },
+  { iata: "KGL", city: "Kigali", country: "Ruanda" },
+  { iata: "MPM", city: "Maputo", country: "Mozambique" },
+  { iata: "APL", city: "Nampula", country: "Mozambique" },
+  { iata: "MJV", city: "Murcia (RMU)", country: "España", alt: ["corvera", "cartagena"] },
 ];
