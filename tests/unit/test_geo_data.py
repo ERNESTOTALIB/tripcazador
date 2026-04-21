@@ -61,6 +61,45 @@ class TestAirportGeoTable:
             assert isinstance(region, str) and region
 
 
+class TestAirportGeoRegressions:
+    """Regresiones puntuales de bugs detectados en caza exploratoria abr-2026."""
+
+    def test_sxm_country_is_sint_maarten(self):
+        """Bug histórico: SXM aparecía con country='San Martín' (ciudad ≠ país).
+        Ahora el país canónico debe ser 'Sint Maarten'.
+        """
+        city, country, region = AIRPORT_GEO["SXM"]
+        assert country == "Sint Maarten", f"SXM country quedó como '{country}'"
+        assert region == "Caribe"
+
+    def test_mza_points_to_mendoza_argentina(self):
+        """MZA es Mendoza (Argentina) — evita confusión con el antiguo alias."""
+        city, country, region = AIRPORT_GEO["MZA"]
+        assert country == "Argentina"
+        assert "Mendoza" in city
+
+    def test_all_iata_codes_are_three_letters_uppercase(self):
+        for iata in AIRPORT_GEO:
+            assert len(iata) == 3, f"IATA inválido: {iata}"
+            assert iata.isupper(), f"IATA no en mayúsculas: {iata}"
+            assert iata.isalpha(), f"IATA con caracteres no alfabéticos: {iata}"
+
+    def test_no_empty_or_none_fields(self):
+        for iata, (city, country, region) in AIRPORT_GEO.items():
+            assert city.strip(), f"{iata}: ciudad vacía"
+            assert country.strip(), f"{iata}: país vacío"
+            assert region.strip(), f"{iata}: región vacía"
+
+    def test_regions_in_known_set(self):
+        known = {
+            "Europa", "Asia", "África", "América Norte", "América Sur",
+            "América Central", "Caribe", "Oriente Medio", "Oceanía",
+            "Internacional",
+        }
+        for iata, (_, _, region) in AIRPORT_GEO.items():
+            assert region in known, f"{iata}: región desconocida '{region}'"
+
+
 class TestGetImageUrl:
     def test_known_iata_returns_specific_image(self):
         url = get_image_url("NRT", "Asia")
