@@ -247,7 +247,7 @@ export const TOP_AIRPORTS: AirportEntry[] = [
   { iata: "EZE", city: "Buenos Aires", country: "Argentina", alt: ["ezeiza"] },
   { iata: "AEP", city: "Buenos Aires Aeroparque", country: "Argentina", alt: ["aeroparque", "jorge newbery"] },
   { iata: "COR", city: "Córdoba (Argentina)", country: "Argentina" },
-  { iata: "MDZ", city: "Mendoza", country: "Argentina" },
+  { iata: "MDZ", city: "Mendoza", country: "Argentina", alt: ["aconcagua", "wine", "vino"] },
   { iata: "USH", city: "Ushuaia", country: "Argentina", alt: ["tierra del fuego"] },
   { iata: "SCL", city: "Santiago de Chile", country: "Chile", alt: ["santiago", "chile"] },
   { iata: "IPC", city: "Isla de Pascua", country: "Chile", alt: ["easter island", "rapa nui"] },
@@ -483,7 +483,6 @@ export const TOP_AIRPORTS: AirportEntry[] = [
   { iata: "PBM", city: "Paramaribo", country: "Surinam" },
 
   // ── Sudamérica (ampliación) ──
-  { iata: "MZA", city: "Mendoza", country: "Argentina", alt: ["aconcagua", "wine", "vino"] },
   { iata: "BRC", city: "Bariloche", country: "Argentina" },
   { iata: "FTE", city: "El Calafate", country: "Argentina", alt: ["perito moreno"] },
   { iata: "AQP", city: "Arequipa", country: "Perú", alt: ["colca"] },
@@ -495,7 +494,7 @@ export const TOP_AIRPORTS: AirportEntry[] = [
   { iata: "AUA", city: "Aruba", country: "Aruba", alt: ["oranjestad"] },
   { iata: "CUR", city: "Curazao", country: "Curazao", alt: ["curacao", "willemstad"] },
   { iata: "BON", city: "Bonaire", country: "Países Bajos caribeños" },
-  { iata: "SXM", city: "San Martín", country: "San Martín", alt: ["st maarten", "sint maarten", "princess juliana"] },
+  { iata: "SXM", city: "Sint Maarten", country: "Sint Maarten", alt: ["st maarten", "san martín", "princess juliana"] },
   { iata: "ANU", city: "Antigua", country: "Antigua y Barbuda" },
   { iata: "SKB", city: "Saint Kitts", country: "San Cristóbal y Nieves", alt: ["basseterre"] },
   { iata: "DOM", city: "Dominica", country: "Dominica", alt: ["roseau"] },

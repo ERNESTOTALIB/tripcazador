@@ -30,9 +30,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const deal = await getDeal(params.id);
   if (!deal) {
+    // Importante: aplicar robots:noindex aquí también, porque la metadata
+    // de page.tsx es la que se renderiza incluso cuando notFound() dispara.
+    // Sin esto, Google puede indexar la página "Deal no encontrado" como 200.
     return {
       title: "Deal no encontrado",
       description: "La oferta que buscas ya no está disponible o ha expirado.",
+      robots: { index: false, follow: false },
+      alternates: { canonical: null },
     };
   }
 

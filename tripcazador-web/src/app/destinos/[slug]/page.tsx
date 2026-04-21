@@ -4,6 +4,12 @@ import { JsonLd } from "@/components/JsonLd";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+// Como la lista de destinos está hardcoded en DESTINATIONS, pre-generamos
+// todos los paths conocidos y rechazamos los demás con 404 real. Sin esto,
+// Vercel servía 200 para /destinos/pais-inexistente porque el render de
+// notFound() no propagaba el status a la respuesta HTTP.
+export const dynamicParams = false;
+
 // Datos de destinos (se puede mover a una BD/CMS)
 const DESTINATIONS: Record<string, {
   name: string;
@@ -222,13 +228,20 @@ const DESTINATIONS: Record<string, {
   },
 };
 
+// Pre-genera las rutas estáticas a partir del diccionario DESTINATIONS.
+// Junto con `dynamicParams = false`, esto garantiza 404 real para slugs
+// inexistentes (antes Vercel devolvía 200 + "Destino no encontrado").
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  return Object.keys(DESTINATIONS).map((slug) => ({ slug }));
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
   const dest = DESTINATIONS[params.slug];
-  if (!dest) return { title: "Destino no encontrado" };
+  if (!dest) return { title: "Destino no encontrado", robots: { index: false, follow: false } };
   return {
     title: `Vuelos baratos a ${dest.name}`,
     description: `Encuentra los mejores chollos de vuelo a ${dest.name}. ${dest.description}`,

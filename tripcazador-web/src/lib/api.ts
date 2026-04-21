@@ -99,6 +99,15 @@ export async function getDeals(params?: {
       ? (dealsBody as Deal[])
       : ((dealsBody as { deals?: Deal[] })?.deals ?? []);
 
+    // Prod safeguard: si el backend respondió 200 OK pero con un array vacío
+    // (cold-start, worker cron caído, seed no ejecutado), preferimos el
+    // `deals.json` estático antes que mostrar un home sin ofertas. Observado
+    // en auditoría abr-2026 (REPORTE_BUGS_20260421.md): backend devolvía
+    // `[]` en prod durante semanas y el UI quedaba sin contenido.
+    if (deals.length === 0) {
+      return getDealsFromStatic();
+    }
+
     return {
       schema_version: "v4.1",
       generated_at: stats?.generated_at ?? new Date().toISOString(),

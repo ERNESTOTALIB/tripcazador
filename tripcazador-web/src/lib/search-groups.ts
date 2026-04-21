@@ -196,14 +196,39 @@ export function fuzzyDistance(a: string, b: string, max = 2): number {
 }
 
 /**
- * Normaliza un string para matching: lowercase + strip de diacríticos.
+ * Normaliza un string para matching: lowercase + strip de diacríticos +
+ * mapeo de ligaduras/caracteres no-NFD que aparecen en topónimos europeos.
+ *
  * Ejemplo: "España" → "espana", "München" → "munchen".
- * Unicode NFD separa la base del combining mark, y [\u0300-\u036f] matchea
- * el rango de marcas combinantes (acentos, cedillas, tildes).
+ *
+ * Unicode NFD separa la base del combining mark, y `[\u0300-\u036f]` matchea
+ * el rango de marcas combinantes (acentos, cedillas, tildes). Pero algunos
+ * glifos no se descomponen en NFD y hay que mapearlos a mano:
+ *   ß (U+00DF eszett) → "ss"  ("Straße" → "strasse")
+ *   ł/Ł (U+0142/U+0141)        → "l"     ("Łódź" → "lodz")
+ *   œ/Œ (U+0153/U+0152)        → "oe"    ("Œuvre" → "oeuvre")
+ *   æ/Æ (U+00E6/U+00C6)        → "ae"    ("Ærø" → "aero")
+ *   ø/Ø (U+00F8/U+00D8)        → "o"     ("København" → "kobenhavn")
+ *   đ/Đ (U+0111/U+0110)        → "d"     ("Split Đakovo" → "split dakovo")
+ *
+ * Este mapeo es clave para autocompletes de aeropuertos europeos, donde el
+ * usuario puede escribir tanto la forma local ("Köln") como la transliterada
+ * ("Koeln") o la internacional ("Cologne"), y esperamos que todas resuelvan
+ * al mismo IATA.
  */
+const LIGATURE_MAP: Record<string, string> = {
+  ß: "ss",
+  ł: "l",
+  ø: "o",
+  æ: "ae",
+  œ: "oe",
+  đ: "d",
+};
+
 export function normalizeInput(s: string): string {
   return s
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[ßłøæœđ]/g, (ch) => LIGATURE_MAP[ch] ?? ch);
 }

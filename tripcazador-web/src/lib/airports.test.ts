@@ -119,6 +119,33 @@ describe("alias multi-idioma", () => {
   });
 });
 
+describe("regresiones de catálogo (bugs abr-2026)", () => {
+  it("no contiene MZA duplicado para Mendoza (regresión, usar MDZ)", () => {
+    const mza = TOP_AIRPORTS.find((a) => a.iata === "MZA");
+    // MZA puede existir pero NO debe ser un clon de Mendoza — usamos MDZ.
+    const mdz = TOP_AIRPORTS.find((a) => a.iata === "MDZ");
+    if (mza) {
+      expect(mza.city.toLowerCase()).not.toBe("mendoza");
+    }
+    if (mdz) {
+      expect(mdz.city).toMatch(/Mendoza/i);
+    }
+  });
+
+  it("SXM tiene país Sint Maarten (no 'San Martín')", () => {
+    const sxm = TOP_AIRPORTS.find((a) => a.iata === "SXM");
+    if (sxm) {
+      expect(sxm.country.toLowerCase()).not.toBe("san martín");
+      expect(sxm.country.toLowerCase()).toMatch(/sint maarten/i);
+    }
+  });
+
+  it("no hay IATA de longitud ≠ 3", () => {
+    const bad = TOP_AIRPORTS.filter((a) => a.iata.length !== 3);
+    expect(bad).toEqual([]);
+  });
+});
+
 describe("cobertura regional", () => {
   // Sanity checks: los hubs principales de cada región están presentes.
   // Si alguien borra uno por error, este test cae.
