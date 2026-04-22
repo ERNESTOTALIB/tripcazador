@@ -53,6 +53,7 @@ COPY --chown=app:app flight_hunter_v4/rapidapi_engine.py /app/rapidapi_engine.py
 COPY --chown=app:app flight_hunter_v4/ryanair_engine.py /app/ryanair_engine.py
 COPY --chown=app:app flight_hunter_v4/config.py /app/config.py
 COPY --chown=app:app flight_hunter_v4/circuit_breaker.py /app/circuit_breaker.py
+COPY --chown=app:app flight_hunter_v4/geo_data.py /app/geo_data.py
 
 USER app
 
