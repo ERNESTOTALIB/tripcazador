@@ -33,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "en": `${BASE_URL}/en`,
     "de": `${BASE_URL}/de`,
     "fr": `${BASE_URL}/fr`,
+    "it": `${BASE_URL}/it`,
     "x-default": `${BASE_URL}/`,
   };
   const LANG_ALT_BLOG = {
@@ -100,6 +101,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${BASE_URL}/fr`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.6,
+      alternates: { languages: LANG_ALT_HOME },
+    },
+    {
+      url: `${BASE_URL}/it`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.6,

@@ -712,6 +712,48 @@ DEST_ASIA_SUDESTE = [
     "REP",  # Siem Reap (Angkor)
 ]
 
+# abr-2026p — Preset Asia Luxury (business class, hubs premium asiáticos)
+# Audiencia: viajeros que cazan business <€900 a Asia (Tokio, Singapur, Bangkok,
+# Hong Kong). Usado por scripts business_real_hunt y rotación premium.
+# Precios típicos no-error rondan €1500-2500; <€900 es claramente anomalía.
+DEST_ASIA_LUXURY = [
+    "HND",  # Tokyo Haneda — preferido por business
+    "NRT",  # Tokyo Narita
+    "KIX",  # Osaka Kansai
+    "ICN",  # Seoul Incheon
+    "GMP",  # Seoul Gimpo (regional)
+    "SIN",  # Singapur Changi — hub long-haul
+    "HKG",  # Hong Kong
+    "BKK",  # Bangkok BKK
+    "TPE",  # Taipei Taoyuan
+    "PVG",  # Shanghai Pudong
+    "PEK",  # Beijing Capital
+    "PEK",  # Beijing Daxing alt
+]
+
+# abr-2026p — Preset Africa Adventure (economy <€350, destinos aventura)
+# Audiencia: viajeros con presupuesto que buscan safari/desierto/playa con
+# valor por euro alto. Off-peak seasonal mults aplican (lluvias = mejor precio).
+# Casablanca actúa como pivot a otros destinos africanos.
+DEST_AFRICA_ADVENTURE = [
+    "CMN",  # Casablanca — pivot
+    "RAK",  # Marrakech — fin de semana corto
+    "RBA",  # Rabat
+    "TUN",  # Túnez
+    "CAI",  # El Cairo (pirámides)
+    "JNB",  # Johannesburgo (Krüger)
+    "CPT",  # Cape Town
+    "NBO",  # Nairobi (Masai Mara)
+    "MBA",  # Mombasa (playa Kenia)
+    "ZNZ",  # Zanzíbar
+    "JRO",  # Kilimanjaro
+    "DAR",  # Dar es Salaam
+    "ADD",  # Addis Abeba
+    "LOS",  # Lagos (Nigeria)
+    "ACC",  # Accra (Ghana)
+    "DKR",  # Dakar (Senegal)
+]
+
 # ==============================================================================
 # SCORING MULTI-FACTOR
 # ==============================================================================

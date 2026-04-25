@@ -77,7 +77,11 @@ class TestNextImageMigration:
 class TestDynamicMap:
     def test_destinos_lazy_loads_map(self):
         src = _read(APP / "destinos" / "page.tsx")
-        assert 'import dynamic from "next/dynamic"' in src
+        # abr-2026p: renamed to nextDynamic to avoid name conflict with
+        # `export const dynamic = "force-static"` route segment config
+        # (the conflict was breaking Vercel webpack build).
+        assert 'from "next/dynamic"' in src
+        assert ('import nextDynamic' in src) or ('import dynamic' in src and 'export const dynamic' not in src)
         assert 'ssr: false' in src
         assert "DestinationsMap" in src
         # loading skeleton presente
