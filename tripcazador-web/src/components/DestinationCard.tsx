@@ -1,76 +1,38 @@
 /**
- * DestinationCard — tarjeta visual de destino con fotografía real de fondo.
- * Usa Unsplash CDN (whitelisted en next.config y CSP img-src). Fallback a
- * gradiente si no hay imageUrl. Incluye skeleton y overlay para legibilidad.
+ * DestinationCard — tarjeta visual de destino con fondo gradiente + emoji,
+ * sin depender de imágenes externas (zero bytes, 100% LCP friendly).
+ * Se usa en la home y en /destinos.
  */
-
-import Image from "next/image";
 
 export interface DestinationCardProps {
   name: string;
   slug: string;
-  /** URL absoluta de imagen de fondo (Unsplash, CDN...). Si no, usa gradient. */
-  imageUrl?: string;
-  /** Gradient Tailwind fallback — ej: "from-orange-700 via-amber-800 to-red-900" */
-  gradient?: string;
+  emoji: string;
+  /** Gradient Tailwind, ej: "from-orange-700 via-amber-800 to-red-900" */
+  gradient: string;
   /** Texto corto opcional bajo el nombre (ej. "Desde 389€") */
   tagline?: string;
-  /** Categoría corta arriba ("Safari", "Paraíso", etc.) */
-  kicker?: string;
-  /** Relación de aspecto. "tall" = 4/5 (home), "wide" = 16/10, "square" = 1/1 */
-  ratio?: "tall" | "wide" | "square";
-  /** Priority de Next Image (LCP en home) */
-  priority?: boolean;
 }
 
-const RATIO_CLASS: Record<NonNullable<DestinationCardProps["ratio"]>, string> = {
-  tall: "aspect-[4/5]",
-  wide: "aspect-[16/10]",
-  square: "aspect-square",
-};
-
-export function DestinationCard({
-  name,
-  slug,
-  imageUrl,
-  gradient = "from-gray-700 via-gray-800 to-gray-900",
-  tagline,
-  kicker,
-  ratio = "tall",
-  priority = false,
-}: DestinationCardProps) {
+export function DestinationCard({ name, slug, emoji, gradient, tagline }: DestinationCardProps) {
   return (
     <a
       href={`/destinos/${slug}`}
       className={`
-        relative group block rounded-2xl overflow-hidden ${RATIO_CLASS[ratio]}
-        border border-white/10 card-hover bg-gradient-to-br ${gradient}
+        relative group block rounded-xl overflow-hidden aspect-[4/5]
+        bg-gradient-to-br ${gradient}
+        border border-white/10 card-hover
         focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950
       `}
       aria-label={`Ver destino ${name}${tagline ? " — " + tagline : ""}`}
     >
-      {/* Foto de fondo */}
-      {imageUrl && (
-        <Image
-          src={imageUrl}
-          alt=""
-          aria-hidden="true"
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-110"
-          priority={priority}
-          quality={80}
-        />
-      )}
+      {/* Overlay oscuro para legibilidad */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 pointer-events-none" />
 
-      {/* Overlay multi-layer para contraste AAA sobre cualquier foto */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-amber-950/20 via-transparent to-transparent pointer-events-none mix-blend-multiply" />
-
-      {/* Grid radar muy sutil, sólo hover */}
+      {/* Patrón radar muy sutil */}
       <svg
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-20 transition-opacity duration-500 mix-blend-screen pointer-events-none"
+        className="absolute inset-0 w-full h-full opacity-20 mix-blend-screen pointer-events-none"
         viewBox="0 0 200 250"
         preserveAspectRatio="xMidYMid slice"
       >
@@ -80,30 +42,26 @@ export function DestinationCard({
           </pattern>
         </defs>
         <rect width="200" height="250" fill={`url(#grid-${slug})`} />
+        <circle cx="100" cy="125" r="40" stroke="white" strokeWidth="0.6" fill="none" opacity="0.35" />
+        <circle cx="100" cy="125" r="70" stroke="white" strokeWidth="0.4" fill="none" opacity="0.2" />
       </svg>
 
-      {/* Kicker arriba */}
-      {kicker && (
-        <div className="absolute top-3 left-3">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-sm text-[10px] uppercase tracking-widest text-amber-300 font-semibold border border-amber-400/20">
-            {kicker}
-          </span>
-        </div>
-      )}
+      {/* Emoji gigante como "poster" */}
+      <div
+        aria-hidden="true"
+        className="absolute top-4 right-3 text-5xl sm:text-6xl opacity-90 drop-shadow-lg transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+      >
+        {emoji}
+      </div>
 
       {/* Texto inferior */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 pb-5">
-        <div className="text-white font-bold text-xl sm:text-2xl leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
-          {name}
-        </div>
+      <div className="absolute bottom-3 left-3 right-3">
+        <div className="text-white font-semibold text-base sm:text-lg drop-shadow-md">{name}</div>
         {tagline && (
-          <div className="text-white/85 text-xs sm:text-sm mt-1 drop-shadow-md">
-            {tagline}
-          </div>
+          <div className="text-white/80 text-xs sm:text-sm mt-0.5">{tagline}</div>
         )}
-        <div className="mt-3 flex items-center gap-1 text-amber-300 text-xs font-medium opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-          Ver guía
-          <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+        <div className="text-amber-300 text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          Ver guía →
         </div>
       </div>
     </a>
