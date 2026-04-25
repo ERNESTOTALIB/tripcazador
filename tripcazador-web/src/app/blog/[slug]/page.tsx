@@ -11,6 +11,12 @@ import { JsonLd } from "@/components/JsonLd";
 
 type Params = { slug: string };
 
+// abr-2026r — explicit revalidate. Posts del blog no cambian tras publicación
+// (correcciones puntuales sí, pero no contenido completo). 24h reduce
+// regeneración innecesaria sin sacrificar capacidad de actualizar.
+export const revalidate = 86400;
+export const dynamicParams = true; // permite slugs nuevos sin rebuild
+
 export async function generateStaticParams(): Promise<Params[]> {
   return getAllPostSlugs().map((slug) => ({ slug }));
 }

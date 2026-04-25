@@ -222,6 +222,11 @@ const DESTINATIONS: Record<string, {
   },
 };
 
+// abr-2026r — revalidate: destinos cambian con seasonal_threshold + holiday
+// windows, pero el contenido textual es estable. 1h es suficiente para que
+// cambios manuales se reflejen razonablemente rápido sin agobiar al ISR.
+export const revalidate = 3600;
+
 export async function generateMetadata({
   params,
 }: {
