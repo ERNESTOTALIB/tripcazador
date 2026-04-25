@@ -16,6 +16,10 @@ export type BlogFrontmatter = {
 
 export type BlogPost = BlogFrontmatter & {
   content: string;
+  /** mtime del fichero MDX en ISO. Para Article.dateModified y sitemap lastmod. */
+  lastModified: string;
+  /** Conteo de palabras del cuerpo (para Article.wordCount). */
+  wordCount: number;
 };
 
 /**
@@ -64,6 +68,18 @@ export function getPostBySlug(slug: string): BlogPost | null {
   if (!fs.existsSync(file)) return null;
   const raw = fs.readFileSync(file, "utf8");
   const { frontmatter, content } = parseFrontmatter(raw);
+  // mtime del fichero — sirve como dateModified real cuando frontmatter no
+  // se ha actualizado tras una edición. Si fs.statSync falla (raro), fallback
+  // a publishedAt.
+  let lastModified: string;
+  try {
+    lastModified = fs.statSync(file).mtime.toISOString();
+  } catch {
+    lastModified = (frontmatter.publishedAt as string) || new Date().toISOString();
+  }
+  // wordCount: split rápido por whitespace (excluye stop-words = OK para
+  // Article.wordCount; Google no lo utiliza para ranking, sólo metadata).
+  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   return {
     title: (frontmatter.title as string) || slug,
     description: (frontmatter.description as string) || "",
@@ -74,6 +90,8 @@ export function getPostBySlug(slug: string): BlogPost | null {
     author: (frontmatter.author as string) || "Equipo TripCazador",
     heroImage: frontmatter.heroImage as string | undefined,
     content,
+    lastModified,
+    wordCount,
   };
 }
 

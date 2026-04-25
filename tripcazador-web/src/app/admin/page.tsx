@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { HunterHealthWidget } from "@/components/HunterHealthWidget";
 
 // Base de la API (misma lógica que lib/api)
 const API_BASE =
@@ -67,12 +68,14 @@ export default function AdminPage() {
         cache: "no-store",
       });
       if (r.status === 401) {
-        setError("Token inválido");
+        setError("Token inválido o no autorizado");
         setData(null);
         return;
       }
       if (r.status === 503) {
-        setError("ADMIN_TOKEN no configurado en el backend");
+        // Legacy: versiones antiguas del backend devolvían 503 por ADMIN_TOKEN sin configurar.
+        // Ahora se uniforma a 401 para no filtrar estado de config.
+        setError("Token inválido o no autorizado");
         setData(null);
         return;
       }
@@ -141,18 +144,41 @@ export default function AdminPage() {
 
       {data && (
         <div className="space-y-8">
+          {/* abr-2026m: Hunter health en vivo (auto-refresh cada 30s).
+              Va arriba del overview para que sea lo primero que vea ops. */}
+          <HunterHealthWidget refreshSeconds={30} />
           <div className="flex items-center justify-between">
             <p className="text-xs text-gray-500">
               Snapshot: {new Date(data.timestamp).toLocaleString("es-ES")}
             </p>
-            <a
-              href={`${API_BASE}/api/admin/digest?token=${encodeURIComponent(token)}&format=html&limit=6`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={async () => {
+                // Abre el digest en nueva pestaña usando fetch con cabecera X-Admin-Token
+                // (evita filtrar el token por query string → Referer/historial/logs).
+                try {
+                  const r = await fetch(
+                    `${API_BASE}/api/admin/digest?format=html&limit=6`,
+                    { headers: { "X-Admin-Token": token }, cache: "no-store" },
+                  );
+                  if (!r.ok) {
+                    setError(`Digest: error ${r.status}`);
+                    return;
+                  }
+                  const blob = await r.blob();
+                  const url = URL.createObjectURL(blob);
+                  const win = window.open(url, "_blank", "noopener,noreferrer");
+                  if (!win) setError("Popup bloqueado — permite ventanas");
+                  // liberar el blob tras 60s (suficiente para abrir)
+                  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+                } catch (e) {
+                  setError(String(e));
+                }
+              }}
               className="text-xs text-amber-400 hover:text-amber-300 underline"
             >
               Preview digest semanal ↗
-            </a>
+            </button>
           </div>
 
           {/* KPI cards */}

@@ -132,99 +132,142 @@ body {
   box-shadow: 0 10px 30px -12px rgba(245, 158, 11, 0.25);
 }
 
-/* Skeleton shimmer — usado mientras cargan resultados de búsqueda.
- * El gradiente se mueve de izquierda a derecha simulando que "algo está
- * pasando detrás". Funciona mejor que un spinner porque indica la forma
- * del contenido que llegará (prevención de CLS percibido). */
-@keyframes skeleton-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    rgba(31, 41, 55, 0.7) 0%,
-    rgba(55, 65, 81, 0.9) 50%,
-    rgba(31, 41, 55, 0.7) 100%
-  );
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.6s ease-in-out infinite;
-  border-radius: 8px;
-}
-
-/* ──────────────────────────────────────────────────────────────
- * Radar empty-state — anillos pulsantes + barrido + blips.
- * Pulsamos opacidad+scale en lugar de stroke-width para mantener
- * el SVG animado sin repaints caros.
- * ────────────────────────────────────────────────────────────── */
-@keyframes radar-pulse {
-  0%, 100% { opacity: 0.15; transform: scale(0.95); }
-  50% { opacity: 0.65; transform: scale(1.05); }
-}
-.radar-ring { transform-origin: 60px 60px; animation: radar-pulse 3.6s ease-in-out infinite; }
-.radar-ring-1 { animation-delay: 0s; }
-.radar-ring-2 { animation-delay: 0.4s; }
-.radar-ring-3 { animation-delay: 0.8s; }
-
-@keyframes radar-sweep {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.radar-sweep { animation: radar-sweep 3.8s linear infinite; }
-
-@keyframes radar-blip {
-  0%, 100% { opacity: 0.2; }
-  45% { opacity: 1; }
-  55% { opacity: 0.9; }
-}
-.radar-blip { animation: radar-blip 2.6s ease-in-out infinite; }
-.radar-blip-1 { animation-delay: 0s; }
-.radar-blip-2 { animation-delay: 0.9s; }
-.radar-blip-3 { animation-delay: 1.7s; }
-
-/* ──────────────────────────────────────────────────────────────
- * Hero entrance — fade + slide-up escalonado. Lo aplicamos a los
- * hijos directos del .hero-entrance para que el título, subtítulo
- * y CTAs aparezcan en cascada. Sin JS; solo CSS.
- * ────────────────────────────────────────────────────────────── */
-@keyframes hero-rise {
-  0% { opacity: 0; transform: translateY(14px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.hero-entrance > * {
-  opacity: 0;
-  animation: hero-rise 0.7s ease-out forwards;
-}
-.hero-entrance > *:nth-child(1) { animation-delay: 0.05s; }
-.hero-entrance > *:nth-child(2) { animation-delay: 0.18s; }
-.hero-entrance > *:nth-child(3) { animation-delay: 0.32s; }
-.hero-entrance > *:nth-child(4) { animation-delay: 0.48s; }
-.hero-entrance > *:nth-child(5) { animation-delay: 0.62s; }
-
-/* Micro-interacción: lift + glow en CTAs primarios al hover */
-.cta-lift {
-  transition: transform 180ms cubic-bezier(.2,.7,.2,1), box-shadow 180ms;
-}
-.cta-lift:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 28px -10px rgba(245, 158, 11, 0.45);
-}
-
 /* Respeto movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   .pulse-ring,
   .btn-gradient,
-  .card-hover,
-  .skeleton,
-  .radar-ring,
-  .radar-sweep,
-  .radar-blip,
-  .cta-lift {
+  .card-hover {
     animation: none !important;
     transition: none !important;
   }
-  .hero-entrance > * {
-    opacity: 1;
-    animation: none !important;
+}
+
+/* ──────────────────────────────────────────────
+ * Mobile polish — pequeñas mejoras específicas de móvil que no caben en
+ * Tailwind sin utilidades custom. Todas opt-in (pantallas < 640px).
+ * ────────────────────────────────────────────── */
+
+/* Evitar scroll horizontal accidental por overflow en viewports estrechos.
+   Nota: esto enmascara bugs de layout, pero también evita que el usuario
+   sufra mientras los arreglamos. Tests de regresión harán grep de anchos
+   fijos sospechosos. */
+html, body {
+  overflow-x: hidden;
+}
+
+/* iOS: evitar el "rubber-band" vertical del body (mantiene sticky header
+   pegado al borde en scroll). Mantiene overscroll de scroll interno. */
+body {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Inputs en iOS: Safari hace zoom automático si font-size < 16px. */
+@media (max-width: 640px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="date"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px; /* no-zoom en iOS Safari */
   }
+}
+
+/* Reducir fondo radar en mobile para ahorrar GPU/batería. */
+@media (max-width: 640px) {
+  .hero-map::before {
+    opacity: 0.35;
+  }
+}
+
+/* ──────────────────────────────────────────────
+ * A11y — foco visible universal (abr-2026i)
+ *
+ * Por defecto muchos navegadores pintan el outline sólo en :focus. Con
+ * :focus-visible afinamos para que el ring aparezca únicamente con teclado
+ * (no con click del ratón), reduciendo ruido visual sin perder accesibilidad.
+ * ────────────────────────────────────────────── */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respeto mayor al contraste alto del sistema (Windows High Contrast / iOS
+ * Increase Contrast). Usamos currentColor en iconos decorativos para que la
+ * preferencia de color del SO prevalezca sin romper la marca. */
+@media (forced-colors: active) {
+  .glass,
+  .glass-strong,
+  .panel {
+    background-color: Canvas !important;
+    border-color: CanvasText !important;
+  }
+  .btn-gradient {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+}
+
+/* iOS: fijar altura de pantalla con svh para evitar saltos de URL-bar. */
+@supports (min-height: 100svh) {
+  body {
+    min-height: 100svh;
+  }
+}
+
+/* Seleccionar texto con contraste adecuado sobre fondo dark (no herencia
+ * amber casi transparente que algunos lectores no distinguen). */
+::selection {
+  background: rgba(245, 158, 11, 0.35);
+  color: #ffffff;
+}
+
+/* ──────────────────────────────────────────────
+ * A11y AAA — abr-2026l
+ *
+ * 1) Texto secundario (hints, breadcrumbs) por defecto en los cards venía
+ *    en `gray-400` (#9ca3af) sobre `bg-gray-900` → contraste 4.49:1, justo
+ *    en el límite WCAG AA y por debajo de AAA (7.0:1). Subimos a `gray-300`
+ *    (#d1d5db) → 7.4:1 en los selectores específicos donde aplica.
+ *
+ *    Solo lo cambiamos donde el texto secundario va sobre superficies muy
+ *    oscuras (.bg-gray-900 / .bg-gray-950 / .glass).
+ *
+ * 2) `.t-meta-aaa` clase utility para textos meta que necesiten ratio AAA.
+ *
+ * 3) `text-wrap: balance` en H1/H2 — equilibra ancho de líneas en
+ *    titulares largos (Chrome 114+, Safari 17.5+, fallback noop).
+ *
+ * 4) Visualmente ocultar [aria-live] vacíos para que screenreaders los
+ *    anuncien sin ocupar espacio cuando están sin mensaje.
+ * ────────────────────────────────────────────── */
+.bg-gray-900 .text-gray-400,
+.bg-gray-950 .text-gray-400,
+.glass .text-gray-400,
+.glass-strong .text-gray-400 {
+  color: #d1d5db; /* gray-300 — ratio 7.4:1 sobre #111827 */
+}
+
+.t-meta-aaa {
+  color: #d1d5db !important;
+}
+
+h1, h2 {
+  text-wrap: balance;
+}
+
+[aria-live="polite"]:empty,
+[aria-live="assertive"]:empty {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

@@ -1,0 +1,97 @@
+name: Dependency Audit
+
+# Audit semanal + en cada PR: detecta CVEs en dependencias npm y pip ANTES
+# de que lleguen a producción. Falla la PR si hay vulnerabilidades CRÍTICAS
+# o ALTAS sin parche disponible. Rotation: domingo 04:00 UTC para no chocar
+# con el cron del worker (06:00 UTC) ni con CI nightly (00:00 UTC).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "tripcazador-web/package*.json"
+      - "tripcazador-web/pnpm-lock.yaml"
+      - "api/requirements.txt"
+      - "flight_hunter_v4/requirements.txt"
+  schedule:
+    - cron: "0 4 * * 0"  # domingos 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  npm-audit:
+    name: npm audit (frontend)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: tripcazador-web/package-lock.json
+      - name: Install
+        run: cd tripcazador-web && npm ci --no-audit --no-fund
+      - name: npm audit (high+)
+        run: |
+          cd tripcazador-web
+          # --audit-level=high: solo falla con HIGH o CRITICAL.
+          # MODERATE/LOW se reportan en el job pero no bloquean la PR.
+          npm audit --audit-level=high --omit=dev || {
+            echo "::error title=npm audit::CVE HIGH/CRITICAL detectado en dependencias prod"
+            exit 1
+          }
+      - name: npm audit moderate (informational)
+        run: |
+          cd tripcazador-web
+          npm audit --audit-level=moderate --omit=dev || true
+
+  pip-audit:
+    name: pip audit (backend + worker)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [api, flight_hunter_v4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pip-audit
+        run: pip install pip-audit
+      - name: Run pip-audit on ${{ matrix.target }}
+        run: |
+          # --strict: falla si hay vulnerabilidades sin parche
+          # --ignore-vuln: lista de CVEs aceptados (p.ej. falsos positivos)
+          # En prod, usar lock file (pip-tools) para resultados deterministas.
+          if [ -f ${{ matrix.target }}/requirements.txt ]; then
+            pip-audit -r ${{ matrix.target }}/requirements.txt --strict --vulnerability-service osv || {
+              echo "::error title=pip-audit::CVE detectado en ${{ matrix.target }}/requirements.txt"
+              exit 1
+            }
+          else
+            echo "No requirements.txt en ${{ matrix.target }}, saltando."
+          fi
+
+  secrets-scan:
+    name: detect-secrets (commits)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install detect-secrets
+        run: pip install detect-secrets
+      - name: Scan diff vs base
+        run: |
+          # Solo escanea archivos que cambian en la PR — más rápido que el repo entero.
+          git diff origin/${{ github.base_ref }}...HEAD --name-only -z | \
+            xargs -0 -I{} bash -c 'test -f "{}" && detect-secrets-hook --baseline .secrets.baseline "{}" || true'

@@ -338,7 +338,72 @@ DEST_AFRICA = [
     "ZNZ",  # Zanzíbar — destino turístico premium, error fares frecuentes
     "DAR",  # Dar es Salaam — hub principal Tanzania
     "JRO",  # Kilimanjaro — safaris y trekking, vuelos estacionales
+    # Expansión abr-2026g — mercado español dominante, alto volumen de búsqueda
+    "RAK",  # Marrakech — escapada invierno, paquetes 3-4 noches
+    "AGA",  # Agadir — playa+surf, vuelos directos desde España
+    "TNG",  # Tánger — Ryanair directo, fin de semana
+    "FEZ",  # Fez — ruta cultural
+    "LXR",  # Luxor — Egipto Valle del Nilo
+    "HRG",  # Hurghada — buceo Mar Rojo
+    "SSH",  # Sharm-el-Sheikh — resorts Mar Rojo
+    "RMF",  # Marsa Alam — buceo menos masificado
+    "TUN",  # Túnez capital — Mediterráneo sur
+    "DJE",  # Djerba — isla Túnez, paquetes
+    "NKC",  # Nouakchott — nuevos vuelos Air Senegal
+    "KGL",  # Kigali — RwandAir connector
+    "SEZ",  # Seychelles — error fares raros pero valiosos
 ]
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PRESETS TEMÁTICOS — Agregados abr-2026g para ampliar cobertura de búsqueda
+# ═══════════════════════════════════════════════════════════════════════════
+# Estos presets se exponen vía main.py --dest <preset> y cron_runner rotation.
+# No romper orden: nuevos IATA al final para no perturbar tests de regresión
+# que dependan de índices.
+
+# Mar Rojo + Egipto clásico — alta demanda desde España, precios volátiles
+DEST_MAR_ROJO = [
+    "HRG",  # Hurghada
+    "SSH",  # Sharm-el-Sheikh
+    "RMF",  # Marsa Alam
+    "LXR",  # Luxor (combinado Nilo)
+    "CAI",  # El Cairo (pirámides + tránsito Mar Rojo)
+    "AQJ",  # Aqaba, Jordania (Mar Rojo norte)
+    "TLV",  # Tel Aviv (costa)
+]
+
+# Marruecos — mercado Ryanair/Vueling muy activo, escapadas de 3-4 noches
+DEST_MARRUECOS = [
+    "RAK",  # Marrakech
+    "AGA",  # Agadir
+    "CMN",  # Casablanca
+    "TNG",  # Tánger
+    "FEZ",  # Fez
+    "OZZ",  # Ouarzazate (puerta del desierto)
+    "ESU",  # Essaouira
+    "NDR",  # Nador
+]
+
+# Weekend city-break europeo — escapadas de 2-3 noches (lista deduplicada)
+DEST_WEEKEND_EUROPE = list(dict.fromkeys([
+    "LIS", "OPO",                # Portugal
+    "BUD", "PRG", "KRK", "WAW",  # Centroeuropa
+    "TIA", "SKP", "SJJ",         # Balcanes
+    "RIX", "TLL", "VNO",         # Báltico
+    "LCA", "PFO",                # Chipre
+    "DBV", "SPU",                # Croacia costa
+    "CFU", "RHO", "HER",         # Islas griegas
+]))
+
+# Family beach — destinos "todo incluido" y cortos de vuelo (deduplicado)
+DEST_FAMILY_BEACH = list(dict.fromkeys([
+    "PMI", "IBZ", "TFS", "LPA", "FUE", "ACE",  # España
+    "AGA", "RAK",                                # Marruecos
+    "SSH", "HRG",                                # Egipto
+    "DJE",                                       # Túnez
+    "AYT", "DLM", "BJV",                         # Turquía Riviera
+    "HER", "RHO", "CFU",                         # Grecia islas
+]))
 
 DEST_OCEANIA = [
     "SYD",  # Sydney
@@ -490,6 +555,162 @@ ANOMALY_THRESHOLDS = {
     "anomalia": 30,   # 30-50% por debajo = ANOMALÍA
     "oferta":   20,   # 20-30% por debajo = OFERTA
 }
+
+# ==============================================================================
+# SEASONAL THRESHOLDS — Multiplicadores estacionales (#163)
+# ==============================================================================
+# Contexto: un "precio bajo" en alta temporada NO es lo mismo que en baja.
+# Un vuelo Madrid→Palma a 60€ en enero es normal; a 60€ en agosto es ERROR.
+# Este mapa multiplica el umbral base (PRICE_THRESHOLDS) según (región, mes)
+# para evitar que el detector mande falsos positivos en temporada alta.
+#
+# Clave 1 = nombre de región (match laxo — contiene-substring sobre el campo
+#           `region` que pone el detector al clasificar el destino).
+# Clave 2 = mes (1-12).
+# Valor   = multiplicador (1.0 = neutro; >1 temporada alta; <1 temporada baja).
+#
+# Ejemplo de uso:
+#   base_max = 200  # max_normal economy corto
+#   threshold = base_max * get_seasonal_multiplier("Europa", 8)  # = 200 * 1.25
+#
+# Si una región/mes no aparece, se devuelve 1.0 (comportamiento previo).
+SEASONAL_MULTIPLIERS: Dict[str, Dict[int, float]] = {
+    # Europa — pico vacacional julio-agosto, caída enero-febrero y noviembre
+    "Europa": {
+        1: 0.80, 2: 0.85, 3: 0.95, 4: 1.00, 5: 1.05, 6: 1.15,
+        7: 1.30, 8: 1.30, 9: 1.05, 10: 0.95, 11: 0.85, 12: 1.20,  # 12 = Navidad
+    },
+    # Caribe + Latam norte — seco (y caro) dic-abril, barato mayo-noviembre
+    "Caribe": {
+        1: 1.30, 2: 1.30, 3: 1.25, 4: 1.15, 5: 0.90, 6: 0.85,
+        7: 0.90, 8: 0.90, 9: 0.75, 10: 0.80, 11: 0.95, 12: 1.35,
+    },
+    # Sudamérica — alta en enero-febrero (vacaciones austral) y dic (Navidad)
+    "América Sur": {
+        1: 1.30, 2: 1.25, 3: 1.00, 4: 0.90, 5: 0.85, 6: 0.90,
+        7: 1.10, 8: 1.00, 9: 0.90, 10: 0.95, 11: 1.00, 12: 1.30,
+    },
+    # Norteamérica — pico jul-ago y Thanksgiving/Navidad
+    "América Norte": {
+        1: 0.85, 2: 0.85, 3: 0.95, 4: 1.00, 5: 1.10, 6: 1.20,
+        7: 1.25, 8: 1.25, 9: 1.00, 10: 1.00, 11: 1.15, 12: 1.20,
+    },
+    # Asia Sudeste — alta dic-febrero (seco), monzón abril-septiembre barato
+    "Asia": {
+        1: 1.25, 2: 1.25, 3: 1.15, 4: 1.05, 5: 0.85, 6: 0.80,
+        7: 0.85, 8: 0.90, 9: 0.85, 10: 0.95, 11: 1.10, 12: 1.30,
+    },
+    # África subsahariana — pico jul-ago (migraciones) y dic-enero
+    "África": {
+        1: 1.20, 2: 1.05, 3: 0.95, 4: 0.85, 5: 0.85, 6: 1.00,
+        7: 1.25, 8: 1.25, 9: 1.05, 10: 0.95, 11: 0.95, 12: 1.30,
+    },
+    # Mar Rojo / Oriente Medio — invierno europeo = alta (escapada cálida)
+    "Oriente Medio": {
+        1: 1.25, 2: 1.20, 3: 1.10, 4: 1.00, 5: 0.90, 6: 0.75,
+        7: 0.70, 8: 0.70, 9: 0.85, 10: 1.00, 11: 1.15, 12: 1.30,
+    },
+    # Oceanía — alta dic-febrero (verano austral), baja jun-agosto
+    "Oceanía": {
+        1: 1.30, 2: 1.20, 3: 1.00, 4: 0.90, 5: 0.85, 6: 0.80,
+        7: 0.85, 8: 0.85, 9: 0.95, 10: 1.00, 11: 1.10, 12: 1.35,
+    },
+}
+
+
+def get_seasonal_multiplier(region: str, month: int) -> float:
+    """
+    Devuelve el multiplicador estacional para (region, month).
+
+    - Si `region` no coincide exactamente con ningún key, se intenta match
+      parcial case-insensitive: el primer key que contenga la región (o
+      viceversa) gana.
+    - Si `month` no está en 1..12, se devuelve 1.0 (safe default).
+    - Si la región no se encuentra, 1.0.
+    """
+    if not isinstance(month, int) or not (1 <= month <= 12):
+        return 1.0
+    if not region:
+        return 1.0
+    # Match exacto primero
+    if region in SEASONAL_MULTIPLIERS:
+        return SEASONAL_MULTIPLIERS[region].get(month, 1.0)
+    # Match laxo (case-insensitive, substring en ambos sentidos)
+    r_low = region.lower()
+    for key, months in SEASONAL_MULTIPLIERS.items():
+        k_low = key.lower()
+        if k_low in r_low or r_low in k_low:
+            return months.get(month, 1.0)
+    return 1.0
+
+
+def get_seasonal_threshold(
+    base_threshold: float,
+    region: str,
+    month: int,
+    iso_date: str = "",
+) -> float:
+    """
+    Aplica el multiplicador estacional al umbral base.
+
+    Útil para las funciones que comparan precio < umbral: llamar con el
+    `max_normal` de `PRICE_THRESHOLDS` y el mes de salida del vuelo para
+    ajustar al rango realista de la temporada.
+
+    abr-2026j (#189): si se provee `iso_date` (YYYY-MM-DD), se aplica
+    adicionalmente el `get_holiday_multiplier` — captura picos como Semana
+    Santa, Navidad o Golden Week que no encajan en la estacionalidad mensual
+    promedio. Sin iso_date, comportamiento idéntico al previo.
+    """
+    mult = get_seasonal_multiplier(region, month)
+    if iso_date:
+        # Intencional: evita importar get_holiday_multiplier si no hace falta.
+        mult *= get_holiday_multiplier(iso_date, region)
+    return float(base_threshold) * mult
+
+
+# ==============================================================================
+# PRESETS TEMÁTICOS ADICIONALES (abr-2026i) — Caribe + Asia Sudeste
+# ==============================================================================
+# Caribe — foco en long-haul accesibles desde hubs europeos
+DEST_CARIBE = [
+    "CUN",  # Cancún, México (puerta de entrada)
+    "PUJ",  # Punta Cana, RD
+    "SDQ",  # Santo Domingo
+    "MBJ",  # Montego Bay, Jamaica
+    "NAS",  # Nassau, Bahamas
+    "SJU",  # San Juan, Puerto Rico
+    "HAV",  # La Habana, Cuba
+    "VRA",  # Varadero, Cuba
+    "CUR",  # Curaçao
+    "AUA",  # Aruba
+    "SXM",  # Sint Maarten
+    "BGI",  # Bridgetown, Barbados
+    "POS",  # Puerto España, Trinidad
+    "CTG",  # Cartagena (Caribe colombiano)
+]
+
+# Asia Sudeste — la tríada clásica Thai/Vietnam/Indonesia
+DEST_ASIA_SUDESTE = [
+    "BKK",  # Bangkok Suvarnabhumi
+    "DMK",  # Bangkok Don Mueang (lowcost)
+    "HKT",  # Phuket
+    "USM",  # Koh Samui
+    "CNX",  # Chiang Mai
+    "SGN",  # Ho Chi Minh
+    "HAN",  # Hanoi
+    "DAD",  # Da Nang
+    "PQC",  # Phu Quoc
+    "KUL",  # Kuala Lumpur
+    "SIN",  # Singapur
+    "DPS",  # Denpasar / Bali
+    "CGK",  # Yakarta
+    "MNL",  # Manila
+    "CEB",  # Cebú
+    "RGN",  # Rangún, Myanmar
+    "PNH",  # Phnom Penh
+    "REP",  # Siem Reap (Angkor)
+]
 
 # ==============================================================================
 # SCORING MULTI-FACTOR
@@ -703,6 +924,268 @@ def is_error_fare(price: float, cabin: int, destination: str) -> bool:
     if threshold is None:
         return False
     return price < threshold
+
+
+def is_error_fare_seasonal(
+    price: float,
+    cabin: int,
+    destination: str,
+    month: int = 0,
+    region: str = "",
+    iso_date: str = "",
+) -> bool:
+    """
+    Variante estacional de `is_error_fare`: aplica SEASONAL_MULTIPLIERS al
+    umbral absoluto según (region, month) del vuelo.
+
+    - Si `month` (1..12) y `region` son válidos, ajusta el umbral.
+    - Si el multiplicador es 1.0 (región/mes sin datos), el resultado es
+      idéntico a `is_error_fare(...)` — compatibilidad hacia atrás.
+    - abr-2026j (#189): si `iso_date` cae en una ventana de `HOLIDAY_WINDOWS`
+      para la region, se multiplica adicionalmente por el holiday_multiplier.
+      Un 500€ Madrid→Punta Cana que en baja NO es error pasa a serlo si cae
+      durante Semana Santa (holiday x1.25).
+
+    Justificación #163: un €150 Madrid→Punta Cana en septiembre NO es error
+    (temporada baja, mult≈0.75 → threshold 150*0.75=112€) pero en febrero
+    SÍ (temporada alta, mult≈1.30 → threshold 150*1.30=195€, así que 150 lo
+    dispara). Evita falsos negativos en alta y falsos positivos en baja.
+    """
+    dist = get_distance_category(destination)
+    if cabin not in ERROR_FARE_ABSOLUTE_THRESHOLDS:
+        return False
+    thresholds = ERROR_FARE_ABSOLUTE_THRESHOLDS[cabin]
+    base = thresholds.get(dist)
+    if base is None:
+        return False
+    if month:
+        adjusted = get_seasonal_threshold(base, region, month, iso_date=iso_date)
+    else:
+        adjusted = float(base)
+    return price < adjusted
+
+
+def _month_from_iso(iso_date: str) -> int:
+    """
+    Extrae el mes (1..12) de un string ISO YYYY-MM-DD (o primer tramo).
+
+    Retorna 0 si el string no es válido, para que los callers puedan
+    combinar con `is_error_fare_seasonal` y caer al comportamiento neutro.
+    """
+    if not iso_date or not isinstance(iso_date, str):
+        return 0
+    try:
+        parts = iso_date.split("-")
+        if len(parts) < 2:
+            return 0
+        m = int(parts[1])
+        return m if 1 <= m <= 12 else 0
+    except (ValueError, IndexError):
+        return 0
+
+
+# ==============================================================================
+# HOLIDAY CALENDAR — abr-2026j (#189)
+# ==============================================================================
+# Ventanas de festividades que encarecen vuelos por encima del patrón estacional
+# base. Se aplica EN ADICIÓN al SEASONAL_MULTIPLIERS: el threshold final es
+# `base * seasonal * holiday`. Esto captura picos como Semana Santa (que cae en
+# marzo/abril — meses con estacionalidad media — pero genera subida brutal de
+# precio), Navidad/Nochevieja, Golden Week japonesa, Chinese New Year, etc.
+#
+# Formato de cada ventana:
+#   - name: etiqueta humana (para debug/logs)
+#   - from / to: YYYY-MM-DD inclusive, pueden ser fechas literales
+#   - regions: lista de regiones; "*" = todas
+#   - multiplier: factor aplicado sobre el threshold (1.0 = neutral)
+#
+# Añadir 3 años por delante para no caer en "ventana vacía" en 2027/2028.
+# Las fechas móviles (Pascua, Eid, Chinese NY) se hardcodean año a año para
+# evitar depender de librerías astronómicas en el motor.
+HOLIDAY_WINDOWS: list = [
+    # ─── Navidad + Nochevieja (Reyes) — pico universal ───
+    {"name": "Navidad/Nochevieja", "from": "2026-12-20", "to": "2027-01-06",
+     "regions": ["*"], "multiplier": 1.25},
+    {"name": "Navidad/Nochevieja", "from": "2027-12-20", "to": "2028-01-06",
+     "regions": ["*"], "multiplier": 1.25},
+    {"name": "Navidad/Nochevieja", "from": "2028-12-20", "to": "2029-01-06",
+     "regions": ["*"], "multiplier": 1.25},
+
+    # ─── Semana Santa (Europa / LatAm / Caribe) ───
+    # 2026: Domingo Resurrección = 5 abr → ventana 28 mar - 6 abr
+    {"name": "Semana Santa", "from": "2026-03-28", "to": "2026-04-06",
+     "regions": ["Europa", "América Sur", "Caribe", "América Norte"],
+     "multiplier": 1.25},
+    # 2027: Domingo Resurrección = 28 mar → ventana 20 - 29 mar
+    {"name": "Semana Santa", "from": "2027-03-20", "to": "2027-03-29",
+     "regions": ["Europa", "América Sur", "Caribe", "América Norte"],
+     "multiplier": 1.25},
+    # 2028: Domingo Resurrección = 16 abr → ventana 8 - 17 abr
+    {"name": "Semana Santa", "from": "2028-04-08", "to": "2028-04-17",
+     "regions": ["Europa", "América Sur", "Caribe", "América Norte"],
+     "multiplier": 1.25},
+
+    # ─── Carnaval (Río + Caribe) ───
+    {"name": "Carnaval", "from": "2026-02-13", "to": "2026-02-18",
+     "regions": ["Caribe", "América Sur"], "multiplier": 1.20},
+    {"name": "Carnaval", "from": "2027-02-05", "to": "2027-02-10",
+     "regions": ["Caribe", "América Sur"], "multiplier": 1.20},
+    {"name": "Carnaval", "from": "2028-02-25", "to": "2028-03-01",
+     "regions": ["Caribe", "América Sur"], "multiplier": 1.20},
+
+    # ─── Puente Constitución + Inmaculada (España) ───
+    {"name": "Puente Constitución", "from": "2026-12-04", "to": "2026-12-09",
+     "regions": ["Europa"], "multiplier": 1.15},
+    {"name": "Puente Constitución", "from": "2027-12-04", "to": "2027-12-08",
+     "regions": ["Europa"], "multiplier": 1.15},
+
+    # ─── Golden Week (Japón) ───
+    {"name": "Golden Week", "from": "2026-04-29", "to": "2026-05-06",
+     "regions": ["Asia"], "multiplier": 1.25},
+    {"name": "Golden Week", "from": "2027-04-29", "to": "2027-05-06",
+     "regions": ["Asia"], "multiplier": 1.25},
+    {"name": "Golden Week", "from": "2028-04-29", "to": "2028-05-06",
+     "regions": ["Asia"], "multiplier": 1.25},
+
+    # ─── Obon (Japón, mediados de agosto) ───
+    {"name": "Obon", "from": "2026-08-13", "to": "2026-08-16",
+     "regions": ["Asia"], "multiplier": 1.15},
+    {"name": "Obon", "from": "2027-08-13", "to": "2027-08-16",
+     "regions": ["Asia"], "multiplier": 1.15},
+
+    # ─── Chinese New Year ───
+    # 2026-02-17 (Caballo), 2027-02-06 (Cabra), 2028-01-26 (Mono)
+    {"name": "Chinese New Year", "from": "2026-02-15", "to": "2026-02-24",
+     "regions": ["Asia"], "multiplier": 1.30},
+    {"name": "Chinese New Year", "from": "2027-02-04", "to": "2027-02-13",
+     "regions": ["Asia"], "multiplier": 1.30},
+    {"name": "Chinese New Year", "from": "2028-01-24", "to": "2028-02-02",
+     "regions": ["Asia"], "multiplier": 1.30},
+
+    # ─── Eid al-Fitr (Oriente Medio + Norte África) ───
+    # Aproximaciones (depende de observación lunar ±1 día)
+    {"name": "Eid al-Fitr", "from": "2026-03-19", "to": "2026-03-23",
+     "regions": ["Oriente Medio", "África"], "multiplier": 1.15},
+    {"name": "Eid al-Fitr", "from": "2027-03-09", "to": "2027-03-13",
+     "regions": ["Oriente Medio", "África"], "multiplier": 1.15},
+    {"name": "Eid al-Fitr", "from": "2028-02-26", "to": "2028-03-01",
+     "regions": ["Oriente Medio", "África"], "multiplier": 1.15},
+
+    # ─── Thanksgiving (EE.UU.) — 4º jueves de noviembre ───
+    {"name": "Thanksgiving", "from": "2026-11-24", "to": "2026-11-30",
+     "regions": ["América Norte"], "multiplier": 1.20},
+    {"name": "Thanksgiving", "from": "2027-11-23", "to": "2027-11-29",
+     "regions": ["América Norte"], "multiplier": 1.20},
+    {"name": "Thanksgiving", "from": "2028-11-21", "to": "2028-11-27",
+     "regions": ["América Norte"], "multiplier": 1.20},
+
+    # ─── Diwali (India + Sudeste Asiático) ───
+    {"name": "Diwali", "from": "2026-11-08", "to": "2026-11-10",
+     "regions": ["Asia"], "multiplier": 1.15},
+    {"name": "Diwali", "from": "2027-10-28", "to": "2027-10-30",
+     "regions": ["Asia"], "multiplier": 1.15},
+]
+
+
+def get_holiday_multiplier(iso_date: str, region: str) -> float:
+    """
+    Devuelve el multiplicador de festividad aplicable a (iso_date, region).
+
+    - Si hay varias ventanas solapadas (raro), toma la mayor.
+    - Si `iso_date` no tiene formato ISO YYYY-MM-DD válido, devuelve 1.0.
+    - Si `region` no coincide con ninguna ventana (y ninguna es "*"), 1.0.
+
+    Valor 1.0 es el "no-op": seguro para multiplicar sin efecto.
+    """
+    if not iso_date or not isinstance(iso_date, str):
+        return 1.0
+    iso = iso_date[:10]
+    # Validar formato YYYY-MM-DD
+    if len(iso) != 10 or iso[4] != "-" or iso[7] != "-":
+        return 1.0
+    try:
+        # Validar que es una fecha real (mes/día en rango)
+        m = int(iso[5:7])
+        d = int(iso[8:10])
+        if not (1 <= m <= 12 and 1 <= d <= 31):
+            return 1.0
+    except ValueError:
+        return 1.0
+
+    r = (region or "").strip().lower()
+    best = 1.0
+    for w in HOLIDAY_WINDOWS:
+        if w["from"] <= iso <= w["to"]:
+            regions = w.get("regions", [])
+            if "*" in regions:
+                match = True
+            else:
+                match = any(
+                    reg.lower() == r or (r and reg.lower() in r) or (r and r in reg.lower())
+                    for reg in regions
+                )
+            if match:
+                mult = float(w.get("multiplier", 1.0))
+                if mult > best:
+                    best = mult
+    return best
+
+
+def is_multi_stop_anomaly(
+    price: float,
+    cabin: int,
+    destination: str,
+    stops: int,
+) -> bool:
+    """
+    Detecta multi-stops absurdamente baratos (#216, abr-2026n).
+
+    Regla: si un vuelo con 2+ escalas cuesta < 50% del threshold long-haul
+    típico para esa cabina, es candidato a anomalía aunque no entre en el
+    threshold absoluto normal (que es para directos o 1 stop).
+
+    Ejemplo: ZRH→DOH→KUL→DPS con Qatar a 220€ economy, mientras el directo
+    ZRH→DPS es 950€. La regla absoluta no lo dispara (220 > 200) pero la
+    multi-stop sí (220 < 400 = 50% de 800).
+
+    Returns: True si es candidato a anomalía multi-stop.
+    """
+    if stops < 2:
+        return False
+    if cabin not in ERROR_FARE_ABSOLUTE_THRESHOLDS:
+        return False
+    threshold = ERROR_FARE_ABSOLUTE_THRESHOLDS[cabin].get("largo")
+    if threshold is None:
+        return False
+    # 50% del threshold long-haul + ajuste por cada stop adicional (-10% por
+    # stop, máximo -30%) — más stops normalmente = más fricción = aún más
+    # barato es necesario para considerarlo anomalía real.
+    extra_stop_discount = min(0.30, 0.10 * (stops - 1))
+    multi_stop_threshold = threshold * (0.50 - extra_stop_discount)
+    return price < multi_stop_threshold
+
+
+def get_active_holiday(iso_date: str, region: str) -> str:
+    """
+    Devuelve el nombre de la festividad activa para `(iso_date, region)`, o
+    cadena vacía si no hay. Útil para etiquetar `t0_reason` en el detector.
+    """
+    if not iso_date or not isinstance(iso_date, str):
+        return ""
+    iso = iso_date[:10]
+    if len(iso) != 10:
+        return ""
+    r = (region or "").strip().lower()
+    for w in HOLIDAY_WINDOWS:
+        if w["from"] <= iso <= w["to"]:
+            regions = w.get("regions", [])
+            match = "*" in regions or any(
+                reg.lower() == r or (r and reg.lower() in r) or (r and r in reg.lower())
+                for reg in regions
+            )
+            if match:
+                return str(w.get("name", ""))
+    return ""
 
 def get_business_economy_ratio_thresholds(destination: str) -> dict:
     """Retorna los umbrales de ratio Business/Economy para un destino."""

@@ -4,12 +4,6 @@ import { JsonLd } from "@/components/JsonLd";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-// Como la lista de destinos está hardcoded en DESTINATIONS, pre-generamos
-// todos los paths conocidos y rechazamos los demás con 404 real. Sin esto,
-// Vercel servía 200 para /destinos/pais-inexistente porque el render de
-// notFound() no propagaba el status a la respuesta HTTP.
-export const dynamicParams = false;
-
 // Datos de destinos (se puede mover a una BD/CMS)
 const DESTINATIONS: Record<string, {
   name: string;
@@ -228,22 +222,15 @@ const DESTINATIONS: Record<string, {
   },
 };
 
-// Pre-genera las rutas estáticas a partir del diccionario DESTINATIONS.
-// Junto con `dynamicParams = false`, esto garantiza 404 real para slugs
-// inexistentes (antes Vercel devolvía 200 + "Destino no encontrado").
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  return Object.keys(DESTINATIONS).map((slug) => ({ slug }));
-}
-
 export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
   const dest = DESTINATIONS[params.slug];
-  if (!dest) return { title: "Destino no encontrado", robots: { index: false, follow: false } };
+  if (!dest) return { title: "Destino no encontrado | TripCazador" };
   return {
-    title: `Vuelos baratos a ${dest.name}`,
+    title: `Vuelos baratos a ${dest.name} — TripCazador`,
     description: `Encuentra los mejores chollos de vuelo a ${dest.name}. ${dest.description}`,
     openGraph: {
       title: `${dest.emoji} Vuelos baratos a ${dest.name} | TripCazador`,
@@ -260,13 +247,47 @@ export default async function DestinationPage({
   const dest = DESTINATIONS[params.slug];
   if (!dest) notFound();
 
-  // Buscar deals actuales para este destino
+  // Buscar deals actuales para este destino. abr-2026n (#213): además del
+  // match por código IATA exacto, aceptamos match por nombre de ciudad
+  // (case-insensitive). Esto evita falsos negativos si el feed reporta el
+  // deal con `destination` no IATA (ej. "PBQ" para Punta Cana en lugar de
+  // "PUJ"). El IATA sigue siendo señal primaria; ciudad es fallback.
   const data = await getDeals({ region: undefined, limit: 200 });
+  const destNameLower = dest.name.toLowerCase();
   const destDeals = data.deals
-    .filter((d) => dest.iata.includes(d.destination))
+    .filter((d) => {
+      // Match primario por IATA exacto (caso normal)
+      if (dest.iata.includes(d.destination)) return true;
+      // Fallback: ciudad de destino contiene el nombre del destino canónico
+      const cityTo = (d.city_to || "").toLowerCase();
+      if (cityTo && cityTo.includes(destNameLower)) return true;
+      return false;
+    })
     .slice(0, 12);
 
-  const jsonLd = [
+  // Métricas para enriquecer schema TouristTrip — tomamos rangos del feed
+  // de deals ya filtrado para este destino (precio mínimo, aerolíneas únicas).
+  const destPrices = destDeals
+    .map((d) => Number(d.price_eur || 0))
+    .filter((n) => n > 0);
+  const minDestPrice = destPrices.length ? Math.min(...destPrices) : null;
+  const uniqueAirlines = Array.from(
+    new Set(destDeals.map((d) => d.airline).filter(Boolean) as string[]),
+  ).slice(0, 6);
+
+  // Heurística de duración recomendada por distancia (ratio noches/destino):
+  // - long-haul (Asia/LatAm/Pacífico) → 14 días
+  // - medium-haul (África/Caribe) → 10 días
+  // - short-haul (Europa/Marruecos) → 5 días
+  const longHaulSlugs = ["japon", "bali", "tailandia", "vietnam", "buenos-aires", "maldivas", "sudafrica", "costa-rica"];
+  const mediumHaulSlugs = ["nueva-york", "tanzania"];
+  const tripDays = longHaulSlugs.includes(params.slug)
+    ? 14
+    : mediumHaulSlugs.includes(params.slug)
+    ? 10
+    : 5;
+
+  const jsonLd: Array<Record<string, unknown>> = [
     {
       "@context": "https://schema.org",
       "@type": "TouristDestination",
@@ -274,7 +295,85 @@ export default async function DestinationPage({
       description: dest.description,
       url: `https://tripcazador.com/destinos/${params.slug}`,
       image: "https://tripcazador.com/og-default.png",
-      touristType: "Travelers from Europe",
+      touristType: ["Budget travelers from Europe", "Error fare hunters"],
+      // abr-2026m: añadimos `availableLanguage` (ES + EN — el feed es bilingüe)
+      // y `geo` opcional cuando el frontmatter lo trae.
+      availableLanguage: ["es", "en"],
+      // Best months como `season` repeatable — Schema.org lo acepta como
+      // string o array.
+      includesAttraction: dest.bestMonths.map((m) => ({
+        "@type": "TouristAttraction",
+        name: `${dest.name} en ${m}`,
+        description: `Mejor temporada para visitar ${dest.name}: ${m}.`,
+      })),
+    },
+    // abr-2026m: TouristTrip schema — Google muestra rich snippets para
+    // queries tipo "viajar a Japón desde Europa". Incluye duración media,
+    // budget mínimo (si tenemos deals activos), y partOfTrip → destination.
+    {
+      "@context": "https://schema.org",
+      "@type": "TouristTrip",
+      name: `Viaje a ${dest.name} desde Europa`,
+      description: dest.description,
+      url: `https://tripcazador.com/destinos/${params.slug}`,
+      itinerary: {
+        "@type": "ItemList",
+        numberOfItems: tripDays,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            item: {
+              "@type": "Place",
+              name: `Llegada a ${dest.name}`,
+            },
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            item: {
+              "@type": "Action",
+              name: `${tripDays} días explorando ${dest.name}`,
+            },
+          },
+        ],
+      },
+      partOfTrip: {
+        "@type": "TouristDestination",
+        name: dest.name,
+        url: `https://tripcazador.com/destinos/${params.slug}`,
+      },
+      provider: {
+        "@type": "Organization",
+        name: "TripCazador",
+        url: "https://tripcazador.com",
+      },
+      // Si tenemos deals activos, exponer rango de precio del vuelo como
+      // hint para Google. Marcamos `lowPrice` con la oferta más barata.
+      ...(minDestPrice && {
+        offers: {
+          "@type": "AggregateOffer",
+          priceCurrency: "EUR",
+          lowPrice: Math.round(minDestPrice),
+          offerCount: destDeals.length,
+          seller: { "@type": "Organization", name: "TripCazador" },
+          ...(uniqueAirlines.length > 0 && {
+            itemOffered: {
+              "@type": "Flight",
+              provider: uniqueAirlines.map((a) => ({
+                "@type": "Airline",
+                name: a,
+              })),
+            },
+          }),
+        },
+      }),
+      // Audiencia + tipo de presupuesto. `suitableForBudget` no es Schema
+      // canónico pero algunos crawlers lo respetan; usamos `additionalProperty`.
+      audience: {
+        "@type": "Audience",
+        audienceType: "Travelers from European hubs (BSL, ZRH, MAD, FRA, CDG, AMS)",
+      },
     },
     {
       "@context": "https://schema.org",

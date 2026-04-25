@@ -167,13 +167,48 @@ def t0_absolute_error_fare(flights: List[Dict]) -> List[Dict]:
                 t0_reason = f"[Low-cost] Precio {price:.0f}€ por debajo de umbral low-cost {lowcost_threshold:.0f}€ ({dist})"
         else:
             # Aerolíneas regulares: usar umbrales normales
-            if config.is_error_fare(price, cabin, dest):
+            # abr-2026i (#163): si el vuelo trae date_out + region, aplicamos
+            # ajuste estacional sobre el umbral base. Esto evita falsos
+            # positivos en temporada baja (Caribe en septiembre) y falsos
+            # negativos en alta (Europa en agosto).
+            # abr-2026j (#189): adicionalmente aplicamos HOLIDAY_WINDOWS
+            # (Semana Santa, Navidad, Golden Week, Chinese NY, etc.) — se
+            # multiplica sobre el estacional para capturar picos puntuales
+            # que el mes promedio suaviza.
+            iso_date = f.get("date_out", "") or ""
+            month = config._month_from_iso(iso_date)
+            region = f.get("region", "") or ""
+            is_err = config.is_error_fare_seasonal(
+                price, cabin, dest, month=month, region=region, iso_date=iso_date
+            ) if month and region else config.is_error_fare(price, cabin, dest)
+            if is_err:
                 t0_triggered = True
                 thresholds = config.ERROR_FARE_ABSOLUTE_THRESHOLDS.get(cabin, {})
-                threshold = thresholds.get(dist, 999)
-                gap = (threshold - price) / threshold * 100
+                threshold_base = thresholds.get(dist, 999)
+                # Para el reporte usamos el umbral efectivo (ajustado por
+                # estacionalidad + festivo si aplica) para que la razón
+                # explique el verdadero margin que el usuario ve.
+                if month and region:
+                    threshold = config.get_seasonal_threshold(
+                        threshold_base, region, month, iso_date=iso_date
+                    )
+                else:
+                    threshold = threshold_base
+                gap = (threshold - price) / threshold * 100 if threshold > 0 else 0
                 t0_score = min(50, 20 + gap * 0.5)
-                t0_reason = f"Precio {price:.0f}€ por debajo de umbral absoluto {threshold:.0f}€ ({gap:.0f}% por debajo)"
+                seasonal_tag = ""
+                if month and region and abs(threshold - threshold_base) >= 1:
+                    seasonal_tag = f" [ajuste estacional {region}/mes-{month}]"
+                holiday_tag = ""
+                if iso_date and region:
+                    holiday_name = config.get_active_holiday(iso_date, region)
+                    if holiday_name:
+                        holiday_tag = f" [festivo: {holiday_name}]"
+                t0_reason = (
+                    f"Precio {price:.0f}€ por debajo de umbral "
+                    f"{threshold:.0f}€ ({gap:.0f}% por debajo)"
+                    f"{seasonal_tag}{holiday_tag}"
+                )
 
             # Verificar rango normal (solo para aerolíneas no low-cost)
             normal_range = config.PRICE_THRESHOLDS.get(cabin, {}).get(dist, (0, 9999))

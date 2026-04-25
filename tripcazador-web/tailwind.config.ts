@@ -8,7 +8,13 @@ const config: Config = {
   ],
   darkMode: "class",
   theme: {
+    // Añadimos `xs: 480px` como breakpoint para navegación móvil densa.
+    // Tailwind no trae `xs` de serie; los breakpoints sm/md/lg/xl/2xl se
+    // preservan al usar `extend.screens` en lugar de sustituirlos.
     extend: {
+      screens: {
+        xs: "480px",
+      },
       colors: {
         amber: {
           400: "#fbbf24",

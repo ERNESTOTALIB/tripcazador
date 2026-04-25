@@ -1,62 +1,79 @@
-name: Lighthouse CI — Core Web Vitals
+name: Lighthouse CI
 
-# Corre Lighthouse contra el build de producción en cada PR y en push a main.
-# Falla el job si las métricas clave bajan del umbral configurado en
-# `tripcazador-web/lighthouserc.json`. Complementa a las señales de
-# `useReportWebVitals` en runtime (src/components/WebVitals.tsx), pero aquí
-# la medición es sintética, reproducible y previa a merge.
+# Bloquea PR si Web Vitals + a11y caen por debajo de los thresholds.
+# Corre contra el preview deployment de Vercel.
+#
+# Thresholds (abr-2026o):
+#   - Performance score >= 0.85 (LCP P75 < 2.5s, INP < 200ms, CLS < 0.1)
+#   - Accessibility >= 0.95 (WCAG AA)
+#   - Best practices >= 0.90
+#   - SEO >= 0.95
+#
+# Si el PR no genera preview Vercel (forks externos, drafts), el workflow
+# se skipea silenciosamente — no bloqueamos contribuciones por infra ajena.
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "tripcazador-web/**"
-      - ".github/workflows/lighthouse.yml"
   pull_request:
     branches: [main]
     paths:
       - "tripcazador-web/**"
       - ".github/workflows/lighthouse.yml"
-  # Permite correrlo a mano desde Actions (útil tras tocar el worker o
-  # cambiar políticas de CSP).
-  workflow_dispatch: {}
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   lighthouse:
-    name: Lighthouse CI (home + /deals + /destinos)
+    name: Lighthouse audit
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: tripcazador-web
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      # Esperar al preview Vercel — este action escucha al webhook.
+      - name: Wait for Vercel preview
+        id: wait_preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
         with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: tripcazador-web/package-lock.json
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 600
+          allow_inactive: false
+        continue-on-error: true
 
-      - name: Install deps
-        run: npm ci
-
-      - name: Build (static + ISR snapshot)
-        env:
-          # Sin API real en CI — las rutas dinámicas deben degradar con gracia.
-          # `getDeals` cae al JSON estático incluido en el repo si el fetch falla.
-          NEXT_PUBLIC_API_URL: "https://api.tripcazador.com"
-          NEXT_PUBLIC_SITE_URL: "http://localhost:3000"
-        run: npm run build
-
-      - name: Install Lighthouse CI
-        run: npm i -g @lhci/cli@0.14.x
+      - name: Skip if no preview URL
+        if: steps.wait_preview.outputs.url == ''
+        run: |
+          echo "::warning::No preview URL — skipping Lighthouse"
+          exit 0
 
       - name: Run Lighthouse CI
-        env:
-          # Opcional: si se configura, el action sube a Temporary Public Storage
-          # y publica el link en el output del job.
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-        run: lhci autorun --config=./lighthouserc.json
+        if: steps.wait_preview.outputs.url != ''
+        id: lhci
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            ${{ steps.wait_preview.outputs.url }}/
+            ${{ steps.wait_preview.outputs.url }}/deals
+            ${{ steps.wait_preview.outputs.url }}/blog
+            ${{ steps.wait_preview.outputs.url }}/destinos/japon
+          configPath: ".github/workflows/lighthouserc.json"
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Comment results on PR
+        if: steps.lhci.outputs.manifest != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const manifest = JSON.parse(`${{ steps.lhci.outputs.manifest }}`);
+            const summary = manifest.map(r => {
+              const s = r.summary || {};
+              return `**${r.url}** — perf ${(s.performance*100).toFixed(0)}, a11y ${(s.accessibility*100).toFixed(0)}, bp ${(s['best-practices']*100).toFixed(0)}, seo ${(s.seo*100).toFixed(0)}`;
+            }).join('\n');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🚦 Lighthouse CI\n\n${summary}\n\nFull report: ${process.env.LHCI_REPORT_URL || 'see job artifacts'}`
+            });

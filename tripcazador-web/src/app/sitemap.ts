@@ -12,16 +12,99 @@ const DESTINOS = [
   "tailandia", "sudafrica", "islandia", "marruecos", "vietnam", "costa-rica",
 ];
 
+function getBlogSlugs(): string[] {
+  const dir = path.join(process.cwd(), "src/content/blog");
+  if (!fs.existsSync(dir)) return [];
+  return fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith(".mdx"))
+    .map((f) => f.replace(/\.mdx$/, ""));
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
+  // `alternates.languages` genera <xhtml:link rel="alternate" hreflang="..."/>
+  // dentro del sitemap — Google lo usa como señal reforzada además del
+  // <link rel="alternate"> que ya va en el <head>. Cada URL debe listar
+  // TODAS las variantes (incluida ella misma), según la especificación.
+  const LANG_ALT_HOME = {
+    "es-ES": `${BASE_URL}/`,
+    "en": `${BASE_URL}/en`,
+    "de": `${BASE_URL}/de`,
+    "fr": `${BASE_URL}/fr`,
+    "x-default": `${BASE_URL}/`,
+  };
+  const LANG_ALT_BLOG = {
+    "es-ES": `${BASE_URL}/blog`,
+    "en": `${BASE_URL}/en/blog`,
+    "x-default": `${BASE_URL}/blog`,
+  };
+  const LANG_ALT_DESTINOS = {
+    "es-ES": `${BASE_URL}/destinos`,
+    "en": `${BASE_URL}/en/destinos`,
+    "x-default": `${BASE_URL}/destinos`,
+  };
+
   const staticPages: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/`, lastModified: now, changeFrequency: "hourly", priority: 1.0 },
+    {
+      url: `${BASE_URL}/`,
+      lastModified: now,
+      changeFrequency: "hourly",
+      priority: 1.0,
+      alternates: { languages: LANG_ALT_HOME },
+    },
+    {
+      url: `${BASE_URL}/en`,
+      lastModified: now,
+      changeFrequency: "hourly",
+      priority: 0.9,
+      alternates: { languages: LANG_ALT_HOME },
+    },
     { url: `${BASE_URL}/deals`, lastModified: now, changeFrequency: "hourly", priority: 0.9 },
     { url: `${BASE_URL}/hoteles`, lastModified: now, changeFrequency: "hourly", priority: 0.8 },
-    { url: `${BASE_URL}/destinos`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${BASE_URL}/estadisticas`, lastModified: now, changeFrequency: "hourly", priority: 0.6 },
-    { url: `${BASE_URL}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    {
+      url: `${BASE_URL}/destinos`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+      alternates: { languages: LANG_ALT_DESTINOS },
+    },
+    {
+      url: `${BASE_URL}/en/destinos`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+      alternates: { languages: LANG_ALT_DESTINOS },
+    },
+    {
+      url: `${BASE_URL}/blog`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+      alternates: { languages: LANG_ALT_BLOG },
+    },
+    {
+      url: `${BASE_URL}/en/blog`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+      alternates: { languages: LANG_ALT_BLOG },
+    },
+    {
+      url: `${BASE_URL}/de`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.6,
+      alternates: { languages: LANG_ALT_HOME },
+    },
+    {
+      url: `${BASE_URL}/fr`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.6,
+      alternates: { languages: LANG_ALT_HOME },
+    },
     { url: `${BASE_URL}/telegram`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/legal`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
@@ -33,12 +116,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // Blog posts — usamos publishedAt como lastmod para que Google sepa
-  // cuándo recrawlear. Con `now` fuerza recrawl constante pero pierde
-  // señal de "qué ha cambiado de verdad".
-  const blogPages: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
+  // abr-2026k: lastmod REAL desde mtime del MDX. Antes usábamos `now` para
+  // todos los posts (Google trata como spam si el sitemap dice que TODO
+  // cambió HOY). Ahora cada post devuelve su fecha real de última edición.
+  const allPosts = getAllPosts();
+  const blogPages: MetadataRoute.Sitemap = allPosts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
-    lastModified: post.publishedAt ? new Date(post.publishedAt) : now,
+    lastModified: post.lastModified
+      ? new Date(post.lastModified)
+      : new Date(post.publishedAt),
     changeFrequency: "monthly",
     priority: 0.6,
   }));

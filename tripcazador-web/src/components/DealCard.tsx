@@ -1,10 +1,9 @@
 "use client";
 
-import { Deal, formatDate, formatDuration, getCabinLabel, getClassificationColor } from "@/lib/api";
-import { Plane, Clock, Star, ExternalLink, CheckCircle } from "lucide-react";
+import { Deal, formatDate, formatDuration, getCabinLabel, getClassificationColor, safeExternalUrl, safeImageUrl } from "@/lib/api";
+import { Plane, Clock, MapPin, Star, ExternalLink, CheckCircle } from "lucide-react";
+import Image from "next/image";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
-import { FavoriteButton } from "@/components/FavoriteButton";
-import { track } from "@/lib/analytics";
 
 interface DealCardProps {
   deal: Deal;
@@ -54,43 +53,36 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
       `}
     >
       {/* Imagen de fondo */}
-      <div className={`relative overflow-hidden ${featured ? "h-56" : "h-44"}`}>
-        {image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
+      <div className="relative h-36 overflow-hidden">
+        {safeImageUrl(image_url) ? (
           <img
-            src={image_url}
-            alt={`${city_to}${country_to ? ", " + country_to : ""}`}
-            loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.08]"
+            src={safeImageUrl(image_url)}
+            alt={city_to}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 opacity-70"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-800 via-gray-850 to-gray-900 flex items-center justify-center">
-            <Plane size={48} className="text-gray-700 rotate-45" />
-          </div>
+          <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900" />
         )}
-        {/* Overlay degradado + tinte cálido */}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/55 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-amber-900/20 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
 
         {/* Badge de clasificación */}
         <div className="absolute top-3 left-3">
-          <span className={`px-2.5 py-1 rounded-full text-xs font-bold backdrop-blur-md ${classColor}`}>
+          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${classColor}`}>
             {classification === "CRÍTICO" ? "🔥 Error Fare" :
              classification === "ERROR" ? "⚡ Posible Error" :
              classification === "ANOMALÍA" ? "⚠️ Anomalía" : "💰 Oferta"}
           </span>
         </div>
 
-        {/* Badges esquina superior derecha: verificado + favorito */}
-        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
-          {verified && (
+        {/* Badge verificado */}
+        {verified && (
+          <div className="absolute top-3 right-3">
             <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">
               <CheckCircle size={10} />
               2+ fuentes
             </span>
-          )}
-          <FavoriteButton dealId={deal.id} size={14} />
-        </div>
+          </div>
+        )}
 
         {/* Score */}
         <div className="absolute bottom-3 right-3">
@@ -201,38 +193,27 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
 
         {/* CTA */}
         <a
-          href={booking_url}
+          href={safeExternalUrl(booking_url)}
           target="_blank"
           rel="noopener noreferrer nofollow"
           className={`
-            mt-auto flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg
+            mt-auto flex items-center justify-center gap-2 py-3 px-4 rounded-lg min-h-[44px]
             font-semibold text-sm transition-all duration-200
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950
             ${isCritical
               ? "bg-amber-500 hover:bg-amber-400 text-black"
               : "bg-gray-700 hover:bg-gray-600 text-white"}
           `}
           onClick={() => {
-            // Evento tipado — emite tanto a GA4 como a Plausible si están presentes.
-            // `result_clicked` captura el id + posición en la lista; `booking_url_opened`
-            // captura la salida del funnel de conversión (click hacia Booking/aerolínea).
-            track({
-              name: "result_clicked",
-              params: {
+            // Track click para analytics
+            if (typeof window !== "undefined" && (window as any).gtag) {
+              (window as any).gtag("event", "deal_click", {
                 deal_id: deal.id,
-                origin,
-                destination,
-                price_eur,
-              },
-            });
-            track({
-              name: "booking_url_opened",
-              params: {
-                source: "deal_card",
-                destination,
-                price_eur,
-                airline: airline_name || undefined,
-              },
-            });
+                destination: destination,
+                price: price_eur,
+                classification: classification,
+              });
+            }
           }}
         >
           Ver oferta
@@ -245,33 +226,13 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
 
 // Versión lista (horizontal) para la página /deals
 export function DealRow({ deal }: { deal: Deal }) {
-  const { origin, destination, city_to, country_to, price_eur, savings_pct, date_out, date_ret,
-          cabin, airline_name, stops, classification, score, booking_url, verified, image_url } = deal;
+  const { origin, destination, city_to, price_eur, savings_pct, date_out, date_ret,
+          cabin, airline_name, stops, classification, score, booking_url, verified } = deal;
 
   const classColor = getClassificationColor(classification);
 
   return (
-    <div className="flex items-stretch gap-0 rounded-xl glass card-hover border border-gray-800 group overflow-hidden">
-      {/* Thumbnail */}
-      <div className="relative w-24 sm:w-32 shrink-0 overflow-hidden bg-gray-900">
-        {image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={image_url}
-            alt={city_to}
-            loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-            <Plane size={22} className="text-gray-600 rotate-45" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-gray-900/60 pointer-events-none" />
-      </div>
-
-      {/* Contenido */}
-      <div className="flex flex-1 items-center gap-4 p-4 min-w-0">
+    <div className="flex items-center gap-4 p-4 rounded-xl glass card-hover border border-gray-800 group">
       {/* Ruta */}
       <div className="flex items-center gap-2 min-w-[140px]">
         <span className="font-mono text-amber-400 font-bold text-sm">{origin}</span>
@@ -281,10 +242,8 @@ export function DealRow({ deal }: { deal: Deal }) {
 
       {/* Ciudad + clase */}
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-white truncate">
-          {city_to}{country_to && <span className="text-gray-400 font-normal"> · {country_to}</span>}
-        </div>
-        <div className="text-xs text-gray-400 truncate">
+        <div className="font-semibold text-white truncate">{city_to}</div>
+        <div className="text-xs text-gray-400">
           {getCabinLabel(cabin)} · {stops === 0 ? "Directo" : `${stops} escala`}
           {airline_name && ` · ${airline_name}`}
         </div>
@@ -311,35 +270,16 @@ export function DealRow({ deal }: { deal: Deal }) {
         )}
       </div>
 
-      {/* Favorito + CTA */}
-      <div className="flex items-center gap-2 shrink-0">
-        <FavoriteButton dealId={deal.id} size={14} />
-        <a
-          href={booking_url}
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-          className="flex items-center gap-1 px-3 py-2 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm rounded-lg transition-all"
-          onClick={() => {
-            track({
-              name: "result_clicked",
-              params: { deal_id: deal.id, origin, destination, price_eur },
-            });
-            track({
-              name: "booking_url_opened",
-              params: {
-                source: "deal_card",
-                destination,
-                price_eur,
-                airline: airline_name || undefined,
-              },
-            });
-          }}
-        >
-          Ver
-          <ExternalLink size={12} />
-        </a>
-      </div>
-      </div>
+      {/* CTA */}
+      <a
+        href={safeExternalUrl(booking_url)}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        className="flex items-center gap-1 px-4 py-2.5 min-h-[44px] bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm rounded-lg transition-all shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+      >
+        Ver
+        <ExternalLink size={12} />
+      </a>
     </div>
   );
 }

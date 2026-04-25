@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -6,12 +7,9 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
+import { JsonLd } from "@/components/JsonLd";
 
 type Params = { slug: string };
-
-// Cualquier slug fuera de generateStaticParams devuelve 404 automáticamente
-// (sin entrar al componente), asegurando que Next responde con status 404.
-export const dynamicParams = false;
 
 export async function generateStaticParams(): Promise<Params[]> {
   return getAllPostSlugs().map((slug) => ({ slug }));
@@ -62,79 +60,69 @@ export default function BlogPostPage({ params }: { params: Params }) {
   const post = getPostBySlug(params.slug);
   if (!post) notFound();
 
-  // Word count aproximado — contar palabras separadas por whitespace del
-  // contenido markdown (incluye algo de ruido de los delimitadores pero
-  // sirve para el schema.org, que solo pide un entero razonable).
-  const wordCount = (post.content.match(/\S+/g) || []).length;
-
-  // JSON-LD Article structured data — con wordCount para el Rich Result
-  // test de Google (algunos resultados enriquecidos lo usan).
-  const articleLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.description,
-    datePublished: post.publishedAt,
-    dateModified: post.publishedAt,
-    author: { "@type": "Organization", name: post.author },
-    publisher: {
-      "@type": "Organization",
-      name: "TripCazador",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://tripcazador.com/android-chrome-512x512.png",
+  // JSON-LD Article structured data — enriquecido en abr-2026k:
+  // - dateModified real (mtime del MDX) en lugar de = publishedAt
+  // - wordCount + timeRequired (ISO 8601 PT{n}M) — Google los muestra
+  //   en algunos resultados rich
+  // - articleSection / inLanguage / isPartOf (Blog) — refuerzan la
+  //   relación canónica con el blog y la jerarquía editorial
+  // - keywords como array (más estándar que CSV string)
+  const jsonLd: Array<Record<string, unknown>> = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: post.title,
+      description: post.description,
+      datePublished: post.publishedAt,
+      dateModified: post.lastModified || post.publishedAt,
+      author: { "@type": "Organization", name: post.author, url: "https://tripcazador.com" },
+      publisher: {
+        "@type": "Organization",
+        name: "TripCazador",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://tripcazador.com/android-chrome-512x512.png",
+          width: 512,
+          height: 512,
+        },
+      },
+      image: post.heroImage || "https://tripcazador.com/og-default.png",
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `https://tripcazador.com/blog/${post.slug}`,
+      },
+      keywords: post.tags,
+      articleSection: post.tags[0] || "Travel",
+      inLanguage: "es-ES",
+      wordCount: post.wordCount,
+      timeRequired: `PT${Math.max(1, post.readingTime)}M`,
+      isPartOf: {
+        "@type": "Blog",
+        name: "TripCazador Blog",
+        url: "https://tripcazador.com/blog",
       },
     },
-    image: post.heroImage || "https://tripcazador.com/og-default.png",
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://tripcazador.com/blog/${post.slug}`,
+    // Breadcrumb separado — Google lo lee como tabla independiente del Article.
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Inicio", item: "https://tripcazador.com/" },
+        { "@type": "ListItem", position: 2, name: "Blog", item: "https://tripcazador.com/blog" },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: post.title,
+          item: `https://tripcazador.com/blog/${post.slug}`,
+        },
+      ],
     },
-    keywords: post.tags.join(", "),
-    wordCount,
-    inLanguage: "es-ES",
-    articleSection: post.tags[0] || "Viajes",
-  };
-
-  // Breadcrumb JSON-LD — ayuda al rich result de Google a mostrar la
-  // migaja "Inicio › Blog › <título>" en los resultados orgánicos.
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Inicio",
-        item: "https://tripcazador.com/",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Blog",
-        item: "https://tripcazador.com/blog",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: post.title,
-        item: `https://tripcazador.com/blog/${post.slug}`,
-      },
-    ],
-  };
+  ];
 
   return (
     <article className="max-w-3xl mx-auto">
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }}
-      />
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
-      />
+      {/* Inyección de JSON-LD con escape anti-breakout <script> centralizado. */}
+      <JsonLd data={jsonLd} />
 
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <a href="/" className="hover:text-white">
@@ -173,12 +161,16 @@ export default function BlogPostPage({ params }: { params: Params }) {
       </header>
 
       {post.heroImage && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={post.heroImage}
-          alt={post.title}
-          className="w-full rounded-2xl mb-8 aspect-[16/9] object-cover"
-        />
+        <div className="relative w-full mb-8 rounded-2xl overflow-hidden aspect-[16/9] bg-gray-800">
+          <Image
+            src={post.heroImage}
+            alt={post.title}
+            fill
+            sizes="(max-width: 1024px) 100vw, 800px"
+            priority
+            className="object-cover"
+          />
+        </div>
       )}
 
       <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-a:text-amber-400 hover:prose-a:text-amber-300 prose-strong:text-white prose-code:text-amber-300 prose-blockquote:border-amber-500 prose-blockquote:text-gray-300">

@@ -9,18 +9,6 @@
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-// Build-time warning: si NEXT_PUBLIC_BOOKING_AID no está seteado en Vercel,
-// cada click a Booking.com desde /hoteles va sin affiliate ID → comisión cero.
-// Es un warning (no error) porque queremos que el site se pueda levantar en
-// local / PRs sin obligar a tener el aid puesto.
-if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_BOOKING_AID) {
-  console.warn(
-    "\n⚠️  NEXT_PUBLIC_BOOKING_AID no está seteado.\n" +
-    "    Los deep-links a Booking.com irán sin aid — no hay comisión.\n" +
-    "    Añádelo en Vercel → Project Settings → Environment Variables.\n"
-  );
-}
-
 // CSP en producción. En dev Next.js necesita 'unsafe-eval' para HMR — diferenciamos.
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -28,30 +16,66 @@ const cspDirectives = [
   "default-src 'self'",
   // 'unsafe-inline' para GA4 + Next.js inline scripts; nonce sería mejor pero requiere middleware SSR
   `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://www.googletagmanager.com https://www.google-analytics.com https://plausible.io`,
+  // script-src-elem: restricción más fina para <script src=...>. Algunos
+  // navegadores (Firefox) la usan preferente y ayuda a aislar scripts
+  // inline de scripts externos si en el futuro metemos nonce.
+  `script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://plausible.io`,
   "style-src 'self' 'unsafe-inline'", // Tailwind requiere inline styles
+  "style-src-elem 'self' 'unsafe-inline'", // consistencia con style-src-attr bloqueado
+  "style-src-attr 'unsafe-inline'", // explícito — evita defaulting a 'none' en Chrome 120+
   "img-src 'self' data: https: blob:", // data: para SVG inline, https: para OG/unsplash
   "font-src 'self' data:",
-  // *.ingest.sentry.io: endpoint donde el SDK de Sentry envía errores/replays.
-  // Inerte si NEXT_PUBLIC_SENTRY_DSN no está setada (el SDK no hace ninguna request).
-  `connect-src 'self' ${API_URL} https://www.google-analytics.com https://plausible.io https://tile.openstreetmap.org https://*.ingest.sentry.io`,
+  `connect-src 'self' ${API_URL} https://www.google-analytics.com https://plausible.io https://tile.openstreetmap.org`,
   "frame-src 'self' https://www.openstreetmap.org", // embed de mapa en detalle de deal
-  "worker-src 'self' blob:", // Sentry Session Replay lanza un Web Worker desde blob
-  "child-src 'self' blob:",
+  "worker-src 'self' blob:", // Next.js RSC usa workers; blob: necesario para streaming
+  "manifest-src 'self'",
+  "media-src 'self' https:",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
   "upgrade-insecure-requests",
+  // Trusted Types (opt-in): prepara el terreno para script-src sin 'unsafe-inline'
+  // sin forzarlo todavía. Next 14 no emite tipos confiables nativamente, así
+  // que usamos `require-trusted-types-for` sólo en Report-Only (header aparte).
+].join("; ");
+
+// CSP Report-Only para trusted-types — recoge violaciones sin bloquear.
+// Útil para medir impacto antes de endurecer la CSP principal.
+const cspReportOnly = [
+  "require-trusted-types-for 'script'",
+  "trusted-types nextjs default",
 ].join("; ");
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: cspDirectives },
+  { key: "Content-Security-Policy-Report-Only", value: cspReportOnly },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
+  // Origin-Agent-Cluster aísla este origen a un agent cluster propio:
+  // bloquea ataques side-channel cross-origin vía SharedArrayBuffer.
+  { key: "Origin-Agent-Cluster", value: "?1" },
+  // Cross-Origin-Embedder-Policy en modo permissive: opt-in para SAB sin
+  // romper imágenes externas (unsplash) al no requerir CORP response.
+  { key: "Cross-Origin-Embedder-Policy", value: "unsafe-none" },
+  // Permissions-Policy: explícito lo que NO queremos.
+  // `interest-cohort=()` bloquea FLoC (tracking basado en histórico del usuario),
+  // `payment` / `usb` / `accelerometer` bloquean APIs invasivas.
+  // `browsing-topics` es el reemplazo de FLoC (Topics API de Chrome), también bloqueado.
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), interest-cohort=(), browsing-topics=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()",
+  },
   { key: "X-DNS-Prefetch-Control", value: "on" },
+  // Cross-Origin-Opener-Policy: aísla este documento de ventanas pop-up de orígenes
+  // distintos (impide `window.opener` leaks). Importante para links externos
+  // aunque ya ponemos rel="noopener".
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  // Cross-Origin-Resource-Policy: impide que terceros usen <img src=nuestro>
+  // como canal de tracking (solo same-site puede incrustar recursos).
+  { key: "Cross-Origin-Resource-Policy", value: "same-site" },
 ];
 
 /** @type {import('next').NextConfig} */

@@ -85,6 +85,118 @@ MIN_EXPORT_SCORE = 15
 # DEDUPLICACIÓN CROSS-SOURCE
 # ─────────────────────────────────────────────────────────────
 
+def dedup_close_prices(
+    flights: List[Dict],
+    tolerance_eur: float = 1.0,
+) -> Tuple[List[Dict], Dict[str, int]]:
+    """
+    Dedup más fino que `dedup_flights` (#abr-2026l).
+
+    Agrupa por `(origin, destination, date_out, cabin, airline)` y colapsa
+    entradas cuyo precio difiera en menos de `tolerance_eur`. Mantiene el
+    de menor precio.
+
+    Justificación: los engines a veces reportan dos resultados para el
+    mismo trayecto con €0.50–€1 de diferencia (impuesto FX, fee bancario,
+    arrastre del cache del GDS). Sin este paso, el feed muestra deals
+    "diferentes" que en realidad son el mismo. Tolerance en EUR (no %)
+    porque los errores son de tipo aditivo, no multiplicativo.
+
+    Returns:
+        (deduped, stats) donde stats es {engine: dropped_count} para que
+        el exporter pueda registrar qué engine genera más ruido.
+    """
+    groups: Dict[Tuple, List[Dict]] = defaultdict(list)
+    for f in flights:
+        cabin = str(f.get("cabin", "economy")).lower().split()[0]
+        airline = str(f.get("airline", "") or f.get("carrier", "")).strip().lower()
+        key = (
+            f.get("origin", ""),
+            f.get("destination", ""),
+            f.get("date_out", ""),
+            cabin,
+            airline,
+        )
+        groups[key].append(f)
+
+    deduped: List[Dict] = []
+    stats: Dict[str, int] = defaultdict(int)
+    for _key, group in groups.items():
+        if len(group) == 1:
+            deduped.append(group[0])
+            continue
+        # Ordenar por precio ascendente para que el más barato gane
+        group.sort(key=lambda x: float(x.get("price_eur", 9999) or 9999))
+        kept = group[0]
+        kept_price = float(kept.get("price_eur", 0) or 0)
+        # Recolectar duplicados ±tolerance_eur del más barato
+        for dup in group[1:]:
+            dup_price = float(dup.get("price_eur", 0) or 0)
+            if abs(dup_price - kept_price) <= tolerance_eur:
+                stats[str(dup.get("source", "unknown"))] += 1
+            else:
+                # Diferente lo suficiente — preservar como deal independiente
+                deduped.append(dup)
+        deduped.append(kept)
+    return deduped, dict(stats)
+
+
+def score_breakdown(deal: Dict) -> Dict[str, float]:
+    """
+    Desglose interpretable del score de un deal (#abr-2026l).
+
+    Devuelve un dict con cada componente que contribuye al `final_score`,
+    para que la UI o ops puedan auditarlo. No modifica el deal — sólo
+    inspecciona campos ya presentes.
+
+    Componentes:
+      - base: score inicial puesto por las técnicas (t0/t1/t2/t3)
+      - seasonal_bonus: +/- por seasonal threshold ajuste
+      - holiday_bonus: +/- por holiday window
+      - verified_bonus: +15% si verificado por 2+ fuentes
+      - lowcost_penalty: -10 si la aerolínea es low-cost (umbral más laxo)
+      - total: el final_score entero (0..100)
+
+    Convención: si no se puede inferir un componente del deal, vale 0.
+    """
+    score = float(deal.get("final_score", deal.get("score", 0) or 0))
+    is_verified = bool(deal.get("verified", False))
+    is_lowcost = bool(deal.get("is_lowcost", False))
+    t0_reason = str(deal.get("t0_reason", "") or "")
+
+    # Heurística de inferencia — los tags se añadieron en abr-2026i/j
+    seasonal_bonus = 0.0
+    if "ajuste estacional" in t0_reason.lower():
+        # Estimación: el ajuste mete típicamente ~5-15 puntos
+        seasonal_bonus = 8.0 if score >= 50 else 4.0
+
+    holiday_bonus = 0.0
+    if "festivo:" in t0_reason.lower():
+        holiday_bonus = 6.0
+
+    verified_bonus = 0.0
+    if is_verified:
+        # Implementación real: best["final_score"] *= 1.15 → bonus ≈ 15% del score
+        verified_bonus = round(score * 0.15 / 1.15, 1)
+
+    lowcost_penalty = 0.0
+    if is_lowcost:
+        lowcost_penalty = -10.0  # Documentado, no afecta score numéricamente
+
+    base = max(
+        0.0, score - seasonal_bonus - holiday_bonus - verified_bonus - lowcost_penalty,
+    )
+
+    return {
+        "base": round(base, 1),
+        "seasonal_bonus": round(seasonal_bonus, 1),
+        "holiday_bonus": round(holiday_bonus, 1),
+        "verified_bonus": round(verified_bonus, 1),
+        "lowcost_penalty": round(lowcost_penalty, 1),
+        "total": round(score, 1),
+    }
+
+
 def dedup_flights(flights: List[Dict]) -> List[Dict]:
     """
     Deduplica vuelos de múltiples fuentes para la misma ruta y fecha.
@@ -258,8 +370,14 @@ def build_unified_deals(
     """
     hotel_deals = hotel_deals or []
 
+    # abr-2026l (#202): aplicar dedup fino ±1€ ANTES del schema unifier para
+    # quitar entradas casi-iguales que no aportan valor. El stats con drops
+    # por engine se incluye en `stats.engine_stats` para auditar qué fuente
+    # genera más ruido.
+    deduped_flights, dedup_engine_stats = dedup_close_prices(flight_deals, tolerance_eur=1.0)
+
     # Convertir vuelos al schema unificado
-    unified_flights = [_flight_to_unified(f) for f in flight_deals]
+    unified_flights = [_flight_to_unified(f) for f in deduped_flights]
 
     # Combinar y ordenar por score
     all_deals = unified_flights + hotel_deals
@@ -276,6 +394,12 @@ def build_unified_deals(
         by_cabin[d.get("cabin", "economy")] += 1
 
     prices = [d["price_eur"] for d in all_deals if d.get("price_eur", 0) > 0]
+    # abr-2026l: contar deals por engine — útil para alertas tipo "rapidapi
+    # no aportó nada en el último hunt, ¿está degradado?".
+    by_engine = defaultdict(int)
+    for d in unified_flights:
+        for src in d.get("sources", []) or []:
+            by_engine[str(src)] += 1
     stats = {
         "total": len(all_deals),
         "flights": len(unified_flights),
@@ -287,6 +411,8 @@ def build_unified_deals(
         "price_max": max(prices) if prices else 0,
         "price_avg": round(sum(prices) / len(prices), 0) if prices else 0,
         "verified_count": sum(1 for d in all_deals if d.get("verified")),
+        "by_engine": dict(by_engine),
+        "engine_dedup_drops": dedup_engine_stats,
     }
 
     return {

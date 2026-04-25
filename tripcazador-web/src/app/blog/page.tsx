@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getAllPosts } from "@/lib/blog";
 
 export const metadata: Metadata = {
@@ -68,13 +69,18 @@ export default function BlogIndexPage() {
             >
               <a href={`/blog/${post.slug}`} className="block">
                 {post.heroImage && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={post.heroImage}
-                    alt={post.title}
-                    className="w-full h-48 object-cover"
-                    loading="lazy"
-                  />
+                  <div className="relative w-full h-48 bg-gray-800">
+                    <Image
+                      src={post.heroImage}
+                      alt={post.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover"
+                      loading="lazy"
+                      // No critical: lazy + responsive sizes evitan descargar
+                      // 1600px en mobile.
+                    />
+                  </div>
                 )}
                 <div className="p-6 space-y-3">
                   <div className="flex items-center gap-3 text-xs text-gray-500">
