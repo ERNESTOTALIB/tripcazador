@@ -48,16 +48,28 @@ export async function GET(req: NextRequest) {
   }
 
   // Listado de URLs a publicar — incluir todas las páginas indexables.
+  // abr-2026q: añadidos /it, /de, /fr y blog posts EN para cobertura
+  // hreflang completa cuando el contenido se actualiza.
   const posts = getAllPosts();
   const urls: string[] = [
     `https://${HOST}/`,
     `https://${HOST}/blog`,
     `https://${HOST}/destinos`,
     `https://${HOST}/deals`,
+    `https://${HOST}/hoteles`,
     `https://${HOST}/en`,
     `https://${HOST}/en/blog`,
     `https://${HOST}/en/destinos`,
+    `https://${HOST}/de`,
+    `https://${HOST}/fr`,
+    `https://${HOST}/it`,
+    `https://${HOST}/lead-magnet/50-hubs-error-fare`,
     ...posts.map((p) => `https://${HOST}/blog/${p.slug}`),
+    // EN sister-posts: aunque no tienen MDX dedicado, los slugs EN existen
+    // como rewrite-fallback en getAllPosts() cuando hay versión inglesa.
+    ...posts
+      .filter((p) => /-en$|cheapest|how-to-catch|what-is-an-error/.test(p.slug))
+      .map((p) => `https://${HOST}/en/blog/${p.slug}`),
   ];
 
   const body = {
@@ -81,10 +93,25 @@ export async function GET(req: NextRequest) {
     indexnowStatus = -1;
   }
 
+  // abr-2026q: Google ping es deprecated (Google retiró /ping/sitemap en Jun 2023)
+  // pero pingueamos a Bing (legacy) por si acaso. Yandex no requiere ping
+  // separado — ya está cubierto por IndexNow.
+  let bingStatus = 0;
+  try {
+    const sitemapUrl = encodeURIComponent(`https://${HOST}/sitemap.xml`);
+    const res = await fetch(`https://www.bing.com/ping?sitemap=${sitemapUrl}`, {
+      cache: "no-store",
+    });
+    bingStatus = res.status;
+  } catch {
+    bingStatus = -1;
+  }
+
   return NextResponse.json({
     ok: indexnowStatus >= 200 && indexnowStatus < 300,
     count: urls.length,
     indexnow_status: indexnowStatus,
+    bing_ping_status: bingStatus,
   });
 }
 

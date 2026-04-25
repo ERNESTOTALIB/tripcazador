@@ -184,6 +184,34 @@ export default function RootLayout({
             },
           ]}
         />
+        {/*
+          abr-2026q — Speculation Rules API para prerender de rutas críticas.
+          Chrome 121+ usa estas hints para precargar (en background) las
+          páginas más probables tras un click. Eager prerender solo para los
+          dos enlaces de navegación más usados (datos GA4: /deals 38%, /destinos 19%).
+          Otras rutas usan moderate (hover + 200ms intent).
+        */}
+        <script
+          type="speculationrules"
+          nonce={nonce}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              prerender: [
+                {
+                  source: "list",
+                  urls: ["/deals", "/destinos"],
+                },
+              ],
+              prefetch: [
+                {
+                  source: "document",
+                  where: { href_matches: "/*" },
+                  eagerness: "moderate",
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body className={`${inter.className} bg-gray-950 text-gray-100 min-h-screen`}>
         {GA_ID && (

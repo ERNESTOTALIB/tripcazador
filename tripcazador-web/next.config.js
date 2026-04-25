@@ -95,6 +95,50 @@ const nextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      {
+        // abr-2026q — CDN cache para imágenes estáticas /_next/image y /_next/static
+        // 1 año immutable: contenido versionado por hash, nunca cambia.
+        source: "/_next/static/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          { key: "CDN-Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
+        // OG images dinámicas: cache 24h en CDN, 1h en navegador.
+        source: "/blog/:slug/opengraph-image",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800" },
+        ],
+      },
+      {
+        source: "/en/blog/:slug/opengraph-image",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800" },
+        ],
+      },
+      {
+        // /api/img edge proxy: ya define su propio Cache-Control en route.ts pero
+        // reforzamos a nivel CDN por si alguna request bypassa el proxy.
+        source: "/api/img",
+        headers: [
+          { key: "CDN-Cache-Control", value: "public, max-age=86400, s-maxage=604800" },
+        ],
+      },
+      {
+        // sitemap.xml: cache corto en CDN, signal de freshness para crawlers.
+        source: "/sitemap.xml",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=300, s-maxage=600, stale-while-revalidate=86400" },
+        ],
+      },
+      {
+        // robots.txt: cache muy corto (cambios deben propagarse rápido).
+        source: "/robots.txt",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=300, s-maxage=600" },
+        ],
+      },
     ];
   },
   async rewrites() {

@@ -1,7 +1,49 @@
+# TripCazador robots.txt — actualizado abr-2026q
+# Política: indexar todo el contenido público, prohibir endpoints API privados y admin.
+
 User-agent: *
 Allow: /
-Disallow: /api/
+Allow: /api/img
+Allow: /api/health
+Allow: /api/status
+Disallow: /api/admin/
+Disallow: /api/admin
 Disallow: /admin
-Disallow: /admin/
+Disallow: /api/price-alerts
+Disallow: /api/indexnow
+Disallow: /api/metrics
+Disallow: /favoritos
+Disallow: /*?*  # Evita indexar páginas con query strings (filtros, sort)
 
+# Crawl-delay para crawlers educados (Google/Bing ignoran, otros respetan).
+Crawl-delay: 5
+
+# Bots que abusan — bloqueo explícito.
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# AI crawlers — política mixta. Permitimos lectura pero bloqueamos endpoints.
+# Reevaluar Q3 2026 si vemos abuso.
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+
+# Sitemaps
 Sitemap: https://tripcazador.com/sitemap.xml
