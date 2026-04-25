@@ -1,11 +1,10 @@
 import { getDeals } from "@/lib/api";
-import { DealsListClient } from "@/components/DealsListClient";
-import { PriceAlertButton } from "@/components/PriceAlertModal";
+import { DealRow } from "@/components/DealCard";
 import { JsonLd } from "@/components/JsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Todos los deals",
+  title: "Todos los deals — TripCazador",
   description:
     "Filtra y explora todos los chollos de vuelo activos: error fares, Business barato, por región, precio y más.",
   alternates: { canonical: "/deals" },
@@ -64,25 +63,9 @@ export default async function DealsPage({
   const deals = data.deals;
   const stats = data.stats;
 
-  // ItemList de los primeros 20 deals visibles. Google necesita position + url
-  // en cada ListItem para Rich Results en buscador. Las Offer aquí son
-  // ligeras (sin Flight) porque el detalle ya está en /deals/[id].
-  const itemListJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    itemListOrder: "https://schema.org/ItemListUnordered",
-    numberOfItems: deals.length,
-    itemListElement: deals.slice(0, 20).map((d, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      url: `${SITE_URL}/deals/${d.id}`,
-      name: `${d.city_from} → ${d.city_to} desde ${Math.round(d.price_eur)}€`,
-    })),
-  };
-
   return (
     <div className="space-y-8">
-      <JsonLd data={[BREADCRUMB_JSONLD, itemListJsonLd]} />
+      <JsonLd data={BREADCRUMB_JSONLD} />
 
       {/* Breadcrumbs visibles */}
       <nav aria-label="Migas de pan" className="flex items-center gap-2 text-sm text-gray-400">
@@ -97,21 +80,15 @@ export default async function DealsPage({
       </nav>
 
       {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Todos los deals</h1>
-          <p className="text-gray-400 mt-1">
-            {stats.total} deals activos · Actualizado hace{" "}
-            {Math.round(
-              (Date.now() - new Date(data.generated_at).getTime()) / 60000,
-            )}{" "}
-            min
-          </p>
-        </div>
-        <PriceAlertButton
-          className="self-start"
-          label="🔔 Avisarme cuando baje"
-        />
+      <div>
+        <h1 className="text-3xl font-bold text-white">Todos los deals</h1>
+        <p className="text-gray-400 mt-1">
+          {stats.total} deals activos · Actualizado hace{" "}
+          {Math.round(
+            (Date.now() - new Date(data.generated_at).getTime()) / 60000
+          )}{" "}
+          min
+        </p>
       </div>
 
       {/* Filtros */}
@@ -192,8 +169,21 @@ export default async function DealsPage({
         </div>
       </div>
 
-      {/* Lista de deals con tabs de ordenación client-side */}
-      <DealsListClient deals={deals} />
+      {/* Lista de deals */}
+      {deals.length > 0 ? (
+        <div className="space-y-3">
+          {deals.map((deal) => (
+            <DealRow key={deal.id} deal={deal} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 text-gray-500">
+          <p className="text-lg">Sin deals con estos filtros</p>
+          <a href="/deals" className="text-amber-400 hover:underline mt-2 block">
+            Ver todos los deals →
+          </a>
+        </div>
+      )}
     </div>
   );
 }

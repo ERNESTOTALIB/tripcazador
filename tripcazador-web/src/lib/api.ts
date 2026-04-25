@@ -75,60 +75,18 @@ export async function getDeals(params?: {
   if (params?.max_price) query.set("max_price", String(params.max_price));
   if (params?.limit) query.set("limit", String(params.limit));
 
-  const dealsUrl = `${API_BASE}/api/deals${query.toString() ? "?" + query : ""}`;
-  const statsUrl = `${API_BASE}/api/stats`;
+  const url = `${API_BASE}/api/deals${query.toString() ? "?" + query : ""}`;
 
-  // El backend FastAPI separa /api/deals (array) y /api/stats (object). Los
-  // componemos aquí en la forma DealsResponse que espera la web.
-  // Si cualquiera falla → fallback a deals.json estático para que la build no
-  // se rompa (p. ej. cuando la API responde lista vacía en cold-start).
-  try {
-    const [dealsRes, statsRes] = await Promise.all([
-      fetch(dealsUrl, { next: { revalidate: 300 } }),
-      fetch(statsUrl, { next: { revalidate: 300 } }),
-    ]);
+  const res = await fetch(url, {
+    next: { revalidate: 300 }, // Revalidar cada 5 minutos (ISR)
+  });
 
-    if (!dealsRes.ok || !statsRes.ok) {
-      return getDealsFromStatic();
-    }
-
-    const dealsBody: unknown = await dealsRes.json();
-    const stats = await statsRes.json();
-
-    const deals: Deal[] = Array.isArray(dealsBody)
-      ? (dealsBody as Deal[])
-      : ((dealsBody as { deals?: Deal[] })?.deals ?? []);
-
-    // Prod safeguard: si el backend respondió 200 OK pero con un array vacío
-    // (cold-start, worker cron caído, seed no ejecutado), preferimos el
-    // `deals.json` estático antes que mostrar un home sin ofertas. Observado
-    // en auditoría abr-2026 (REPORTE_BUGS_20260421.md): backend devolvía
-    // `[]` en prod durante semanas y el UI quedaba sin contenido.
-    if (deals.length === 0) {
-      return getDealsFromStatic();
-    }
-
-    return {
-      schema_version: "v4.1",
-      generated_at: stats?.generated_at ?? new Date().toISOString(),
-      total_deals: stats?.total ?? deals.length,
-      stats: {
-        total: stats?.total ?? 0,
-        flights: stats?.flights ?? 0,
-        hotels: stats?.hotels ?? 0,
-        by_classification: stats?.by_classification ?? {},
-        by_region: stats?.by_region ?? {},
-        by_cabin: stats?.by_cabin ?? {},
-        price_min: stats?.price_min ?? 0,
-        price_max: stats?.price_max ?? 0,
-        price_avg: stats?.price_avg ?? 0,
-        verified_count: stats?.verified_count ?? 0,
-      },
-      deals,
-    };
-  } catch {
+  if (!res.ok) {
+    // Fallback: intentar cargar desde deals.json estático
     return getDealsFromStatic();
   }
+
+  return res.json();
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -262,49 +220,6 @@ export async function searchDeals(params: SearchParams): Promise<Deal[]> {
   }
 }
 
-// ──────────────────────────────────────────────
-// Live search — busca en caliente contra varios proveedores vía FastAPI
-// ──────────────────────────────────────────────
-export interface LiveSearchParams {
-  origin: string;        // IATA (MAD, JFK…)
-  destination: string;   // IATA
-  date_out: string;      // YYYY-MM-DD
-  cabin?: "economy" | "premium_economy" | "business" | "first";
-  limit?: number;
-}
-
-/**
- * Llama a /api/search/live del FastAPI. El backend orquesta varios proveedores
- * en paralelo, cachea 15 min y devuelve top-N por precio.
- * Timeout de cliente: 25s (el server corta a 18s, dejamos margen para red).
- */
-export async function searchDealsLive(params: LiveSearchParams): Promise<Deal[]> {
-  const query = new URLSearchParams({
-    origin: params.origin.toUpperCase(),
-    destination: params.destination.toUpperCase(),
-    date_out: params.date_out,
-    cabin: params.cabin ?? "economy",
-    limit: String(params.limit ?? 20),
-  });
-
-  const url = `${API_BASE}/api/search/live?${query.toString()}`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25000);
-
-  try {
-    const res = await fetch(url, {
-      cache: "no-store",
-      signal: controller.signal,
-    });
-    if (!res.ok) return [];
-    return await res.json();
-  } catch {
-    return [];
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
 export async function getDeal(id: string): Promise<Deal | null> {
   try {
     const res = await fetch(`${API_BASE}/api/deals/${encodeURIComponent(id)}`, {
@@ -421,4 +336,58 @@ export function getClassificationColor(cls: string): string {
     "NORMAL": "text-gray-400 bg-gray-400/10",
   };
   return colors[cls] || "text-gray-400 bg-gray-400/10";
+}
+
+// ──────────────────────────────────────────────
+// Sanitización de URLs externas (defensa en profundidad).
+// Bloquea esquemas peligrosos (`javascript:`, `data:`, `vbscript:`, `file:`)
+// en `booking_url` y otras URLs que vengan del backend y terminen en <a href>.
+// Si el esquema no es http/https ni relativo, se devuelve "#".
+// ──────────────────────────────────────────────
+export function safeExternalUrl(url: string | undefined | null): string {
+  if (!url) return "#";
+  const trimmed = String(url).trim();
+  if (!trimmed) return "#";
+  // Relative URL → safe
+  if (trimmed.startsWith("/") || trimmed.startsWith("#") || trimmed.startsWith("?")) {
+    return trimmed;
+  }
+  // Strip leading whitespace/control chars that some browsers ignore
+  const normalized = trimmed.replace(/[\u0000-\u001f\u007f\s]/g, "").toLowerCase();
+  if (
+    normalized.startsWith("javascript:") ||
+    normalized.startsWith("data:") ||
+    normalized.startsWith("vbscript:") ||
+    normalized.startsWith("file:")
+  ) {
+    return "#";
+  }
+  // Only http/https allowed for external
+  if (!/^https?:\/\//i.test(trimmed)) return "#";
+  return trimmed;
+}
+
+/**
+ * Sanitiza URLs de imagen provenientes del backend antes de pintar en <img src>.
+ *
+ * Por qué: aunque `javascript:` en src de img es ignorado por navegadores modernos,
+ * `data:image/svg+xml,...<script>` puede ejecutar JS en algunos contextos. Y si
+ * el backend se compromete y emite una URL con esquemas raros, preferimos NO
+ * intentar cargar el recurso.
+ *
+ * Política:
+ *   - http(s) permitido
+ *   - data:image/(png|jpeg|jpg|webp|gif) permitido (raster, no SVG)
+ *   - Relativos (inicia con `/`) permitidos (Next.js Image loader)
+ *   - cualquier otro esquema → cadena vacía (browsers no intentarán cargarla)
+ */
+export function safeImageUrl(url: string | undefined | null): string {
+  if (!url) return "";
+  const trimmed = String(url).trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("/")) return trimmed;
+  const normalized = trimmed.replace(/[\u0000-\u001f\u007f\s]/g, "").toLowerCase();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^data:image\/(png|jpeg|jpg|webp|gif)[;,]/i.test(normalized)) return trimmed;
+  return "";
 }

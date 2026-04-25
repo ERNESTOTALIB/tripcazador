@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Deal no encontrado",
+  title: "Deal no encontrado — TripCazador",
   description: "La oferta que buscas ya no está disponible o ha expirado.",
   robots: { index: false, follow: false },
 };

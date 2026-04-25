@@ -9,6 +9,8 @@ import {
   formatDuration,
   getCabinLabel,
   getClassificationColor,
+  safeExternalUrl,
+  safeImageUrl,
   type Deal,
 } from "@/lib/api";
 import { DealCard } from "@/components/DealCard";
@@ -30,20 +32,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const deal = await getDeal(params.id);
   if (!deal) {
-    // Importante: aplicar robots:noindex aquí también, porque la metadata
-    // de page.tsx es la que se renderiza incluso cuando notFound() dispara.
-    // Sin esto, Google puede indexar la página "Deal no encontrado" como 200.
     return {
-      title: "Deal no encontrado",
+      title: "Deal no encontrado — TripCazador",
       description: "La oferta que buscas ya no está disponible o ha expirado.",
-      robots: { index: false, follow: false },
-      alternates: { canonical: null },
     };
   }
 
   const title = `${deal.city_from} → ${deal.city_to} desde ${Math.round(
     deal.price_eur,
-  )}€ — ${getCabinLabel(deal.cabin)}`;
+  )}€ — ${getCabinLabel(deal.cabin)} | TripCazador`;
 
   const savings =
     deal.savings_pct > 0 ? ` (${deal.savings_pct.toFixed(0)}% menos)` : "";
@@ -57,6 +54,11 @@ export async function generateMetadata({
 
   const canonical = `/deals/${deal.id}`;
 
+  // Sanitizar image_url: si viene con esquema peligroso (javascript:, data:svg+xml, etc.)
+  // devolvemos "" y no incluimos openGraph/twitter images. Esto evita que un backend
+  // comprometido inyecte XSS vía meta tags renderizadas por crawlers/embebidores.
+  const safeOgImage = safeImageUrl(deal.image_url);
+
   return {
     title,
     description,
@@ -66,16 +68,15 @@ export async function generateMetadata({
       description,
       url: canonical,
       type: "article",
-      // Nota: NO seteamos `images` aquí — dejamos que la convención de
-      // archivo `opengraph-image.tsx` en esta misma carpeta inyecte el PNG
-      // dinámico generado con next/og (precio grande, ciudades, ahorro).
-      // Mucho mejor CTR en WhatsApp/Telegram que una foto genérica.
+      images: safeOgImage
+        ? [{ url: safeOgImage, width: 1200, height: 630, alt: deal.city_to }]
+        : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      // Igual que arriba: convención de archivo se encarga del image.
+      images: safeOgImage ? [safeOgImage] : undefined,
     },
     robots: {
       index: true,
@@ -124,69 +125,26 @@ export default async function DealDetailPage({
   const isCritical =
     deal.classification === "CRÍTICO" || deal.classification === "ERROR";
 
-  // URLs absolutas requeridas por los validators de Google Rich Results.
-  const SITE = "https://tripcazador.com";
-  const dealCanonical = `${SITE}/deals/${deal.id}`;
-
-  // JSON-LD: Product + Offer (esquema bendecido por Google para rich
-  // snippets de productos/ofertas con precio). Incluimos sku, seller,
-  // itemCondition y priceValidUntil para cumplir con los requisitos
-  // obligatorios + recomendados.
-  const jsonLd: Record<string, unknown> = {
+  // JSON-LD: Producto + Oferta (para rich snippets en Google)
+  const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "@id": dealCanonical,
     name: `Vuelo ${deal.city_from} → ${deal.city_to}`,
     description: deal.headline || `Vuelo ${deal.origin} → ${deal.destination}`,
-    sku: deal.id,
+    image: safeImageUrl(deal.image_url) || undefined,
     brand: {
       "@type": "Brand",
       name: deal.airline_name || deal.airline,
     },
-    category: "Travel > Flights",
     offers: {
       "@type": "Offer",
-      url: dealCanonical,
+      url: safeExternalUrl(deal.booking_url),
       priceCurrency: "EUR",
       price: deal.price_eur.toFixed(2),
       availability: "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
       validFrom: deal.found_at,
       validThrough: deal.expires_at,
-      priceValidUntil: deal.expires_at,
-      seller: {
-        "@type": "Organization",
-        name: deal.airline_name || deal.airline,
-      },
     },
-  };
-  if (deal.image_url) {
-    (jsonLd as { image?: string }).image = deal.image_url;
-  }
-
-  // Schema Flight complementario — ayuda a motores de búsqueda a entender
-  // que esto es un vuelo específico entre dos aeropuertos.
-  const flightLd = {
-    "@context": "https://schema.org",
-    "@type": "Flight",
-    flightNumber: undefined, // no lo tenemos granular; omitido intencionalmente
-    provider: {
-      "@type": "Airline",
-      name: deal.airline_name || deal.airline,
-      iataCode: deal.airline,
-    },
-    departureAirport: {
-      "@type": "Airport",
-      iataCode: deal.origin,
-      name: deal.city_from,
-    },
-    arrivalAirport: {
-      "@type": "Airport",
-      iataCode: deal.destination,
-      name: deal.city_to,
-    },
-    departureTime: deal.date_out,
-    arrivalTime: deal.date_ret || undefined,
   };
 
   const breadcrumbLd = {
@@ -197,26 +155,26 @@ export default async function DealDetailPage({
         "@type": "ListItem",
         position: 1,
         name: "Inicio",
-        item: `${SITE}/`,
+        item: "/",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Deals",
-        item: `${SITE}/deals`,
+        item: "/deals",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: `${deal.city_from} → ${deal.city_to}`,
-        item: dealCanonical,
+        item: `/deals/${deal.id}`,
       },
     ],
   };
 
   return (
     <div className="space-y-10">
-      <JsonLd data={[jsonLd, flightLd, breadcrumbLd]} />
+      <JsonLd data={[jsonLd, breadcrumbLd]} />
 
       {/* ─────────── Breadcrumb ─────────── */}
       <nav className="text-xs text-gray-500" aria-label="Breadcrumb">
@@ -241,11 +199,11 @@ export default async function DealDetailPage({
             : "border-gray-800"
         }`}
       >
-        {deal.image_url && (
+        {safeImageUrl(deal.image_url) && (
           <div className="absolute inset-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={deal.image_url}
+              src={safeImageUrl(deal.image_url)}
               alt={deal.city_to}
               className="w-full h-full object-cover opacity-30"
             />
@@ -310,7 +268,7 @@ export default async function DealDetailPage({
             </div>
 
             <a
-              href={deal.booking_url}
+              href={safeExternalUrl(deal.booking_url)}
               target="_blank"
               rel="noopener noreferrer nofollow"
               className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-base transition-all ${
