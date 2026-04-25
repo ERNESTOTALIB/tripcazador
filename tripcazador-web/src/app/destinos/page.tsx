@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import { DestinationCard } from "@/components/DestinationCard";
 import { JsonLd } from "@/components/JsonLd";
 
@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/JsonLd";
 // hover) y pesa ~25KB minificados con su SVG inline. Lazy load reduce el
 // bundle inicial de /destinos sin afectar SEO porque el contenido textual
 // (lista de destinos) sí se prerenderiza.
-const DestinationsMap = dynamic(
+const DestinationsMap = nextDynamic(
   () => import("@/components/DestinationsMap").then((m) => m.DestinationsMap),
   {
     ssr: false,
