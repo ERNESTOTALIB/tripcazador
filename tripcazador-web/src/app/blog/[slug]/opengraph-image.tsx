@@ -12,10 +12,12 @@ import { getPostBySlug } from "@/lib/blog";
  * suben CTR de Twitter/LinkedIn ~25-40% según AB tests públicos
  * (Vercel/Linear publicaron datos similares).
  *
- * Edge runtime — cero cold start, ~80ms p99 en Vercel.
+ * Runtime: Node — `getPostBySlug` lee MDX del filesystem (`fs`/`path`),
+ * incompatible con edge. Migrar a edge requiere pre-bundle del MDX.
+ * abr-2026t: removido `runtime = "edge"` para desbloquear Vercel build.
  */
 
-export const runtime = "edge";
+// export const runtime = "edge"; // bloquea webpack: fs/path Node-only en lib/blog
 export const alt = "TripCazador — error fares & vuelos baratos desde Europa";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

@@ -14,7 +14,9 @@ import { getPostBySlug } from "@/lib/blog";
  * TripCazador team / 8 min read" que sigue siendo correcto.
  */
 
-export const runtime = "edge";
+// abr-2026t: removed `runtime = "edge"` — fs/path Node-only en lib/blog
+// rompía webpack ("Module not found: Can't resolve 'path'").
+// export const runtime = "edge";
 export const alt = "TripCazador — error fares & cheap flights from Europe";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
