@@ -1,13 +1,14 @@
 name: Deploy Web → Vercel
 
-# Auto-deploy del frontend Next.js en Vercel cada vez que hay un push a main
-# que toca tripcazador-web/. Reemplaza la rotación manual del token.
+# Auto-deploy a Vercel cuando cambia el frontend (tripcazador-web/**) o
+# cuando se ejecuta manualmente. Reemplaza la integración nativa Vercel↔Git
+# que nunca pudo conectarse en la UI (popup OAuth bloqueado el 2026-04-20).
 #
-# Secrets necesarios:
-#   VERCEL_TOKEN       — token con permiso de deploy (vercel.com/account/settings/tokens)
-#   VERCEL_ORG_ID      — team_yGePQTjnzSAWEPzPG73xGlFE
-#   VERCEL_PROJECT_ID  — prj_67nltvSOptrl1ZlfEWjQeAQrLLQu
-#   TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID (opcionales — notificación)
+# Sin este workflow, Vercel se queda congelado en el último deploy manual y
+# todas las rutas/contenido nuevo (calculadoras, vuelos-baratos-[mes], i18n,
+# regiones, comparativas) responden 404 en prod aunque el código esté en
+# main. Este bug pasó silencioso varios días — los smoke tests prod
+# (TRIPCAZADOR_PROD_SMOKE=1) lo detectan ahora.
 
 on:
   push:
@@ -19,72 +20,65 @@ on:
 
 jobs:
   deploy:
-    name: Build + deploy en Vercel
+    name: Vercel deploy --prod
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: tripcazador-web
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+          cache-dependency-path: tripcazador-web/package-lock.json
 
       - name: Install Vercel CLI
-        run: npm install -g vercel@latest
+        run: npm install --global vercel@latest
 
-      - name: Pull Vercel env
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - name: Pull Vercel env (prod)
+        working-directory: tripcazador-web
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          vercel build --prod --token="$VERCEL_TOKEN"
+      - name: Build (prod)
+        working-directory: tripcazador-web
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy (prebuilt)
+      - name: Deploy --prebuilt --prod
+        working-directory: tripcazador-web
         id: deploy
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          URL=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
-          echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "✅ Desplegado en $URL"
+          URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Deployed: $URL"
 
-      - name: Smoke check tripcazador.com
+      - name: Smoke test new deploy
         run: |
-          sleep 5
-          HTTP=$(curl -sS -o /dev/null -w "%{http_code}" https://tripcazador.com)
-          if [ "$HTTP" != "200" ]; then
-            echo "::warning::tripcazador.com devolvió $HTTP"
-          else
-            echo "✅ tripcazador.com: HTTP 200"
-          fi
+          # Espera 10s a que el alias se propague, luego verifica home + una ruta nueva
+          sleep 10
+          curl -fsS --max-time 15 https://tripcazador.com/ | grep -q TripCazador || (echo "home failed" && exit 1)
+          curl -fsS --max-time 15 https://tripcazador.com/calculadora | grep -q -i calculadora || (echo "calc failed" && exit 1)
+          echo "smoke OK"
 
       - name: Notify Telegram
         if: always()
         env:
           TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TG_CHAT:  ${{ secrets.TELEGRAM_CHAT_ID }}
-          STATUS:   ${{ job.status }}
-          URL:      ${{ steps.deploy.outputs.url }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          STATUS: ${{ job.status }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         run: |
           if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
             ICON="✅"
             [ "$STATUS" != "success" ] && ICON="🚨"
-            MSG=$(printf '%s <b>Deploy Web: %s</b>\nURL: %s\nCommit: %s\nRun: https://github.com/%s/actions/runs/%s' \
-              "$ICON" "$STATUS" "${URL:-n/a}" "${{ github.sha }}" "${{ github.repository }}" "${{ github.run_id }}")
             curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
               -d chat_id="${TG_CHAT}" \
               -d parse_mode=HTML \
-              --data-urlencode "text=${MSG}" || true
+              --data-urlencode text="${ICON} <b>Deploy Web: ${STATUS}</b>
+Commit: ${{ github.sha }}
+Deploy: ${DEPLOY_URL:-n/a}
+Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" || true
           fi
