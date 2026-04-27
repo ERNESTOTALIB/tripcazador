@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, getAllTagsWithCounts } from "@/lib/blog";
+import { AIRLINES } from "@/lib/airlines";
+import { HUBS } from "@/lib/hubs";
+import { COMPARISONS } from "@/lib/comparisons";
+import { REGIONS } from "@/lib/regions";
+import { MONTHS } from "@/lib/months";
 
 /**
  * IndexNow ping — abr-2026k
@@ -64,12 +69,56 @@ export async function GET(req: NextRequest) {
     `https://${HOST}/fr`,
     `https://${HOST}/it`,
     `https://${HOST}/lead-magnet/50-hubs-error-fare`,
+    `https://${HOST}/rss.xml`,
+    `https://${HOST}/en/rss.xml`,
+    `https://${HOST}/aerolineas`,
     ...posts.map((p) => `https://${HOST}/blog/${p.slug}`),
     // EN sister-posts: aunque no tienen MDX dedicado, los slugs EN existen
     // como rewrite-fallback en getAllPosts() cuando hay versión inglesa.
     ...posts
-      .filter((p) => /-en$|cheapest|how-to-catch|what-is-an-error/.test(p.slug))
+      .filter(
+        (p) =>
+          p.resolvedLang === "en" ||
+          /-en$|cheapest|how-to-catch|what-is-an-error/.test(p.slug),
+      )
       .map((p) => `https://${HOST}/en/blog/${p.slug}`),
+    // abr-2026x: tag pages ES + EN, aerolíneas individuales
+    ...getAllTagsWithCounts("es").map(
+      (t) => `https://${HOST}/blog/tag/${encodeURIComponent(t.tag)}`,
+    ),
+    ...getAllTagsWithCounts("en").map(
+      (t) => `https://${HOST}/en/blog/tag/${encodeURIComponent(t.tag)}`,
+    ),
+    ...AIRLINES.map((a) => `https://${HOST}/aerolineas/${a.code.toLowerCase()}`),
+    // abr-2026y: glosario, prensa, hubs, comparativas
+    `https://${HOST}/glosario`,
+    `https://${HOST}/prensa`,
+    `https://${HOST}/comparar`,
+    `https://${HOST}/vuelos-desde`,
+    ...HUBS.map((h) => `https://${HOST}/vuelos-desde/${h.code.toLowerCase()}`),
+    ...COMPARISONS.map((c) => `https://${HOST}/comparar/${c.slug}`),
+    // abr-2026z: calculadora, mapa, embed
+    `https://${HOST}/calculadora`,
+    `https://${HOST}/mapa-precios`,
+    `https://${HOST}/embed`,
+    // abr-2026aa: calculadora-co2, opiniones, faq, lead-magnet #2
+    `https://${HOST}/calculadora-co2`,
+    `https://${HOST}/opiniones`,
+    `https://${HOST}/faq`,
+    `https://${HOST}/lead-magnet/30-trucos-avanzados`,
+    // abr-2026bb: buscar, calculadora-millas, stopovers
+    `https://${HOST}/buscar`,
+    `https://${HOST}/calculadora-millas`,
+    `https://${HOST}/stopovers`,
+    // abr-2026cc: calculadora-cancelacion, partners, regiones
+    `https://${HOST}/calculadora-cancelacion`,
+    `https://${HOST}/partners`,
+    `https://${HOST}/regiones`,
+    ...REGIONS.map((r) => `https://${HOST}/regiones/${r.slug}`),
+    // abr-2026dd: vuelos-baratos-mes hub + 12 monthly + calculadora-upgrade
+    `https://${HOST}/vuelos-baratos-mes`,
+    `https://${HOST}/calculadora-upgrade`,
+    ...MONTHS.map((m) => `https://${HOST}/vuelos-baratos-${m.slug}`),
   ];
 
   const body = {

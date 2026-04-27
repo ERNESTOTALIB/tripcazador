@@ -44,6 +44,16 @@ export const metadata: Metadata = {
       "es-CH": "https://tripcazador.com/",
       "es-AT": "https://tripcazador.com/",
       "es": "https://tripcazador.com/",
+      // abr-2026dd: hreflang Latam — apuntamos al mismo dominio raíz.
+      // El contenido es válido para hispanohablantes globalmente; el
+      // hreflang es-MX/es-AR/es-CO/es-CL es señal a Google de que el
+      // contenido es relevante para audiencia LATAM.
+      "es-MX": "https://tripcazador.com/",
+      "es-AR": "https://tripcazador.com/",
+      "es-CO": "https://tripcazador.com/",
+      "es-CL": "https://tripcazador.com/",
+      "es-PE": "https://tripcazador.com/",
+      "es-419": "https://tripcazador.com/", // Spanish Latin America generic
       "en": "https://tripcazador.com/en",
       "en-US": "https://tripcazador.com/en",
       "en-GB": "https://tripcazador.com/en",

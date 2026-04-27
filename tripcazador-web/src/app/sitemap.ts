@@ -2,14 +2,23 @@ import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
 import { getDeals } from "@/lib/api";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, getAllTagsWithCounts } from "@/lib/blog";
+import { AIRLINES } from "@/lib/airlines";
+import { HUBS } from "@/lib/hubs";
+import { COMPARISONS } from "@/lib/comparisons";
+import { REGIONS } from "@/lib/regions";
+import { MONTHS } from "@/lib/months";
 
 const BASE_URL = "https://tripcazador.com";
 
 // Lista hardcoded de destinos (debe coincidir con destinos/[slug]/page.tsx)
+// abr-2026z: añadidos marrakech, tokio, reykjavik, singapur, praga, estambul (12 → 18)
+// abr-2026bb: añadidos berlin, atenas, dubai, el-cairo, hong-kong, sydney (18 → 24)
 const DESTINOS = [
   "tanzania", "japon", "maldivas", "nueva-york", "bali", "buenos-aires",
   "tailandia", "sudafrica", "islandia", "marruecos", "vietnam", "costa-rica",
+  "marrakech", "tokio", "reykjavik", "singapur", "praga", "estambul",
+  "berlin", "atenas", "dubai", "el-cairo", "hong-kong", "sydney",
 ];
 
 function getBlogSlugs(): string[] {
@@ -152,5 +161,214 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     /* silencio: el motor puede no estar arriba al momento del build */
   }
 
-  return [...staticPages, ...destinoPages, ...blogPages, ...dealPages];
+  // abr-2026x: tag pages — uno por cada tag único en ES y EN. Long-tail SEO.
+  const esTagPages: MetadataRoute.Sitemap = getAllTagsWithCounts("es").map((t) => ({
+    url: `${BASE_URL}/blog/tag/${encodeURIComponent(t.tag)}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.5,
+  }));
+  const enTagPages: MetadataRoute.Sitemap = getAllTagsWithCounts("en").map((t) => ({
+    url: `${BASE_URL}/en/blog/tag/${encodeURIComponent(t.tag)}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.5,
+  }));
+
+  // abr-2026x: aerolíneas — index + cada perfil individual
+  const aerolineasPages: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/aerolineas`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...AIRLINES.map((a) => ({
+      url: `${BASE_URL}/aerolineas/${a.code.toLowerCase()}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+  ];
+
+  // abr-2026x: feeds RSS dentro del sitemap como contenido descubrible.
+  const feedPages: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/rss.xml`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.4,
+    },
+    {
+      url: `${BASE_URL}/en/rss.xml`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.4,
+    },
+  ];
+
+  // abr-2026y: glosario, hubs aeropuerto, comparativas, prensa.
+  // abr-2026z: añadidos calculadora, mapa-precios, embed.
+  const utilityPages: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/glosario`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/prensa`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${BASE_URL}/comparar`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/vuelos-desde`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/calculadora`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/mapa-precios`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/embed`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    // abr-2026aa: calculadora-co2, opiniones, faq, lead-magnet 30 trucos
+    {
+      url: `${BASE_URL}/calculadora-co2`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/opiniones`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/faq`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/lead-magnet/30-trucos-avanzados`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    // abr-2026bb: buscar, calculadora-millas, stopovers
+    {
+      url: `${BASE_URL}/buscar`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
+      url: `${BASE_URL}/calculadora-millas`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/stopovers`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    // abr-2026cc: cancelacion calculator, partners, regiones index
+    {
+      url: `${BASE_URL}/calculadora-cancelacion`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/partners`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${BASE_URL}/regiones`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    // abr-2026dd: vuelos-baratos-mes index, calculadora-upgrade
+    {
+      url: `${BASE_URL}/vuelos-baratos-mes`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/calculadora-upgrade`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+  ];
+  // abr-2026cc: páginas regiones individuales
+  const regionPages: MetadataRoute.Sitemap = REGIONS.map((r) => ({
+    url: `${BASE_URL}/regiones/${r.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+  const hubPages: MetadataRoute.Sitemap = HUBS.map((h) => ({
+    url: `${BASE_URL}/vuelos-desde/${h.code.toLowerCase()}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+  const comparisonPages: MetadataRoute.Sitemap = COMPARISONS.map((c) => ({
+    url: `${BASE_URL}/comparar/${c.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+  // abr-2026dd: 12 month pages (vuelos-baratos-enero..diciembre)
+  const monthPages: MetadataRoute.Sitemap = MONTHS.map((m) => ({
+    url: `${BASE_URL}/vuelos-baratos-${m.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  return [
+    ...staticPages,
+    ...destinoPages,
+    ...blogPages,
+    ...esTagPages,
+    ...enTagPages,
+    ...aerolineasPages,
+    ...utilityPages,
+    ...hubPages,
+    ...comparisonPages,
+    ...regionPages,
+    ...monthPages,
+    ...feedPages,
+    ...dealPages,
+  ];
 }
