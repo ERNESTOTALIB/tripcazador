@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { HunterHealthWidget } from "@/components/HunterHealthWidget";
+import { ManualHuntButton } from "@/components/ManualHuntButton";
 
 // Base de la API (misma lógica que lib/api)
 const API_BASE =
@@ -147,6 +148,9 @@ export default function AdminPage() {
           {/* abr-2026m: Hunter health en vivo (auto-refresh cada 30s).
               Va arriba del overview para que sea lo primero que vea ops. */}
           <HunterHealthWidget refreshSeconds={30} />
+          {/* abr-2026r/s: trigger manual del motor sin SSH.
+              Útil cuando deals_total=0 y el cron de GitHub Actions está roto. */}
+          <ManualHuntButton />
           <div className="flex items-center justify-between">
             <p className="text-xs text-gray-500">
               Snapshot: {new Date(data.timestamp).toLocaleString("es-ES")}

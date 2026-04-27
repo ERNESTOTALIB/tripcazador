@@ -5,6 +5,7 @@ import SearchBar from "@/components/SearchBar";
 import { DestinationCard } from "@/components/DestinationCard";
 import { Testimonials } from "@/components/Testimonials";
 import { JsonLd } from "@/components/JsonLd";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -343,6 +344,12 @@ export default async function HomePage() {
             </details>
           ))}
         </div>
+      </section>
+
+      {/* abr-2026r/s: Newsletter signup expanded — captura email tras leer
+          FAQ. Conversión típica de bottom-of-page email forms: 3-7%. */}
+      <section className="container mx-auto px-4 py-10 sm:py-12">
+        <NewsletterSignup variant="expanded" context="home-bottom" />
       </section>
     </div>
   );
