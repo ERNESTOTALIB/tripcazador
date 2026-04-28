@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, getAllTagsWithCounts } from "@/lib/blog";
+import { JsonLd } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Blog — Guías, estrategias y análisis de chollos de vuelo",
@@ -32,9 +33,36 @@ function formatDate(iso: string): string {
 
 export default function BlogIndexPage() {
   const posts = getAllPosts();
+  // abr-2026x: top 8 tags como chips de navegación + JSON-LD ItemList del listado
+  const topTags = getAllTagsWithCounts("es").slice(0, 8);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "TripCazador Blog",
+    url: "https://tripcazador.com/blog",
+    inLanguage: "es-ES",
+    blogPost: posts.slice(0, 20).map((p) => ({
+      "@type": "BlogPosting",
+      headline: p.title,
+      url: `https://tripcazador.com/blog/${p.slug}`,
+      datePublished: p.publishedAt,
+      author: { "@type": "Organization", name: p.author },
+    })),
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: posts.length,
+      itemListElement: posts.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `https://tripcazador.com/blog/${p.slug}`,
+        name: p.title,
+      })),
+    },
+  };
 
   return (
     <div className="space-y-10">
+      <JsonLd data={jsonLd} />
       <header className="space-y-4">
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <a href="/" className="hover:text-white">
@@ -54,6 +82,19 @@ export default function BlogIndexPage() {
             Suscríbete por RSS
           </a>
         </div>
+        {topTags.length > 0 && (
+          <nav aria-label="Etiquetas populares" className="flex flex-wrap gap-2 pt-2">
+            {topTags.map(({ tag, count }) => (
+              <a
+                key={tag}
+                href={`/blog/tag/${encodeURIComponent(tag)}`}
+                className="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-amber-300 px-3 py-1 rounded-full transition-colors"
+              >
+                {tag} <span className="text-gray-500">({count})</span>
+              </a>
+            ))}
+          </nav>
+        )}
       </header>
 
       {posts.length === 0 ? (

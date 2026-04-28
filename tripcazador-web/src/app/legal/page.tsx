@@ -43,14 +43,12 @@ export default function LegalPage() {
           En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se informa de los datos identificativos del titular del sitio web:
         </p>
         <ul className="text-gray-300 list-disc pl-6 space-y-1">
-          <li><strong>Titular:</strong> [PENDIENTE — nombre o razón social]</li>
-          <li><strong>NIF/CIF:</strong> [PENDIENTE]</li>
-          <li><strong>Domicilio:</strong> [PENDIENTE — dirección postal]</li>
-          <li><strong>Correo electrónico:</strong> contacto@tripcazador.com</li>
-          <li><strong>Sitio web:</strong> https://tripcazador.com</li>
+          <li><strong>Titular del sitio:</strong> Equipo TripCazador (proyecto personal sin actividad comercial directa)</li>
+          <li><strong>Correo electrónico de contacto:</strong> <a href="mailto:contacto@tripcazador.com" className="text-amber-400 hover:text-amber-300">contacto@tripcazador.com</a></li>
+          <li><strong>Sitio web:</strong> <a href="https://tripcazador.com" className="text-amber-400 hover:text-amber-300">https://tripcazador.com</a></li>
         </ul>
         <p className="text-gray-400 text-sm">
-          TripCazador es un agregador de información de tarifas aéreas publicadas por terceros. No actuamos como agencia de viajes, no vendemos billetes y no gestionamos reservas. Toda reserva se realiza directamente con la aerolínea o agencia correspondiente en su propio sitio web.
+          TripCazador es un agregador de información de tarifas aéreas publicadas por terceros. No actuamos como agencia de viajes, no vendemos billetes y no gestionamos reservas. Toda reserva se realiza directamente con la aerolínea o agencia correspondiente en su propio sitio web. Si se requiriera identificación fiscal completa por el inicio de actividad comercial, se actualizará esta sección con los datos correspondientes.
         </p>
       </section>
 
@@ -62,7 +60,7 @@ export default function LegalPage() {
 
         <h3 className="text-lg font-semibold text-white">2.1. Responsable del tratamiento</h3>
         <p className="text-gray-300">
-          El responsable del tratamiento es el titular identificado en la sección 1. Para cualquier cuestión relativa a tus datos personales, puedes contactar en <a href="mailto:privacidad@tripcazador.com" className="text-amber-400">privacidad@tripcazador.com</a>.
+          El responsable del tratamiento es el titular identificado en la sección 1. Para cualquier cuestión relativa a tus datos personales, puedes contactar en <a href="mailto:contacto@tripcazador.com" className="text-amber-400">contacto@tripcazador.com</a>.
         </p>
 
         <h3 className="text-lg font-semibold text-white">2.2. Datos que tratamos</h3>
@@ -95,7 +93,7 @@ export default function LegalPage() {
 
         <h3 className="text-lg font-semibold text-white">2.6. Tus derechos</h3>
         <p className="text-gray-300">
-          Tienes derecho a acceder, rectificar, suprimir, oponerte, limitar y portar tus datos, así como a revocar el consentimiento en cualquier momento. Para ejercerlos, escribe a <a href="mailto:privacidad@tripcazador.com" className="text-amber-400">privacidad@tripcazador.com</a>. Si consideras que no hemos atendido tu solicitud correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer" className="text-amber-400">www.aepd.es</a>).
+          Tienes derecho a acceder, rectificar, suprimir, oponerte, limitar y portar tus datos, así como a revocar el consentimiento en cualquier momento. Para ejercerlos, escribe a <a href="mailto:contacto@tripcazador.com" className="text-amber-400">contacto@tripcazador.com</a>. Si consideras que no hemos atendido tu solicitud correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer" className="text-amber-400">www.aepd.es</a>).
         </p>
       </section>
 
@@ -152,12 +150,12 @@ export default function LegalPage() {
       <section className="mt-12 p-6 bg-gray-900 rounded-xl border border-gray-800 not-prose">
         <p className="text-sm text-gray-400">
           Para cualquier cuestión legal, contacta en{" "}
-          <a href="mailto:legal@tripcazador.com" className="text-amber-400 hover:text-amber-300">
-            legal@tripcazador.com
+          <a href="mailto:contacto@tripcazador.com" className="text-amber-400 hover:text-amber-300">
+            contacto@tripcazador.com
           </a>
           . Para cuestiones de privacidad, en{" "}
-          <a href="mailto:privacidad@tripcazador.com" className="text-amber-400 hover:text-amber-300">
-            privacidad@tripcazador.com
+          <a href="mailto:contacto@tripcazador.com" className="text-amber-400 hover:text-amber-300">
+            contacto@tripcazador.com
           </a>
           .
         </p>

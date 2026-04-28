@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/blog";
+import { getPostsByLang } from "@/lib/blog";
 
 const BASE_URL = "https://tripcazador.com";
 const SITE_TITLE = "TripCazador — Blog";
@@ -27,7 +27,9 @@ function toRfc822(date: string): string {
 }
 
 export async function GET(): Promise<Response> {
-  const posts = getAllPosts();
+  // abr-2026x: feed ES = solo posts ES. Antes mezclaba EN. Se separa porque
+  // Google News indexa por idioma y mezclar baja calidad de hits.
+  const posts = getPostsByLang("es");
   const lastBuild = posts.length > 0 ? toRfc822(posts[0].publishedAt) : new Date().toUTCString();
 
   const items = posts
@@ -40,7 +42,7 @@ export async function GET(): Promise<Response> {
       <guid isPermaLink="true">${url}</guid>
       <description>${escapeXml(post.description)}</description>
       <pubDate>${toRfc822(post.publishedAt)}</pubDate>
-      <author>noreply@tripcazador.com (${escapeXml(post.author)})</author>
+      <author>contacto@tripcazador.com (${escapeXml(post.author)})</author>
       ${post.tags.map((t) => `<category>${escapeXml(t)}</category>`).join("\n      ")}
     </item>`;
     })

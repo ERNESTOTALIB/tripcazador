@@ -121,3 +121,21 @@ export function clearSearchHistory(): void {
     /* silencio */
   }
 }
+
+/**
+ * Remueve UNA entrada del historial — fase-w. Útil para que el usuario pueda
+ * borrar una búsqueda individual desde el dropdown del SearchBar (botón "×")
+ * sin tener que vaciar todo. Match por origin+destination (case-insensitive).
+ */
+export function removeSearch(origin: string, destination: string): void {
+  if (typeof window === "undefined") return;
+  if (!hasConsent()) return;
+  const o = origin.trim().toUpperCase();
+  const d = destination.trim().toUpperCase();
+  const list = safeRead();
+  const filtered = list.filter(
+    (e) => !(e.origin === o && e.destination === d),
+  );
+  if (filtered.length === list.length) return; // nada que cambiar
+  safeWrite(filtered);
+}

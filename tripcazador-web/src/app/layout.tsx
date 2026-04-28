@@ -6,6 +6,7 @@ import { CookieBanner } from "@/components/CookieBanner";
 import { JsonLd } from "@/components/JsonLd";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
+import { TrackingBeacon } from "@/components/TrackingBeacon";
 import "./globals.css";
 
 // Inter — subset latin solo (no cyrillic/greek/vietnamese), display=swap para
@@ -383,6 +384,7 @@ export default function RootLayout({
         <CookieBanner />
         <WebVitalsReporter />
         <PWAInstallBanner />
+        <TrackingBeacon />
       </body>
     </html>
   );

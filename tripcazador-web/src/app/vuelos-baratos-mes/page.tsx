@@ -20,7 +20,7 @@ export default function MonthsIndexPage() {
     itemListElement: MONTHS.map((m, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `https://tripcazador.com/vuelos-baratos-${m.slug}`,
+      url: `https://tripcazador.com/vuelos-baratos/${m.slug}`,
       name: `Vuelos baratos en ${m.monthEs}`,
     })),
   };
@@ -46,7 +46,7 @@ export default function MonthsIndexPage() {
             key={m.slug}
             className="bg-gray-900 border border-gray-800 hover:border-amber-500/40 rounded-2xl transition-colors"
           >
-            <a href={`/vuelos-baratos-${m.slug}`} className="block p-4 text-center space-y-2">
+            <a href={`/vuelos-baratos/${m.slug}`} className="block p-4 text-center space-y-2">
               <div className="text-3xl">{m.emoji}</div>
               <h2 className="text-lg font-bold text-white">{m.monthEs}</h2>
               <p className="text-xs text-gray-500">{m.topDestinations.length} destinos top</p>

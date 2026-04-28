@@ -30,7 +30,7 @@ export function ExpiryCountdown({ expiresAt, foundAt, critical }: Props) {
     return () => clearInterval(id);
   }, []);
 
-  // Caso 1 — sin expires_at: chip de frescura
+  // Caso 1 — sin expires_at: chip de frescura con código de color por antigüedad
   if (!expiresAt) {
     if (!foundAt) return null;
     const diffMin = Math.max(0, (now - new Date(foundAt).getTime()) / 60_000);
@@ -40,10 +40,36 @@ export function ExpiryCountdown({ expiresAt, foundAt, critical }: Props) {
         : diffMin < 60 * 24
           ? `Hace ${Math.round(diffMin / 60)}h`
           : `Hace ${Math.round(diffMin / (60 * 24))}d`;
+    // F1 fase ii: stale warning visual si oferta >24h
+    let chipCls = "bg-gray-800 text-gray-400";
+    let dotCls = "bg-gray-500";
+    let prefix = "Encontrado";
+    if (diffMin < 60) {
+      // <1h: fresh — verde
+      chipCls = "bg-green-500/10 border border-green-500/30 text-green-300";
+      dotCls = "bg-green-400 animate-pulse";
+    } else if (diffMin < 60 * 24) {
+      // <24h: ok — gris claro
+      chipCls = "bg-gray-800 text-gray-300";
+      dotCls = "bg-gray-400";
+    } else if (diffMin < 60 * 24 * 3) {
+      // 1-3 días: stale warning — amber suave
+      chipCls = "bg-amber-500/10 border border-amber-500/30 text-amber-200";
+      dotCls = "bg-amber-400";
+      prefix = "Visto";
+    } else {
+      // >3 días: probablemente caducado — rojo suave
+      chipCls = "bg-red-500/10 border border-red-500/30 text-red-300";
+      dotCls = "bg-red-400";
+      prefix = "Posiblemente caducado · visto";
+    }
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-800 text-gray-400 text-xs">
-        <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
-        Encontrado {label}
+      <span
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs ${chipCls}`}
+        title={`Último escaneo: ${new Date(foundAt).toLocaleString("es-ES")}`}
+      >
+        <span className={`w-1.5 h-1.5 rounded-full ${dotCls}`} />
+        {prefix} {label}
       </span>
     );
   }

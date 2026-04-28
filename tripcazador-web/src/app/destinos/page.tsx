@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import nextDynamic from "next/dynamic";
 import { DestinationCard } from "@/components/DestinationCard";
 import { JsonLd } from "@/components/JsonLd";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 // Mapa cargado bajo demanda — el componente es client-side (useState para
 // hover) y pesa ~25KB minificados con su SVG inline. Lazy load reduce el
@@ -160,7 +161,7 @@ export default function DestinosIndexPage() {
       <section aria-labelledby="destinos-visual-heading">
         <h2 id="destinos-visual-heading" className="sr-only">Destinos disponibles</h2>
         <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 list-none m-0 p-0">
-          {DESTINATIONS.map((d) => (
+          {DESTINATIONS.map((d, i) => (
             <li key={d.slug}>
               <DestinationCard
                 name={d.name}
@@ -168,6 +169,7 @@ export default function DestinosIndexPage() {
                 emoji={d.emoji}
                 gradient={d.gradient}
                 tagline={d.bestMonths}
+                eager={i < 8}
               />
             </li>
           ))}
@@ -222,6 +224,13 @@ export default function DestinosIndexPage() {
         >
           Contactar por Telegram →
         </a>
+      </section>
+
+      {/* abr-2026t/u: Newsletter signup compact tras destinos — captura
+          email de visitantes que llegan por SEO de destinos. Conversion
+          típica below-fold: 2-4%. */}
+      <section className="container mx-auto px-4 pb-10">
+        <NewsletterSignup variant="compact" context="destinos-bottom" />
       </section>
     </div>
   );

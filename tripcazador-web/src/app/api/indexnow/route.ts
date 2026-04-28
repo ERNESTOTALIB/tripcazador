@@ -115,10 +115,12 @@ export async function GET(req: NextRequest) {
     `https://${HOST}/partners`,
     `https://${HOST}/regiones`,
     ...REGIONS.map((r) => `https://${HOST}/regiones/${r.slug}`),
-    // abr-2026dd: vuelos-baratos-mes hub + 12 monthly + calculadora-upgrade
+    // abr-2026dd: vuelos-baratos-mes hub + calculadora-upgrade
+    // abr-2026ee: monthly URL pattern moved to /vuelos-baratos/{slug} (nested) tras
+    // bug Vercel CLI con bracket-prefix routes. Index sigue en /vuelos-baratos-mes.
     `https://${HOST}/vuelos-baratos-mes`,
     `https://${HOST}/calculadora-upgrade`,
-    ...MONTHS.map((m) => `https://${HOST}/vuelos-baratos-${m.slug}`),
+    ...MONTHS.map((m) => `https://${HOST}/vuelos-baratos/${m.slug}`),
   ];
 
   const body = {

@@ -139,6 +139,97 @@ const nextConfig = {
           { key: "Cache-Control", value: "public, max-age=300, s-maxage=600" },
         ],
       },
+      // ── B7 (fase abr-2026 post-EE) — cache headers route-segment ────
+      // Estrategia: alinear TTL al ritmo real de cambio de cada ruta.
+      // Reduce cold-LCP, descarga la API y permite SWR cuando se invalida.
+      {
+        // Home: 5 min en CDN, SWR 1h. Refleja deals refresh cada 5min sin
+        // forzar recompute en cada visit.
+        source: "/",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=60, s-maxage=300, stale-while-revalidate=3600",
+          },
+        ],
+      },
+      {
+        // /deals: rota mucho. 1 min en CDN, SWR 10 min para deals frescos.
+        source: "/deals",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=30, s-maxage=60, stale-while-revalidate=600",
+          },
+        ],
+      },
+      {
+        // /destinos/[slug]: contenido casi-estático con destino + deals 1h.
+        source: "/destinos/:slug",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+          },
+        ],
+      },
+      {
+        // /blog/[slug]: artículo evergreen. 24h CDN, SWR 1 semana.
+        source: "/blog/:slug",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/en/blog/:slug",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        // /comparar/[slug]: head-to-head, evergreen.
+        source: "/comparar/:slug",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        // /vuelos-baratos/[mes]: temporal por mes — 12h CDN, SWR 3d.
+        source: "/vuelos-baratos/:mes",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=1800, s-maxage=43200, stale-while-revalidate=259200",
+          },
+        ],
+      },
+      {
+        // /regiones/[region]: hub regional, evergreen.
+        source: "/regiones/:region",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        // /admin: nunca cache (datos sensibles + token-gated).
+        source: "/admin/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store, no-cache, must-revalidate" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+        ],
+      },
     ];
   },
   async rewrites() {

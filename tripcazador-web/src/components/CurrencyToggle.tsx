@@ -38,11 +38,51 @@ const SYMBOLS: Record<SupportedCurrency, string> = {
 
 const STORAGE_KEY = "cv_currency";
 
+/**
+ * abr-2026w: detecta moneda preferida desde navigator.language en primer
+ * visit. Mapeo: ES/IT/FR/DE/AT/PT/NL/BE → EUR; GB → GBP; CH → CHF;
+ * US/CA → USD. Cualquier otro → EUR (fallback).
+ *
+ * Diseño: SOLO se aplica si no hay valor persistido (primer visit). Tras
+ * elegir manualmente, la elección manda y la auto-detect no la sobreescribe.
+ *
+ * Razón pragmática: la mayoría del tráfico es DACH/ES — auto-set ahorra
+ * 1-click al user típico sin complicar el flow.
+ */
+export function detectCurrencyFromLocale(
+  locale?: string,
+): SupportedCurrency {
+  if (typeof window === "undefined" && !locale) return "EUR";
+  const raw =
+    locale ||
+    (typeof navigator !== "undefined" && navigator.language) ||
+    "es-ES";
+  const lower = raw.toLowerCase();
+  // language[-region] — usar región si existe, sino language como country
+  const parts = lower.split(/[-_]/);
+  const region = parts[1] || parts[0] || "";
+  // Por región explícita
+  if (region === "gb" || region === "uk") return "GBP";
+  if (region === "ch") return "CHF";
+  if (region === "us" || region === "ca") return "USD";
+  // EUR-zone explícita o language en zona euro (es, it, fr, de, pt, nl, el, fi, ga, mt)
+  const euLangs = new Set([
+    "es", "it", "fr", "de", "pt", "nl", "el", "fi", "ga", "mt",
+    "lt", "lv", "et", "sk", "sl", "hr", "ca", "eu", "gl",
+  ]);
+  if (euLangs.has(parts[0])) return "EUR";
+  return "EUR";
+}
+
 export function getStoredCurrency(): SupportedCurrency {
   if (typeof window === "undefined") return "EUR";
   try {
     const v = window.localStorage.getItem(STORAGE_KEY);
     if (v && v in RATES) return v as SupportedCurrency;
+    // abr-2026w: si no hay preferencia guardada, auto-detect.
+    // No persistimos — sólo "guess inicial". Si el user toca el toggle, eso
+    // ES persistido como elección explícita.
+    return detectCurrencyFromLocale();
   } catch {
     /* noop */
   }

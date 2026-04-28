@@ -35,11 +35,8 @@ interface Props {
   context?: string;
 }
 
-declare global {
-  interface Window {
-    gtag?: (...args: unknown[]) => void;
-  }
-}
+// gtag global se declara en src/components/WebVitalsReporter.tsx; no
+// re-declaramos aquí para evitar conflict de tipos (TS2717).
 
 export function NewsletterSignup({ variant = "compact", context = "site" }: Props) {
   const [email, setEmail] = useState("");
@@ -178,7 +175,7 @@ export function NewsletterSignup({ variant = "compact", context = "site" }: Prop
         {status === "error" && <span className="text-red-400">{errorMsg}</span>}
         {status === "idle" && expanded && (
           <span className="text-gray-500">
-            RGPD-compliant. Cancela en 1 click.
+            Sin spam · Cancela cuando quieras · Datos protegidos
           </span>
         )}
       </p>

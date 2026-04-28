@@ -6,6 +6,7 @@ import { DestinationCard } from "@/components/DestinationCard";
 import { Testimonials } from "@/components/Testimonials";
 import { JsonLd } from "@/components/JsonLd";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { HeroCopyAB } from "@/components/HeroCopyAB";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -18,29 +19,43 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 async function HeroStats() {
-  const data = await getDeals({ limit: 1 });
+  // Sin limit para que stats refleje el total real, no el del query paginado.
+  // Bug fase-ee: con limit:1, getDeals (tras wrap) computaba stats sobre 1 deal
+  // y la home mostraba "1 Deals activos / 89€" en vez de los totales reales.
+  const data = await getDeals();
   const stats = data.stats;
+  // G3 fase jj: stats inteligentes — verified_count cuando >0, sino destinos
+  const regionCount = Object.keys(stats.by_region || {}).length;
   return (
-    <div className="flex flex-wrap justify-center gap-8 text-center mt-10">
+    <div className="flex flex-wrap justify-center gap-x-10 gap-y-6 text-center mt-10">
       <div>
-        <div className="text-3xl font-bold text-amber-400 tabular-nums">{stats.total}</div>
-        <div className="text-sm text-gray-300 mt-1">Deals activos</div>
+        <div className="text-3xl sm:text-4xl font-bold text-amber-400 tabular-nums">{stats.total}</div>
+        <div className="text-xs sm:text-sm text-gray-300 mt-1 uppercase tracking-wide">Deals activos</div>
       </div>
       <div>
-        <div className="text-3xl font-bold text-amber-400 tabular-nums">
+        <div className="text-3xl sm:text-4xl font-bold text-amber-400 tabular-nums">
           {stats.price_min > 0 ? `${stats.price_min.toFixed(0)}€` : "—"}
         </div>
-        <div className="text-sm text-gray-300 mt-1">Precio mínimo</div>
+        <div className="text-xs sm:text-sm text-gray-300 mt-1 uppercase tracking-wide">Precio mínimo</div>
       </div>
-      <div>
-        <div className="text-3xl font-bold text-amber-400 tabular-nums">
-          {stats.verified_count}
+      {stats.verified_count > 0 ? (
+        <div>
+          <div className="text-3xl sm:text-4xl font-bold text-amber-400 tabular-nums">
+            {stats.verified_count}
+          </div>
+          <div className="text-xs sm:text-sm text-gray-300 mt-1 uppercase tracking-wide">Verificados</div>
         </div>
-        <div className="text-sm text-gray-300 mt-1">Verificados 2+ fuentes</div>
-      </div>
+      ) : (
+        <div>
+          <div className="text-3xl sm:text-4xl font-bold text-amber-400 tabular-nums">
+            {regionCount > 0 ? regionCount : "7"}
+          </div>
+          <div className="text-xs sm:text-sm text-gray-300 mt-1 uppercase tracking-wide">Regiones cubiertas</div>
+        </div>
+      )}
       <div>
-        <div className="text-3xl font-bold text-amber-400">24h</div>
-        <div className="text-sm text-gray-300 mt-1">Actualización</div>
+        <div className="text-3xl sm:text-4xl font-bold text-amber-400">24/7</div>
+        <div className="text-xs sm:text-sm text-gray-300 mt-1 uppercase tracking-wide">Rastreo activo</div>
       </div>
     </div>
   );
@@ -77,28 +92,42 @@ async function TopDeals() {
     );
   }
 
-  const featured = deals[0];
-  const rest = deals.slice(1);
+  // G2: 3 deals destacados (top 3 por score) en lugar de solo 1
+  const featuredCount = Math.min(3, deals.length);
+  const featured = deals.slice(0, featuredCount);
+  const rest = deals.slice(featuredCount);
 
   return (
-    <div className="space-y-8">
-      {/* Deal destacado */}
+    <div className="space-y-10">
+      {/* Deals destacados — grid 1/2/3 columnas */}
       <div>
-        <h2 className="text-sm font-semibold text-amber-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 pulse-ring" aria-hidden="true" />
-          Deal del momento
-        </h2>
-        <div className="max-w-sm">
-          <DealCard deal={featured} featured />
+        <div className="flex items-end justify-between mb-5">
+          <h2 className="text-base font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-400 pulse-ring" aria-hidden="true" />
+            Deals destacados
+          </h2>
+          <a href="/deals?sort=score" className="text-xs text-gray-400 hover:text-amber-300 transition-colors">
+            Ver todos →
+          </a>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {featured.map((deal) => (
+            <DealCard key={deal.id} deal={deal} featured />
+          ))}
         </div>
       </div>
 
       {/* Grid de deals */}
       {rest.length > 0 && (
         <div>
-          <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
-            Últimos chollos cazados
-          </h2>
+          <div className="flex items-end justify-between mb-5">
+            <h2 className="text-base font-semibold text-gray-300 uppercase tracking-wider">
+              Últimos chollos cazados
+            </h2>
+            <a href="/deals?sort=recent" className="text-xs text-gray-400 hover:text-amber-300 transition-colors">
+              Ver todos →
+            </a>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {rest.map((deal) => (
               <DealCard key={deal.id} deal={deal} />
@@ -176,24 +205,8 @@ export default async function HomePage() {
           Motor activo — rastreando aeropuertos en tiempo real
         </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
-          {/*
-            IMPORTANTE: el {" "} antes del <br /> es necesario.
-            Sin él, `textContent` devuelve "dechollos" (screen readers lo leen
-            como una palabra + SEO crawlers lo indexan como keyword inventado).
-            El <br /> sólo afecta al render visual; no produce whitespace en el DOM.
-          */}
-          El cazador automático de{" "}
-          <br />
-          <span className="text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.35)]">
-            chollos de vuelo
-          </span>
-        </h1>
-
-        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-          Error fares, Business class a precio de economy y los mejores chollos
-          desde aeropuertos europeos. Rastrea 750+ aerolíneas 24/7.
-        </p>
+        {/* C4: Hero copy A/B test (control "El cazador automático de chollos" vs "-70% antes que nadie") */}
+        <HeroCopyAB />
 
         {/* CTAs */}
         <div className="flex flex-wrap justify-center gap-3 mt-6">
@@ -264,7 +277,7 @@ export default async function HomePage() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {FEATURED_DESTINATIONS.map((d) => (
-            <DestinationCard key={d.slug} {...d} />
+            <DestinationCard key={d.slug} {...d} eager={true} />
           ))}
         </div>
         <div className="text-center">

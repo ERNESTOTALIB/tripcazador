@@ -8,6 +8,8 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 import { JsonLd } from "@/components/JsonLd";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { RelatedPosts } from "@/components/RelatedPosts";
 
 type Params = { slug: string };
 
@@ -214,6 +216,18 @@ export default function BlogPostPage({ params }: { params: Params }) {
             ← Volver al blog
           </a>
         </div>
+        {/* abr-2026t/u: Newsletter signup compact en bottom de cada post —
+            captura email tras lectura completa. Conversion ~5-10% en blog
+            posts long-form (lector ya invirtió 8-15min, alta intent). */}
+        <div className="mt-8">
+          <NewsletterSignup
+            variant="compact"
+            context={`blog-${params.slug}`}
+          />
+        </div>
+        {/* abr-2026x: Related posts (top-3 by tag overlap). Mejora dwell
+            time + internal linking semántico. */}
+        <RelatedPosts slug={params.slug} localePrefix="" />
       </footer>
     </article>
   );

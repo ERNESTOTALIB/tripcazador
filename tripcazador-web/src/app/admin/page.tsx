@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { HunterHealthWidget } from "@/components/HunterHealthWidget";
 import { ManualHuntButton } from "@/components/ManualHuntButton";
+import { SubscribersWidget } from "@/components/SubscribersWidget";
+import { GitHubHuntDispatcher } from "@/components/GitHubHuntDispatcher";
 
 // Base de la API (misma lógica que lib/api)
 const API_BASE =
@@ -151,6 +153,12 @@ export default function AdminPage() {
           {/* abr-2026r/s: trigger manual del motor sin SSH.
               Útil cuando deals_total=0 y el cron de GitHub Actions está roto. */}
           <ManualHuntButton />
+          {/* abr-2026/B4: GitHubHuntDispatcher — dispara el workflow real
+              hunter-cron.yml (RapidAPI/SerpAPI) vía GitHub REST. */}
+          <GitHubHuntDispatcher />
+          {/* abr-2026w: SubscribersWidget — agregados de newsletter sin PII.
+              Reusa el token guardado por ManualHuntButton (tc_admin_token_v1). */}
+          <SubscribersWidget />
           <div className="flex items-center justify-between">
             <p className="text-xs text-gray-500">
               Snapshot: {new Date(data.timestamp).toLocaleString("es-ES")}

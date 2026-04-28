@@ -8,6 +8,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 import { JsonLd } from "@/components/JsonLd";
+import { RelatedPosts } from "@/components/RelatedPosts";
 
 /**
  * /en/blog/[slug] — abr-2026k
@@ -195,6 +196,8 @@ export default function EnBlogSlugPage({
             {post.content}
           </ReactMarkdown>
         </div>
+        {/* abr-2026x: Related posts EN — top-3 por tag overlap, mismo idioma. */}
+        <RelatedPosts slug={post.slug} localePrefix="/en" />
       </article>
     );
   }

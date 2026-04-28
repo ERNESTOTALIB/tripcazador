@@ -42,6 +42,12 @@ export const metadata: Metadata = {
       "en-GB": "https://tripcazador.com/en",
       "x-default": "https://tripcazador.com/",
     },
+    // abr-2026x: feed RSS EN dedicado linkado vía <link rel=alternate>
+    types: {
+      "application/rss+xml": [
+        { url: "/en/rss.xml", title: "TripCazador Blog RSS (English)" },
+      ],
+    },
   },
   openGraph: {
     type: "website",

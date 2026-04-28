@@ -8,6 +8,7 @@ import { HUBS } from "@/lib/hubs";
 import { COMPARISONS } from "@/lib/comparisons";
 import { REGIONS } from "@/lib/regions";
 import { MONTHS } from "@/lib/months";
+import { MONTHLY_ROUTES } from "@/lib/monthly_prices";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -348,9 +349,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));
-  // abr-2026dd: 12 month pages (vuelos-baratos-enero..diciembre)
+  // abr-2026dd: 12 month pages (URL: /vuelos-baratos/{slug})
+  // Renamed from /vuelos-baratos-{slug} (top-level bracket route) en abr-2026ee tras
+  // descubrir que Vercel CLI sin git source no servía rutas con corchetes en prefix.
   const monthPages: MetadataRoute.Sitemap = MONTHS.map((m) => ({
-    url: `${BASE_URL}/vuelos-baratos-${m.slug}`,
+    url: `${BASE_URL}/vuelos-baratos/${m.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  // C3: precio mes a mes — 12 rutas top con calendar 12 meses cada una
+  const monthlyPriceIndex = {
+    url: `${BASE_URL}/precio-mes-a-mes`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  };
+  const monthlyPriceRoutes: MetadataRoute.Sitemap = Object.keys(MONTHLY_ROUTES).map((slug) => ({
+    url: `${BASE_URL}/precio-mes-a-mes/${slug}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.7,
@@ -368,6 +385,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...comparisonPages,
     ...regionPages,
     ...monthPages,
+    monthlyPriceIndex,
+    ...monthlyPriceRoutes,
     ...feedPages,
     ...dealPages,
   ];

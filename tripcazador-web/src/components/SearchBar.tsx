@@ -20,6 +20,13 @@ import {
   type SearchParams,
   type Airport,
 } from "@/lib/api";
+import {
+  getRecentSearches,
+  pushSearch,
+  removeSearch,
+  clearSearchHistory,
+  type SearchEntry,
+} from "@/lib/searchHistory";
 
 // Aeropuertos más buscados por el público objetivo (DACH hispanohablante).
 // Orden = prioridad en el autocomplete.
@@ -112,6 +119,26 @@ export default function SearchBar({
   const [originFocus, setOriginFocus] = useState(false);
   const [destFocus, setDestFocus] = useState(false);
 
+  // abr-2026w: Historia de búsqueda (last 5, consent-gated). Se muestra cuando
+  // el usuario foca "Desde" estando vacío. Click → repuebla origen+destino.
+  const [recentSearches, setRecentSearches] = useState<SearchEntry[]>([]);
+  function refreshRecent() {
+    setRecentSearches(getRecentSearches());
+  }
+  useEffect(() => {
+    refreshRecent();
+    // Si el consent banner cambia mid-session refrescamos
+    function onConsent() {
+      refreshRecent();
+    }
+    window.addEventListener("storage", onConsent);
+    window.addEventListener("cv:consent-changed", onConsent);
+    return () => {
+      window.removeEventListener("storage", onConsent);
+      window.removeEventListener("cv:consent-changed", onConsent);
+    };
+  }, []);
+
   // Catálogo dinámico cargado del backend (/api/airports). Se fusiona
   // con TOP_AIRPORTS priorizando estos últimos en el orden del dropdown.
   const [remoteAirports, setRemoteAirports] = useState<Airport[]>([]);
@@ -163,6 +190,13 @@ export default function SearchBar({
     try {
       const data = await searchDeals(params);
       setResults(data);
+      // abr-2026w: Guarda en history sólo si la búsqueda tiene origen+destino
+      // explícitos y devolvió al menos algo. Evitamos polución del historial
+      // con queries vacías o broken.
+      if (origin && destination && data.length > 0) {
+        pushSearch(origin, destination, dateFrom || undefined);
+        refreshRecent();
+      }
       if (data.length === 0) {
         // abr-2026n: mensaje más claro cuando 0 resultados — antes el usuario
         // veía los TopDeals arriba sin filtrar y creía que eran los resultados.
@@ -231,13 +265,30 @@ export default function SearchBar({
               aria-controls="origin-listbox"
               aria-autocomplete="list"
             />
-            {originFocus && originMatches.length > 0 && (
+            {originFocus && origin === "" && recentSearches.length > 0 ? (
+              <RecentSearchesList
+                items={recentSearches}
+                onPick={(e) => {
+                  setOrigin(e.origin);
+                  setDestination(e.destination);
+                  if (e.date) setDateFrom(e.date);
+                }}
+                onRemove={(e) => {
+                  removeSearch(e.origin, e.destination);
+                  refreshRecent();
+                }}
+                onClearAll={() => {
+                  clearSearchHistory();
+                  refreshRecent();
+                }}
+              />
+            ) : originFocus && originMatches.length > 0 ? (
               <AutocompleteList
                 id="origin-listbox"
                 items={originMatches}
                 onPick={(code) => setOrigin(code)}
               />
-            )}
+            ) : null}
           </div>
 
           {/* Destino */}
@@ -487,6 +538,88 @@ function AutocompleteList({
         </li>
       ))}
     </ul>
+  );
+}
+
+/**
+ * RecentSearchesList — abr-2026w. Dropdown que aparece cuando el usuario
+ * focalizar "Desde" estando vacío. Lista las últimas 5 búsquedas guardadas
+ * (consent-gated). Click en entry → repuebla origen+destino+fecha. Botón
+ * "×" por entry borra esa entrada. Link "Borrar todo" abajo limpia historial.
+ */
+function RecentSearchesList({
+  items,
+  onPick,
+  onRemove,
+  onClearAll,
+}: {
+  items: SearchEntry[];
+  onPick: (entry: SearchEntry) => void;
+  onRemove: (entry: SearchEntry) => void;
+  onClearAll: () => void;
+}) {
+  return (
+    <div
+      className="absolute z-20 mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 shadow-2xl overflow-hidden"
+      role="region"
+      aria-label="Búsquedas recientes"
+    >
+      <p className="text-xs uppercase tracking-wider text-slate-400 px-3 py-2 border-b border-slate-700 bg-slate-900/40">
+        Búsquedas recientes
+      </p>
+      <ul role="listbox">
+        {items.map((e) => (
+          <li
+            key={`${e.origin}-${e.destination}`}
+            role="option"
+            aria-selected="false"
+            className="flex items-stretch border-b border-slate-700/50 last:border-b-0"
+          >
+            <button
+              type="button"
+              onMouseDown={(ev) => {
+                ev.preventDefault();
+                onPick(e);
+              }}
+              aria-label={`Repetir búsqueda ${e.origin} a ${e.destination}`}
+              className="flex-1 text-left px-3 py-2 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+            >
+              <span className="font-mono font-semibold text-amber-300">
+                {e.origin}
+              </span>{" "}
+              <span className="text-slate-400">→</span>{" "}
+              <span className="font-mono font-semibold text-amber-300">
+                {e.destination}
+              </span>
+              {e.date && (
+                <span className="ml-2 text-xs text-slate-500">{e.date}</span>
+              )}
+            </button>
+            <button
+              type="button"
+              onMouseDown={(ev) => {
+                ev.preventDefault();
+                onRemove(e);
+              }}
+              aria-label={`Quitar ${e.origin} a ${e.destination} del historial`}
+              className="px-3 text-slate-500 hover:text-red-400 hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+            >
+              ×
+            </button>
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        onMouseDown={(ev) => {
+          ev.preventDefault();
+          onClearAll();
+        }}
+        className="w-full text-xs text-slate-400 hover:text-amber-300 px-3 py-2 border-t border-slate-700 bg-slate-900/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+      >
+        Borrar todo el historial
+      </button>
+    </div>
   );
 }
 

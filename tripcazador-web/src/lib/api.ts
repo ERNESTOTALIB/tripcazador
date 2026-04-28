@@ -3,6 +3,9 @@
  * Conecta con el FastAPI backend en /api/deals
  */
 
+import { enhanceDealBookingUrl } from "./airline_links";
+import { diversifyDeals } from "./seed_diversifier";
+
 export interface Deal {
   id: string;
   type: "flight" | "hotel";
@@ -86,7 +89,70 @@ export async function getDeals(params?: {
     return getDealsFromStatic();
   }
 
-  return res.json();
+  const json = await res.json();
+
+  // FastAPI puede devolver un array plano (`Deal[]`) o el envoltorio
+  // `DealsResponse`. Cuando devuelve array (variante actual del backend),
+  // lo envolvemos para mantener el contrato del cliente.
+  // Bug fase-ee: sin este wrap, `data.stats.total` lanzaba en el server
+  // component de la home → error.tsx mostraba "Algo salió mal en el radar".
+  if (Array.isArray(json)) {
+    // Reescribir booking_url genérico (Google Flights) → URL directa
+    // de la aerolínea (Ryanair / easyJet / Wizz) o Kayak/Travelpayouts.
+    // Implementado fase EE6/B1 — usuarios prefieren ir directo a la web
+    // de la aerolínea, no a Google Flights.
+    //
+    // C1: si el seed VPS devuelve solo un mes (síntoma seed legacy),
+    // diversifyDeals reemplaza por catálogo TS con Jul-2026..Jun-2027.
+    // No-op transparente cuando el motor devuelve datos diversos.
+    const rawDeals = json as Deal[];
+    // BUG fix fase-hh: pasar params al diversifier para que filtre el catálogo
+    // fallback. Sin esto /deals?classification=CRÍTICO devolvía el catálogo
+    // entero ignorando el filtro del usuario.
+    const diversified = diversifyDeals(rawDeals, params);
+    const deals = diversified.map((d) => enhanceDealBookingUrl(d));
+    const totalCount = deals.length;
+    const flights = deals.filter((d) => d.type === "flight").length;
+    const hotels = deals.filter((d) => d.type === "hotel").length;
+    const verified = deals.filter((d) => d.verified).length;
+    const prices = deals.map((d) => d.price_eur).filter((p) => p > 0);
+    const priceMin = prices.length ? Math.min(...prices) : 0;
+    const priceMax = prices.length ? Math.max(...prices) : 0;
+    const priceAvg = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
+    const byClass: Record<string, number> = {};
+    const byRegion: Record<string, number> = {};
+    const byCabin: Record<string, number> = {};
+    for (const d of deals) {
+      byClass[d.classification] = (byClass[d.classification] || 0) + 1;
+      byRegion[d.region] = (byRegion[d.region] || 0) + 1;
+      byCabin[d.cabin] = (byCabin[d.cabin] || 0) + 1;
+    }
+    return {
+      schema_version: "1",
+      generated_at: new Date().toISOString(),
+      total_deals: totalCount,
+      stats: {
+        total: totalCount,
+        flights,
+        hotels,
+        by_classification: byClass,
+        by_region: byRegion,
+        by_cabin: byCabin,
+        price_min: priceMin,
+        price_max: priceMax,
+        price_avg: priceAvg,
+        verified_count: verified,
+      },
+      deals,
+    };
+  }
+
+  // Backend devolvió forma DealsResponse: enhancear cada deal igualmente
+  const wrapped = json as DealsResponse;
+  if (wrapped?.deals && Array.isArray(wrapped.deals)) {
+    wrapped.deals = wrapped.deals.map((d) => enhanceDealBookingUrl(d));
+  }
+  return wrapped;
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -267,12 +333,16 @@ export async function getTopDeals(limit = 10): Promise<Deal[]> {
     });
     if (!res.ok) {
       const data = await getDealsFromStatic();
-      return data.deals.slice(0, limit);
+      return data.deals.slice(0, limit).map((d) => enhanceDealBookingUrl(d));
     }
-    return res.json();
+    const arr: Deal[] = await res.json();
+    // B1: reescribir google.com/travel → ryanair/easyjet/wizz/kayak directos
+    // C1: diversificar si el seed devuelve un solo mes
+    if (!Array.isArray(arr)) return arr;
+    return diversifyDeals(arr, { limit }).map((d) => enhanceDealBookingUrl(d));
   } catch {
     const data = await getDealsFromStatic();
-    return data.deals.slice(0, limit);
+    return data.deals.slice(0, limit).map((d) => enhanceDealBookingUrl(d));
   }
 }
 

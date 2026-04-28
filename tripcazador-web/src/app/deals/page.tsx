@@ -28,6 +28,54 @@ interface SearchParams {
   region?: string;
   cabin?: string;
   max_price?: string;
+  sort?: string;
+  freshness?: string;  // "all" | "fresh" (≤24h) | "today" (≤8h)
+}
+
+// NN2 fase nn: filtros de frescura. "fresh" oculta deals que llevarían el chip
+// rojo "Posiblemente caducado" (>72h) y los amber "Visto Hace Xd" (>24h).
+const FRESHNESS_OPTIONS: { id: string; label: string; maxHours: number | null }[] = [
+  { id: "all", label: "Todos", maxHours: null },
+  { id: "fresh", label: "🟢 Frescos (24h)", maxHours: 24 },
+  { id: "today", label: "🔥 Hoy (8h)", maxHours: 8 },
+];
+
+// F2 fase ii: opciones de ordenación. URL state preservada para SEO/share.
+const SORT_OPTIONS: { id: string; label: string }[] = [
+  { id: "recent", label: "Más recientes" },
+  { id: "cheapest", label: "Más baratos" },
+  { id: "savings", label: "Mayor descuento" },
+  { id: "score", label: "Mejor puntuación" },
+];
+
+function applyFreshness(deals: import("@/lib/api").Deal[], freshness: string | undefined): import("@/lib/api").Deal[] {
+  const opt = FRESHNESS_OPTIONS.find((f) => f.id === freshness);
+  if (!opt || opt.maxHours === null) return deals;
+  const now = Date.now();
+  const maxMs = opt.maxHours * 3600_000;
+  return deals.filter((d) => {
+    if (!d.found_at) return true;  // sin timestamp, no filtramos
+    return now - new Date(d.found_at).getTime() <= maxMs;
+  });
+}
+
+function applySort(deals: import("@/lib/api").Deal[], sort: string | undefined): import("@/lib/api").Deal[] {
+  const arr = [...deals];
+  switch (sort) {
+    case "cheapest":
+      return arr.sort((a, b) => a.price_eur - b.price_eur);
+    case "savings":
+      return arr.sort((a, b) => (b.savings_pct || 0) - (a.savings_pct || 0));
+    case "score":
+      return arr.sort((a, b) => (b.score || 0) - (a.score || 0));
+    case "recent":
+    default:
+      return arr.sort((a, b) => {
+        const tA = new Date(a.found_at || 0).getTime();
+        const tB = new Date(b.found_at || 0).getTime();
+        return tB - tA;
+      });
+  }
 }
 
 // Opciones de filtro
@@ -50,7 +98,7 @@ export default async function DealsPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const { classification, region, cabin, max_price } = searchParams;
+  const { classification, region, cabin, max_price, sort, freshness } = searchParams;
 
   const data = await getDeals({
     classification: classification !== "Todos" ? classification : undefined,
@@ -60,8 +108,14 @@ export default async function DealsPage({
     limit: 200,
   });
 
-  const deals = data.deals;
+  // F2: server-side sort (estable porque ISR cachea 5min)
+  // NN2: aplicar freshness filter antes del sort
+  const fresh = applyFreshness(data.deals, freshness);
+  const deals = applySort(fresh, sort);
   const stats = data.stats;
+  const activeSort = sort || "recent";
+  const activeFreshness = freshness || "all";
+  const filteredOut = data.deals.length - fresh.length;
 
   return (
     <div className="space-y-8">
@@ -169,6 +223,52 @@ export default async function DealsPage({
         </div>
       </div>
 
+      {/* F2 + NN2: Sort + Freshness tabs en una fila */}
+      <div className="bg-gray-900 rounded-xl p-3 border border-gray-800 space-y-3">
+        {/* Freshness filter */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-gray-500 uppercase tracking-wider">Frescura:</span>
+          {FRESHNESS_OPTIONS.map((opt) => (
+            <a
+              key={opt.id}
+              href={`/deals${buildQuery({ ...searchParams, freshness: opt.id })}`}
+              aria-current={activeFreshness === opt.id ? "true" : undefined}
+              className={`px-3 py-1.5 rounded-lg text-sm transition-all min-h-[36px] inline-flex items-center ${
+                activeFreshness === opt.id
+                  ? "bg-amber-500 text-black font-semibold"
+                  : "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700"
+              }`}
+            >
+              {opt.label}
+            </a>
+          ))}
+          {filteredOut > 0 && (
+            <span className="text-xs text-gray-500 ml-2">
+              ({filteredOut} ocultos por antigüedad)
+            </span>
+          )}
+        </div>
+
+        {/* Sort */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-gray-500 uppercase tracking-wider">Ordenar:</span>
+          {SORT_OPTIONS.map((opt) => (
+            <a
+              key={opt.id}
+              href={`/deals${buildQuery({ ...searchParams, sort: opt.id })}`}
+              aria-current={activeSort === opt.id ? "true" : undefined}
+              className={`px-3 py-1.5 rounded-lg text-sm transition-all min-h-[36px] inline-flex items-center ${
+                activeSort === opt.id
+                  ? "bg-amber-500 text-black font-semibold"
+                  : "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700"
+              }`}
+            >
+              {opt.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
       {/* Lista de deals */}
       {deals.length > 0 ? (
         <div className="space-y-3">
@@ -191,7 +291,7 @@ export default async function DealsPage({
 function buildQuery(params: Record<string, string | undefined>): string {
   const q = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
-    if (v && v !== "Todos" && v !== "Todas") {
+    if (v && v !== "Todos" && v !== "Todas" && v !== "all") {
       q.set(k, v);
     }
   }
