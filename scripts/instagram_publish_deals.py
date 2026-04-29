@@ -18,7 +18,7 @@ Env vars necesarias:
 Uso local:
   IG_USER_ID=xxx IG_ACCESS_TOKEN=yyy python scripts/instagram_publish_deals.py
 
-Uso en GH#Actions:
+Uso en GH Actions:
   Ver .github/workflows/instagram-publish.yml
 """
 from __future__ import annotations
@@ -58,8 +58,17 @@ def http_post(url: str, params: Dict[str, str], timeout: int = 30) -> Any:
             "User-Agent": "TripCazadorBot/1.0",
         },
     )
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        # Log the response body so we can see Meta's actual error
+        try:
+            err_body = e.read().decode("utf-8")
+        except Exception:
+            err_body = "<no body>"
+        log(f"HTTP {e.code} body: {err_body[:500]}")
+        raise
 
 
 def fetch_top_deals(limit: int = 30) -> List[Dict[str, Any]]:
