@@ -1,0 +1,29 @@
+name: Instagram auto-publish deals
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: instagram-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish top deal to Instagram
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run script
+        env:
+          SITE_URL: https://tripcazador.com
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          TG_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/instagram_publish_deals.py
