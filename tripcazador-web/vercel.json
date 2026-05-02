@@ -2,7 +2,7 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "installCommand": "npm ci",
+  "installCommand": "npm install --legacy-peer-deps --no-audit --no-fund",
 
   "env": {
     "NEXT_PUBLIC_API_URL": "https://api.tripcazador.com"
