@@ -5,6 +5,7 @@ import { Plane, Clock, MapPin, Star, ExternalLink, CheckCircle } from "lucide-re
 import Image from "next/image";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 import { ShareDealInline } from "@/components/ShareDealInline";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 interface DealCardProps {
   deal: Deal;
@@ -182,6 +183,24 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
           </span>
         </div>
 
+        {/* III1 — Heart favorite, junto al badge */}
+        <FavoriteButton
+          variant="card"
+          deal={{
+            id: String(deal.id),
+            origin,
+            destination,
+            city_to,
+            country_to,
+            price_eur,
+            date_out,
+            date_ret,
+            cabin,
+            classification,
+            airline_name,
+          }}
+        />
+
         {/* Badge verificado */}
         {verified && (
           <div className="absolute top-3 right-3">
@@ -324,6 +343,7 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
                     : "bg-gray-700 hover:bg-gray-600 text-white"}
                 `}
                 onClick={() => {
+                  // GA4 (consent-gated en el sitio)
                   if (typeof window !== "undefined" && (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag) {
                     (window as unknown as { gtag: (...a: unknown[]) => void }).gtag("event", "deal_click", {
                       deal_id: deal.id,
@@ -332,6 +352,31 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
                       classification: classification,
                       direct_airline: !isMetasearch,
                     });
+                  }
+                  // Server-side track (alimenta /panel — fase ss-SS4)
+                  if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
+                    const body = new Blob(
+                      [
+                        JSON.stringify({
+                          type: "booking_redirect",
+                          meta: {
+                            deal_id: String(deal.id || ""),
+                            destination: String(destination || ""),
+                            origin: String(origin || ""),
+                            airline: String(airline_name || ""),
+                            price: Number(price_eur || 0),
+                            cabin: String(deal.cabin || ""),
+                            direct_airline: !isMetasearch,
+                          },
+                        }),
+                      ],
+                      { type: "application/json" },
+                    );
+                    try {
+                      navigator.sendBeacon("/api/track", body);
+                    } catch {
+                      /* no-op */
+                    }
                   }
                 }}
               >
@@ -362,13 +407,34 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
 
 // Versión lista (horizontal) para la página /deals
 export function DealRow({ deal }: { deal: Deal }) {
-  const { origin, destination, city_to, price_eur, savings_pct, date_out, date_ret,
+  const { origin, destination, city_to, country_to, price_eur, savings_pct, date_out, date_ret,
           cabin, airline_name, stops, classification, score, booking_url, verified } = deal;
+
+  void score; void verified;
 
   const classColor = getClassificationColor(classification);
 
   return (
     <div className="flex items-center gap-4 p-4 rounded-xl glass card-hover border border-gray-800 group">
+      {/* III1 — Heart favorite */}
+      <FavoriteButton
+        variant="row"
+        className="shrink-0"
+        deal={{
+          id: String(deal.id),
+          origin,
+          destination,
+          city_to,
+          country_to,
+          price_eur,
+          date_out,
+          date_ret,
+          cabin,
+          classification,
+          airline_name,
+        }}
+      />
+
       {/* Ruta */}
       <div className="flex items-center gap-2 min-w-[140px]">
         <span className="font-mono text-amber-400 font-bold text-sm">{origin}</span>
@@ -382,6 +448,21 @@ export function DealRow({ deal }: { deal: Deal }) {
         <div className="text-xs text-gray-400">
           {getCabinLabel(cabin)} · {stops === 0 ? "Directo" : `${stops} escala`}
           {airline_name && ` · ${airline_name}`}
+        </div>
+        {/* III3 — internal links cruzados (SEO + UX). JJJ5: collapse en xs. */}
+        <div className="deal-row-internal-links text-[11px] text-gray-500 mt-1 flex flex-wrap gap-2">
+          <a
+            href={`/deals?destination=${encodeURIComponent(destination || "")}`}
+            className="hover:text-amber-300 underline-offset-2 hover:underline"
+          >
+            Más a {city_to || destination} →
+          </a>
+          <a
+            href={`/deals?origin=${encodeURIComponent(origin || "")}`}
+            className="hover:text-amber-300 underline-offset-2 hover:underline"
+          >
+            Desde {origin} →
+          </a>
         </div>
       </div>
 

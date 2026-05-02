@@ -21,7 +21,10 @@ export type EventType =
   | "search_submitted"
   | "booking_redirect"
   | "newsletter_signup"
-  | "alert_created";
+  | "alert_created"
+  | "calc_used"          // fase tt-TT4: alguna calculadora usada
+  | "share_clicked"      // fase tt-TT4: share button clickeado
+  | "telegram_clicked";  // fase tt-TT4: link a Telegram clickeado
 
 export interface TrackedEvent {
   ts: number;          // epoch ms

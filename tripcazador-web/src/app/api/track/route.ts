@@ -5,14 +5,47 @@ import { trackEvent, EventType } from "@/lib/event_store";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const VALID_TYPES: EventType[] = [
+// fase tt-TT2: ampliados — calc_used / share_clicked / telegram_clicked permiten
+// saber qué calculadoras usan, qué se comparte, qué Telegram conversions.
+const VALID_TYPES: string[] = [
   "page_view",
   "deal_click",
   "search_submitted",
   "booking_redirect",
   "newsletter_signup",
   "alert_created",
+  "calc_used",
+  "share_clicked",
+  "telegram_clicked",
 ];
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
+
+/**
+ * Persist evento en backend FastAPI (best-effort). Si falla no crashea.
+ * Backend escribe a JSONL append-only en /var/lib/tripcazador/events.jsonl.
+ */
+async function persistRemote(event: {
+  ts: number;
+  type: string;
+  visitor_id: string;
+  meta: Record<string, string | number | boolean>;
+}): Promise<void> {
+  if (!BACKEND_URL || !ADMIN_TOKEN) return;
+  try {
+    await fetch(`${BACKEND_URL}/api/admin/events/track?token=${encodeURIComponent(ADMIN_TOKEN)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ events: [event] }),
+      cache: "no-store",
+      // Timeout corto: no queremos bloquear el response al usuario
+      signal: AbortSignal.timeout(2000),
+    });
+  } catch {
+    /* best effort — no failback al ring buffer in-memory */
+  }
+}
 
 // Rate limit muy básico — cada IP máx 200 events/min
 const rate = new Map<string, { count: number; windowStart: number }>();
@@ -69,12 +102,19 @@ export async function POST(req: NextRequest) {
     count++;
   }
 
-  trackEvent({
+  const event = {
     ts: now,
-    type,
+    type: type as EventType,
     visitor_id: visitorId(req),
     meta: sanitized,
-  });
+  };
+
+  // 1) In-memory ring (rápido, vista admin sin backend)
+  trackEvent(event);
+
+  // 2) Persist en backend (best-effort, sobrevive cold start)
+  // No await: fire-and-forget para no añadir latencia al response.
+  persistRemote(event).catch(() => { /* no-op */ });
 
   return NextResponse.json({ ok: true }, { status: 202 });
 }

@@ -319,10 +319,21 @@ export async function getTopHotels(params?: {
   const url = `${API_BASE}/api/hotels/top${q.toString() ? "?" + q : ""}`;
   try {
     const res = await fetch(url, { next: { revalidate: 900 } }); // 15 min
-    if (!res.ok) return [];
-    return await res.json();
+    if (!res.ok) {
+      // ww WW1: backend devuelve error → seed fallback (30 hoteles reales con marker Booking)
+      const { getHotelSeedFallback } = await import("@/lib/hotel_seed");
+      return getHotelSeedFallback(params);
+    }
+    const arr = await res.json();
+    if (Array.isArray(arr) && arr.length === 0) {
+      // backend OK pero array vacío (hotel_hunter sin datos) → seed fallback
+      const { getHotelSeedFallback } = await import("@/lib/hotel_seed");
+      return getHotelSeedFallback(params);
+    }
+    return arr;
   } catch {
-    return [];
+    const { getHotelSeedFallback } = await import("@/lib/hotel_seed");
+    return getHotelSeedFallback(params);
   }
 }
 

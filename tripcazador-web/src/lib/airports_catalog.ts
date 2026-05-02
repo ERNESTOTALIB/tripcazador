@@ -9,17 +9,22 @@
  * para autocomplete en tiempo real.
  */
 
+// Tipo Region — string en runtime para evitar TS2590 con 6000+ entries
+// (la unión literal × 6000 elementos rebasa el límite del checker).
+// Se valida en bash via /tmp/build_catalog.mjs antes de generar este archivo.
+export type Region = string;
+
 export interface AirportEntry {
   iata: string;
   city: string;
   country: string;
-  region: "Europa" | "América Norte" | "América Sur" | "Caribe" | "Asia" | "África" | "Oriente Medio" | "Oceanía";
+  region: Region;
   /** alias adicionales para fuzzy match, ej: ["barajas", "adolfo suárez"] */
   aliases?: string[];
   emoji?: string;
 }
 
-export const AIRPORTS_CATALOG: AirportEntry[] = [
+export const AIRPORTS_CATALOG = ([
   // España
   { iata: "MAD", city: "Madrid", country: "España", region: "Europa", aliases: ["barajas", "adolfo suarez"], emoji: "🇪🇸" },
   { iata: "BCN", city: "Barcelona", country: "España", region: "Europa", aliases: ["el prat"], emoji: "🇪🇸" },
@@ -50,7 +55,6 @@ export const AIRPORTS_CATALOG: AirportEntry[] = [
   // Europa
   { iata: "CDG", city: "París", country: "Francia", region: "Europa", aliases: ["paris", "charles de gaulle"], emoji: "🇫🇷" },
   { iata: "ORY", city: "París Orly", country: "Francia", region: "Europa", aliases: ["paris orly"], emoji: "🇫🇷" },
-  { iata: "BVA", city: "Beauvais", country: "Francia", region: "Europa", emoji: "🇫🇷" },
   { iata: "NCE", city: "Niza", country: "Francia", region: "Europa", aliases: ["nice"], emoji: "🇫🇷" },
   { iata: "LYS", city: "Lyon", country: "Francia", region: "Europa", emoji: "🇫🇷" },
   { iata: "MRS", city: "Marsella", country: "Francia", region: "Europa", aliases: ["marseille"], emoji: "🇫🇷" },
@@ -142,6 +146,116 @@ export const AIRPORTS_CATALOG: AirportEntry[] = [
   { iata: "KEF", city: "Reikiavik", country: "Islandia", region: "Europa", aliases: ["reykjavik"], emoji: "🇮🇸" },
   { iata: "DBV", city: "Dubrovnik", country: "Croacia", region: "Europa", emoji: "🇭🇷" },
   { iata: "SPU", city: "Split", country: "Croacia", region: "Europa", emoji: "🇭🇷" },
+  { iata: "ZAD", city: "Zadar", country: "Croacia", region: "Europa", emoji: "🇭🇷" },
+  { iata: "PUY", city: "Pula", country: "Croacia", region: "Europa", emoji: "🇭🇷" },
+  { iata: "TIV", city: "Tivat", country: "Montenegro", region: "Europa", emoji: "🇲🇪" },
+  { iata: "TGD", city: "Podgorica", country: "Montenegro", region: "Europa", emoji: "🇲🇪" },
+
+  // Europa — secundarios Alemania (CCC1)
+  { iata: "FKB", city: "Karlsruhe Baden-Baden", country: "Alemania", region: "Europa", aliases: ["baden baden", "baden-baden", "karlsruhe", "soellingen"], emoji: "🇩🇪" },
+  { iata: "FMM", city: "Memmingen", country: "Alemania", region: "Europa", aliases: ["münchen-west", "allgäu"], emoji: "🇩🇪" },
+  { iata: "FDH", city: "Friedrichshafen", country: "Alemania", region: "Europa", aliases: ["bodensee", "lago constanza"], emoji: "🇩🇪" },
+  { iata: "NRN", city: "Düsseldorf Weeze", country: "Alemania", region: "Europa", aliases: ["weeze", "niederrhein"], emoji: "🇩🇪" },
+  { iata: "DTM", city: "Dortmund", country: "Alemania", region: "Europa", emoji: "🇩🇪" },
+  { iata: "BRE", city: "Bremen", country: "Alemania", region: "Europa", emoji: "🇩🇪" },
+  { iata: "HAJ", city: "Hannover", country: "Alemania", region: "Europa", aliases: ["hanover"], emoji: "🇩🇪" },
+  { iata: "FMO", city: "Münster Osnabrück", country: "Alemania", region: "Europa", aliases: ["munster", "osnabruck"], emoji: "🇩🇪" },
+  { iata: "PAD", city: "Paderborn Lippstadt", country: "Alemania", region: "Europa", aliases: ["paderborn"], emoji: "🇩🇪" },
+  { iata: "SCN", city: "Saarbrücken", country: "Alemania", region: "Europa", aliases: ["saarbrucken"], emoji: "🇩🇪" },
+  { iata: "RLG", city: "Rostock Laage", country: "Alemania", region: "Europa", aliases: ["rostock"], emoji: "🇩🇪" },
+  { iata: "ERF", city: "Erfurt Weimar", country: "Alemania", region: "Europa", aliases: ["erfurt"], emoji: "🇩🇪" },
+
+  // Europa — secundarios Italia (CCC1)
+  { iata: "AHO", city: "Alguer", country: "Italia", region: "Europa", aliases: ["alghero", "cerdena", "sardinia"], emoji: "🇮🇹" },
+  { iata: "BDS", city: "Brindisi", country: "Italia", region: "Europa", aliases: ["puglia"], emoji: "🇮🇹" },
+  { iata: "TPS", city: "Trapani", country: "Italia", region: "Europa", aliases: ["sicilia oeste"], emoji: "🇮🇹" },
+  { iata: "TRS", city: "Trieste", country: "Italia", region: "Europa", aliases: ["friuli"], emoji: "🇮🇹" },
+  { iata: "AOI", city: "Ancona", country: "Italia", region: "Europa", aliases: ["marche"], emoji: "🇮🇹" },
+  { iata: "RMI", city: "Rímini", country: "Italia", region: "Europa", aliases: ["rimini", "riviera romagnola"], emoji: "🇮🇹" },
+  { iata: "PMF", city: "Parma", country: "Italia", region: "Europa", emoji: "🇮🇹" },
+  { iata: "PEG", city: "Perugia", country: "Italia", region: "Europa", aliases: ["umbria"], emoji: "🇮🇹" },
+  { iata: "OLB", city: "Olbia", country: "Italia", region: "Europa", aliases: ["costa esmeralda", "sardinia norte"], emoji: "🇮🇹" },
+
+  // Europa — secundarios Francia (CCC1)
+  { iata: "BVA", city: "París Beauvais", country: "Francia", region: "Europa", aliases: ["beauvais", "paris beauvais", "tille"], emoji: "🇫🇷" },
+  { iata: "LIL", city: "Lille", country: "Francia", region: "Europa", emoji: "🇫🇷" },
+  { iata: "CFE", city: "Clermont-Ferrand", country: "Francia", region: "Europa", aliases: ["clermont"], emoji: "🇫🇷" },
+  { iata: "BES", city: "Brest", country: "Francia", region: "Europa", aliases: ["bretagne"], emoji: "🇫🇷" },
+  { iata: "RNS", city: "Rennes", country: "Francia", region: "Europa", emoji: "🇫🇷" },
+  { iata: "MPL", city: "Montpellier", country: "Francia", region: "Europa", emoji: "🇫🇷" },
+  { iata: "AJA", city: "Ajaccio", country: "Francia", region: "Europa", aliases: ["corcega", "corsica"], emoji: "🇫🇷" },
+  { iata: "BIA", city: "Bastia", country: "Francia", region: "Europa", aliases: ["corse"], emoji: "🇫🇷" },
+  { iata: "PGF", city: "Perpiñán", country: "Francia", region: "Europa", aliases: ["perpignan"], emoji: "🇫🇷" },
+  { iata: "SXB", city: "Estrasburgo", country: "Francia", region: "Europa", aliases: ["strasbourg"], emoji: "🇫🇷" },
+  { iata: "FNI", city: "Nimes", country: "Francia", region: "Europa", aliases: ["nimes camargue"], emoji: "🇫🇷" },
+  { iata: "TLN", city: "Tolón Hyères", country: "Francia", region: "Europa", aliases: ["toulon", "hyeres"], emoji: "🇫🇷" },
+
+  // Europa — secundarios Reino Unido / Irlanda (CCC1)
+  { iata: "ABZ", city: "Aberdeen", country: "Reino Unido", region: "Europa", emoji: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
+  { iata: "INV", city: "Inverness", country: "Reino Unido", region: "Europa", aliases: ["highlands"], emoji: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
+  { iata: "BHD", city: "Belfast City", country: "Reino Unido", region: "Europa", emoji: "🏴󠁧󠁢" },
+  { iata: "EXT", city: "Exeter", country: "Reino Unido", region: "Europa", aliases: ["devon"], emoji: "🏴󠁧󠁢" },
+  { iata: "CWL", city: "Cardiff", country: "Reino Unido", region: "Europa", aliases: ["wales", "gales"], emoji: "🏴󠁧󠁢󠁷󠁬󠁳󠁿" },
+  { iata: "EMA", city: "East Midlands", country: "Reino Unido", region: "Europa", aliases: ["nottingham", "derby"], emoji: "🏴󠁧󠁢" },
+  { iata: "SEN", city: "Londres Southend", country: "Reino Unido", region: "Europa", aliases: ["southend"], emoji: "🏴󠁧󠁢" },
+  { iata: "DSA", city: "Doncaster Sheffield", country: "Reino Unido", region: "Europa", emoji: "🏴󠁧󠁢" },
+  { iata: "KIR", city: "Kerry", country: "Irlanda", region: "Europa", aliases: ["killarney"], emoji: "🇮🇪" },
+  { iata: "NOC", city: "Knock Ireland West", country: "Irlanda", region: "Europa", aliases: ["knock"], emoji: "🇮🇪" },
+
+  // Europa — secundarios Bélgica/Países Bajos (CCC1)
+  { iata: "CRL", city: "Bruselas Charleroi", country: "Bélgica", region: "Europa", aliases: ["charleroi", "brussels south"], emoji: "🇧🇪" },
+  { iata: "ANR", city: "Amberes", country: "Bélgica", region: "Europa", aliases: ["antwerp", "anvers"], emoji: "🇧🇪" },
+  { iata: "EIN", city: "Eindhoven", country: "Países Bajos", region: "Europa", emoji: "🇳🇱" },
+  { iata: "RTM", city: "Rotterdam", country: "Países Bajos", region: "Europa", emoji: "🇳🇱" },
+
+  // Europa — secundarios Escandinavia/Báltico (CCC1)
+  { iata: "BLL", city: "Billund", country: "Dinamarca", region: "Europa", aliases: ["legoland"], emoji: "🇩🇰" },
+  { iata: "AAL", city: "Aalborg", country: "Dinamarca", region: "Europa", aliases: ["aalborg"], emoji: "🇩🇰" },
+  { iata: "AAR", city: "Aarhus", country: "Dinamarca", region: "Europa", emoji: "🇩🇰" },
+  { iata: "MMX", city: "Malmö", country: "Suecia", region: "Europa", aliases: ["malmo"], emoji: "🇸🇪" },
+  { iata: "NYO", city: "Estocolmo Skavsta", country: "Suecia", region: "Europa", aliases: ["nykoping", "skavsta"], emoji: "🇸🇪" },
+  { iata: "TMP", city: "Tampere", country: "Finlandia", region: "Europa", emoji: "🇫🇮" },
+  { iata: "OUL", city: "Oulu", country: "Finlandia", region: "Europa", emoji: "🇫🇮" },
+  { iata: "RVN", city: "Rovaniemi Laponia", country: "Finlandia", region: "Europa", aliases: ["lapland", "santa"], emoji: "🇫🇮" },
+  { iata: "TOS", city: "Tromsø", country: "Noruega", region: "Europa", aliases: ["tromso", "auroras boreales"], emoji: "🇳🇴" },
+  { iata: "SVG", city: "Stavanger", country: "Noruega", region: "Europa", emoji: "🇳🇴" },
+
+  // Europa — secundarios Grecia + islas (CCC1)
+  { iata: "KGS", city: "Kos", country: "Grecia", region: "Europa", emoji: "🇬🇷" },
+  { iata: "ZTH", city: "Zante", country: "Grecia", region: "Europa", aliases: ["zakynthos", "zakinthos"], emoji: "🇬🇷" },
+  { iata: "PVK", city: "Préveza Lefkada", country: "Grecia", region: "Europa", aliases: ["preveza", "lefkada"], emoji: "🇬🇷" },
+  { iata: "CHQ", city: "Chania Creta", country: "Grecia", region: "Europa", aliases: ["chania", "la canea"], emoji: "🇬🇷" },
+  { iata: "VOL", city: "Volos", country: "Grecia", region: "Europa", aliases: ["pelion", "skiathos near"], emoji: "🇬🇷" },
+  { iata: "JSI", city: "Skiathos", country: "Grecia", region: "Europa", emoji: "🇬🇷" },
+  { iata: "EFL", city: "Cefalonia", country: "Grecia", region: "Europa", aliases: ["kefalonia"], emoji: "🇬🇷" },
+
+  // Europa — secundarios Bulgaria/Rumanía/Eslovaquia/Bosnia (CCC1)
+  { iata: "VAR", city: "Varna", country: "Bulgaria", region: "Europa", aliases: ["mar negro"], emoji: "🇧🇬" },
+  { iata: "BOJ", city: "Burgas", country: "Bulgaria", region: "Europa", aliases: ["sunny beach"], emoji: "🇧🇬" },
+  { iata: "CLJ", city: "Cluj-Napoca", country: "Rumanía", region: "Europa", aliases: ["cluj", "transilvania"], emoji: "🇷🇴" },
+  { iata: "TSR", city: "Timișoara", country: "Rumanía", region: "Europa", aliases: ["timisoara"], emoji: "🇷🇴" },
+  { iata: "BTS", city: "Bratislava", country: "Eslovaquia", region: "Europa", emoji: "🇸🇰" },
+  { iata: "SJJ", city: "Sarajevo", country: "Bosnia y Herzegovina", region: "Europa", emoji: "🇧🇦" },
+  { iata: "TZL", city: "Tuzla", country: "Bosnia y Herzegovina", region: "Europa", emoji: "🇧🇦" },
+  { iata: "SKP", city: "Skopie", country: "Macedonia del Norte", region: "Europa", aliases: ["skopje"], emoji: "🇲🇰" },
+  { iata: "PRN", city: "Pristina", country: "Kosovo", region: "Europa", aliases: ["prishtina"], emoji: "🇽🇰" },
+  { iata: "KIV", city: "Chisinau", country: "Moldavia", region: "Europa", aliases: ["chișinău"], emoji: "🇲🇩" },
+
+  // Europa — secundarios Polonia/Chequia/Hungría/Países nórdicos extras (CCC1)
+  { iata: "WMI", city: "Varsovia Modlin", country: "Polonia", region: "Europa", aliases: ["modlin", "warsaw modlin"], emoji: "🇵🇱" },
+  { iata: "GDN", city: "Gdansk", country: "Polonia", region: "Europa", aliases: ["danzig"], emoji: "🇵🇱" },
+  { iata: "POZ", city: "Poznan", country: "Polonia", region: "Europa", emoji: "🇵🇱" },
+  { iata: "WRO", city: "Wroclaw", country: "Polonia", region: "Europa", aliases: ["breslavia"], emoji: "🇵🇱" },
+  { iata: "KTW", city: "Katowice", country: "Polonia", region: "Europa", emoji: "🇵🇱" },
+  { iata: "BRQ", city: "Brno", country: "Chequia", region: "Europa", emoji: "🇨🇿" },
+  { iata: "DEB", city: "Debrecen", country: "Hungría", region: "Europa", emoji: "🇭🇺" },
+
+  // Europa — secundarios Turquía costa (CCC1)
+  { iata: "BJV", city: "Bodrum", country: "Turquía", region: "Asia", aliases: ["milas-bodrum"], emoji: "🇹🇷" },
+  { iata: "DLM", city: "Dalaman", country: "Turquía", region: "Asia", aliases: ["fethiye", "marmaris"], emoji: "🇹🇷" },
+  { iata: "ADB", city: "Esmirna", country: "Turquía", region: "Asia", aliases: ["izmir", "smyrna"], emoji: "🇹🇷" },
+  { iata: "GZP", city: "Gazipaşa", country: "Turquía", region: "Asia", aliases: ["gazipasa", "alanya"], emoji: "🇹🇷" },
+  { iata: "TZX", city: "Trabzon", country: "Turquía", region: "Asia", emoji: "🇹🇷" },
 
   // América Norte
   { iata: "JFK", city: "Nueva York JFK", country: "Estados Unidos", region: "América Norte", aliases: ["new york", "nyc", "ny"], emoji: "🇺🇸" },
@@ -309,7 +423,8 @@ export const AIRPORTS_CATALOG: AirportEntry[] = [
   { iata: "WLG", city: "Wellington", country: "Nueva Zelanda", region: "Oceanía", emoji: "🇳🇿" },
   { iata: "NAN", city: "Nadi", country: "Fiyi", region: "Oceanía", aliases: ["fiji"], emoji: "🇫🇯" },
   { iata: "PPT", city: "Tahití Papeete", country: "Polinesia Francesa", region: "Oceanía", emoji: "🇵🇫" },
-];
+
+] as AirportEntry[]);
 
 // Index para país → aeropuertos (para sugerir todos los aeropuertos de un país)
 const COUNTRY_INDEX = new Map<string, AirportEntry[]>();
@@ -324,6 +439,8 @@ function normalize(s: string): string {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "") // strip diacritics
+    .replace(/[-_]+/g, " ")            // dash/underscore \u2192 space (Baden-Baden \u2194 baden baden)
+    .replace(/\s+/g, " ")               // collapse spaces
     .trim();
 }
 
@@ -335,25 +452,54 @@ export function fuzzySearchAirports(query: string, limit = 18): AirportEntry[] {
   const q = normalize(query);
   if (q.length < 2) return [];
 
-  // Score: 100 IATA exacto, 90 ciudad startsWith, 70 ciudad contiene, 50 país, 40 alias
-  const scored: Array<{ a: AirportEntry; score: number }> = [];
+  // Si la consulta tiene varios tokens (ej: "frankfurt hahn", "baden baden")
+  // exigimos que TODOS aparezcan en algún campo combinado para evitar ruido.
+  const tokens = q.split(" ").filter(Boolean);
+  const isMultiToken = tokens.length > 1;
+
+  // Sistema de puntuación (más alto = mejor match):
+  //   110 IATA exacto                             ("FKB"        → FKB)
+  //   100 ciudad exacta                           ("bari"       → BRI)
+  //    95 IATA startsWith                          ("FK"         → FKB, FCO…)
+  //    92 alias exacto                             ("munchen"    → MUC)
+  //    90 ciudad startsWith                        ("baden"      → FKB)
+  //    85 alias startsWith                         ("zaki"       → ZTH)
+  //    78 país exacto                              ("alemania"   → todos DE)
+  //    72 ciudad contiene                          ("frankfurt"  → FRA, HHN)
+  //    65 alias contiene                           ("legoland"   → BLL)
+  //    60 país startsWith                          ("alem"       → todos DE)
+  //    50 país contiene                            ("aleman"     → todos DE)
+  //    35 multi-token: todos los tokens aparecen en algún campo
+  // Tiebreaker: ciudades más cortas ganan (más específicas).
+  const scored: Array<{ a: AirportEntry; score: number; tieLen: number }> = [];
   for (const a of AIRPORTS_CATALOG) {
     const iataN = a.iata.toLowerCase();
     const cityN = normalize(a.city);
     const countryN = normalize(a.country);
+    const aliasNs = (a.aliases || []).map((al) => normalize(al));
+
     let score = 0;
-    if (iataN === q) score = 100;
+    if (iataN === q) score = 110;
+    else if (cityN === q) score = 100;
     else if (iataN.startsWith(q) && q.length >= 2) score = 95;
-    else if (cityN === q) score = 95;
+    else if (aliasNs.some((al) => al === q)) score = 92;
     else if (cityN.startsWith(q)) score = 90;
-    else if (cityN.includes(q)) score = 70;
-    else if (countryN === q) score = 80; // país exacto
+    else if (aliasNs.some((al) => al.startsWith(q))) score = 85;
+    else if (countryN === q) score = 78;
+    else if (cityN.includes(q)) score = 72;
+    else if (aliasNs.some((al) => al.includes(q))) score = 65;
     else if (countryN.startsWith(q)) score = 60;
     else if (countryN.includes(q)) score = 50;
-    else if (a.aliases?.some((al) => normalize(al).includes(q))) score = 40;
-    if (score > 0) scored.push({ a, score });
+    else if (isMultiToken) {
+      // Match relajado por tokens: todos los tokens en haystack combinado
+      const hay = `${iataN} ${cityN} ${countryN} ${aliasNs.join(" ")}`;
+      if (tokens.every((t) => hay.includes(t))) score = 35;
+    }
+
+    if (score > 0) scored.push({ a, score, tieLen: cityN.length });
   }
-  scored.sort((x, y) => y.score - x.score);
+  // Sort por score desc, tiebreaker: ciudad más corta primero (más específica)
+  scored.sort((x, y) => (y.score - x.score) || (x.tieLen - y.tieLen));
   return scored.slice(0, limit).map((s) => s.a);
 }
 
@@ -363,5 +509,121 @@ export function getAirportsByCountry(country: string): AirportEntry[] {
 
 export function getAirportByIata(iata: string): AirportEntry | undefined {
   const k = iata.toUpperCase();
-  return AIRPORTS_CATALOG.find((a) => a.iata === k);
+  // Buscar primero en curated (eager), luego en bulk (si ya está cargado)
+  return (
+    AIRPORTS_CATALOG.find((a) => a.iata === k) ||
+    BULK_AIRPORTS.find((a) => a.iata === k)
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// DDD1 (Apr 2026): bulk catalog (5663 OpenFlights entries) cargado bajo demanda
+// para evitar inflar el bundle inicial. AirportCombobox llama a
+// `loadBulkAirports()` en el primer focus para que `fuzzySearchAirports()`
+// pueda extender la búsqueda al catálogo completo sin penalizar el FCP.
+// ────────────────────────────────────────────────────────────────────────────
+
+let BULK_AIRPORTS: AirportEntry[] = [];
+let bulkLoadPromise: Promise<AirportEntry[]> | null = null;
+
+/** Estado del carga del bulk catalog (para UI de "cargando aeropuertos exhaustivos…"). */
+export function isBulkAirportsLoaded(): boolean {
+  return BULK_AIRPORTS.length > 0;
+}
+
+/** Devuelve el array bulk si ya está cargado, o vacío si todavía no. No bloquea. */
+export function getBulkAirports(): AirportEntry[] {
+  return BULK_AIRPORTS;
+}
+
+/**
+ * Carga `/airports_full.json` (5663 entries) en background. Idempotente —
+ * llamadas repetidas comparten la misma promesa y al final la lista en memoria.
+ *
+ * Usar via `loadBulkAirports().then(...)` o como fire-and-forget desde un
+ * useEffect/onFocus.
+ */
+export function loadBulkAirports(): Promise<AirportEntry[]> {
+  if (BULK_AIRPORTS.length > 0) return Promise.resolve(BULK_AIRPORTS);
+  if (bulkLoadPromise) return bulkLoadPromise;
+
+  // SSR safety: en server no fetch; ya tenemos curated suficiente para SEO.
+  if (typeof fetch === "undefined") return Promise.resolve([]);
+
+  bulkLoadPromise = fetch("/airports_full.json", { cache: "force-cache" })
+    .then((r) => (r.ok ? r.json() : []))
+    .then((data: AirportEntry[]) => {
+      // Dedup contra curated (por seguridad si OpenFlights tuviese overlap)
+      const curatedSet = new Set(AIRPORTS_CATALOG.map((a) => a.iata));
+      BULK_AIRPORTS = data.filter((a) => !curatedSet.has(a.iata));
+      return BULK_AIRPORTS;
+    })
+    .catch(() => {
+      bulkLoadPromise = null; // permite reintento futuro
+      return [];
+    });
+
+  return bulkLoadPromise;
+}
+
+/**
+ * Variante extendida de `fuzzySearchAirports` que también busca en el bulk
+ * catalog si está cargado. Si no, idéntica a la curated. Mantenemos la API
+ * de la función original para retro-compatibilidad — código existente sigue
+ * funcionando sin cambios.
+ */
+export function fuzzySearchAirportsAll(query: string, limit = 18): AirportEntry[] {
+  const curatedHits = fuzzySearchAirports(query, limit * 2);
+  if (BULK_AIRPORTS.length === 0) return curatedHits.slice(0, limit);
+
+  // Re-aplicar el mismo algoritmo sobre bulk + merge ordenado por score
+  // Reutilizamos la lógica embebiéndola in-line (no exportable porque el helper
+  // es local). Approach: ejecutar fuzzy contra union temporal.
+  const q = query.trim().toLowerCase().normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (q.length < 2) return curatedHits.slice(0, limit);
+  const tokens = q.split(" ").filter(Boolean);
+  const isMultiToken = tokens.length > 1;
+
+  const scored: Array<{ a: AirportEntry; score: number; tieLen: number }> = [];
+  // Score curated hits con score mucho más alto para priorizar siempre
+  curatedHits.forEach((a, i) => scored.push({ a, score: 1000 - i, tieLen: 0 }));
+
+  for (const a of BULK_AIRPORTS) {
+    const iataN = a.iata.toLowerCase();
+    const cityN = a.city.toLowerCase().normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[-_]+/g, " ")
+      .replace(/\s+/g, " ");
+    const countryN = a.country.toLowerCase().normalize("NFD")
+      .replace(/[̀-ͯ]/g, "");
+    let score = 0;
+    if (iataN === q) score = 110;
+    else if (cityN === q) score = 100;
+    else if (iataN.startsWith(q) && q.length >= 2) score = 95;
+    else if (cityN.startsWith(q)) score = 90;
+    else if (countryN === q) score = 78;
+    else if (cityN.includes(q)) score = 72;
+    else if (countryN.startsWith(q)) score = 60;
+    else if (countryN.includes(q)) score = 50;
+    else if (isMultiToken) {
+      const hay = `${iataN} ${cityN} ${countryN}`;
+      if (tokens.every((t) => hay.includes(t))) score = 35;
+    }
+    if (score > 0) scored.push({ a, score, tieLen: cityN.length });
+  }
+  scored.sort((x, y) => (y.score - x.score) || (x.tieLen - y.tieLen));
+  // Dedup por IATA (curated puede aparecer en ambos)
+  const seen = new Set<string>();
+  const out: AirportEntry[] = [];
+  for (const s of scored) {
+    if (seen.has(s.a.iata)) continue;
+    seen.add(s.a.iata);
+    out.push(s.a);
+    if (out.length >= limit) break;
+  }
+  return out;
 }

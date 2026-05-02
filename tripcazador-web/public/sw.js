@@ -154,3 +154,40 @@ async function staleWhileRevalidate(request, cacheName) {
 self.addEventListener("message", (e) => {
   if (e.data?.type === "SKIP_WAITING") self.skipWaiting();
 });
+
+// ─── GGG2 (Apr 2026) push notification handlers ────────────────────────────
+// Recibe pushes del backend cuando match price-alert. Payload esperado:
+// { title, body, url?, icon?, badge?, tag? }. Si no llega payload (heartbeat)
+// usamos defaults para no perder permission.
+self.addEventListener("push", (event) => {
+  let data = { title: "TripCazador", body: "Tienes un nuevo aviso" };
+  try {
+    if (event.data) data = { ...data, ...event.data.json() };
+  } catch { /* payload no-JSON, default */ }
+  const opts = {
+    body: data.body,
+    icon: data.icon || "/icon-192.png",
+    badge: data.badge || "/icon-72.png",
+    data: { url: data.url || "/deals" },
+    tag: data.tag || "tc-alert",
+    vibrate: [100, 50, 100],
+  };
+  event.waitUntil(self.registration.showNotification(data.title, opts));
+});
+
+// Click → abrir/focalizar la app en url específica del payload.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/deals";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((cs) => {
+      for (const c of cs) {
+        if (c.url.includes(self.location.origin)) {
+          c.navigate(url);
+          return c.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
+});

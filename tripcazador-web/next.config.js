@@ -105,6 +105,16 @@ const nextConfig = {
         ],
       },
       {
+        // DDD1 (Apr 2026) — bulk airports JSON estático ~520KB, contenido inmutable
+        // (regenerado solo en build). 1 año cache para minimizar transfer en repeat
+        // visits. Vercel edge sirve gzipped → ~75KB efectivos por request.
+        source: "/airports_full.json",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          { key: "CDN-Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
         // OG images dinámicas: cache 24h en CDN, 1h en navegador.
         source: "/blog/:slug/opengraph-image",
         headers: [

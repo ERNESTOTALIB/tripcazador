@@ -9,7 +9,12 @@
     "lint": "next lint",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:install": "playwright install --with-deps chromium"
+    "test:e2e:install": "playwright install --with-deps chromium",
+    "test:e2e:staging": "BASE_URL=https://tripcazador-staging.vercel.app E2E_ENV=staging playwright test",
+    "test:e2e:prod": "BASE_URL=https://tripcazador.com E2E_ENV=prod playwright test e2e/tests/multi_env_smoke.spec.ts e2e/tests/api_full.spec.ts --grep-invert Mutaciones",
+    "test:e2e:smoke": "playwright test e2e/tests/multi_env_smoke.spec.ts",
+    "test:e2e:api": "playwright test e2e/tests/api_full.spec.ts",
+    "test:e2e:flows": "playwright test e2e/tests/search_flow_complete.spec.ts e2e/tests/premium_referral_push.spec.ts"
   },
   "dependencies": {
     "next": "14.2.3",

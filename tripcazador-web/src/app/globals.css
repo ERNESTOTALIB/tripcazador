@@ -271,3 +271,496 @@ h1, h2 {
   white-space: nowrap;
   border: 0;
 }
+
+/* =====================================================================
+   C8 Glass Hero — fase uu UU3
+   Sky gradient hero + glass cards. Se aplica en root pages cuando se usa
+   el componente <SkyHero/>. El resto de la página sigue dark theme.
+   ===================================================================== */
+
+.sky-hero {
+  position: relative;
+  /* Full-bleed: escapa del max-w-7xl del <main> usando 100vw + offset.
+     50% es la mitad del contenedor padre, 50vw es la mitad del viewport.
+     La diferencia mete el hero a viewport completo sin afectar al <main>. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 0;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #0c4a6e 0%,
+    #0369a1 25%,
+    #38bdf8 55%,
+    #fbbf24 85%,
+    #f97316 100%
+  );
+}
+
+.sky-hero-clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 600px 200px at 30% 60%, rgba(255, 255, 255, 0.4), transparent 70%),
+    radial-gradient(ellipse 700px 250px at 80% 50%, rgba(255, 255, 255, 0.35), transparent 70%),
+    radial-gradient(ellipse 500px 180px at 20% 70%, rgba(255, 255, 255, 0.3), transparent 70%),
+    radial-gradient(ellipse 800px 250px at 50% 80%, rgba(255, 150, 80, 0.5), transparent 70%);
+}
+
+.sky-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 32px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.sky-badge-dot {
+  width: 8px;
+  height: 8px;
+  background: #fbbf24;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #fbbf24;
+  animation: skyPulse 2s infinite;
+}
+@keyframes skyPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+.sky-h1 {
+  font-size: clamp(50px, 6.5vw, 86px);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -0.045em;
+  max-width: 920px;
+  margin: 0 auto 22px;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  color: #fff;
+}
+
+.sky-h1 em {
+  font-style: normal;
+  color: #fbbf24;
+  text-shadow: 0 4px 24px rgba(251, 191, 36, 0.4);
+}
+
+.sky-lead {
+  font-size: 20px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.sky-searchbar {
+  max-width: 780px;
+  margin: 0 auto 30px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 18px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+.sky-field {
+  padding: 14px 20px;
+  text-align: left;
+  border-right: 1px solid #e5e7eb;
+  cursor: pointer;
+  display: block;
+}
+.sky-field:last-of-type { border-right: 0; }
+
+.sky-field-label {
+  display: block;
+  font-size: 11px;
+  color: #5b6478;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 4px;
+}
+
+.sky-field-value {
+  display: block;
+  font-size: 15px;
+  color: #0f1729;
+  font-weight: 600;
+}
+.sky-field-value.placeholder { color: #5b6478; font-weight: 500; }
+
+/* fase vv VV7 — inputs editables del searchbar */
+.sky-field-select,
+.sky-field-input {
+  display: block;
+  width: 100%;
+  font-size: 15px;
+  color: #0f1729;
+  font-weight: 600;
+  border: 0;
+  background: transparent;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
+}
+.sky-field-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='%23667085'><path d='M1 1l4 4 4-4' stroke='%23667085' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  padding-right: 16px;
+}
+.sky-field-input::placeholder { color: #5b6478; font-weight: 500; }
+.sky-field-input[type="date"] { color: #0f1729; }
+.sky-field-select:focus,
+.sky-field-input:focus { outline: 2px solid #f59e0b; outline-offset: 2px; border-radius: 4px; }
+
+.sky-search-btn {
+  background: #f59e0b;
+  color: #fff;
+  border: 0;
+  padding: 0 32px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.15s;
+  min-height: 56px;
+}
+.sky-search-btn:hover { background: #d97706; }
+
+.sky-floating {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.sky-floatcard {
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+  color: #fff;
+  text-align: left;
+  min-width: 200px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, background 0.2s;
+  text-decoration: none;
+}
+.sky-floatcard:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.sky-fc-route {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.sky-fc-price {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  margin-top: 4px;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55), 0 0 24px rgba(251, 191, 36, 0.4);
+}
+
+/* fase vv VV12 — floating cards con fondo más opaco para legibilidad sobre el sunset */
+.sky-floatcard {
+  background: rgba(15, 23, 41, 0.42);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.sky-floatcard:hover {
+  background: rgba(15, 23, 41, 0.55);
+}
+
+@media (max-width: 880px) {
+  .sky-searchbar {
+    grid-template-columns: 1fr;
+  }
+  .sky-field {
+    border-right: 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .sky-field:last-of-type { border-bottom: 0; }
+  .sky-search-btn {
+    margin-top: 4px;
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   fase vv VV10 — SkyHero searchbar RICA (autocomplete + ida/vuelta + cabina)
+   Glass blanco con dos rows: arriba airports (autocomplete), abajo dates+cabin+CTA.
+   ============================================================ */
+.sky-searchbar-rich {
+  max-width: 920px;
+  margin: 0 auto 36px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 18px;
+  padding: 12px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.sky-row {
+  display: grid;
+  gap: 10px;
+}
+.sky-row-airports {
+  grid-template-columns: 1fr 1fr;
+}
+.sky-row-meta {
+  grid-template-columns: repeat(4, 1fr) auto;
+  align-items: end;
+}
+
+.sky-cell {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 8px 12px;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.sky-cell-mini { padding: 6px 12px; min-height: 56px; }
+
+.sky-cell-label {
+  display: block;
+  font-size: 11px;
+  color: #5b6478;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 2px;
+}
+
+.sky-cell-input {
+  display: block;
+  width: 100%;
+  font-size: 15px;
+  color: #0f1729;
+  font-weight: 600;
+  border: 0;
+  background: transparent;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
+}
+.sky-cell-input::placeholder { color: #94a3b8; font-weight: 500; }
+.sky-cell-input[type="date"] { color: #0f1729; }
+.sky-cell-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23667085' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  padding-right: 16px;
+}
+.sky-cell-input:focus { outline: 2px solid #f59e0b; outline-offset: 2px; border-radius: 4px; }
+
+/* AirportCombobox dentro de .sky-cell — neutralizamos bg dark + bordes y dejamos
+   que su <label> y <input> hereden el estilo light del cell wrapper */
+.sky-cell > div { width: 100%; }
+.sky-cell > div > label {
+  display: block;
+  font-size: 11px;
+  color: #5b6478;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 2px;
+}
+.sky-cell input[type="text"] {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f1729 !important;
+  outline: none;
+  width: 100%;
+}
+/* Dropdown del combobox: forzamos paleta light-glass para coherencia con la searchbar */
+.sky-cell ul[role="listbox"] {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15) !important;
+}
+.sky-cell ul[role="listbox"] li {
+  color: #0f1729 !important;
+}
+.sky-cell ul[role="listbox"] li[aria-selected="true"] {
+  background: rgba(245, 158, 11, 0.12) !important;
+  color: #92400e !important;
+}
+.sky-cell ul[role="listbox"] li:hover {
+  background: #f8fafc !important;
+}
+.sky-cell ul[role="listbox"] .text-amber-300 {
+  color: #d97706 !important;
+}
+.sky-cell ul[role="listbox"] .text-gray-500 {
+  color: #64748b !important;
+}
+
+@media (max-width: 720px) {
+  .sky-row-airports { grid-template-columns: 1fr; }
+  .sky-row-meta { grid-template-columns: 1fr 1fr; }
+  .sky-row-meta .sky-search-btn {
+    grid-column: span 2;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   fase vv VV4 — SectionHero (mini sky-hero para deals/destinos/blog/hoteles)
+   Reusa el background gradient + clouds del .sky-hero pero con tamaños
+   más contenidos. Garantiza coherencia visual sin robar foco al contenido.
+   ============================================================ */
+.section-hero {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 0;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #0c4a6e 0%,
+    #0369a1 30%,
+    #38bdf8 70%,
+    #fbbf24 100%
+  );
+}
+
+.section-hero--tall {
+  /* landing pages estilo hub que merecen más altura */
+  background: linear-gradient(
+    180deg,
+    #0c4a6e 0%,
+    #0369a1 25%,
+    #38bdf8 60%,
+    #fbbf24 90%,
+    #f97316 100%
+  );
+}
+
+.section-hero-clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 500px 160px at 25% 60%, rgba(255, 255, 255, 0.35), transparent 70%),
+    radial-gradient(ellipse 600px 200px at 80% 50%, rgba(255, 255, 255, 0.3), transparent 70%);
+}
+
+.section-hero-h1 {
+  font-size: clamp(34px, 4.5vw, 58px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  max-width: 920px;
+  margin: 0 auto 16px;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  color: #fff;
+}
+
+.section-hero-h1 em {
+  font-style: normal;
+  color: #fbbf24;
+  text-shadow: 0 4px 24px rgba(251, 191, 36, 0.4);
+}
+
+.section-hero-lead {
+  font-size: 17px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 700px;
+  margin: 0 auto;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.section-hero a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.section-hero a:hover {
+  color: #fde68a;
+}
+
+@media (max-width: 640px) {
+  .section-hero-h1 {
+    font-size: clamp(28px, 7vw, 38px);
+  }
+  .section-hero-lead {
+    font-size: 15px;
+  }
+}
+
+/* JJJ1 — Toggle grid/lista en /deals.
+   El page.tsx renderiza ambos (.deals-view-list + .deals-view-grid).
+   El client toggle setea data-deals-view="list"|"grid" en el container.
+   Default = list. CSS oculta el opuesto. */
+[data-deals-view-root] .deals-view-list { display: block; }
+[data-deals-view-root] .deals-view-grid { display: none; }
+[data-deals-view-root][data-deals-view="grid"] .deals-view-list { display: none; }
+[data-deals-view-root][data-deals-view="grid"] .deals-view-grid { display: grid; }
+
+/* JJJ5 — DealRow mobile internal links collapse */
+@media (max-width: 480px) {
+  .deal-row-internal-links { display: none; }
+}
+
+/* JJJ4 — MobileNavBar mobile padding bottom para no tapar contenido.
+   sm+ no aplica (hidden via Tailwind sm:hidden en el component).
+   Excluido /panel/* via body inheritance + nav check, no afecta. */
+@media (max-width: 639px) {
+  body { padding-bottom: 64px; }
+  /* MobileStickyCta sits encima del MobileNavBar (z-40 nav, z-50 sticky) */
+}

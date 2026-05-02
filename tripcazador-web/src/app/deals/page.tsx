@@ -1,6 +1,10 @@
 import { getDeals } from "@/lib/api";
-import { DealRow } from "@/components/DealCard";
+import { DealCard, DealRow } from "@/components/DealCard";
 import { JsonLd } from "@/components/JsonLd";
+import { SectionHero } from "@/components/SectionHero";
+import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { DealsViewToggle } from "@/components/DealsViewToggle";
+import { DealsFilterDrawer } from "@/components/DealsFilterDrawer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -30,7 +34,21 @@ interface SearchParams {
   max_price?: string;
   sort?: string;
   freshness?: string;  // "all" | "fresh" (≤24h) | "today" (≤8h)
+  // VV7 — params del searchbar de la home
+  origin?: string;
+  destination?: string;
+  date?: string;
+  // HHH2 — date range filter
+  date_from?: string;
+  date_to?: string;
+  // III2 — paginación
+  page?: string;
+  // JJJ2 — drawer filters
+  max_stops?: string;
+  max_duration_min?: string;
 }
+
+const PAGE_SIZE = 24;
 
 // NN2 fase nn: filtros de frescura. "fresh" oculta deals que llevarían el chip
 // rojo "Posiblemente caducado" (>72h) y los amber "Visto Hace Xd" (>24h).
@@ -98,7 +116,7 @@ export default async function DealsPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const { classification, region, cabin, max_price, sort, freshness } = searchParams;
+  const { classification, region, cabin, max_price, sort, freshness, origin, destination, date, date_from, date_to, page, max_stops, max_duration_min } = searchParams;
 
   const data = await getDeals({
     classification: classification !== "Todos" ? classification : undefined,
@@ -108,42 +126,81 @@ export default async function DealsPage({
     limit: 200,
   });
 
+  // VV7: filtros de la searchbar de la home — match exact por IATA + mes
+  let scoped = data.deals;
+  if (origin) {
+    const o = origin.toUpperCase();
+    scoped = scoped.filter((d) => d.origin === o);
+  }
+  if (destination) {
+    const dest = destination.toUpperCase();
+    scoped = scoped.filter((d) => d.destination === dest);
+  }
+  if (date) {
+    // formato YYYY-MM-DD; filtramos por mes para tolerar fechas flex.
+    const monthPrefix = date.slice(0, 7); // YYYY-MM
+    scoped = scoped.filter((d) => (d.date_out || "").startsWith(monthPrefix));
+  }
+  // HHH2 — date range filter (gana sobre date legacy si ambos están presentes)
+  if (date_from || date_to) {
+    scoped = scoped.filter((d) => {
+      const dt = d.date_out || "";
+      if (!dt) return false;
+      if (date_from && dt < date_from) return false;
+      if (date_to && dt > date_to) return false;
+      return true;
+    });
+  }
+
+  // JJJ2 — drawer filters (max_stops + max_duration)
+  if (max_stops !== undefined && max_stops !== "") {
+    const ms = parseInt(max_stops);
+    if (Number.isFinite(ms) && ms < 9) {
+      scoped = scoped.filter((d) => (d.stops ?? 9) <= ms);
+    }
+  }
+  if (max_duration_min !== undefined && max_duration_min !== "") {
+    const md = parseInt(max_duration_min);
+    if (Number.isFinite(md) && md > 0) {
+      scoped = scoped.filter((d) => (d.duration_min ?? 0) === 0 || (d.duration_min ?? 0) <= md);
+    }
+  }
+
   // F2: server-side sort (estable porque ISR cachea 5min)
   // NN2: aplicar freshness filter antes del sort
-  const fresh = applyFreshness(data.deals, freshness);
-  const deals = applySort(fresh, sort);
+  const fresh = applyFreshness(scoped, freshness);
+  const allDeals = applySort(fresh, sort);
   const stats = data.stats;
   const activeSort = sort || "recent";
   const activeFreshness = freshness || "all";
   const filteredOut = data.deals.length - fresh.length;
 
+  // III2 — paginación
+  const totalPages = Math.max(1, Math.ceil(allDeals.length / PAGE_SIZE));
+  const requestedPage = Math.max(1, Math.min(totalPages, parseInt(page || "1") || 1));
+  const startIdx = (requestedPage - 1) * PAGE_SIZE;
+  const deals = allDeals.slice(startIdx, startIdx + PAGE_SIZE);
+  const hasPagination = totalPages > 1;
+
+  const minutesAgo = Math.round(
+    (Date.now() - new Date(data.generated_at).getTime()) / 60000
+  );
+
   return (
     <div className="space-y-8">
       <JsonLd data={BREADCRUMB_JSONLD} />
 
-      {/* Breadcrumbs visibles */}
-      <nav aria-label="Migas de pan" className="flex items-center gap-2 text-sm text-gray-400">
-        <a
-          href="/"
-          className="hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded px-1"
-        >
-          Inicio
-        </a>
-        <span aria-hidden="true">/</span>
-        <span className="text-white">Deals</span>
-      </nav>
-
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-white">Todos los deals</h1>
-        <p className="text-gray-400 mt-1">
-          {stats.total} deals activos · Actualizado hace{" "}
-          {Math.round(
-            (Date.now() - new Date(data.generated_at).getTime()) / 60000
-          )}{" "}
-          min
-        </p>
-      </div>
+      {/* fase vv VV5 — Hero sky en lugar de header dark plano. Breadcrumb
+          textual eliminado en VV11 (el hero ya da contexto + JSON-LD intacto). */}
+      <SectionHero
+        badge={`${stats.total} deals activos · Actualizado hace ${minutesAgo} min`}
+        title={
+          <>
+            Todos los <em>chollos</em>
+          </>
+        }
+        subtitle="Filtra por región, cabina o precio. Lista completa en tiempo real."
+      />
 
       {/* Filtros */}
       <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
@@ -157,7 +214,7 @@ export default async function DealsPage({
               {CLASSIFICATIONS.map((cls) => (
                 <a
                   key={cls}
-                  href={`/deals${buildQuery({ ...searchParams, classification: cls })}`}
+                  href={`/deals${buildQuery({ ...searchParams, classification: cls, page: undefined })}`}
                   className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                     (cls === "Todos" && !classification) ||
                     classification === cls
@@ -183,7 +240,7 @@ export default async function DealsPage({
               {CABINS.map((c) => (
                 <a
                   key={c}
-                  href={`/deals${buildQuery({ ...searchParams, cabin: c })}`}
+                  href={`/deals${buildQuery({ ...searchParams, cabin: c, page: undefined })}`}
                   className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                     (c === "Todas" && !cabin) || cabin === c
                       ? "bg-amber-500 text-black font-semibold"
@@ -208,7 +265,7 @@ export default async function DealsPage({
               {REGIONS.map((r) => (
                 <a
                   key={r}
-                  href={`/deals${buildQuery({ ...searchParams, region: r })}`}
+                  href={`/deals${buildQuery({ ...searchParams, region: r, page: undefined })}`}
                   className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                     (r === "Todos" && !region) || region === r
                       ? "bg-amber-500 text-black font-semibold"
@@ -231,7 +288,7 @@ export default async function DealsPage({
           {FRESHNESS_OPTIONS.map((opt) => (
             <a
               key={opt.id}
-              href={`/deals${buildQuery({ ...searchParams, freshness: opt.id })}`}
+              href={`/deals${buildQuery({ ...searchParams, freshness: opt.id, page: undefined })}`}
               aria-current={activeFreshness === opt.id ? "true" : undefined}
               className={`px-3 py-1.5 rounded-lg text-sm transition-all min-h-[36px] inline-flex items-center ${
                 activeFreshness === opt.id
@@ -249,13 +306,16 @@ export default async function DealsPage({
           )}
         </div>
 
+        {/* HHH2 — date range filter */}
+        <DateRangeFilter />
+
         {/* Sort */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-gray-500 uppercase tracking-wider">Ordenar:</span>
           {SORT_OPTIONS.map((opt) => (
             <a
               key={opt.id}
-              href={`/deals${buildQuery({ ...searchParams, sort: opt.id })}`}
+              href={`/deals${buildQuery({ ...searchParams, sort: opt.id, page: undefined })}`}
               aria-current={activeSort === opt.id ? "true" : undefined}
               className={`px-3 py-1.5 rounded-lg text-sm transition-all min-h-[36px] inline-flex items-center ${
                 activeSort === opt.id
@@ -271,10 +331,46 @@ export default async function DealsPage({
 
       {/* Lista de deals */}
       {deals.length > 0 ? (
-        <div className="space-y-3">
-          {deals.map((deal) => (
-            <DealRow key={deal.id} deal={deal} />
-          ))}
+        <div data-deals-view-root data-deals-view="list">
+          {/* III2 + JJJ1 + JJJ2 — Resumen + paginación + toggle vista + drawer */}
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-gray-400 mb-4">
+            <div>
+              Mostrando <span className="text-white font-semibold">{startIdx + 1}–{Math.min(startIdx + PAGE_SIZE, allDeals.length)}</span> de{" "}
+              <span className="text-white font-semibold">{allDeals.length}</span> chollos
+              {hasPagination && (
+                <span className="ml-2 text-gray-500">· Página {requestedPage}/{totalPages}</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <DealsFilterDrawer />
+              <DealsViewToggle />
+            </div>
+          </div>
+
+          {/* List view — visible cuando data-deals-view=list */}
+          <div className="space-y-3 deals-view-list">
+            {deals.map((deal) => (
+              <DealRow key={deal.id} deal={deal} />
+            ))}
+          </div>
+
+          {/* JJJ1 — Grid view — visible cuando data-deals-view=grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 deals-view-grid">
+            {deals.map((deal) => (
+              <DealCard key={deal.id} deal={deal} />
+            ))}
+          </div>
+
+          {/* III2 — paginación bottom */}
+          {hasPagination && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={requestedPage}
+                totalPages={totalPages}
+                searchParams={searchParams}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-20 text-gray-500">
@@ -285,6 +381,96 @@ export default async function DealsPage({
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * III2 — Pagination component. Server component sin estado, todo via URL.
+ * Estrategia: muestra prev/first/window-around-current/last/next con elipsis.
+ */
+function Pagination({
+  currentPage,
+  totalPages,
+  searchParams,
+}: {
+  currentPage: number;
+  totalPages: number;
+  searchParams: SearchParams;
+}) {
+  const pageHref = (n: number) => `/deals${buildQuery({ ...searchParams, page: String(n) })}`;
+
+  // Window de 5 paginas centrada (con clamp a edges)
+  const window: number[] = [];
+  const start = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
+  const end = Math.min(totalPages, start + 4);
+  for (let i = start; i <= end; i++) window.push(i);
+
+  return (
+    <nav
+      className="flex flex-wrap items-center justify-center gap-2 pt-6"
+      aria-label="Paginación"
+    >
+      {currentPage > 1 ? (
+        <a
+          href={pageHref(currentPage - 1)}
+          rel="prev"
+          className="px-3 py-2 min-h-[40px] inline-flex items-center rounded-lg bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold transition-colors"
+        >
+          ← Anterior
+        </a>
+      ) : (
+        <span className="px-3 py-2 min-h-[40px] inline-flex items-center rounded-lg bg-gray-900 text-gray-600 text-sm font-semibold cursor-not-allowed">
+          ← Anterior
+        </span>
+      )}
+
+      {start > 1 && (
+        <>
+          <a href={pageHref(1)} className="px-3 py-2 min-h-[40px] min-w-[40px] inline-flex items-center justify-center rounded-lg bg-gray-800 hover:bg-gray-700 text-white text-sm">
+            1
+          </a>
+          {start > 2 && <span className="text-gray-600 px-1">…</span>}
+        </>
+      )}
+
+      {window.map((n) => (
+        <a
+          key={n}
+          href={pageHref(n)}
+          aria-current={n === currentPage ? "page" : undefined}
+          className={`px-3 py-2 min-h-[40px] min-w-[40px] inline-flex items-center justify-center rounded-lg text-sm font-semibold transition-colors ${
+            n === currentPage
+              ? "bg-amber-500 text-black"
+              : "bg-gray-800 hover:bg-gray-700 text-white"
+          }`}
+        >
+          {n}
+        </a>
+      ))}
+
+      {end < totalPages && (
+        <>
+          {end < totalPages - 1 && <span className="text-gray-600 px-1">…</span>}
+          <a href={pageHref(totalPages)} className="px-3 py-2 min-h-[40px] min-w-[40px] inline-flex items-center justify-center rounded-lg bg-gray-800 hover:bg-gray-700 text-white text-sm">
+            {totalPages}
+          </a>
+        </>
+      )}
+
+      {currentPage < totalPages ? (
+        <a
+          href={pageHref(currentPage + 1)}
+          rel="next"
+          className="px-3 py-2 min-h-[40px] inline-flex items-center rounded-lg bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold transition-colors"
+        >
+          Siguiente →
+        </a>
+      ) : (
+        <span className="px-3 py-2 min-h-[40px] inline-flex items-center rounded-lg bg-gray-900 text-gray-600 text-sm font-semibold cursor-not-allowed">
+          Siguiente →
+        </span>
+      )}
+    </nav>
   );
 }
 

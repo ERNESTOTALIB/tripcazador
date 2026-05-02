@@ -1,25 +1,14 @@
 import type { Metadata } from "next";
-import nextDynamic from "next/dynamic";
+import { DestinationsMap } from "@/components/DestinationsMap";
 import { DestinationCard } from "@/components/DestinationCard";
 import { JsonLd } from "@/components/JsonLd";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { SectionHero } from "@/components/SectionHero";
 
 // Mapa cargado bajo demanda — el componente es client-side (useState para
 // hover) y pesa ~25KB minificados con su SVG inline. Lazy load reduce el
-// bundle inicial de /destinos sin afectar SEO porque el contenido textual
-// (lista de destinos) sí se prerenderiza.
-const DestinationsMap = nextDynamic(
-  () => import("@/components/DestinationsMap").then((m) => m.DestinationsMap),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        aria-hidden="true"
-        className="w-full aspect-[16/9] rounded-2xl bg-gray-900 border border-gray-800 animate-pulse"
-      />
-    ),
-  },
-);
+// VV12: dynamic import eliminado — el componente es SVG puro sin Leaflet,
+// el lazy load solo causaba skeleton perpetuo. Ahora se renderiza directamente.
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -129,19 +118,17 @@ export default function DestinosIndexPage() {
   return (
     <div className="space-y-10">
       <JsonLd data={BREADCRUMB_JSONLD} />
-      <header className="space-y-4">
-        <nav aria-label="Migas de pan" className="flex items-center gap-2 text-sm text-gray-400">
-          <a href="/" className="hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded px-1">
-            Inicio
-          </a>
-          <span aria-hidden="true">/</span>
-          <span className="text-white">Destinos</span>
-        </nav>
-        <h1 className="text-4xl font-bold text-white">Destinos</h1>
-        <p className="text-gray-300 max-w-2xl text-lg">
-          Guías por destino: mejor época para volar, consejos prácticos y los chollos activos que el motor está siguiendo en este momento.
-        </p>
-      </header>
+
+      {/* fase vv VV6 — Hero sky. Breadcrumb textual eliminado en VV11. */}
+      <SectionHero
+        size="tall"
+        title={
+          <>
+            <em>Destinos</em> con chollo activo
+          </>
+        }
+        subtitle="Guías por destino, mejor época para volar y los chollos que el motor está siguiendo ahora mismo."
+      />
 
       {/* Mapa interactivo con los destinos georeferenciados */}
       <section aria-labelledby="destinos-mapa-heading">

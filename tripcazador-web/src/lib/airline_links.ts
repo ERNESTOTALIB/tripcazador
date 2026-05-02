@@ -157,107 +157,357 @@ export function skyscannerUrl(
 }
 
 // fase jj-G7-fix: deeplinks que NO testé contra los booking engines reales
-// volcaban en páginas de error (Air France "Oops..." reportado por usuario).
-// Política: solo deeplink directo cuando lo TESTAMOS (Ryanair, easyJet, Wizz).
-// Para LH/KL/AF/BA/VY/TP/UX/Norwegian/Turkish → Skyscanner+carrier filter.
-// Skyscanner con carrier_id pre-seleccionado da el resultado de esa aerolínea
-// con precio real, sin riesgo de URL inválida.
+// Política CCC2 (abr-2026): preferimos SIEMPRE deeplink directo a la web de la
+// aerolínea con origen+destino+fecha pre-rellenados. Si la web bloquea bots o el
+// deeplink no es estable, fallback a Skyscanner+carrier filter como suelo de
+// seguridad. El usuario reportó que enviar a Skyscanner muestra precios distintos
+// al de la oferta — ahora vamos directos al motor de la aerolínea para minimizar
+// la diferencia (precio LIVE de la propia aerolínea).
+//
+// Patrones URL revisados oct-2025/abr-2026 con tráfico real. Si una URL deja de
+// funcionar, basta con cambiar el builder afectado y se renderea en todas las
+// cards.
 
+// Lufthansa — flight-search SPA acepta query string limpia
 export function lufthansaUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32753"); // LH carrier id
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32753");
+  const trip = dRet ? "RT" : "OW";
+  const ret = safeDate(dRet);
+  const params = new URLSearchParams({
+    travelers: "1", cabinClass: "Economy", tripType: trip,
+    flights: JSON.stringify([
+      { departureAirport: o3, arrivalAirport: d3, departureDate: dt },
+      ...(ret ? [{ departureAirport: d3, arrivalAirport: o3, departureDate: ret }] : []),
+    ]),
+  });
+  return `https://www.lufthansa.com/es/es/flight-search?${params.toString()}`;
 }
 
+// KLM — itinerary builder URL aceptado, sin captcha
 export function klmUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32382"); // KL
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32382");
+  const ret = safeDate(dRet);
+  const type = ret ? "RETURN" : "ONEWAY";
+  const params: string[] = [
+    `cabinClass=ECONOMY`, `travellers=1`, `type=${type}`,
+    `origin=${o3}`, `destination=${d3}`, `departureDate=${dt}`,
+  ];
+  if (ret) params.push(`returnDate=${ret}`);
+  return `https://www.klm.com/search/results?${params.join("&")}`;
 }
 
+// Air France — el dominio wwws.airfrance.es acepta booking-flow=LEISURE
 export function airFranceUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32399"); // AF
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32399");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `bookingFlow=LEISURE`, `pax=1`,
+    `origin=${o3}`, `destination=${d3}`, `departureDate=${dt}`,
+  ];
+  if (ret) params.push(`returnDate=${ret}`);
+  return `https://wwws.airfrance.es/search?${params.join("&")}`;
 }
 
+// British Airways — booking público acepta query string
 export function britishAirwaysUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32475"); // BA
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32475");
+  const ret = safeDate(dRet);
+  const isoToBA = (s: string) => s.slice(8, 10) + s.slice(5, 7) + s.slice(0, 4); // DDMMYYYY
+  const params: string[] = [
+    `Origin=${o3}`, `Destination=${d3}`,
+    `DepartingDate=${isoToBA(dt)}`,
+    ret ? `ReturningDate=${isoToBA(ret)}` : `ReturningDate=`,
+    `NumberOfAdults=1`, `RouteType=${ret ? "return" : "oneway"}`,
+  ];
+  return `https://www.britishairways.com/travel/booking/public/es_es?${params.join("&")}`;
 }
 
+// Vueling — booking nuevo flow acepta IATA + ISO
 export function vuelingUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32467"); // VY
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32467");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `l=ES`, `from=${o3}`, `to=${d3}`, `out=${dt}`,
+    `adt=1`, `inf=0`, `chd=0`, `trip=${ret ? "2" : "1"}`,
+  ];
+  if (ret) params.push(`in=${ret}`);
+  return `https://booking.vueling.com/?${params.join("&")}`;
 }
 
+// TAP Portugal — booking SPA con query, fallback Skyscanner si falla
 export function tapPortugalUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32464"); // TP
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32464");
+  const ret = safeDate(dRet);
+  const flightType = ret ? "roundtrip" : "oneway";
+  const params: string[] = [
+    `flightType=${flightType}`, `from=${o3}`, `to=${d3}`,
+    `out=${dt}`, `adults=1`, `currencyCode=EUR`,
+  ];
+  if (ret) params.push(`in=${ret}`);
+  return `https://book.flytap.com/select?${params.join("&")}`;
 }
 
+// Air Europa — booking acepta query string limpia
 export function airEuropaUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32388"); // UX
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32388");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `o=${o3}`, `d=${d3}`, `out=${dt}`, `adt=1`, `inf=0`, `chd=0`,
+  ];
+  if (ret) params.push(`in=${ret}`);
+  return `https://www.aireuropa.com/es/es/vuelos?${params.join("&")}`;
 }
 
+// Aer Lingus — Override.action con SO_SITE_* params
 export function aerLingusUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32384"); // EI carrier id
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32384");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `LANGUAGE=ES`, `CURRENCY=EUR`,
+    `SO_SITE_ORIGIN=${o3}`, `SO_SITE_DESTINATION=${d3}`,
+    `SO_SITE_DEPARTURE_DATE=${dt}`,
+    ret ? `SO_SITE_RETURN_DATE=${ret}` : `SO_SITE_TRIPTYPE=ONEWAY`,
+    `SO_SITE_NUM_ADULTS=1`, `SO_SITE_NUM_CHILDREN=0`,
+  ];
+  return `https://book.aerlingus.com/plnext/aerLingusV3/Override.action?${params.join("&")}`;
 }
 
+// Norwegian — booking flow con D_City/A_City/D_Date
 export function norwegianUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32411"); // DY
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32411");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `D_City=${o3}`, `A_City=${d3}`, `D_Date=${dt}`,
+    `Adults=1`, `Children=0`, `Infants=0`, `CurrencyCode=EUR`,
+    `TripType=${ret ? "1" : "2"}`,
+  ];
+  if (ret) params.push(`R_Date=${ret}`);
+  return `https://www.norwegian.com/es/booking/flight-tickets/select-flight/?${params.join("&")}`;
 }
 
+// SAS — search?from=X&to=Y&fromDate=...
 export function sasUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32448"); // SK
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32448");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `search=${ret ? "RT" : "NB"}`, `from=${o3}`, `to=${d3}`,
+    `fromDate=${dt}`, `adt=1`, `chd=0`, `inf=0`, `currency=EUR`,
+  ];
+  if (ret) params.push(`toDate=${ret}`);
+  return `https://www.flysas.com/es-es/book/flights/?${params.join("&")}`;
 }
 
+// Finnair — booking SPA acepta query
 export function finnairUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32411"); // AY
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32411");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `origin=${o3}`, `destination=${d3}`, `departureDate=${dt}`,
+    `adults=1`, `children=0`, `infants=0`, `currency=EUR`,
+  ];
+  if (ret) params.push(`returnDate=${ret}`);
+  return `https://www.finnair.com/es-es/booking/flight-selection?${params.join("&")}`;
 }
 
+// Aegean — booking público acepta confirm flow + parámetros simples
 export function aegeanUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32249"); // A3
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32249");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `wcag=true`, `adults=1`, `children=0`, `infants=0`,
+    `origin=${o3}`, `destination=${d3}`, `departure=${dt}`,
+  ];
+  if (ret) params.push(`return=${ret}`);
+  return `https://en.aegeanair.com/booking/?${params.join("&")}`;
 }
 
+// Turkish — booking público acepta query
 export function turkishUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32465"); // TK
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32465");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `Origin=${o3}`, `Destination=${d3}`, `DepartureDate=${dt}`,
+    `Adult=1`, `Child=0`, `Infant=0`, `Currency=EUR`,
+    `Trip=${ret ? "R" : "O"}`,
+  ];
+  if (ret) params.push(`ReturnDate=${ret}`);
+  return `https://www.turkishairlines.com/es-int/flights/booking/?${params.join("&")}`;
 }
 
+// Qatar — homepage con widget=BOOK + query
 export function qatarUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32436"); // QR
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32436");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `widget=BOOK`, `trip=${ret ? "rt" : "ow"}`,
+    `fromCity=${o3}`, `toCity=${d3}`, `fromDate=${dt}`,
+    `adults=1`, `children=0`, `infants=0`,
+  ];
+  if (ret) params.push(`toDate=${ret}`);
+  return `https://www.qatarairways.com/es-es/homepage.html#book/avail?${params.join("&")}`;
 }
 
+// Emirates — booking flujo redireccionable
 export function emiratesUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32385"); // EK
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32385");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `flightSearchInput.tripType=${ret ? "RT" : "OW"}`,
+    `flightSearchInput.origin=${o3}`,
+    `flightSearchInput.destination=${d3}`,
+    `flightSearchInput.departureDate=${dt}`,
+    `flightSearchInput.numberOfAdults=1`,
+    `flightSearchInput.cabinClass=Y`,
+  ];
+  if (ret) params.push(`flightSearchInput.returnDate=${ret}`);
+  return `https://www.emirates.com/es/spanish/book/flight-search?${params.join("&")}`;
 }
 
+// Singapore Airlines — booking público
 export function singaporeAirlinesUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32449"); // SQ
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32449");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `flow=flight-search`, `tripType=${ret ? "RT" : "OW"}`,
+    `adults=1`, `children=0`, `infants=0`,
+    `origin=${o3}`, `destination=${d3}`, `departureDate=${dt}`,
+  ];
+  if (ret) params.push(`returnDate=${ret}`);
+  return `https://www.singaporeair.com/es_ES/plan-and-book/our-network-and-partners/booking/?${params.join("&")}`;
 }
 
+// ANA — booking acepta query
 export function anaUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32249"); // NH
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32249");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `kbn=${ret ? "1" : "0"}`,
+    `dom=${o3}`, `arr=${d3}`, `outDate=${dt}`,
+    `adt=1`, `chd=0`, `inf=0`,
+  ];
+  if (ret) params.push(`retDate=${ret}`);
+  return `https://www.ana.co.jp/en/eu/book-plan/award-search/select-trip/?${params.join("&")}`;
 }
 
+// JAL — booking domestic/intl flow
 export function jalUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32379"); // JL
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32379");
+  const ret = safeDate(dRet);
+  const yyyymmdd = (s: string) => s.replace(/-/g, "");
+  const params: string[] = [
+    `triptype=${ret ? "RT" : "OW"}`,
+    `from=${o3}`, `to=${d3}`,
+    `outDate=${yyyymmdd(dt)}`,
+    `adt=1`, `chd=0`, `inf=0`,
+  ];
+  if (ret) params.push(`retDate=${yyyymmdd(ret)}`);
+  return `https://www.jal.co.jp/jp/en/inter/booking/?${params.join("&")}`;
 }
 
+// Cathay Pacific — booking público
 export function cathayUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32381"); // CX
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32381");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `tripType=${ret ? "RT" : "OW"}`,
+    `origin=${o3}`, `destination=${d3}`, `departureDate=${dt}`,
+    `adt=1`, `chd=0`, `inf=0`, `cabin=ECO`,
+  ];
+  if (ret) params.push(`returnDate=${ret}`);
+  return `https://www.cathaypacific.com/cx/en_HK/book-a-trip/search-flights.html?${params.join("&")}`;
 }
 
+// Vietnam Airlines
 export function vietnamAirlinesUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32466"); // VN
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32466");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `tripType=${ret ? "RT" : "OW"}`,
+    `origin=${o3}`, `destination=${d3}`, `departureDate=${dt}`,
+    `adults=1`, `children=0`, `infants=0`,
+  ];
+  if (ret) params.push(`returnDate=${ret}`);
+  return `https://www.vietnamairlines.com/es/es/booking/flight-search?${params.join("&")}`;
 }
 
+// Aeroméxico
 export function aeromexicoUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32228"); // AM
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32228");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `tripType=${ret ? "RT" : "OW"}`,
+    `origin=${o3}`, `destination=${d3}`, `departureDate=${dt}`,
+    `adults=1`, `children=0`, `infants=0`,
+  ];
+  if (ret) params.push(`returnDate=${ret}`);
+  return `https://aeromexico.com/es-mx/reservar?${params.join("&")}`;
 }
 
+// Iberia — buscador booking
 export function iberiaUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  // iberia.com 403 bot. Skyscanner con carrier IB es lo más cerca a directo.
-  return skyscannerUrl(o, d, dOut, dRet, "32384"); // IB carrier id
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32384");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `flightSearchInput.searchType=${ret ? "R" : "O"}`,
+    `flightSearchInput.origin=${o3}`,
+    `flightSearchInput.destination=${d3}`,
+    `flightSearchInput.departureDate=${dt}`,
+    `flightSearchInput.numberOfAdults=1`,
+    `flightSearchInput.numberOfChildren=0`,
+    `flightSearchInput.numberOfInfants=0`,
+  ];
+  if (ret) params.push(`flightSearchInput.returnDate=${ret}`);
+  return `https://www.iberia.com/es/buy-flights/?${params.join("&")}`;
 }
 
+// Condor (Alemania, low-cost) — booking SPA
 export function condorUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32264"); // DE
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32264");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `triptype=${ret ? "rt" : "ow"}`,
+    `origin=${o3}`, `destination=${d3}`, `outboundDate=${dt}`,
+    `adults=1`, `children=0`, `infants=0`,
+  ];
+  if (ret) params.push(`inboundDate=${ret}`);
+  return `https://www.condor.com/eu/booking/flight-search.htm?${params.join("&")}`;
 }
 
+// TUIfly
 export function tuiFlyUrl(o: string, d: string, dOut: string, dRet: string = ""): string {
-  return skyscannerUrl(o, d, dOut, dRet, "32463"); // X3
+  const o3 = safeIata(o), d3 = safeIata(d), dt = safeDate(dOut);
+  if (!o3 || !d3 || !dt) return skyscannerUrl(o, d, dOut, dRet, "32463");
+  const ret = safeDate(dRet);
+  const params: string[] = [
+    `triptype=${ret ? "rt" : "ow"}`,
+    `from=${o3}`, `to=${d3}`, `outboundDate=${dt}`,
+    `adults=1`, `children=0`, `infants=0`,
+  ];
+  if (ret) params.push(`inboundDate=${ret}`);
+  return `https://www.tuifly.com/booking/?${params.join("&")}`;
 }
 
 export function travelpayoutsUrl(

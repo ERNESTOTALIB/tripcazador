@@ -1,12 +1,16 @@
 import { Suspense } from "react";
 import { getTopDeals, getDeals } from "@/lib/api";
 import { DealCard } from "@/components/DealCard";
-import SearchBar from "@/components/SearchBar";
+// fase vv VV13: SearchBar legacy retirado del home (SkyHero ya cubre todo)
 import { DestinationCard } from "@/components/DestinationCard";
 import { Testimonials } from "@/components/Testimonials";
 import { JsonLd } from "@/components/JsonLd";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
-import { HeroCopyAB } from "@/components/HeroCopyAB";
+import { SkyHero } from "@/components/SkyHero";
+import { TrendingNowWidget } from "@/components/TrendingNowWidget";
+import { RecentSearchesStrip } from "@/components/RecentSearchesStrip";
+import { MyFeedStrip } from "@/components/MyFeedStrip";
+import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -117,6 +121,12 @@ async function TopDeals() {
         </div>
       </div>
 
+      {/* fff F3 — Live trending widget: prueba social en tiempo real */}
+      <TrendingNowWidget />
+
+      {/* ggg G2 — Push opt-in: permite avisos push instantáneos */}
+      <PushNotificationOptIn />
+
       {/* Grid de deals */}
       {rest.length > 0 && (
         <div>
@@ -195,62 +205,124 @@ export default async function HomePage() {
     })),
   };
 
+  // FFF5 — Organization + WebSite schema para mejor rich results en Google
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "TripCazador",
+    legalName: "TripCazador",
+    url: "https://tripcazador.com",
+    logo: "https://tripcazador.com/icon-512.png",
+    description: "Cazador de chollos de vuelos y hoteles en tiempo real. Alertas de precio, error fares y comparativas para viajar barato desde España.",
+    sameAs: [
+      "https://t.me/tripcazador",
+      "https://www.instagram.com/tripcazador",
+      "https://x.com/tripcazador",
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: "contacto@tripcazador.com",
+      contactType: "customer support",
+      availableLanguage: ["Spanish", "English"],
+    },
+    foundingDate: "2024",
+    areaServed: ["ES", "EU", "Worldwide"],
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "TripCazador",
+    url: "https://tripcazador.com",
+    inLanguage: "es-ES",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: "https://tripcazador.com/buscar?q={search_term_string}",
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
-    <div className="space-y-16">
+    <div>
       <JsonLd data={faqSchema} />
-      {/* Hero con fondo de radar/mapa */}
-      <section className="hero-map text-center py-14 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
-          Motor activo — rastreando aeropuertos en tiempo real
+      <JsonLd data={orgSchema} />
+      <JsonLd data={websiteSchema} />
+
+      {/* fase uu UU3 — SkyHero glass full-width.
+          Reemplaza el hero-map dark anterior. Sky gradient + searchbar
+          glass + 3 floating deal cards translúcidas. El header se monta
+          encima con backdrop transparent (transición a glass al scrollear). */}
+      <SkyHero />
+
+      {/* JJJ3 — Mi feed (silent si no hay favoritos guardados) */}
+      <MyFeedStrip />
+
+      {/* III4 — Recent searches strip (silent if no consent / no history) */}
+      <RecentSearchesStrip />
+
+      {/* Stats + chips quick-filters en sección body light, después del hero.
+          full-bleed escapando del max-w-7xl del <main> */}
+      <section className="bg-gray-950 py-12 sm:py-16" style={{ width: "100vw", marginLeft: "calc(50% - 50vw)", marginRight: "calc(50% - 50vw)" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
+            <a
+              href="/deals?classification=CR%C3%8DTICO"
+              className="px-5 py-2.5 bg-red-500/10 border border-red-500/30 hover:bg-red-500/20 text-red-300 font-semibold rounded-full text-sm transition-colors"
+            >
+              🔥 Solo error fares
+            </a>
+            <a
+              href="/deals?cabin=business"
+              className="px-5 py-2.5 bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 text-purple-300 font-semibold rounded-full text-sm transition-colors"
+            >
+              👑 Business barato
+            </a>
+            <a
+              href="/deals?duration=weekend"
+              className="px-5 py-2.5 bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-200 font-semibold rounded-full text-sm transition-colors"
+            >
+              Fin de semana
+            </a>
+            <a
+              href="/regiones/caribe"
+              className="px-5 py-2.5 bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-200 font-semibold rounded-full text-sm transition-colors"
+            >
+              Caribe
+            </a>
+            <a
+              href="/regiones/asia"
+              className="px-5 py-2.5 bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-200 font-semibold rounded-full text-sm transition-colors"
+            >
+              Asia
+            </a>
+          </div>
+
+          <Suspense
+            fallback={
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="animate-pulse text-center">
+                    <div className="h-8 w-16 bg-gray-800 rounded mx-auto" />
+                    <div className="h-4 w-24 bg-gray-800 rounded mt-2 mx-auto" />
+                  </div>
+                ))}
+              </div>
+            }
+          >
+            <HeroStats />
+          </Suspense>
         </div>
-
-        {/* C4: Hero copy A/B test (control "El cazador automático de chollos" vs "-70% antes que nadie") */}
-        <HeroCopyAB />
-
-        {/* CTAs */}
-        <div className="flex flex-wrap justify-center gap-3 mt-6">
-          <a
-            href="/deals"
-            className="px-6 py-3 btn-gradient text-black font-semibold rounded-xl transition-all shadow-lg shadow-amber-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
-          >
-            Ver todos los deals →
-          </a>
-          <a
-            href="/deals?classification=CR%C3%8DTICO"
-            className="px-6 py-3 bg-red-500/10 border border-red-500/30 hover:bg-red-500/20 text-red-300 font-semibold rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
-          >
-            🔥 Solo Error Fares
-          </a>
-          <a
-            href="/deals?cabin=business"
-            className="px-6 py-3 bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 text-purple-300 font-semibold rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
-          >
-            👑 Business barato
-          </a>
-        </div>
-
-        {/* Stats dinámicas */}
-        <Suspense
-          fallback={
-            <div className="flex justify-center gap-8 mt-10">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse text-center">
-                  <div className="h-8 w-16 bg-gray-800 rounded mx-auto" />
-                  <div className="h-4 w-24 bg-gray-800 rounded mt-2 mx-auto" />
-                </div>
-              ))}
-            </div>
-          }
-        >
-          <HeroStats />
-        </Suspense>
       </section>
 
-      {/* Buscador en vivo (client component) */}
-      <section className="px-4">
-        <SearchBar />
-      </section>
+      {/* Resto de secciones en wrapper dark full-bleed.
+          fase vv VV13: SearchBar legacy eliminado — el SkyHero arriba ya tiene
+          DESDE/A/IDA/VUELTA/CABINA/PRECIO MÁX con autocomplete fuzzy. Las chips
+          quick-filter siguen viviendo arriba como atajos. */}
+      <div className="bg-gray-950 py-12 space-y-16" style={{ width: "100vw", marginLeft: "calc(50% - 50vw)", marginRight: "calc(50% - 50vw)" }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
 
       {/* Top Deals */}
       <section>
@@ -361,9 +433,12 @@ export default async function HomePage() {
 
       {/* abr-2026r/s: Newsletter signup expanded — captura email tras leer
           FAQ. Conversión típica de bottom-of-page email forms: 3-7%. */}
-      <section className="container mx-auto px-4 py-10 sm:py-12">
+      <section className="py-10 sm:py-12">
         <NewsletterSignup variant="expanded" context="home-bottom" />
       </section>
+
+      </div>
+      </div>
     </div>
   );
 }

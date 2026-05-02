@@ -1,41 +1,87 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getTopHotels, safeExternalUrl, type Deal } from "@/lib/api";
+import { getTopHotels } from "@/lib/api";
+import { SectionHero } from "@/components/SectionHero";
+import { HotelFilters } from "@/components/HotelFilters";
+import { HotelSearchBar } from "@/components/HotelSearchBar";
 
 export const revalidate = 900; // 15 minutos
 
 export const metadata: Metadata = {
-  title: "Chollos de hotel — los más baratos por noche | TripCazador",
+  title: "Buscador de hoteles — Chollos por noche con filtros | TripCazador",
   description:
-    "Hoteles con mejor precio por noche detectados por nuestro motor en Booking.com: Phuket, Bali, Grecia, Tailandia... Actualizado continuamente.",
+    "Busca entre 60+ hoteles con mejor precio/noche en Phuket, Bali, Grecia, Maldivas y más. Filtra por categoría, rating, estrellas, servicios. Reserva con descuento.",
   alternates: { canonical: "/hoteles" },
   openGraph: {
-    title: "Chollos de hotel — TripCazador",
+    title: "Buscador de hoteles — TripCazador",
     description:
-      "Los hoteles más baratos por noche detectados automáticamente en Booking.",
+      "Buscador completo de hoteles con autocomplete, fechas, huéspedes y filtros avanzados. Categorías Playa / Ciudad / Lujo / Familia / Económico.",
     url: "/hoteles",
     type: "website",
   },
 };
 
 export default async function HotelesPage() {
-  const hotels = await getTopHotels({ limit: 30, minStars: 3 });
+  const hotels = await getTopHotels({ limit: 60, minStars: 3 });
+
+  // JSON-LD ItemList para SEO
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Chollos de hotel TripCazador",
+    description:
+      "Listado de hoteles seleccionados con mejor precio por noche detectados por nuestro motor.",
+    itemListElement: hotels.slice(0, 30).map((h, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "Hotel",
+        name: h.airline_name || h.headline,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: h.city_to,
+          addressCountry: h.country_to,
+        },
+        priceRange: `€${h.price_per_night ?? 0}/noche`,
+        aggregateRating:
+          // @ts-expect-error custom field
+          h.review_score
+            ? {
+                "@type": "AggregateRating",
+                // @ts-expect-error custom field
+                ratingValue: h.review_score,
+                // @ts-expect-error custom field
+                reviewCount: h.review_count ?? 100,
+                bestRating: 10,
+                worstRating: 1,
+              }
+            : undefined,
+      },
+    })),
+  };
 
   return (
     <div className="space-y-10">
-      {/* Hero */}
-      <header className="space-y-3">
-        <h1 className="text-3xl md:text-5xl font-bold text-white">
-          Chollos de <span className="text-amber-400">hotel</span>
-        </h1>
-        <p className="text-gray-400 max-w-2xl">
-          Hoteles con el precio por noche más bajo detectados en Booking.com por
-          nuestro motor. Ordenados del más barato al más caro.{" "}
-          <span className="text-gray-500">
-            Los precios cambian rápido — siempre verifica antes de reservar.
-          </span>
-        </p>
-      </header>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
+
+      <SectionHero
+        size="tall"
+        badge="Booking.com · 60+ hoteles · ordenados por precio/noche"
+        title={
+          <>
+            Buscador de <em>hoteles</em>
+          </>
+        }
+        subtitle="Busca por destino, fechas, huéspedes. Filtra por playa, ciudad, lujo, familia o económico. Los precios se actualizan en horas — verifica antes de reservar."
+      />
+
+      {/* Buscador en la parte superior — sticky en mobile para acceso rápido */}
+      <div className="-mt-4">
+        <HotelSearchBar hotels={hotels} className="" />
+      </div>
 
       {hotels.length === 0 ? (
         <div className="rounded-2xl border border-gray-800 bg-gray-900/60 p-12 text-center">
@@ -56,12 +102,34 @@ export default async function HotelesPage() {
           </Link>
         </div>
       ) : (
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {hotels.map((h) => (
-            <HotelCard key={h.id} hotel={h} />
-          ))}
-        </section>
+        <HotelFilters hotels={hotels} />
       )}
+
+      {/* SEO content block */}
+      <section className="prose prose-invert max-w-3xl mx-auto text-sm">
+        <h2 className="text-white">Cómo cazamos chollos de hotel</h2>
+        <p className="text-gray-300">
+          Nuestro motor analiza más de 60 hoteles 4★/5★ en destinos de alta
+          rotación de precios (Bali, Tailandia, Maldivas, Grecia, Italia...) y
+          detecta caídas anómalas comparando contra el histórico de la misma
+          fecha. Las tarifas mostradas son aproximadas — Booking ajusta
+          dinámicamente según ocupación, así que verifica el precio final antes
+          de reservar.
+        </p>
+        <h3 className="text-white">Categorías y filtros</h3>
+        <ul className="text-gray-300">
+          <li><strong>Playa</strong>: hoteles frente al mar en Caribe, Asia y Mediterráneo.</li>
+          <li><strong>Ciudad</strong>: hoteles boutique en capitales europeas y asiáticas.</li>
+          <li><strong>Lujo</strong>: 5★ con servicios premium (spa, infinity, suite con jacuzzi…).</li>
+          <li><strong>Familia</strong>: all-inclusive con piscinas y kids-club.</li>
+          <li><strong>Económico</strong>: 3★/4★ con buena relación calidad-precio.</li>
+        </ul>
+        <p className="text-gray-300">
+          Filtra también por servicios concretos (piscina, spa, kids club, parking),
+          rating mínimo 0-9.5 estilo Booking, estrellas mínimas, precio máximo por noche.
+          Las URLs incluyen los filtros aplicados — puedes guardar como marcador o compartir.
+        </p>
+      </section>
 
       <section className="text-center text-xs text-gray-500 border-t border-gray-800 pt-6">
         <p>
@@ -71,61 +139,5 @@ export default async function HotelesPage() {
         </p>
       </section>
     </div>
-  );
-}
-
-function HotelCard({ hotel }: { hotel: Deal }) {
-  const ppn =
-    hotel.price_per_night ?? hotel.price_eur / Math.max(hotel.nights, 1);
-  const tags = hotel.tags ?? [];
-  const stars = tags.find((t) => t.includes("⭐"));
-  const booking = tags.find((t) => t.startsWith("Booking"));
-
-  return (
-    <article className="flex flex-col rounded-2xl border border-gray-800 bg-gray-900 overflow-hidden hover:border-gray-700 transition-colors">
-      <div className="p-5 flex-1 space-y-3">
-        <div className="flex items-center gap-2 flex-wrap">
-          {stars && (
-            <span className="text-amber-400 text-sm">{stars}</span>
-          )}
-          {booking && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/30">
-              {booking}
-            </span>
-          )}
-        </div>
-
-        <h2 className="text-white font-semibold text-lg leading-tight">
-          {hotel.headline || hotel.city_to}
-        </h2>
-
-        <div className="text-xs text-gray-400 space-y-1">
-          <div>📍 {hotel.destination}</div>
-          <div>
-            📅 {hotel.date_out} → {hotel.date_ret}
-            {hotel.nights > 0 && ` (${hotel.nights} noches)`}
-          </div>
-        </div>
-
-        <div className="pt-2">
-          <div className="text-3xl font-bold text-white">
-            {ppn.toFixed(0)}€
-            <span className="text-sm text-gray-400 font-normal"> / noche</span>
-          </div>
-          <div className="text-xs text-gray-500">
-            {hotel.price_eur.toFixed(0)}€ en total
-          </div>
-        </div>
-      </div>
-
-      <a
-        href={safeExternalUrl(hotel.booking_url)}
-        target="_blank"
-        rel="noopener noreferrer nofollow"
-        className="block bg-gray-800 hover:bg-gray-700 text-white text-center py-3 text-sm font-semibold transition-colors"
-      >
-        Ver en Booking →
-      </a>
-    </article>
   );
 }

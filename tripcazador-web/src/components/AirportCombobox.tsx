@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef, useId } from "react";
-import { fuzzySearchAirports, AirportEntry, getAirportByIata } from "@/lib/airports_catalog";
+import {
+  fuzzySearchAirports,
+  fuzzySearchAirportsAll,
+  loadBulkAirports,
+  isBulkAirportsLoaded,
+  AirportEntry,
+  getAirportByIata,
+} from "@/lib/airports_catalog";
 
 interface Props {
   label: string;
@@ -39,6 +46,7 @@ export function AirportCombobox({ label, value, onChange, placeholder, required,
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState(0);
   const [results, setResults] = useState<AirportEntry[]>([]);
+  const [bulkReady, setBulkReady] = useState(() => isBulkAirportsLoaded());
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -49,12 +57,27 @@ export function AirportCombobox({ label, value, onChange, placeholder, required,
       }
     }
     document.addEventListener("mousedown", onClickOutside);
+
+    // DDD1: precarga del bulk catalog en background tras render. Idempotente.
+    // Si el user empieza a escribir antes de que cargue, ve resultados curated;
+    // cuando bulk carga, re-renderea con resultados extendidos.
+    if (!isBulkAirportsLoaded()) {
+      // Pequeño delay para no competir con el FCP
+      const t = setTimeout(() => {
+        loadBulkAirports().then(() => setBulkReady(true)).catch(() => {});
+      }, 800);
+      return () => {
+        clearTimeout(t);
+        document.removeEventListener("mousedown", onClickOutside);
+      };
+    }
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
   function handleInput(q: string) {
     setText(q);
-    const r = fuzzySearchAirports(q, 18);
+    // Si bulk ya está cargado usar versión extendida; si no, curated only
+    const r = bulkReady ? fuzzySearchAirportsAll(q, 18) : fuzzySearchAirports(q, 18);
     setResults(r);
     setOpen(r.length > 0);
     setHover(0);

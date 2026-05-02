@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getAllPosts, getAllTagsWithCounts } from "@/lib/blog";
 import { JsonLd } from "@/components/JsonLd";
+import { SectionHero } from "@/components/SectionHero";
 
 export const metadata: Metadata = {
   title: "Blog — Guías, estrategias y análisis de chollos de vuelo",
@@ -63,18 +64,21 @@ export default function BlogIndexPage() {
   return (
     <div className="space-y-10">
       <JsonLd data={jsonLd} />
+
+      {/* fase vv VV6 — Hero sky */}
+      <SectionHero
+        size="tall"
+        badge={`${posts.length} artículos publicados`}
+        title={
+          <>
+            Guías y <em>estrategias</em>
+          </>
+        }
+        subtitle="Todo lo que hemos aprendido monitorizando tarifas 24/7 desde hubs europeos. Sin IA generativa, sin clickbait."
+      />
+
       <header className="space-y-4">
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <a href="/" className="hover:text-white">
-            Inicio
-          </a>
-          <span>/</span>
-          <span className="text-white">Blog</span>
-        </div>
-        <h1 className="text-4xl font-bold text-white">Blog TripCazador</h1>
-        <p className="text-gray-400 max-w-2xl text-lg">
-          Guías en profundidad, estrategias que funcionan y análisis de destinos. Todo lo que hemos aprendido monitorizando tarifas 24/7 desde Basel, Zúrich, Frankfurt, Múnich, París y Ámsterdam.
-        </p>
+        {/* Breadcrumb textual eliminado en VV11 (el hero ya da contexto). */}
         <div className="flex items-center gap-3 text-sm text-gray-500">
           <span>{posts.length} artículos publicados</span>
           <span className="text-gray-700">·</span>

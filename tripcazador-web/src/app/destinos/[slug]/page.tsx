@@ -1,8 +1,15 @@
 import { getDeals } from "@/lib/api";
 import { DealCard } from "@/components/DealCard";
+import { HotelCard } from "@/components/HotelCard";
 import { JsonLd } from "@/components/JsonLd";
+import { getHotelSeedFallback } from "@/lib/hotel_seed";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { GetYourGuideWidget } from "@/components/GetYourGuideWidget";
+import { EsimBanner } from "@/components/EsimBanner";
+import { TravelInsuranceCTA } from "@/components/TravelInsuranceCTA";
+import { TravelToolkit } from "@/components/TravelToolkit";
 
 // Datos de destinos (se puede mover a una BD/CMS)
 const DESTINATIONS: Record<string, {
@@ -625,6 +632,16 @@ export default async function DestinationPage({
 
         <p className="text-gray-300 text-lg max-w-3xl">{dest.description}</p>
 
+        {/* KKK2+KKK3 — Monetización: tours + eSIM */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-2">
+          <div className="lg:col-span-2">
+            <GetYourGuideWidget city={dest.name} destinationIata={undefined} />
+          </div>
+          <div>
+            <EsimBanner countryName={dest.country.split(",")[0]} />
+          </div>
+        </div>
+
         {/* Info rápida */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
@@ -665,6 +682,42 @@ export default async function DestinationPage({
         )}
       </section>
 
+      {/* Hoteles del destino */}
+      {(() => {
+        // Match por ciudad o país aproximado (slug → entries)
+        const destHotels = getHotelSeedFallback({ limit: 6, minStars: 3 })
+          .filter((h) => {
+            const cityLower = (h.city_to ?? "").toLowerCase();
+            const countryLower = (h.country_to ?? "").toLowerCase();
+            const destName = dest.name.toLowerCase();
+            return (
+              cityLower.includes(destName) ||
+              destName.includes(cityLower) ||
+              countryLower.includes(destName) ||
+              destName.includes(countryLower)
+            );
+          })
+          .slice(0, 3);
+        if (destHotels.length === 0) return null;
+        return (
+          <section>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">
+                🏨 Hoteles seleccionados en {dest.name}
+              </h2>
+              <Link href="/hoteles" className="text-amber-400 hover:text-amber-300 text-sm font-semibold">
+                Ver todos →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {destHotels.map((h) => (
+                <HotelCard key={h.id} hotel={h} />
+              ))}
+            </div>
+          </section>
+        );
+      })()}
+
       {/* Guía / Tips */}
       <section className="bg-gray-900 rounded-2xl p-8 border border-gray-800">
         <h2 className="text-xl font-bold text-white mb-4">
@@ -679,6 +732,16 @@ export default async function DestinationPage({
           ))}
         </ul>
       </section>
+
+      {/* LLL2 — Travel toolkit (4 partners) + insurance separado al final */}
+      <TravelToolkit
+        variant="destination"
+        city={dest.name}
+        country={dest.country.split(",")[0]}
+      />
+
+      {/* KKK4 — Travel insurance CTA al final con destination context */}
+      <TravelInsuranceCTA destination={dest.name} variant="expanded" />
     </div>
   );
 }

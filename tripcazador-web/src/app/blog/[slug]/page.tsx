@@ -10,6 +10,7 @@ import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 import { JsonLd } from "@/components/JsonLd";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { RelatedPosts } from "@/components/RelatedPosts";
+import { TravelInsuranceCTA } from "@/components/TravelInsuranceCTA";
 
 type Params = { slug: string };
 
@@ -225,6 +226,9 @@ export default function BlogPostPage({ params }: { params: Params }) {
             context={`blog-${params.slug}`}
           />
         </div>
+        {/* KKK4 — Travel insurance affiliate CTA en blog footer. Lector ya
+            está en intent de viaje, alta conversion. */}
+        <TravelInsuranceCTA variant="compact" />
         {/* abr-2026x: Related posts (top-3 by tag overlap). Mejora dwell
             time + internal linking semántico. */}
         <RelatedPosts slug={params.slug} localePrefix="" />

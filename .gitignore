@@ -73,3 +73,8 @@ htmlcov/
 
 # Next.js typecheck cache
 tripcazador-web/tsconfig.tsbuildinfo
+
+# Test artifacts
+playwright-report/
+test-results/
+
