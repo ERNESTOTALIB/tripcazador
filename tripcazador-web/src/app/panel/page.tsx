@@ -3,12 +3,36 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { verifyToken, COOKIE_KEY } from "@/lib/panel_auth";
 import { PanelDashboard } from "@/components/PanelDashboard";
+import { PanelLogoutButton } from "@/components/PanelLogoutButton";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+export const metadata = {
+  title: "Panel — TripCazador",
+  robots: "noindex,nofollow",
+};
+
+/**
+ * /panel — fase tt-TT3 (refactor robusto)
+ *
+ * Bug previo: pantalla blanca tras login. Root cause sospechado:
+ *  - Client component <form> con <button onClick={preventDefault}> causaba
+ *    React hydration error → Next devolvía error boundary default vacía.
+ *  - O bug en server component al hacer cookies().get() bajo dynamic render.
+ *
+ * Fix: try/catch defensivo en server, logout button extracted client component,
+ * fallback UI si verifyToken throws.
+ */
 export default function PanelPage() {
-  const session = verifyToken(cookies().get(COOKIE_KEY)?.value);
+  let session;
+  try {
+    session = verifyToken(cookies().get(COOKIE_KEY)?.value);
+  } catch (err) {
+    // Si verifyToken throws (config issue), forzar a login en vez de blanca
+    console.error("[/panel] verifyToken error:", err);
+    redirect("/panel/login");
+  }
   if (!session) {
     redirect("/panel/login");
   }
@@ -23,25 +47,30 @@ export default function PanelPage() {
               Sesión: {session.user}
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <nav className="flex items-center gap-3">
+            <Link
+              href="/panel/concierge"
+              className="text-xs text-amber-400 hover:text-amber-300 font-semibold"
+            >
+              Concierge €19
+            </Link>
+            <Link
+              href="/panel/share"
+              className="text-xs text-gray-400 hover:text-amber-300"
+            >
+              Share kit
+            </Link>
+            <Link
+              href="/panel/outreach"
+              className="text-xs text-gray-400 hover:text-amber-300"
+            >
+              Outreach
+            </Link>
             <Link href="/" className="text-xs text-gray-400 hover:text-amber-300">
               ← Ir al sitio
             </Link>
-            <form action="/api/panel/logout" method="POST" className="inline">
-              <button
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  fetch("/api/panel/logout", { method: "POST" }).then(() => {
-                    window.location.href = "/panel/login";
-                  });
-                }}
-                className="text-xs text-red-400 hover:text-red-300 underline-offset-2 hover:underline"
-              >
-                Cerrar sesión
-              </button>
-            </form>
-          </div>
+            <PanelLogoutButton />
+          </nav>
         </div>
       </header>
 

@@ -9,6 +9,8 @@ import { COMPARISONS } from "@/lib/comparisons";
 import { REGIONS } from "@/lib/regions";
 import { MONTHS } from "@/lib/months";
 import { MONTHLY_ROUTES } from "@/lib/monthly_prices";
+import { getHotelEntries } from "@/lib/hotel_seed";
+import { PARTNERS } from "@/lib/travel_partners";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -125,6 +127,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     { url: `${BASE_URL}/telegram`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/legal`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    // ppp PPP1: nuevas landing pages monetización
+    { url: `${BASE_URL}/concierge`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE_URL}/comparar-vuelos`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${BASE_URL}/como-viajar`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
   ];
 
   const destinoPages: MetadataRoute.Sitemap = DESTINOS.map((slug) => ({
@@ -132,6 +138,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.8,
+  }));
+
+  // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
+  const comoViajarPages: MetadataRoute.Sitemap = PARTNERS.map((p) => ({
+    url: `${BASE_URL}/como-viajar/${p.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
   }));
 
   // abr-2026k: lastmod REAL desde mtime del MDX. Antes usábamos `now` para
@@ -373,9 +387,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // YY4: hotel detail pages (60+ entries con imagen + rating + booking)
+  const hotelPages: MetadataRoute.Sitemap = getHotelEntries().map((h) => ({
+    url: `${BASE_URL}/hoteles/${h.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.65,
+  }));
+
   return [
     ...staticPages,
     ...destinoPages,
+    ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
     ...enTagPages,
@@ -387,6 +410,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...monthPages,
     monthlyPriceIndex,
     ...monthlyPriceRoutes,
+    ...hotelPages,
     ...feedPages,
     ...dealPages,
   ];

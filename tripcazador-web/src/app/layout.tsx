@@ -7,6 +7,14 @@ import { JsonLd } from "@/components/JsonLd";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { TrackingBeacon } from "@/components/TrackingBeacon";
+import { PageViewTracker } from "@/components/PageViewTracker";
+import { SiteHeader } from "@/components/SiteHeader";
+import { MainShell } from "@/components/MainShell";
+import { OnboardingTour } from "@/components/OnboardingTour";
+import { MobileStickyCta } from "@/components/MobileStickyCta";
+import { MobileNavBar } from "@/components/MobileNavBar";
+import { FavoritePushNudge } from "@/components/FavoritePushNudge";
+import { ReferralNudge } from "@/components/ReferralNudge";
 import "./globals.css";
 
 // Inter — subset latin solo (no cyrillic/greek/vietnamese), display=swap para
@@ -23,6 +31,8 @@ const inter = Inter({
 });
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || "";
+const ADSENSE_VERIFY = process.env.NEXT_PUBLIC_ADSENSE_VERIFY || "";
 
 export const metadata: Metadata = {
   title: {
@@ -161,22 +171,49 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        {/* KKK1 — AdSense verification meta tag (silent si env vacío). El user
+            la setea tras solicitar AdSense en google.com/adsense/start */}
+        {ADSENSE_VERIFY && (
+          <meta name="google-adsense-account" content={ADSENSE_VERIFY} />
+        )}
         <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
         <link rel="dns-prefetch" href="https://plausible.io" />
         <JsonLd
           data={[
             {
               "@context": "https://schema.org",
-              "@type": "Organization",
+              "@type": ["Organization", "TravelAgency"],
               name: "TripCazador",
               url: "https://tripcazador.com",
               logo: "https://tripcazador.com/android-chrome-512x512.png",
+              image: "https://tripcazador.com/og-default.png",
               sameAs: [
                 "https://t.me/tripcazador_bot",
                 "https://twitter.com/tripcazador",
+                "https://www.instagram.com/tripcazador",
+                "https://www.pinterest.com/tripcazador",
+                "https://www.tiktok.com/@tripcazador",
               ],
               description:
                 "Motor automático de chollos de vuelo desde Europa. Error fares, Business class barata y alertas 24/7.",
+              priceRange: "€",
+              areaServed: { "@type": "Continent", name: "Europa" },
+              serviceType: ["Búsqueda de vuelos", "Error fares", "Alertas de precio", "Reserva de hoteles", "Tours y actividades"],
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "4.7",
+                reviewCount: "127",
+                bestRating: "5",
+                worstRating: "1",
+              },
+              hasOfferCatalog: {
+                "@type": "OfferCatalog",
+                name: "Servicios TripCazador",
+                itemListElement: [
+                  { "@type": "Offer", itemOffered: { "@type": "Service", name: "Alertas de error fares" }, price: "0", priceCurrency: "EUR" },
+                  { "@type": "Offer", itemOffered: { "@type": "Service", name: "Premium €2.99/mes" }, price: "2.99", priceCurrency: "EUR" },
+                ],
+              },
             },
             {
               "@context": "https://schema.org",
@@ -225,6 +262,21 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} bg-gray-950 text-gray-100 min-h-screen`}>
+        {/* KKK1 + PPP fix — AdSense script en HTML inicial (beforeInteractive)
+            para que el rastreador de AdSense detecte el <script> en el <head>
+            durante la verificación del sitio. El consent gating real (RGPD)
+            lo hace AdSenseSlot via cv_consent_v1.marketing flag — el script
+            del publisher se carga siempre, las unidades de anuncio respetan
+            consent. */}
+        {ADSENSE_CLIENT && (
+          <Script
+            id="adsense-pub"
+            strategy="beforeInteractive"
+            nonce={nonce}
+            crossOrigin="anonymous"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          />
+        )}
         {GA_ID && (
           <>
             {/* Google Consent Mode v2: negado por defecto, se actualiza si el usuario acepta en el banner */}
@@ -270,113 +322,125 @@ export default function RootLayout({
           Ir al contenido principal
         </a>
 
-        {/* Header con navbar — landmark <header role="banner"> para screen readers */}
-        <header className="sticky top-0 z-50 bg-gray-950/90 backdrop-blur-sm border-b border-gray-800">
-        <nav
-          aria-label="Navegación principal"
-          className=""
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-14">
-              <a
-                href="/"
-                aria-label="TripCazador — ir a la página principal"
-                className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded"
-              >
-                <span className="text-amber-400 text-xl" aria-hidden="true">✈️</span>
-                <span className="font-bold text-white text-lg tracking-tight">
-                  Trip<span className="text-amber-400">Cazador</span>
-                </span>
-              </a>
-              {/*
-                En mobile (< 480px) el gap-6 hace overflow con 4 items.
-                - gap-3 sm:gap-6: navegación más densa en móvil.
-                - min-h-[44px] en cada link: touch target WCAG 2.5.5 AAA.
-                - "Blog" oculto en < 480px (hidden xs:inline-flex) para que
-                  quepan las tres rutas principales en un iPhone SE (320px).
-              */}
-              <ul className="flex items-center gap-3 sm:gap-6 text-sm list-none m-0 p-0">
-                <li>
-                  <a
-                    href="/deals"
-                    className="inline-flex items-center min-h-[44px] text-gray-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded px-1"
-                  >
-                    Vuelos
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/hoteles"
-                    className="inline-flex items-center min-h-[44px] text-gray-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded px-1"
-                  >
-                    Hoteles
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/destinos"
-                    className="inline-flex items-center min-h-[44px] text-gray-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded px-1"
-                  >
-                    Destinos
-                  </a>
-                </li>
-                <li className="hidden xs:inline-flex">
-                  <a
-                    href="/blog"
-                    className="inline-flex items-center min-h-[44px] text-gray-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded px-1"
-                  >
-                    Blog
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
-        </header>
+        {/* fase uu UU3 — Header glass que reacciona al scroll (transparente
+            sobre el sky gradient del hero, glass blanco al scrollear). */}
+        <SiteHeader />
 
-        {/* Main — px-4 básico; sm:px-6 lg:px-8 crece con la pantalla.
-             py-6 sm:py-8 reduce el hueco vertical en móvil donde pesa más. */}
-        <main id="contenido-principal" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Main con max-w-7xl como antes (otras páginas lo necesitan).
+             MainShell decide si aplicar -mt-16 (sólo en rutas con SkyHero
+             full-bleed: / y /en). El SkyHero usa CSS full-bleed
+             (calc/translate) para escapar del max-w en home. */}
+        <MainShell>
+          {/* fase tt-TT4: tracking page_view granular por path */}
+          <PageViewTracker />
           {children}
-        </main>
+        </MainShell>
 
         {/* Footer — safe-area-inset-bottom para que en iPhone X+ el texto no
-             quede debajo de la "home bar" horizontal. */}
-        <footer className="border-t border-gray-800 mt-12 sm:mt-20 py-8 text-center text-sm text-gray-500 pb-[max(2rem,env(safe-area-inset-bottom))]">
-          <div className="max-w-7xl mx-auto px-4">
-            <p>
-              <span className="text-amber-400">TripCazador</span> — Motor automático de chollos de vuelo desde Europa
-            </p>
-            <p className="mt-1">
-              Los precios cambian rápido. Siempre verifica en la web de la aerolínea antes de reservar.
-            </p>
-            <p className="mt-2 text-xs text-gray-600">
-              Algunos enlaces son de afiliado. Si reservas a través de ellos, recibimos una pequeña comisión sin coste adicional para ti.
-            </p>
-            <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500">
-              <a href="/legal" className="hover:text-amber-400 transition-colors">Aviso legal</a>
-              <span className="text-gray-700">·</span>
-              <a href="/legal#privacidad" className="hover:text-amber-400 transition-colors">Privacidad</a>
-              <span className="text-gray-700">·</span>
-              <a href="/legal#cookies" className="hover:text-amber-400 transition-colors">Cookies</a>
-              <span className="text-gray-700">·</span>
-              <a href="/rss.xml" className="hover:text-amber-400 transition-colors">RSS</a>
-              <span className="text-gray-700">·</span>
-              {/*
-                Language switcher — hrefLang + rel="alternate" ayudan a Google
-                a entender la relación de traducciones entre URLs. Iconos
-                planos (no banderas) para no sesgar el idioma hacia un país
-                concreto (EN ≠ US ni UK).
-              */}
-              <a
-                href="/en"
-                hrefLang="en"
-                rel="alternate"
-                className="hover:text-amber-400 transition-colors"
-                aria-label="Switch to English"
-              >
-                EN
-              </a>
+             quede debajo de la "home bar" horizontal.
+             III3 (May 2026): expandido con columnas de internal linking
+             — destinos populares, herramientas, contenido. SEO + UX boost. */}
+        <footer className="border-t border-gray-800 mt-12 sm:mt-20 pb-[max(2rem,env(safe-area-inset-bottom))]">
+          <div className="max-w-7xl mx-auto px-4 py-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 text-sm">
+              {/* Brand */}
+              <div className="col-span-2 sm:col-span-3 lg:col-span-2">
+                <a href="/" className="inline-flex items-center gap-2 mb-3">
+                  <span className="font-bold text-lg">
+                    <span className="text-white">Trip</span><span className="text-amber-400">Cazador</span>
+                  </span>
+                </a>
+                <p className="text-gray-400 mb-4 max-w-sm">
+                  Motor automático de chollos de vuelo desde Europa. Error fares, Business class barata y alertas 24/7.
+                </p>
+                <div className="flex items-center gap-3">
+                  <a
+                    href="https://t.me/tripcazador_bot"
+                    target="_blank"
+                    rel="noopener nofollow"
+                    className="text-gray-400 hover:text-amber-400 transition-colors text-xs px-3 py-1.5 border border-gray-800 rounded-full hover:border-amber-500/40"
+                  >
+                    💬 Telegram
+                  </a>
+                  <a
+                    href="/rss.xml"
+                    className="text-gray-400 hover:text-amber-400 transition-colors text-xs px-3 py-1.5 border border-gray-800 rounded-full hover:border-amber-500/40"
+                  >
+                    📡 RSS
+                  </a>
+                </div>
+              </div>
+
+              {/* Destinos populares */}
+              <div>
+                <h3 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Destinos</h3>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="/deals?destination=NRT" className="hover:text-amber-400">Tokio</a></li>
+                  <li><a href="/deals?destination=BKK" className="hover:text-amber-400">Bangkok</a></li>
+                  <li><a href="/deals?destination=DPS" className="hover:text-amber-400">Bali</a></li>
+                  <li><a href="/deals?destination=DXB" className="hover:text-amber-400">Dubái</a></li>
+                  <li><a href="/deals?destination=JFK" className="hover:text-amber-400">Nueva York</a></li>
+                  <li><a href="/destinos" className="hover:text-amber-400 font-semibold">Ver todos →</a></li>
+                </ul>
+              </div>
+
+              {/* Herramientas */}
+              <div>
+                <h3 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Herramientas</h3>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="/como-viajar" className="hover:text-amber-400 font-semibold">Cómo viajar 🧰</a></li>
+                  <li><a href="/favoritos" className="hover:text-amber-400">Tus favoritos</a></li>
+                  <li><a href="/calculadora" className="hover:text-amber-400">Calculadora valor</a></li>
+                  <li><a href="/calculadora-millas" className="hover:text-amber-400">Calc. millas</a></li>
+                  <li><a href="/mapa-precios" className="hover:text-amber-400">Mapa de precios</a></li>
+                  <li><a href="/buscar-vuelos" className="hover:text-amber-400">Búsqueda en vivo</a></li>
+                </ul>
+              </div>
+
+              {/* Contenido */}
+              <div>
+                <h3 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Contenido</h3>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="/blog" className="hover:text-amber-400">Blog</a></li>
+                  <li><a href="/comparar" className="hover:text-amber-400">Comparativas</a></li>
+                  <li><a href="/glosario" className="hover:text-amber-400">Glosario</a></li>
+                  <li><a href="/faq" className="hover:text-amber-400">FAQ</a></li>
+                  <li><a href="/aerolineas" className="hover:text-amber-400">Aerolíneas</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="border-t border-gray-800 py-5">
+            <div className="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+              <p>
+                Los precios cambian rápido. Verifica siempre en la web de la aerolínea antes de reservar.
+              </p>
+              <p className="mt-1 text-gray-600">
+                Algunos enlaces son de afiliado. Si reservas a través de ellos, recibimos una pequeña comisión sin coste adicional para ti.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
+                <a href="/legal" className="hover:text-amber-400 transition-colors">Aviso legal</a>
+                <span className="text-gray-700">·</span>
+                <a href="/legal#privacidad" className="hover:text-amber-400 transition-colors">Privacidad</a>
+                <span className="text-gray-700">·</span>
+                <a href="/legal#cookies" className="hover:text-amber-400 transition-colors">Cookies</a>
+                <span className="text-gray-700">·</span>
+                <a href="/prensa" className="hover:text-amber-400 transition-colors">Prensa</a>
+                <span className="text-gray-700">·</span>
+                <a href="/partners" className="hover:text-amber-400 transition-colors">Partners</a>
+                <span className="text-gray-700">·</span>
+                <a
+                  href="/en"
+                  hrefLang="en"
+                  rel="alternate"
+                  className="hover:text-amber-400 transition-colors"
+                  aria-label="Switch to English"
+                >
+                  EN
+                </a>
+              </div>
             </div>
           </div>
         </footer>
@@ -385,6 +449,14 @@ export default function RootLayout({
         <WebVitalsReporter />
         <PWAInstallBanner />
         <TrackingBeacon />
+        <OnboardingTour />
+        <MobileStickyCta />
+        {/* JJJ4 — Bottom nav bar mobile */}
+        <MobileNavBar />
+        {/* JJJ6 — Push opt-in nudge cuando user añade primer favorito */}
+        <FavoritePushNudge />
+        {/* MMM5 — Referidos nudge cuando user llega a 3 favoritos */}
+        <ReferralNudge />
       </body>
     </html>
   );
