@@ -1,0 +1,40 @@
+name: Email Weekly Digest
+
+# Cron lunes 09:00 UTC (= 11:00 ES) — envía top 10 deals de la semana
+# a todos los suscriptores activos via Resend.
+#
+# Requiere: ADMIN_TOKEN secret.
+# Si RESEND_API_KEY no está configurado en Vercel env, el endpoint
+# devuelve 503 y este workflow falla (esperado hasta que se setee).
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger digest endpoint
+        id: send
+        run: |
+          STATUS=$(curl -s -o /tmp/digest.json -w "%{http_code}" \
+            -X POST "https://tripcazador.com/api/email/weekly-digest" \
+            -H "x-admin-token: ${{ secrets.ADMIN_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --max-time 60)
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          cat /tmp/digest.json | head -c 1000
+
+      - name: Notify Telegram on failure
+        if: steps.send.outputs.status != '200' && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MSG="⚠ Email digest weekly failed HTTP ${{ steps.send.outputs.status }}\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+            -d chat_id="$TELEGRAM_CHAT_ID" \
+            -d text="$MSG"

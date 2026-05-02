@@ -1,0 +1,94 @@
+name: Anomaly Detection — Hunter Health
+
+# Cron horario que verifica /api/health y /api/admin/hunters-health
+# y manda alerta Telegram al owner si detecta:
+#  - worker no ha corrido en >12h
+#  - deals_total = 0 por >2h consecutivas
+#  - backend FastAPI inalcanzable
+#
+# Uso: requiere TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID secrets.
+
+on:
+  schedule:
+    - cron: "15 * * * *"  # cada hora :15
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe backend health
+        id: probe
+        run: |
+          set -e
+          STATUS=$(curl -s -o /tmp/health.json -w "%{http_code}" \
+            "${{ vars.API_URL || 'https://api.tripcazador.com' }}/api/health" \
+            --max-time 10 || echo "000")
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          if [ "$STATUS" = "200" ]; then
+            DEALS=$(jq -r '.deals_count // 0' /tmp/health.json)
+            UPDATED_AT=$(jq -r '.deals_updated_at // ""' /tmp/health.json)
+            echo "deals=$DEALS" >> $GITHUB_OUTPUT
+            echo "updated_at=$UPDATED_AT" >> $GITHUB_OUTPUT
+          else
+            echo "deals=0" >> $GITHUB_OUTPUT
+            echo "updated_at=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Evaluate anomalies
+        id: eval
+        run: |
+          ALERTS=""
+          STATUS="${{ steps.probe.outputs.status }}"
+          DEALS="${{ steps.probe.outputs.deals }}"
+          UPDATED="${{ steps.probe.outputs.updated_at }}"
+
+          if [ "$STATUS" != "200" ]; then
+            ALERTS="$ALERTS\n⚠ Backend health endpoint HTTP $STATUS (esperado 200)"
+          fi
+
+          if [ "$DEALS" = "0" ]; then
+            ALERTS="$ALERTS\n⚠ deals_count=0 — worker no está produciendo resultados"
+          fi
+
+          if [ -n "$UPDATED" ]; then
+            UPDATED_TS=$(date -d "$UPDATED" +%s 2>/dev/null || echo 0)
+            NOW_TS=$(date +%s)
+            AGE_HOURS=$(( (NOW_TS - UPDATED_TS) / 3600 ))
+            if [ "$AGE_HOURS" -gt 12 ]; then
+              ALERTS="$ALERTS\n⚠ Última hunt cron hace ${AGE_HOURS}h (esperado <12h)"
+            fi
+          fi
+
+          echo "alerts=$ALERTS" >> $GITHUB_OUTPUT
+          if [ -n "$ALERTS" ]; then
+            echo "has_alerts=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_alerts=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify Telegram on anomaly
+        if: steps.eval.outputs.has_alerts == 'true' && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MSG="🚨 Hunter anomaly detected\n${{ steps.eval.outputs.alerts }}\n\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+            -d chat_id="$TELEGRAM_CHAT_ID" \
+            -d text="$(echo -e $MSG)"
+
+      - name: Summary
+        run: |
+          echo "## Hunter Health Check $(date -u +%Y-%m-%dT%H:%MZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend HTTP: ${{ steps.probe.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Deals count: ${{ steps.probe.outputs.deals }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Last update: ${{ steps.probe.outputs.updated_at }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Has alerts: ${{ steps.eval.outputs.has_alerts }}" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ steps.eval.outputs.alerts }}" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Alerts" >> $GITHUB_STEP_SUMMARY
+            echo "${{ steps.eval.outputs.alerts }}" >> $GITHUB_STEP_SUMMARY
+          fi
