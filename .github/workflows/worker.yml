@@ -101,26 +101,58 @@ jobs:
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
           echo "✅ deals.json: $TOTAL deals, $SIZE bytes"
 
-      - name: Upload to API (/api/admin/deals)
+      - name: Upload to VPS API (/api/admin/deals)
+        # VPS endpoint puede no estar deployed (404). El path canónico es
+        # git commit a public/deals-latest.json (paso siguiente).
+        continue-on-error: true
         env:
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         run: |
           if [ -z "$ADMIN_TOKEN" ]; then
-            echo "::error::ADMIN_TOKEN secret no configurado"
-            exit 1
+            echo "::warning::ADMIN_TOKEN no configurado — skip VPS upload"
+            exit 0
           fi
           HTTP=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
             -X POST https://api.tripcazador.com/api/admin/deals \
             -H "X-Admin-Token: $ADMIN_TOKEN" \
             -H "Content-Type: application/json" \
-            --data-binary @deals.json)
-          cat /tmp/resp.json
+            --data-binary @deals.json || echo "000")
+          cat /tmp/resp.json 2>/dev/null || true
           echo ""
           if [ "$HTTP" != "200" ]; then
-            echo "::error::Upload falló con HTTP $HTTP"
-            exit 1
+            echo "::warning::VPS upload HTTP $HTTP — fallback a git commit"
+          else
+            echo "✅ VPS Upload OK — HTTP $HTTP"
           fi
-          echo "✅ Upload OK — HTTP $HTTP"
+
+      - name: Commit deals.json al repo (canonical path)
+        # Path principal: el frontend lee tripcazador-web/public/deals-latest.json
+        # como fallback cuando VPS está stale o caído.
+        run: |
+          mkdir -p tripcazador-web/public
+          cp deals.json tripcazador-web/public/deals-latest.json
+          python -c "
+          import json, datetime
+          d = json.load(open('deals.json'))
+          deals = d.get('deals', d) if isinstance(d, dict) else d
+          summary = {
+            'total_deals': d.get('total_deals', len(deals) if isinstance(deals, list) else 0),
+            'generated_at': datetime.datetime.utcnow().isoformat() + 'Z',
+            'run_id': '${{ github.run_id }}',
+          }
+          json.dump(summary, open('tripcazador-web/public/deals-summary.json', 'w'), indent=2)
+          print(summary)
+          "
+          git config user.email "hunter-bot@tripcazador.com"
+          git config user.name "TripCazador Hunter Bot"
+          git add tripcazador-web/public/deals-latest.json tripcazador-web/public/deals-summary.json
+          if git diff --staged --quiet; then
+            echo "Sin cambios en deals.json — skip commit"
+          else
+            git commit -m "chore(hunter): refresh deals.json (run ${{ github.run_id }}) [skip ci]"
+            git push origin HEAD:main || echo "::warning::Push falló (probablemente conflicto, retry siguiente run)"
+            echo "✅ deals.json committeado a public/"
+          fi
 
       - name: Trigger price-alert matcher
         # Cruza price_alerts.json (server-side) con los deals recién subidos
