@@ -10,7 +10,7 @@ name: Anomaly Detection — Hunter Health
 
 on:
   schedule:
-    - cron: "15 * * * *"  # cada hora :15
+    - cron: "15 */6 * * *"  # cada 6 horas (00:15 06:15 12:15 18:15 UTC)
   workflow_dispatch:
 
 jobs:
