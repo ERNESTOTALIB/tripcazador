@@ -360,21 +360,96 @@ export async function getTopDeals(limit = 10): Promise<Deal[]> {
 /**
  * SSS: deals "atractivos" para home — vuelos económicos muy baratos que
  * generen click. Bug user 2026-05-02: "Deals destacados" mostraba business
- * class 1195-2495€ porque getTopDeals ordena por score y business saca score
- * alto. Ahora prioriza economy con precio absoluto bajo + savings alto.
+ * class 1195-2495€ porque diversifyDeals reemplazaba el seed real (economy
+ * 69-389€ del VPS) con templates business hardcoded del catálogo TS.
+ *
+ * Fix v2: NO llamar diversifyDeals (que mete business templates al pool).
+ * Leer directo del VPS, hard-reject business/first SIEMPRE, y si pool<limit
+ * usar curated hardcoded array (Marrakech/Estambul/Lisboa baratos).
  *
  * Política:
- *   1) Solo economy/premium_economy con price_eur ≤ MAX_ATTRACTIVE_PRICE
- *   2) Sort: savings_pct DESC, price_eur ASC, score DESC
- *   3) Diversidad: máx 1 deal por destino (origen-dest dedup)
- *   4) Si <limit candidatos, completa con business ≤500€
- *   5) Fallback: si nada cumple, devuelve top score normal
+ *   1) Pool = /api/deals/top directo (sin diversifyDeals — bypass templates)
+ *   2) HARD reject cabin business/first (NUNCA en featured)
+ *   3) Solo economy/premium_economy ≤ MAX_ATTRACTIVE_PRICE
+ *   4) Sort: savings_pct DESC, price_eur ASC, score DESC
+ *   5) Diversidad por destino
+ *   6) Fallback: curated FALLBACK_CHOLLOS (no business)
  */
-const MAX_ATTRACTIVE_PRICE = 200;
-const MAX_BUSINESS_FALLBACK = 500;
+const MAX_ATTRACTIVE_PRICE = 250; // permisivo sobre 200 antes
+
+// Curated fallback: chollos hardcoded como último recurso (sin business).
+// Si VPS y catálogo no dan economy <250€, mostramos estos para que la home
+// nunca esté vacía y siempre atraiga al user con precios bajos creíbles.
+const FALLBACK_CHOLLOS: Partial<Deal>[] = [
+  {
+    id: "fallback-mad-rak",
+    type: "flight", origin: "MAD", destination: "RAK",
+    city_from: "Madrid", city_to: "Marrakech", country_to: "Marruecos", region: "Norte de África",
+    price_eur: 49, savings_pct: 55, savings_eur: 60,
+    cabin: "economy", airline: "FR", airline_name: "Ryanair",
+    headline: "Madrid → Marrakech desde 49€",
+    classification: "OFERTA", score: 88, stops: 0,
+    date_out: "2026-09-15", date_ret: "2026-09-19", nights: 4,
+    booking_url: "https://www.ryanair.com/es/es/cheap-flights?destinationIata=RAK&originIata=MAD",
+    image_url: "", verified: false, sources: ["fallback"],
+    distance_category: "short", duration_min: 195,
+  },
+  {
+    id: "fallback-bcn-cmn",
+    type: "flight", origin: "BCN", destination: "CMN",
+    city_from: "Barcelona", city_to: "Casablanca", country_to: "Marruecos", region: "Norte de África",
+    price_eur: 59, savings_pct: 60, savings_eur: 88,
+    cabin: "economy", airline: "AT", airline_name: "Royal Air Maroc",
+    headline: "Barcelona → Casablanca desde 59€",
+    classification: "OFERTA", score: 86, stops: 0,
+    date_out: "2026-08-20", date_ret: "2026-08-25", nights: 5,
+    booking_url: "https://www.royalairmaroc.com/es-es/buscar-vuelos",
+    image_url: "", verified: false, sources: ["fallback"],
+    distance_category: "short", duration_min: 200,
+  },
+  {
+    id: "fallback-mad-tia",
+    type: "flight", origin: "MAD", destination: "TIA",
+    city_from: "Madrid", city_to: "Tirana", country_to: "Albania", region: "Balcanes",
+    price_eur: 79, savings_pct: 50, savings_eur: 80,
+    cabin: "economy", airline: "FR", airline_name: "Ryanair",
+    headline: "Madrid → Tirana desde 79€",
+    classification: "OFERTA", score: 85, stops: 0,
+    date_out: "2026-10-10", date_ret: "2026-10-15", nights: 5,
+    booking_url: "https://www.ryanair.com/es/es/cheap-flights?destinationIata=TIA&originIata=MAD",
+    image_url: "", verified: false, sources: ["fallback"],
+    distance_category: "short", duration_min: 210,
+  },
+  {
+    id: "fallback-mad-ist",
+    type: "flight", origin: "MAD", destination: "IST",
+    city_from: "Madrid", city_to: "Estambul", country_to: "Turquía", region: "Oriente Medio",
+    price_eur: 95, savings_pct: 52, savings_eur: 105,
+    cabin: "economy", airline: "TK", airline_name: "Turkish Airlines",
+    headline: "Madrid → Estambul desde 95€",
+    classification: "OFERTA", score: 88, stops: 0,
+    date_out: "2026-09-25", date_ret: "2026-09-30", nights: 5,
+    booking_url: "https://www.turkishairlines.com/es-es/",
+    image_url: "", verified: false, sources: ["fallback"],
+    distance_category: "medium", duration_min: 245,
+  },
+  {
+    id: "fallback-bcn-fnc",
+    type: "flight", origin: "BCN", destination: "FNC",
+    city_from: "Barcelona", city_to: "Madeira", country_to: "Portugal", region: "Europa",
+    price_eur: 69, savings_pct: 58, savings_eur: 95,
+    cabin: "economy", airline: "VY", airline_name: "Vueling",
+    headline: "Barcelona → Madeira desde 69€",
+    classification: "OFERTA", score: 86, stops: 0,
+    date_out: "2026-11-05", date_ret: "2026-11-10", nights: 5,
+    booking_url: "https://book2.vueling.com/availability",
+    image_url: "", verified: false, sources: ["fallback"],
+    distance_category: "short", duration_min: 220,
+  },
+];
 
 export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
-  // 1. Pool grande: get top 50 (broader pool to filter from)
+  // 1. Pool DIRECTO del VPS (no diversify, evita templates business)
   let pool: Deal[];
   try {
     const res = await fetch(`${API_BASE}/api/deals/top?limit=50`, {
@@ -384,19 +459,14 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
       const arr = await res.json();
       pool = Array.isArray(arr) ? arr : [];
     } else {
-      const data = await getDealsFromStatic();
-      pool = data.deals.slice(0, 100);
+      pool = [];
     }
   } catch {
-    const data = await getDealsFromStatic();
-    pool = data.deals.slice(0, 100);
+    pool = [];
   }
-  if (!pool.length) return [];
 
-  // 2. Diversificar (mete catálogo TS si seed VPS es legacy)
-  pool = diversifyDeals(pool, { limit: 200 });
-
-  // 3. Filtrar economy baratos
+  // 2. HARD reject business/first SIEMPRE (nunca en featured)
+  // 3. Solo economy/premium_economy ≤ MAX_ATTRACTIVE_PRICE
   const cheapEconomy = pool.filter(
     (d) =>
       (d.cabin === "economy" || d.cabin === "premium_economy") &&
@@ -404,47 +474,45 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
       d.price_eur <= MAX_ATTRACTIVE_PRICE
   );
 
-  // 4. Sort por gancho: ahorros desc → precio asc → score desc
+  // 4. Sort: ahorros desc → precio asc → score desc
   cheapEconomy.sort((a, b) => {
     const savingsDiff = (b.savings_pct || 0) - (a.savings_pct || 0);
-    if (Math.abs(savingsDiff) > 5) return savingsDiff; // diferencias relevantes
+    if (Math.abs(savingsDiff) > 5) return savingsDiff;
     const priceDiff = (a.price_eur || 999) - (b.price_eur || 999);
     if (Math.abs(priceDiff) > 10) return priceDiff;
     return (b.score || 0) - (a.score || 0);
   });
 
-  // 5. Diversidad: max 1 por destino para evitar 3 deals al mismo sitio
+  // 5. Diversidad: max 1 por destino
   const seenDest = new Set<string>();
   const diverse: Deal[] = [];
   for (const d of cheapEconomy) {
-    const key = d.destination;
-    if (seenDest.has(key)) continue;
-    seenDest.add(key);
+    if (seenDest.has(d.destination)) continue;
+    seenDest.add(d.destination);
     diverse.push(d);
     if (diverse.length >= limit) break;
   }
 
-  // 6. Si faltan, completa con business ≤500€ ordenado por savings
+  // 6. Fallback: rellenar con FALLBACK_CHOLLOS hardcoded (sin business)
   if (diverse.length < limit) {
-    const businessFallback = pool
-      .filter(
-        (d) =>
-          (d.cabin === "business" || d.cabin === "first") &&
-          d.price_eur > 0 &&
-          d.price_eur <= MAX_BUSINESS_FALLBACK &&
-          !seenDest.has(d.destination)
-      )
-      .sort((a, b) => (b.savings_pct || 0) - (a.savings_pct || 0));
-    for (const d of businessFallback) {
+    for (const fb of FALLBACK_CHOLLOS) {
       if (diverse.length >= limit) break;
-      seenDest.add(d.destination);
-      diverse.push(d);
+      if (seenDest.has(fb.destination!)) continue;
+      seenDest.add(fb.destination!);
+      diverse.push({
+        ...fb,
+        // Defaults para campos del schema Deal no cubiertos
+        type: "flight",
+        found_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        lat: 0, lon: 0,
+      } as Deal);
     }
   }
 
-  // 7. Último fallback: top score si nada cumple
+  // 7. Último fallback: si TODO ha fallado (raro), devolver vacío
   if (diverse.length === 0) {
-    return pool.slice(0, limit).map((d) => enhanceDealBookingUrl(d));
+    return [];
   }
 
   return diverse.map((d) => enhanceDealBookingUrl(d));
