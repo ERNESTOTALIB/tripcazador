@@ -496,6 +496,24 @@ h1, h2 {
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55), 0 0 24px rgba(251, 191, 36, 0.4);
 }
 
+/* SSS — badge ahorro en floating cards (-58%, ERROR, etc) */
+.sky-fc-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: #1a1a1a;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.sky-floatcard {
+  position: relative;
+}
+
 /* fase vv VV12 — floating cards con fondo más opaco para legibilidad sobre el sunset */
 .sky-floatcard {
   background: rgba(15, 23, 41, 0.42);

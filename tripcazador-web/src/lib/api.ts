@@ -357,6 +357,99 @@ export async function getTopDeals(limit = 10): Promise<Deal[]> {
   }
 }
 
+/**
+ * SSS: deals "atractivos" para home — vuelos económicos muy baratos que
+ * generen click. Bug user 2026-05-02: "Deals destacados" mostraba business
+ * class 1195-2495€ porque getTopDeals ordena por score y business saca score
+ * alto. Ahora prioriza economy con precio absoluto bajo + savings alto.
+ *
+ * Política:
+ *   1) Solo economy/premium_economy con price_eur ≤ MAX_ATTRACTIVE_PRICE
+ *   2) Sort: savings_pct DESC, price_eur ASC, score DESC
+ *   3) Diversidad: máx 1 deal por destino (origen-dest dedup)
+ *   4) Si <limit candidatos, completa con business ≤500€
+ *   5) Fallback: si nada cumple, devuelve top score normal
+ */
+const MAX_ATTRACTIVE_PRICE = 200;
+const MAX_BUSINESS_FALLBACK = 500;
+
+export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
+  // 1. Pool grande: get top 50 (broader pool to filter from)
+  let pool: Deal[];
+  try {
+    const res = await fetch(`${API_BASE}/api/deals/top?limit=50`, {
+      next: { revalidate: 300 },
+    });
+    if (res.ok) {
+      const arr = await res.json();
+      pool = Array.isArray(arr) ? arr : [];
+    } else {
+      const data = await getDealsFromStatic();
+      pool = data.deals.slice(0, 100);
+    }
+  } catch {
+    const data = await getDealsFromStatic();
+    pool = data.deals.slice(0, 100);
+  }
+  if (!pool.length) return [];
+
+  // 2. Diversificar (mete catálogo TS si seed VPS es legacy)
+  pool = diversifyDeals(pool, { limit: 200 });
+
+  // 3. Filtrar economy baratos
+  const cheapEconomy = pool.filter(
+    (d) =>
+      (d.cabin === "economy" || d.cabin === "premium_economy") &&
+      d.price_eur > 0 &&
+      d.price_eur <= MAX_ATTRACTIVE_PRICE
+  );
+
+  // 4. Sort por gancho: ahorros desc → precio asc → score desc
+  cheapEconomy.sort((a, b) => {
+    const savingsDiff = (b.savings_pct || 0) - (a.savings_pct || 0);
+    if (Math.abs(savingsDiff) > 5) return savingsDiff; // diferencias relevantes
+    const priceDiff = (a.price_eur || 999) - (b.price_eur || 999);
+    if (Math.abs(priceDiff) > 10) return priceDiff;
+    return (b.score || 0) - (a.score || 0);
+  });
+
+  // 5. Diversidad: max 1 por destino para evitar 3 deals al mismo sitio
+  const seenDest = new Set<string>();
+  const diverse: Deal[] = [];
+  for (const d of cheapEconomy) {
+    const key = d.destination;
+    if (seenDest.has(key)) continue;
+    seenDest.add(key);
+    diverse.push(d);
+    if (diverse.length >= limit) break;
+  }
+
+  // 6. Si faltan, completa con business ≤500€ ordenado por savings
+  if (diverse.length < limit) {
+    const businessFallback = pool
+      .filter(
+        (d) =>
+          (d.cabin === "business" || d.cabin === "first") &&
+          d.price_eur > 0 &&
+          d.price_eur <= MAX_BUSINESS_FALLBACK &&
+          !seenDest.has(d.destination)
+      )
+      .sort((a, b) => (b.savings_pct || 0) - (a.savings_pct || 0));
+    for (const d of businessFallback) {
+      if (diverse.length >= limit) break;
+      seenDest.add(d.destination);
+      diverse.push(d);
+    }
+  }
+
+  // 7. Último fallback: top score si nada cumple
+  if (diverse.length === 0) {
+    return pool.slice(0, limit).map((d) => enhanceDealBookingUrl(d));
+  }
+
+  return diverse.map((d) => enhanceDealBookingUrl(d));
+}
+
 // Fallback: carga deals-latest.json (worker commit) o deals.json (legacy) desde /public.
 // El worker GH Actions cron 6h committea deals reales (470 deals/run desde Travelpayouts)
 // a tripcazador-web/public/deals-latest.json. Cuando VPS está stale o caído, este path

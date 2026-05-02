@@ -1,12 +1,12 @@
 import { Suspense } from "react";
-import { getTopDeals, getDeals } from "@/lib/api";
+import { getTopDeals, getDeals, getAttractiveDeals } from "@/lib/api";
 import { DealCard } from "@/components/DealCard";
 // fase vv VV13: SearchBar legacy retirado del home (SkyHero ya cubre todo)
 import { DestinationCard } from "@/components/DestinationCard";
 import { Testimonials } from "@/components/Testimonials";
 import { JsonLd } from "@/components/JsonLd";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
-import { SkyHero } from "@/components/SkyHero";
+import { SkyHero, type FloatingDeal } from "@/components/SkyHero";
 import { TrendingNowWidget } from "@/components/TrendingNowWidget";
 import { RecentSearchesStrip } from "@/components/RecentSearchesStrip";
 import { MyFeedStrip } from "@/components/MyFeedStrip";
@@ -66,7 +66,15 @@ async function HeroStats() {
 }
 
 async function TopDeals() {
-  const deals = await getTopDeals(9);
+  // SSS: featured ahora prioriza atractivos baratos, no top score (que sacaba
+  // business 2495€). El resto siguen ordenados por score normal.
+  const [featured, restPool] = await Promise.all([
+    getAttractiveDeals(3),
+    getTopDeals(12),
+  ]);
+  // Quitar del rest los IDs ya en featured para evitar duplicados
+  const featuredIds = new Set(featured.map((d) => d.id));
+  const deals = [...featured, ...restPool.filter((d) => !featuredIds.has(d.id))].slice(0, 12);
   if (!deals || deals.length === 0) {
     return (
       <div className="panel text-center py-16 px-6">
@@ -191,7 +199,34 @@ const HOME_FAQ: Array<{ q: string; a: string }> = [
   },
 ];
 
+/**
+ * SSS: Genera floating cards reales para SkyHero a partir de deals
+ * atractivos. Cada card linka al booking_url DIRECTO (airline / Skyscanner)
+ * en nueva pestaña — bug user "ME LLEVA A DEAL, NO AL VUELO CONCRETO".
+ */
+async function buildHeroFloating(): Promise<FloatingDeal[]> {
+  try {
+    const deals = await getAttractiveDeals(6);
+    return deals.map((d) => {
+      const cabinTag = d.cabin === "business" || d.cabin === "first" ? " biz" : "";
+      const route = `${d.city_from || d.origin} → ${d.city_to || d.destination}${cabinTag}`;
+      const price = `${Math.round(d.price_eur)}€`;
+      const savingsBadge = d.savings_pct && d.savings_pct >= 30 ? `-${Math.round(d.savings_pct)}%` : undefined;
+      return {
+        route,
+        price,
+        href: d.booking_url || `/deals/${d.id}`,
+        external: !!(d.booking_url && d.booking_url.startsWith("http")),
+        badge: savingsBadge,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
 export default async function HomePage() {
+  const heroFloating = await buildHeroFloating();
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -255,7 +290,7 @@ export default async function HomePage() {
           Reemplaza el hero-map dark anterior. Sky gradient + searchbar
           glass + 3 floating deal cards translúcidas. El header se monta
           encima con backdrop transparent (transición a glass al scrollear). */}
-      <SkyHero />
+      <SkyHero floating={heroFloating} />
 
       {/* JJJ3 — Mi feed (silent si no hay favoritos guardados) */}
       <MyFeedStrip />

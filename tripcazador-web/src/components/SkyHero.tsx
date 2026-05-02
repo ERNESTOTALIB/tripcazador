@@ -19,18 +19,32 @@ import { useRouter } from "next/navigation";
 import { AirportCombobox } from "@/components/AirportCombobox";
 import { getBookingUrl } from "@/lib/airline_links";
 
-interface FloatingDeal {
+export interface FloatingDeal {
   route: string;
   price: string;
+  /** URL del deal/booking. Si externa abre en nueva pestaña, si interna router.push. */
+  href: string;
+  /** true → window.open externo (booking aerolínea/Skyscanner). false → /deals/{id} */
+  external?: boolean;
+  /** Badge opcional: "-58%", "ERROR" */
+  badge?: string;
 }
 
-const FLOATING: FloatingDeal[] = [
-  { route: "Madrid → Reikiavik", price: "119€" },
-  { route: "Madrid → Tokio business", price: "695€" },
-  { route: "BCN → Maldivas", price: "1.495€" },
+// Fallback si page.tsx no pasa floating (ej: build sin VPS). Si user los ve,
+// significa que el motor no devolvió deals < €200.
+const FLOATING_FALLBACK: FloatingDeal[] = [
+  { route: "Madrid → Reikiavik", price: "119€", href: "/deals?destination=KEF&max_price=200", external: false },
+  { route: "Barcelona → Marrakech", price: "49€", href: "/deals?destination=RAK&max_price=100", external: false },
+  { route: "Madrid → Estambul", price: "89€", href: "/deals?destination=IST&max_price=150", external: false },
 ];
 
-export function SkyHero({ deals_total = 50 }: { deals_total?: number }) {
+interface SkyHeroProps {
+  deals_total?: number;
+  floating?: FloatingDeal[];
+}
+
+export function SkyHero({ deals_total = 50, floating }: SkyHeroProps) {
+  const cards = floating && floating.length > 0 ? floating : FLOATING_FALLBACK;
   const router = useRouter();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
@@ -187,14 +201,20 @@ export function SkyHero({ deals_total = 50 }: { deals_total?: number }) {
           </div>
         </form>
 
-        {/* Floating deal cards */}
+        {/* Floating deal cards — 3-6 chollos reales (server props) */}
         <div className="sky-floating">
-          {FLOATING.map((d) => (
-            <Link href="/deals" key={d.route} className="sky-floatcard">
-              <span className="sky-fc-route">{d.route}</span>
-              <span className="sky-fc-price">{d.price}</span>
-            </Link>
-          ))}
+          {cards.map((d) => {
+            const linkProps = d.external
+              ? { href: d.href, target: "_blank" as const, rel: "noopener noreferrer" }
+              : { href: d.href };
+            return (
+              <Link {...linkProps} key={d.route + d.price} className="sky-floatcard">
+                <span className="sky-fc-route">{d.route}</span>
+                <span className="sky-fc-price">{d.price}</span>
+                {d.badge && <span className="sky-fc-badge">{d.badge}</span>}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
