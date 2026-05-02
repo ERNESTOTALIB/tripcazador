@@ -34,7 +34,7 @@ jobs:
           cache: "npm"
           cache-dependency-path: tripcazador-web/package-lock.json
       - name: Install
-        run: cd tripcazador-web && npm ci --no-audit --no-fund
+        run: cd tripcazador-web && npm install --legacy-peer-deps --no-audit --no-fund
       - name: npm audit (high+)
         run: |
           cd tripcazador-web
