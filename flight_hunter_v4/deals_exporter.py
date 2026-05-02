@@ -271,8 +271,17 @@ def filter_quality(deals: List[Dict], min_score: float = MIN_EXPORT_SCORE) -> Li
     - Sin fecha de salida
     - Deals expirados
     """
-    now = datetime.now().isoformat()
+    # RRR2 anti-stale: descartar deals que expiran en <24h (no solo expirados).
+    # Antes el filtro era `expires < now` (ya caducado). Ahora `expires < now+24h`
+    # evita que el frontend muestre "posiblemente caducado" en deals destacados,
+    # bug reportado por user en NN1 + ronda QQQ. 24h da margen para el
+    # próximo cron (cada 6h) para refrescar datos antes de que se hagan stale.
+    from datetime import timedelta
+    now = datetime.now()
+    now_iso = now.isoformat()
+    stale_cutoff = (now + timedelta(hours=24)).isoformat()
     filtered = []
+    stale_count = 0
     for d in deals:
         if d.get("price_eur", 0) <= 0:
             continue
@@ -282,11 +291,14 @@ def filter_quality(deals: List[Dict], min_score: float = MIN_EXPORT_SCORE) -> Li
             continue
         if d.get("final_score", 0) < min_score:
             continue
-        # Verificar expiración
+        # Verificar expiración (con margen de 24h)
         expires = d.get("expires_at", "")
-        if expires and expires < now:
+        if expires and expires < stale_cutoff:
+            stale_count += 1
             continue
         filtered.append(d)
+    if stale_count:
+        print(f"   🗑  filter_quality_deals: {stale_count} deals descartados por anti-stale (<24h)")
     return filtered
 
 

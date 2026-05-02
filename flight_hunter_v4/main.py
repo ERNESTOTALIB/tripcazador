@@ -413,9 +413,17 @@ async def run_pipeline(args):
             date_to=args.date_to,
             include_long_haul=True,
         )
+        # RRR1: Vueling re-añadido al UNION. Aunque Travelpayouts agrega Vueling,
+        # el deeplink de Vueling directo (book2.vueling.com) es preferible al
+        # partner link de Travelpayouts. Vueling cubre ~10% short-haul EU+ES.
+        vueling_task = VuelingEngine().search_multi_origins(
+            origins=origins,
+            date_from=args.date_from,
+            date_to=args.date_to,
+        )
 
         amadeus = AmadeusEngine()
-        tasks_parallel = [ryanair_task, tp_task]
+        tasks_parallel = [ryanair_task, tp_task, vueling_task]
         if amadeus.available:
             amadeus_task = amadeus.search_gds_deals(
                 origins=origins,
@@ -434,14 +442,15 @@ async def run_pipeline(args):
         parallel_results = await asyncio.gather(*tasks_parallel, return_exceptions=True)
         ryanair_res  = parallel_results[0]
         tp_res       = parallel_results[1]
-        idx = 2
+        vueling_res  = parallel_results[2]
+        idx = 3
         amadeus_res  = parallel_results[idx] if amadeus.available and len(parallel_results) > idx else []
         if amadeus.available:
             idx += 1
         biz_res      = parallel_results[idx] if include_business and len(parallel_results) > idx else []
 
         combined = []
-        for res in [ryanair_res, tp_res, amadeus_res, biz_res]:
+        for res in [ryanair_res, tp_res, vueling_res, amadeus_res, biz_res]:
             if isinstance(res, list):
                 combined.extend(res)
 
