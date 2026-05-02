@@ -357,7 +357,10 @@ export async function getTopDeals(limit = 10): Promise<Deal[]> {
   }
 }
 
-// Fallback: carga el deals.json estático en /public
+// Fallback: carga deals-latest.json (worker commit) o deals.json (legacy) desde /public.
+// El worker GH Actions cron 6h committea deals reales (470 deals/run desde Travelpayouts)
+// a tripcazador-web/public/deals-latest.json. Cuando VPS está stale o caído, este path
+// sirve los deals reales. Estructura: { total_deals, deals: [...], stats: {...} } ó array.
 async function getDealsFromStatic(): Promise<DealsResponse> {
   const emptyResponse: DealsResponse = {
     schema_version: "4.1",
@@ -371,13 +374,39 @@ async function getDealsFromStatic(): Promise<DealsResponse> {
     deals: [],
   };
 
-  try {
-    const res = await fetch("/deals.json", { cache: "no-store" });
-    if (!res.ok) return emptyResponse;
-    return res.json();
-  } catch {
-    return emptyResponse;
+  // En SSR (server), construir URL absoluta — fetch relativo no funciona server-side.
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
+  // Intenta primero deals-latest.json (path canónico del worker), luego deals.json (legacy).
+  for (const path of ["/deals-latest.json", "/deals.json"]) {
+    try {
+      const url = typeof window === "undefined" ? `${SITE_URL}${path}` : path;
+      const res = await fetch(url, { cache: "no-store", next: { revalidate: 300 } });
+      if (!res.ok) continue;
+      const json = await res.json();
+
+      // Si es array plano (formato hunter): wrap a DealsResponse + diversificar
+      if (Array.isArray(json)) {
+        const deals = (json as Deal[]).map((d) => enhanceDealBookingUrl(d));
+        return {
+          schema_version: "4.1",
+          generated_at: new Date().toISOString(),
+          total_deals: deals.length,
+          stats: emptyResponse.stats,
+          deals,
+        };
+      }
+
+      // Si es objeto con .deals: usar tal cual + enhance
+      if (json && typeof json === "object" && Array.isArray(json.deals)) {
+        json.deals = json.deals.map((d: Deal) => enhanceDealBookingUrl(d));
+        json.total_deals = json.total_deals || json.deals.length;
+        return json as DealsResponse;
+      }
+    } catch {
+      // continuar al siguiente path
+    }
   }
+  return emptyResponse;
 }
 
 export function formatDate(dateStr: string): string {
