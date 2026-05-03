@@ -63,6 +63,7 @@ from duffel_engine import DuffelEngine
 from serpapi_engine import SerpAPIEngine
 from amadeus_engine import AmadeusEngine
 from hotellook_engine import HotellookEngine
+from serpapi_hotels_engine import SerpApiHotelsEngine
 from airline_links import enrich_flight
 from detector import analyze_all, generate_markdown_report
 from deals_exporter import run_export
@@ -513,35 +514,27 @@ async def run_pipeline(args):
         # Enriquecer: URL de reserva correcta para cada aerolínea
         all_flights = [enrich_flight(f) for f in all_flights]
 
-        # ── Hotellook: cazador de hoteles via Travelpayouts ─────────────
-        # Mismo TP_MARKER que vuelos → activa comisiones afiliado (4-7%).
-        # Sólo se ejecuta en modo "all" para no enlentecer modos especializados.
-        print(f"\n   🏨 Buscando hoteles top destinations...")
-        hotellook = HotellookEngine()
-        if hotellook.available:
+        # ── Hotels: SerpAPI Google Hotels ──────────────────────────────
+        # SSS28: HotellookEngine deshabilitado (endpoint público dead).
+        # Usamos SerpAPI google_hotels que devuelve datos reales agregados de
+        # Booking/Hotels.com/Expedia. Booking URLs incluyen TP_MARKER aid.
+        print(f"\n   🏨 Buscando hoteles top destinations (SerpAPI Google Hotels)...")
+        hotels_engine = SerpApiHotelsEngine()
+        if hotels_engine.available:
             try:
                 hotel_deals = await asyncio.wait_for(
-                    hotellook.search_top_destinations(
-                        destinations=[
-                            "Madrid", "Barcelona", "Paris", "Roma", "Lisboa",
-                            "Berlin", "Amsterdam", "Praga", "Viena", "Atenas",
-                            "Estambul", "Marrakech", "Tokio", "Bangkok",
-                            "Nueva York", "Bali",
-                        ],
-                        date_from=args.date_from,
-                        date_to=args.date_to,
-                    ),
-                    timeout=300,
+                    hotels_engine.search_top_destinations(),
+                    timeout=180,  # 3 min — 16 reqs paralelas con sem=4 = ~30-60s
                 )
-                print(f"   🏨 Hotellook: {len(hotel_deals)} hoteles")
+                print(f"   🏨 SerpAPI Hotels: {len(hotel_deals)} hoteles")
             except asyncio.TimeoutError:
-                print(f"   ⏱️  Hotellook: timeout 5 min — descartado")
+                print(f"   ⏱️  SerpAPI Hotels: timeout 3 min — descartado")
                 hotel_deals = []
             except Exception as e:
-                print(f"   ⚠️  Hotellook: {type(e).__name__}: {e}")
+                print(f"   ⚠️  SerpAPI Hotels: {type(e).__name__}: {e}")
                 hotel_deals = []
         else:
-            print(f"   ℹ️  Hotellook: TP_MARKER no configurado, hoteles omitidos")
+            print(f"   ℹ️  SerpAPI Hotels: SERPAPI_KEY no configurada, hoteles omitidos")
 
     elif mode == "amadeus":
         # Modo AMADEUS: GDS completo — Eurowings, Condor, TUIfly, LOT, airBaltic...
