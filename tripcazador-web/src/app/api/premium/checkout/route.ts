@@ -1,45 +1,75 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
 
 /**
- * /api/premium/checkout — fase ww WW8
+ * /api/premium/checkout — fase SSS9 LIVE
  *
- * Stub Stripe Checkout. Cuando STRIPE_SECRET_KEY + STRIPE_PRICE_PREMIUM_MONTHLY
- * estén configurados en Vercel env, este endpoint creará una sesión de Stripe
- * Checkout y devolverá la URL de redirect.
+ * Crea una sesión Stripe Checkout para suscribir al usuario al plan
+ * TripCazador Premium €2.99/mes recurrente.
  *
- * Mientras tanto: devuelve 503 para que el cliente haga fallback al trial
- * client-side (activateTrial en localStorage).
- *
- * Cuando se enchufe Stripe (5 min de trabajo):
- *   1. npm i stripe
- *   2. import Stripe from 'stripe'
- *   3. const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
- *   4. const session = await stripe.checkout.sessions.create({
- *        mode: 'subscription',
- *        line_items: [{ price: process.env.STRIPE_PRICE_PREMIUM_MONTHLY, quantity: 1 }],
- *        success_url: 'https://tripcazador.com/premium?status=success',
- *        cancel_url: 'https://tripcazador.com/premium?status=cancel',
- *        subscription_data: { trial_period_days: 7 },
- *      })
- *   5. return { url: session.url }
+ * Vars de entorno necesarias:
+ *   - STRIPE_SECRET_KEY        (sk_live_...)
+ *   - STRIPE_PRICE_PREMIUM     (price_...)
+ *   - NEXT_PUBLIC_SITE_URL     (https://tripcazador.com)
  */
-export async function POST() {
+export const runtime = "nodejs";
+
+export async function POST(req: NextRequest) {
   const stripeKey = process.env.STRIPE_SECRET_KEY;
-  const priceId = process.env.STRIPE_PRICE_PREMIUM_MONTHLY;
+  const priceId = process.env.STRIPE_PRICE_PREMIUM;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
   if (!stripeKey || !priceId) {
     return NextResponse.json(
       {
         error: "stripe_not_configured",
-        hint: "Configura STRIPE_SECRET_KEY y STRIPE_PRICE_PREMIUM_MONTHLY en Vercel env",
+        hint: "Falta STRIPE_SECRET_KEY o STRIPE_PRICE_PREMIUM en Vercel env",
       },
       { status: 503 },
     );
   }
 
-  // TODO: enchufar Stripe SDK cuando keys estén configuradas
-  return NextResponse.json(
-    { error: "stripe_pending_implementation" },
-    { status: 501 },
-  );
+  const stripe = new Stripe(stripeKey);
+
+  // Email opcional (si user logueado / form lo provee)
+  let customerEmail: string | undefined;
+  try {
+    const body = await req.json();
+    if (body && typeof body.email === "string" && body.email.includes("@")) {
+      customerEmail = body.email;
+    }
+  } catch {
+    // POST sin body es válido — Stripe lo gestiona en checkout
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${siteUrl}/premium?status=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl}/premium?status=cancel`,
+      customer_email: customerEmail,
+      allow_promotion_codes: true,
+      billing_address_collection: "auto",
+      // RGPD: Stripe envía recibo automático al email del comprador
+      // y muestra términos de TripCazador en el checkout.
+      subscription_data: {
+        metadata: {
+          source: "tripcazador.com",
+          plan: "premium-monthly",
+        },
+      },
+      metadata: {
+        source: "premium_checkout_page",
+      },
+    });
+
+    return NextResponse.json({ url: session.url, id: session.id });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "stripe_error";
+    return NextResponse.json(
+      { error: "stripe_session_failed", message: msg },
+      { status: 500 },
+    );
+  }
 }
