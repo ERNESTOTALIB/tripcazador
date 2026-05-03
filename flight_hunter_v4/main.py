@@ -416,11 +416,27 @@ async def run_pipeline(args):
         # RRR1: Vueling re-añadido al UNION. Aunque Travelpayouts agrega Vueling,
         # el deeplink de Vueling directo (book2.vueling.com) es preferible al
         # partner link de Travelpayouts. Vueling cubre ~10% short-haul EU+ES.
-        vueling_task = VuelingEngine().search_multi_origins(
-            origins=origins,
-            date_from=args.date_from,
-            date_to=args.date_to,
-        )
+        # SSS8: cap a 8 minutos máximo. Vueling fan-out es 14 hubs × 41 dests ×
+        # 3 meses = 1722 requests con sem=4 → puede tardar 60-140 min y matar
+        # el workflow GH (timeout 25 min). Si Vueling tarda demasiado lo
+        # descartamos y seguimos con Ryanair + Travelpayouts.
+        async def _vueling_with_timeout():
+            try:
+                return await asyncio.wait_for(
+                    VuelingEngine().search_multi_origins(
+                        origins=origins,
+                        date_from=args.date_from,
+                        date_to=args.date_to,
+                    ),
+                    timeout=480,  # 8 min máx
+                )
+            except asyncio.TimeoutError:
+                print("   ⏱️  Vueling: timeout 8 min — descartado, seguimos sin él")
+                return []
+            except Exception as e:
+                print(f"   ⚠️  Vueling: error {type(e).__name__}: {e}")
+                return []
+        vueling_task = _vueling_with_timeout()
 
         amadeus = AmadeusEngine()
         tasks_parallel = [ryanair_task, tp_task, vueling_task]

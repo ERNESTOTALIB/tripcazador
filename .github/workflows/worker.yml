@@ -36,7 +36,9 @@ jobs:
   hunt:
     name: Buscar chollos + publicar deals.json
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # SSS8: bumped 25→45min. Vueling engine puede tardar hasta 8min (cap interno)
+    # + Ryanair + Travelpayouts paralelos + commit/push. 25 min era apretado.
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v4

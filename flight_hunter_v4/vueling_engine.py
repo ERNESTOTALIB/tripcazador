@@ -332,10 +332,16 @@ class VuelingEngine:
         Búsqueda desde múltiples orígenes en paralelo.
         Si no se especifican destinos, usa VUELING_POPULAR_DESTS.
         """
-        dests = destinations or VUELING_POPULAR_DESTS
+        # SSS8: limitar fan-out. Antes: 14 hubs × 41 dests × 3 meses = 1722 req
+        # → 60-140 min con semaphore=4 → kill workflow GH (timeout). Ahora top
+        # 4 hubs × 20 dests × N meses → ~240 req por mes window → 5-15 min.
+        dests = (destinations or VUELING_POPULAR_DESTS)[:20]
 
-        # Filtrar orígenes con presencia Vueling conocida
-        vueling_origins = [o for o in origins if o in VUELING_HUBS] or origins[:10]
+        # Filtrar orígenes con presencia Vueling conocida — top 4 hubs solamente
+        TOP_HUBS = ["BCN", "MAD", "CDG", "FCO"]
+        vueling_origins = [o for o in origins if o in TOP_HUBS] or [
+            o for o in origins if o in VUELING_HUBS
+        ][:4] or origins[:4]
 
         print(f"\n   ✈️  Vueling: {len(vueling_origins)} orígenes × {len(dests)} destinos")
 
