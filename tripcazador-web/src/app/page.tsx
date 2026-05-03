@@ -104,10 +104,10 @@ async function TopDeals() {
     );
   }
 
-  // G2: 3 deals destacados (top 3 por score) en lugar de solo 1
-  const featuredCount = Math.min(3, deals.length);
-  const featured = deals.slice(0, featuredCount);
-  const rest = deals.slice(featuredCount);
+  // SSS: `featured` ya viene de getAttractiveDeals (línea 71). Aquí
+  // solo separamos el resto (los que NO son featured) para el grid
+  // "Últimos chollos cazados".
+  const rest = deals.slice(featured.length);
 
   return (
     <div className="space-y-10">
