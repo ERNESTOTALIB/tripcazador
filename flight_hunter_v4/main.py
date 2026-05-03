@@ -59,8 +59,10 @@ from ryanair_engine import RyanairEngine
 from rapidapi_engine import RapidAPIEngine
 from travelpayouts_engine import TravelpayoutsEngine
 from vueling_engine import VuelingEngine
+from duffel_engine import DuffelEngine
 from serpapi_engine import SerpAPIEngine
 from amadeus_engine import AmadeusEngine
+from hotellook_engine import HotellookEngine
 from airline_links import enrich_flight
 from detector import analyze_all, generate_markdown_report
 from deals_exporter import run_export
@@ -324,6 +326,7 @@ async def run_pipeline(args):
     print(f"{'━'*70}")
 
     all_flights = []
+    hotel_deals: List[dict] = []
 
     if mode == "ryanair":
         engine = RyanairEngine()
@@ -438,8 +441,31 @@ async def run_pipeline(args):
                 return []
         vueling_task = _vueling_with_timeout()
 
+        # Duffel: motor real-time GDS-grade (300+ aerolíneas). Mismo patrón
+        # de timeout que Vueling — si tarda > 5 min lo descartamos.
+        duffel = DuffelEngine()
+        async def _duffel_with_timeout():
+            if not duffel.available:
+                return []
+            try:
+                return await asyncio.wait_for(
+                    duffel.search_long_haul(
+                        origins=origins,
+                        date_from=args.date_from,
+                        date_to=args.date_to,
+                    ),
+                    timeout=300,  # 5 min máx
+                )
+            except asyncio.TimeoutError:
+                print("   ⏱️  Duffel: timeout 5 min — descartado, seguimos sin él")
+                return []
+            except Exception as e:
+                print(f"   ⚠️  Duffel: error {type(e).__name__}: {e}")
+                return []
+        duffel_task = _duffel_with_timeout()
+
         amadeus = AmadeusEngine()
-        tasks_parallel = [ryanair_task, tp_task, vueling_task]
+        tasks_parallel = [ryanair_task, tp_task, vueling_task, duffel_task]
         if amadeus.available:
             amadeus_task = amadeus.search_gds_deals(
                 origins=origins,
@@ -459,14 +485,15 @@ async def run_pipeline(args):
         ryanair_res  = parallel_results[0]
         tp_res       = parallel_results[1]
         vueling_res  = parallel_results[2]
-        idx = 3
+        duffel_res   = parallel_results[3]
+        idx = 4
         amadeus_res  = parallel_results[idx] if amadeus.available and len(parallel_results) > idx else []
         if amadeus.available:
             idx += 1
         biz_res      = parallel_results[idx] if include_business and len(parallel_results) > idx else []
 
         combined = []
-        for res in [ryanair_res, tp_res, vueling_res, amadeus_res, biz_res]:
+        for res in [ryanair_res, tp_res, vueling_res, duffel_res, amadeus_res, biz_res]:
             if isinstance(res, list):
                 combined.extend(res)
 
@@ -483,6 +510,36 @@ async def run_pipeline(args):
 
         # Enriquecer: URL de reserva correcta para cada aerolínea
         all_flights = [enrich_flight(f) for f in all_flights]
+
+        # ── Hotellook: cazador de hoteles via Travelpayouts ─────────────
+        # Mismo TP_MARKER que vuelos → activa comisiones afiliado (4-7%).
+        # Sólo se ejecuta en modo "all" para no enlentecer modos especializados.
+        print(f"\n   🏨 Buscando hoteles top destinations...")
+        hotellook = HotellookEngine()
+        if hotellook.available:
+            try:
+                hotel_deals = await asyncio.wait_for(
+                    hotellook.search_top_destinations(
+                        destinations=[
+                            "Madrid", "Barcelona", "Paris", "Roma", "Lisboa",
+                            "Berlin", "Amsterdam", "Praga", "Viena", "Atenas",
+                            "Estambul", "Marrakech", "Tokio", "Bangkok",
+                            "Nueva York", "Bali",
+                        ],
+                        date_from=args.date_from,
+                        date_to=args.date_to,
+                    ),
+                    timeout=300,
+                )
+                print(f"   🏨 Hotellook: {len(hotel_deals)} hoteles")
+            except asyncio.TimeoutError:
+                print(f"   ⏱️  Hotellook: timeout 5 min — descartado")
+                hotel_deals = []
+            except Exception as e:
+                print(f"   ⚠️  Hotellook: {type(e).__name__}: {e}")
+                hotel_deals = []
+        else:
+            print(f"   ℹ️  Hotellook: TP_MARKER no configurado, hoteles omitidos")
 
     elif mode == "amadeus":
         # Modo AMADEUS: GDS completo — Eurowings, Condor, TUIfly, LOT, airBaltic...
@@ -696,6 +753,7 @@ async def run_pipeline(args):
         export_send_alerts = getattr(args, "telegram", False) or bool(config.TELEGRAM_BOT_TOKEN)
         run_export(
             analyzed_flights=analyzed,
+            hotel_deals=hotel_deals,
             output_dir=report_dir,
             send_alerts=export_send_alerts,
         )
