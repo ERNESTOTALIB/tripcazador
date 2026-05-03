@@ -120,6 +120,15 @@ const nextConfig = {
         ],
       },
       {
+        // SSS22 — TopoJSON world atlas para DestinationsMap (107KB, gzipped ~30KB).
+        // Contenido inmutable (CC0 world-atlas v2). 1 año cache.
+        source: "/world-110m.json",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          { key: "CDN-Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
         // OG images dinámicas: cache 24h en CDN, 1h en navegador.
         source: "/blog/:slug/opengraph-image",
         headers: [

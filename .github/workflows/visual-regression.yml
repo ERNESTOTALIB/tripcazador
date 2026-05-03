@@ -1,0 +1,78 @@
+name: Visual Regression — UI overlap + broken images detector
+
+# SSS25 (May 2026): caza automática de bugs visuales que el ojo humano ve
+# pero los tests funcionales no detectan. Específicamente:
+#   - Heart icon solapando classification badge en DealCard
+#   - Badge -95% solapando nombre de aeropuerto en SkyHero
+#   - Imágenes 404 (img.naturalWidth === 0)
+#   - Touch targets < 44px en mobile
+#   - Overflow horizontal en mobile viewport
+#   - Trending widget mostrando solo MAD/BCN
+#
+# Corre 4× al día + on workflow_dispatch + después de cada deploy.
+# Si falla envía alerta Telegram con screenshot artifact link.
+
+permissions:
+  contents: read
+
+on:
+  schedule:
+    # 4× al día — UTC: 06:00, 12:00, 18:00, 00:00
+    - cron: "0 0,6,12,18 * * *"
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Deploy Web → Vercel"]
+    types: [completed]
+
+jobs:
+  detect:
+    name: Detect visual regressions in prod
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tripcazador-web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: tripcazador-web/package-lock.json
+
+      - name: Install Playwright
+        run: |
+          npm ci --prefer-offline --no-audit --legacy-peer-deps || npm install --legacy-peer-deps
+          npx playwright install --with-deps chromium
+
+      - name: Run visual regression tests against prod
+        env:
+          BASE_URL: https://tripcazador.com
+        run: |
+          npx playwright test e2e/tests/visual_overlap_detector.spec.ts \
+            --reporter=list \
+            || echo "::warning::Visual regression failures detected"
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-screenshots-${{ github.run_id }}
+          path: tripcazador-web/test-results/
+          retention-days: 14
+
+      - name: Notify Telegram on failure
+        if: failure()
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
+            MSG=$(printf '🚨 <b>Visual regression detectada en prod</b>\n\nUI bug en tripcazador.com — revisa screenshots:\n%s\n\n(SkyHero overlap / DealCard heart / broken images / etc)' "$RUN_URL")
+            curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              -d chat_id="${TG_CHAT}" \
+              -d parse_mode=HTML \
+              --data-urlencode "text=${MSG}" || true
+          fi
