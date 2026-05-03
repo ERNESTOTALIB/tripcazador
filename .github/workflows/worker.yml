@@ -7,6 +7,12 @@ name: Worker — Flight Hunter (cron 6h)
 #
 # Presupuesto estimado: 4 runs/día × ~8 min/run = ~1000 min/mes (dentro del free tier).
 
+# SSS8: permiso explícito para que el bot pueda hacer push de deals.json
+# (commit a tripcazador-web/public/deals-latest.json). Sin esto el push
+# falla con 'Write access to repository not granted' (HTTP 403).
+permissions:
+  contents: write
+
 on:
   schedule:
     # UTC — corre a las 00:00, 06:00, 12:00, 18:00 UTC
