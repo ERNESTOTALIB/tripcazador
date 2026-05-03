@@ -13,7 +13,8 @@
  * fetch directo siempre.
  */
 
-const VERSION = "tc-v3-2026-04-25";
+// SSS52: bump version para invalidar SW cacheado con bug black-screen
+const VERSION = "tc-v4-2026-05-04-fix-blackscreen";
 const SHELL_CACHE = `${VERSION}-shell`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 const IMG_CACHE = `${VERSION}-img`;
@@ -23,6 +24,8 @@ const PRECACHE_URLS = [
   "/",
   "/deals",
   "/destinos",
+  "/blog",
+  "/offline.html",
   "/site.webmanifest",
 ];
 
@@ -113,23 +116,35 @@ self.addEventListener("fetch", (event) => {
 });
 
 async function networkFirstWithTimeout(request, timeoutMs) {
+  // SSS52 (May 2026): BUG FIX — antes el timeout rejectaba aunque la red
+  // todavía no hubiera respondido, lo que disparaba el fallback "offline"
+  // y mostraba pantalla negra en primera visita (sin caché todavía).
+  // Ahora: solo usamos timeout si hay caché disponible. Sin caché, esperamos
+  // siempre a la red (que tampoco va a tardar 3s típicamente).
   const cache = await caches.open(RUNTIME_CACHE);
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(async () => {
-      const cached = await cache.match(request);
-      cached ? resolve(cached) : reject(new Error("timeout"));
-    }, timeoutMs);
+  const networkP = fetch(request).then((res) => {
+    if (res.ok) cache.put(request, res.clone());
+    return res;
+  });
 
-    fetch(request)
+  const cached = await cache.match(request);
+
+  if (!cached) {
+    // Sin caché → confía en la red (no race, evita el black-screen bug)
+    return networkP;
+  }
+
+  // Con caché → race red vs timeout que sirve caché stale como fallback rápido
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(cached), timeoutMs);
+    networkP
       .then((res) => {
         clearTimeout(timer);
-        if (res.ok) cache.put(request, res.clone());
         resolve(res);
       })
-      .catch(async (err) => {
+      .catch(() => {
         clearTimeout(timer);
-        const cached = await cache.match(request);
-        cached ? resolve(cached) : reject(err);
+        resolve(cached);
       });
   });
 }
