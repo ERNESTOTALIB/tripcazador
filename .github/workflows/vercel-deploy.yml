@@ -14,10 +14,13 @@ name: Deploy Web → Vercel
 # runners GH cuando re-ejecuta installCommand de vercel.json). Usamos
 # `vercel deploy --prod --archive=tgz` que sube source a Vercel y deja que
 # el builder cloud (donde sh sí existe) corra install + build.
+#
+# IMPORTANTE: corremos desde el REPO ROOT, no desde tripcazador-web/. El
+# Vercel project tiene `rootDirectory=tripcazador-web` configurado, así
+# que si corremos desde dentro vercel CLI duplica el path → error
+# `tripcazador-web/tripcazador-web does not exist`.
 
 on:
-  # SSS6 2026-05-02: re-activado. Vercel Git integration NO redeploya
-  # automáticamente (verificado prod). Este workflow es el único path real.
   push:
     branches: [main]
     paths:
@@ -44,17 +47,17 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Pull Vercel env (prod)
-        working-directory: tripcazador-web
+      - name: Pull Vercel env (prod) — desde repo root
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy --prod (cloud build)
-        working-directory: tripcazador-web
+      - name: Deploy --prod (cloud build) — desde repo root
         id: deploy
         run: |
           # `vercel deploy --prod --archive=tgz` sube el source como tarball
           # a Vercel y deja que el builder cloud corra install + build.
           # Evita el bug `spawn sh ENOENT` de `vercel build` local.
+          # Corremos desde repo root para que Vercel pick el rootDirectory
+          # configurado en el project (tripcazador-web).
           URL=$(vercel deploy --prod --archive=tgz --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed: $URL"
