@@ -41,6 +41,13 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Install npm deps (workaround Vercel CLI spawn sh ENOENT)
+        # SSS6: vercel build local falla con installCommand npm install
+        # ('Error: spawn sh ENOENT' en runners GH). Pre-instalamos las deps
+        # antes y Vercel CLI las reusa sin re-correr installCommand.
+        working-directory: tripcazador-web
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+
       - name: Pull Vercel env (prod)
         working-directory: tripcazador-web
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
