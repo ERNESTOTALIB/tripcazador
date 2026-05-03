@@ -449,28 +449,31 @@ const FALLBACK_CHOLLOS: Partial<Deal>[] = [
 ];
 
 export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
-  // 1. Pool: prioriza VPS, pero si está vacío/down, lee deals-latest.json
-  // (worker commit cada 6h con deals reales del hunter — 478+ deals típicos).
-  // SSS8: bug detectado — antes solo leía VPS y caía a FALLBACK_CHOLLOS, así
-  // los 478 deals reales del worker (Wizz/Ryanair/etc.) nunca llegaban a featured.
+  // 1. Pool: PRIORIZA worker deals-latest.json (cron 6h con deals frescos —
+  // 478+ deals reales de Wizz/Ryanair/Volare). Si vacío, fallback a VPS.
+  //
+  // SSS8 bug history:
+  //   - antes solo VPS → 5 deals seed estancados (Iberia/Condor 69-109€)
+  //   - pasó a leer worker output: Wizz Podgorica 25€, Wizz Ereván 59€ etc
   let pool: Deal[] = [];
   try {
-    const res = await fetch(`${API_BASE}/api/deals/top?limit=50`, {
-      next: { revalidate: 300 },
-    });
-    if (res.ok) {
-      const arr = await res.json();
-      pool = Array.isArray(arr) ? arr : [];
-    }
+    const fresh = await getDealsFromStatic();
+    pool = Array.isArray(fresh?.deals) ? fresh.deals : [];
   } catch {
     pool = [];
   }
 
-  // Si VPS no devolvió nada, leer worker deals-latest.json
+  // Si worker output vacío (raro, solo si todavía no hay primer commit),
+  // fallback a VPS endpoint
   if (pool.length === 0) {
     try {
-      const fallback = await getDealsFromStatic();
-      pool = Array.isArray(fallback?.deals) ? fallback.deals : [];
+      const res = await fetch(`${API_BASE}/api/deals/top?limit=50`, {
+        next: { revalidate: 300 },
+      });
+      if (res.ok) {
+        const arr = await res.json();
+        pool = Array.isArray(arr) ? arr : [];
+      }
     } catch {
       pool = [];
     }
