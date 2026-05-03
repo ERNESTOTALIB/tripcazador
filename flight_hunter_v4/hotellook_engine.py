@@ -255,20 +255,29 @@ class HotellookEngine:
 
     async def _get(self, session: aiohttp.ClientSession, url: str,
                    params: Dict, debug_label: str = "") -> Optional[List[Dict]]:
-        """GET con semáforo y manejo de errores. SSS19: log status para debug."""
+        """GET con semáforo y manejo de errores. SSS19+SSS24: log diagnóstico."""
         async with self._semaphore:
             try:
                 async with session.get(
                     url, params=params,
                     timeout=aiohttp.ClientTimeout(total=15),
                 ) as resp:
+                    body_preview = ""
                     if resp.status not in (200, 201):
-                        # SSS19: log primer fallo para diagnóstico
+                        try:
+                            body_preview = (await resp.text())[:200]
+                        except Exception:
+                            pass
                         if not getattr(self, "_logged_status", False):
-                            print(f"   ⚠️  Hotellook HTTP {resp.status} {debug_label}")
+                            print(f"   ⚠️  Hotellook HTTP {resp.status} {debug_label} | body: {body_preview}")
                             self._logged_status = True
                         return None
                     data = await resp.json(content_type=None)
+                    # SSS24: si la respuesta es 200 pero vacía, log el primer caso
+                    if isinstance(data, list) and len(data) == 0:
+                        if not getattr(self, "_logged_empty", False):
+                            print(f"   ⚠️  Hotellook 200 OK pero array vacío {debug_label} | params: {params}")
+                            self._logged_empty = True
                     if isinstance(data, list):
                         return data
                     if isinstance(data, dict):
@@ -366,6 +375,12 @@ class HotellookEngine:
                 for (ci, co) in windows
             ]
             gathered = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # SSS24: log status agregado para entender por qué 0 hoteles
+        ok_count = sum(1 for r in gathered if isinstance(r, list))
+        empty_count = sum(1 for r in gathered if isinstance(r, list) and len(r) == 0)
+        err_count = sum(1 for r in gathered if isinstance(r, BaseException))
+        print(f"   🏨 Hotellook batch: {ok_count} OK ({empty_count} vacíos), {err_count} errores")
 
         for r in gathered:
             if isinstance(r, list):

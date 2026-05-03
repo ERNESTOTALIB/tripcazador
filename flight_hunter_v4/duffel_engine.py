@@ -32,7 +32,7 @@ BASE_URL = "https://api.duffel.com/air"
 # Long-haul prioritarios (los que Ryanair / low-cost no cubren).
 DUFFEL_LONG_HAUL = ["JFK", "LAX", "BKK", "NRT", "SIN", "GRU", "EZE", "JNB", "DXB", "SYD"]
 
-_CONCURRENCY = 4
+_CONCURRENCY = 2  # SSS24: Duffel rate limits agresivos en accounts nuevos — sem=2
 _REQUEST_TIMEOUT = 25   # s por petición HTTP
 _SEARCH_TIMEOUT = 30    # s por búsqueda completa (create + retrieve)
 
@@ -270,17 +270,22 @@ class DuffelEngine:
         Test mode: 3 origins × 5 dests × 4 dates = 60 requests (≈ 1.5 min con sem=4).
         Live mode: 25 origins × 10 dests × 11 dates = 2750 requests.
         """
+        # SSS24: Duffel Live mode también tiene rate limits agresivos en cuentas
+        # nuevas (~10-20 req/min). El cap "live=full fan-out" causaba 2,750 reqs
+        # → todas rate-limited → 0 deals. Fix: cap conservador para AMBOS modos
+        # hasta que la cuenta Live escale en límites.
         no_cap = os.getenv("DUFFEL_NO_CAP", "").lower() in ("1", "true", "yes")
-        is_live = self.token and self.token.startswith("duffel_live_")
-        if no_cap or is_live:
+        if no_cap:
             origins_capped = origins
             dests_capped = DUFFEL_LONG_HAUL
             step = 7
         else:
-            # Test mode caps — rate-limit-friendly
-            origins_capped = origins[:3]
-            dests_capped = DUFFEL_LONG_HAUL[:5]
-            step = 14  # cada 2 semanas en vez de cada 1
+            # Default cap: 5 origins × 6 dests × step=14d = ~30-50 requests
+            # con sem=2 = ~5 min. Producible bajo cualquier rate limit razonable.
+            # User puede setear DUFFEL_NO_CAP=1 cuando la cuenta tenga >100 req/min.
+            origins_capped = origins[:5]
+            dests_capped = DUFFEL_LONG_HAUL[:6]
+            step = 14
         return await self.search_routes(origins_capped, date_from, date_to, dests_capped, step_days=step)
 
 
