@@ -248,10 +248,19 @@ class HotellookEngine:
 
     def __init__(self):
         self.marker = TP_MARKER
-        self.available = bool(TP_MARKER)
+        # SSS27: el endpoint público engine.hotellook.com/api/v2/cache.json
+        # devuelve HTTP 404 (deprecated/migrado en mayo 2026).
+        # Hasta que migremos a la nueva Travelpayouts hotel API (requiere
+        # X-Access-Token con scope hoteles), desactivamos engine para no
+        # gastar 32 requests inútiles por run. El frontend sigue usando
+        # hotel_seed.ts (12 ciudades curated) con afiliado activo.
+        self.available = bool(TP_MARKER) and os.getenv("HOTELLOOK_FORCE", "").lower() in ("1", "true", "yes")
         self._semaphore = asyncio.Semaphore(4)
         if not self.available:
-            print("⚠️  Hotellook: TP_MARKER no configurado — engine deshabilitado.")
+            if not TP_MARKER:
+                print("⚠️  Hotellook: TP_MARKER no configurado — engine deshabilitado.")
+            else:
+                print("ℹ️  Hotellook: endpoint público deprecated (HTTP 404). Engine deshabilitado. Frontend usa hotel_seed.ts.")
 
     async def _get(self, session: aiohttp.ClientSession, url: str,
                    params: Dict, debug_label: str = "") -> Optional[List[Dict]]:

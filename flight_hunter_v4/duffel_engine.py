@@ -32,7 +32,7 @@ BASE_URL = "https://api.duffel.com/air"
 # Long-haul prioritarios (los que Ryanair / low-cost no cubren).
 DUFFEL_LONG_HAUL = ["JFK", "LAX", "BKK", "NRT", "SIN", "GRU", "EZE", "JNB", "DXB", "SYD"]
 
-_CONCURRENCY = 2  # SSS24: Duffel rate limits agresivos en accounts nuevos — sem=2
+_CONCURRENCY = 1  # SSS27: cuentas Live nuevas tienen ~5-10 req/min, sem=1+sleep
 _REQUEST_TIMEOUT = 25   # s por petición HTTP
 _SEARCH_TIMEOUT = 30    # s por búsqueda completa (create + retrieve)
 
@@ -193,12 +193,19 @@ class DuffelEngine:
     async def _search_one(self, session: aiohttp.ClientSession,
                           origin: str, destination: str,
                           departure_date: str) -> List[Dict]:
-        """Búsqueda completa (create + retrieve) con timeout total y semáforo."""
+        """Búsqueda completa (create + retrieve) con timeout total y semáforo.
+
+        SSS27: throttle explícito 7s entre requests para no exceder 10 req/min
+        de cuentas Live nuevas. Sin esto el burst inicial dispara HTTP 429
+        en cascada.
+        """
         async with self._semaphore:
             try:
                 async def _flow():
                     rid = await self._create_offer_request(session, origin, destination, departure_date)
                     if not rid:
+                        # Sleep aún en fallo para no saturar el rate-limit
+                        await asyncio.sleep(7)
                         return []
                     offers = await self._retrieve_offers(session, rid)
                     flights = []
@@ -206,9 +213,11 @@ class DuffelEngine:
                         f = _offer_to_dict(offer, origin, destination)
                         if f and f["price_eur"] > 0:
                             flights.append(f)
+                    # Sleep después del éxito también — total 7s/request en serie
+                    await asyncio.sleep(7)
                     return flights
 
-                return await asyncio.wait_for(_flow(), timeout=_SEARCH_TIMEOUT)
+                return await asyncio.wait_for(_flow(), timeout=_SEARCH_TIMEOUT + 8)
             except asyncio.TimeoutError:
                 return []
             except Exception:
@@ -280,12 +289,13 @@ class DuffelEngine:
             dests_capped = DUFFEL_LONG_HAUL
             step = 7
         else:
-            # Default cap: 5 origins × 6 dests × step=14d = ~30-50 requests
-            # con sem=2 = ~5 min. Producible bajo cualquier rate limit razonable.
-            # User puede setear DUFFEL_NO_CAP=1 cuando la cuenta tenga >100 req/min.
-            origins_capped = origins[:5]
-            dests_capped = DUFFEL_LONG_HAUL[:6]
-            step = 14
+            # SSS27: Duffel Live accounts nuevas tienen ~5-10 req/min.
+            # 5×6×6=180 reqs todas se rate-limit. Reducimos drásticamente:
+            # 3 origins × 4 dests × step=21d = ~12-20 requests.
+            # Con sem=1 + sleep 7s entre requests = ~2-3 min runtime, 0 rate-limits.
+            origins_capped = origins[:3]
+            dests_capped = DUFFEL_LONG_HAUL[:4]
+            step = 21
         return await self.search_routes(origins_capped, date_from, date_to, dests_capped, step_days=step)
 
 
