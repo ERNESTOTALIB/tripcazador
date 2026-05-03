@@ -204,6 +204,93 @@ EUROPEAN_AIRPORTS_TIER2 = [
 # Todos los aeropuertos europeos combinados (sin duplicados)
 EUROPEAN_AIRPORTS_ALL = list(dict.fromkeys(EUROPEAN_AIRPORTS_TIER1 + EUROPEAN_AIRPORTS_TIER2))
 
+# ═══════════════════════════════════════════════════════════════════
+# SSS41 — Latam hubs (audiencia hispanohablante América)
+# Conexiones España ↔ Latam y rutas regionales Latam
+# ═══════════════════════════════════════════════════════════════════
+LATAM_HUBS = [
+    "MEX",  # Ciudad de México
+    "CUN",  # Cancún
+    "GDL",  # Guadalajara
+    "MTY",  # Monterrey
+    "EZE",  # Buenos Aires Ezeiza
+    "AEP",  # Buenos Aires Aeroparque
+    "GIG",  # Río de Janeiro
+    "GRU",  # São Paulo
+    "BSB",  # Brasilia
+    "BOG",  # Bogotá
+    "MDE",  # Medellín
+    "CTG",  # Cartagena
+    "SCL",  # Santiago de Chile
+    "LIM",  # Lima
+    "CUZ",  # Cusco
+    "UIO",  # Quito
+    "GYE",  # Guayaquil
+    "PTY",  # Panamá
+    "HAV",  # La Habana
+    "PUJ",  # Punta Cana
+    "SDQ",  # Santo Domingo
+    "GUA",  # Guatemala
+    "SAL",  # San Salvador
+    "TGU",  # Tegucigalpa
+    "MGA",  # Managua
+    "SJO",  # San José Costa Rica
+    "MVD",  # Montevideo
+    "ASU",  # Asunción
+    "VVI",  # Santa Cruz Bolivia
+    "LPB",  # La Paz
+]
+
+# ═══════════════════════════════════════════════════════════════════
+# SSS41 — Balcanes (destinos baratos en alza)
+# ═══════════════════════════════════════════════════════════════════
+DEST_BALCANES = [
+    "TIA",  # Tirana
+    "BEG",  # Belgrado
+    "PRN",  # Pristina
+    "SJJ",  # Sarajevo
+    "TGD",  # Podgorica
+    "TIV",  # Tivat (Montenegro)
+    "SKP",  # Skopje
+    "ZAG",  # Zagreb
+    "DBV",  # Dubrovnik
+    "SPU",  # Split
+    "LJU",  # Ljubljana
+    "BUD",  # Budapest
+    "OTP",  # Bucarest
+    "SOF",  # Sofia
+    "CFU",  # Corfú
+    "RHO",  # Rodas
+    "HER",  # Heraklion
+    "SKG",  # Tesalónica
+]
+
+# ═══════════════════════════════════════════════════════════════════
+# SSS41 — Europa del Norte (Islandia, Noruega, Lofoten, Suecia)
+# ═══════════════════════════════════════════════════════════════════
+DEST_EUROPA_NORTE = [
+    "KEF",  # Reikiavik
+    "AEY",  # Akureyri (Islandia norte)
+    "OSL",  # Oslo
+    "BGO",  # Bergen
+    "TRD",  # Trondheim
+    "TOS",  # Tromsø (auroras boreales)
+    "SVJ",  # Svolvær (Lofoten)
+    "LYR",  # Longyearbyen (Svalbard)
+    "ARN",  # Estocolmo
+    "GOT",  # Gotemburgo
+    "LLA",  # Luleå
+    "HEL",  # Helsinki
+    "RVN",  # Rovaniemi (Laponia, Papá Noel)
+    "OUL",  # Oulu
+    "TLL",  # Tallinn
+    "RIX",  # Riga
+    "VNO",  # Vilnius
+    "CPH",  # Copenhague
+    "BLL",  # Billund (LEGOLAND)
+    "FAE",  # Faroe Islands
+]
+
 # SSS38: España completa — para usuarios que viven fuera de Madrid/BCN.
 # Subconjunto pensado para audiencia ES principal (target tripcazador.com).
 SPANISH_HUBS_COMPLETE = [

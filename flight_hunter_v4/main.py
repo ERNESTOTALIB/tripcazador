@@ -92,6 +92,9 @@ def parse_origins(args) -> List[str]:
     elif args.origins == "spain":
         # SSS38: orígenes ES completos para audiencia local
         return config.SPANISH_HUBS_COMPLETE
+    elif args.origins == "latam":
+        # SSS41: hubs Latam para audiencia hispanohablante
+        return config.LATAM_HUBS
     else:
         # Códigos custom separados por coma
         return [o.strip().upper() for o in args.origins.split(",") if o.strip()]
@@ -120,6 +123,10 @@ def parse_destinations(args) -> List[str]:
         # abr-2026i — largo haul barato
         "caribe":       getattr(config, "DEST_CARIBE", []),
         "asia-sudeste": getattr(config, "DEST_ASIA_SUDESTE", []),
+        # SSS41 — destinos en alza
+        "balcanes":     getattr(config, "DEST_BALCANES", []),
+        "europa-norte": getattr(config, "DEST_EUROPA_NORTE", []),
+        "latam":        getattr(config, "LATAM_HUBS", []),
         "anywhere":     None,  # Señal especial para fly_to=anywhere
     }
     if hasattr(args, "dest") and args.dest:

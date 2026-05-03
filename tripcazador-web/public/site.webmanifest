@@ -119,5 +119,23 @@
   "display_override": ["window-controls-overlay", "standalone", "browser"],
   "start_url": "/?source=pwa",
   "scope": "/",
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "share_target": {
+    "action": "/buscar",
+    "method": "GET",
+    "params": {
+      "title": "destination",
+      "text": "q"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+tripcazador",
+      "url": "/deals/%s"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 480
+  },
+  "handle_links": "preferred"
 }

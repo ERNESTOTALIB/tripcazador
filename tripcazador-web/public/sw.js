@@ -76,10 +76,13 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith("/api/price-alerts")) return;
 
   // Estrategia 1: navegación HTML — network-first con timeout
+  // SSS42: fallback a /offline.html (página rica con favoritos cache)
   if (request.mode === "navigate") {
     event.respondWith(
       networkFirstWithTimeout(request, 3000).catch(() =>
-        caches.match("/").then((m) => m || new Response("offline")),
+        caches.match("/offline.html").then(
+          (m) => m || caches.match("/").then((r) => r || new Response("offline"))
+        ),
       ),
     );
     return;
@@ -164,21 +167,52 @@ self.addEventListener("push", (event) => {
   try {
     if (event.data) data = { ...data, ...event.data.json() };
   } catch { /* payload no-JSON, default */ }
+  // SSS42: action buttons + image (más conversión, pattern WhatsApp/Instagram)
   const opts = {
     body: data.body,
-    icon: data.icon || "/icon-192.png",
-    badge: data.badge || "/icon-72.png",
-    data: { url: data.url || "/deals" },
+    icon: data.icon || "/android-chrome-192x192.png",
+    badge: data.badge || "/favicon-32x32.png",
+    image: data.image,                 // Hero image (1080×567 ideal)
+    data: { url: data.url || "/deals", dealId: data.dealId },
     tag: data.tag || "tc-alert",
-    vibrate: [100, 50, 100],
+    vibrate: [100, 50, 100, 50, 200],
+    requireInteraction: data.urgent === true,  // Críticos no se auto-cierran
+    actions: [
+      { action: "view",   title: "Ver chollo" },
+      { action: "snooze", title: "Recordar en 1h" },
+    ],
   };
   event.waitUntil(self.registration.showNotification(data.title, opts));
 });
 
-// Click → abrir/focalizar la app en url específica del payload.
+// Click → manejar action buttons + abrir/focalizar la app.
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = event.notification.data?.url || "/deals";
+  const data = event.notification.data || {};
+  const action = event.action;
+
+  // Action: snooze → reprograma para dentro de 1h via setTimeout en el SW
+  // (mejor que postMessage al cliente porque puede no estar abierto)
+  if (action === "snooze") {
+    event.waitUntil(
+      // Re-mostrar después de 1h. SW no garantiza vivir 1h pero registramos intent.
+      new Promise((resolve) => {
+        setTimeout(() => {
+          self.registration.showNotification("Recordatorio: " + (event.notification.title || "Chollo"), {
+            body: "Sigue activo — comprueba ahora",
+            icon: "/android-chrome-192x192.png",
+            data,
+            tag: data.tag || "tc-alert-snooze",
+          });
+          resolve();
+        }, 3600 * 1000);
+      })
+    );
+    return;
+  }
+
+  // Default + action "view": abrir la URL
+  const url = data.url || "/deals";
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((cs) => {
       for (const c of cs) {
@@ -190,4 +224,16 @@ self.addEventListener("notificationclick", (event) => {
       return self.clients.openWindow(url);
     }),
   );
+});
+
+// SSS42: notificationclose → tracking opt-out signal (analítica)
+self.addEventListener("notificationclose", (event) => {
+  const data = event.notification.data || {};
+  // Best-effort beacon — no bloquea si el server no responde
+  if (data.dealId && self.fetch) {
+    fetch("/api/track?event=push_closed&dealId=" + encodeURIComponent(data.dealId), {
+      method: "POST",
+      keepalive: true,
+    }).catch(() => {});
+  }
 });
