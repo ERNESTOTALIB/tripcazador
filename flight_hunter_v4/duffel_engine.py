@@ -21,6 +21,7 @@ Notas:
 
 import asyncio
 import aiohttp
+import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple
 import config
@@ -215,7 +216,8 @@ class DuffelEngine:
 
     async def search_routes(self, origins: List[str], date_from: str,
                             date_to: str,
-                            destinations: List[str] = None) -> List[Dict]:
+                            destinations: List[str] = None,
+                            step_days: int = 7) -> List[Dict]:
         """
         Búsqueda multi-origen × multi-destino × ventana de fechas.
         Genera una offer_request por combinación (limitado por _CONCURRENCY).
@@ -226,7 +228,7 @@ class DuffelEngine:
         if not destinations:
             return []
 
-        dates = _dates_in_range(date_from, date_to, step_days=7)  # cada 7 días
+        dates = _dates_in_range(date_from, date_to, step_days=step_days)
         if not dates:
             return []
 
@@ -260,8 +262,26 @@ class DuffelEngine:
 
     async def search_long_haul(self, origins: List[str], date_from: str,
                                date_to: str) -> List[Dict]:
-        """Atajo: usa DUFFEL_LONG_HAUL como destinos."""
-        return await self.search_routes(origins, date_from, date_to, DUFFEL_LONG_HAUL)
+        """
+        Atajo: usa DUFFEL_LONG_HAUL como destinos.
+
+        SSS17 (may-2026): caps agresivos para test-mode (rate-limit ~50 req/min).
+        Si el token es Live el cap se relaja vía DUFFEL_NO_CAP=1.
+        Test mode: 3 origins × 5 dests × 4 dates = 60 requests (≈ 1.5 min con sem=4).
+        Live mode: 25 origins × 10 dests × 11 dates = 2750 requests.
+        """
+        no_cap = os.getenv("DUFFEL_NO_CAP", "").lower() in ("1", "true", "yes")
+        is_live = self.token and self.token.startswith("duffel_live_")
+        if no_cap or is_live:
+            origins_capped = origins
+            dests_capped = DUFFEL_LONG_HAUL
+            step = 7
+        else:
+            # Test mode caps — rate-limit-friendly
+            origins_capped = origins[:3]
+            dests_capped = DUFFEL_LONG_HAUL[:5]
+            step = 14  # cada 2 semanas en vez de cada 1
+        return await self.search_routes(origins_capped, date_from, date_to, dests_capped, step_days=step)
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
