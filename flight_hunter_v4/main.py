@@ -64,6 +64,7 @@ from serpapi_engine import SerpAPIEngine
 from amadeus_engine import AmadeusEngine
 from hotellook_engine import HotellookEngine
 from serpapi_hotels_engine import SerpApiHotelsEngine
+from hotel_deal_detector import detect_deals as detect_hotel_deals
 from airline_links import enrich_flight
 from detector import analyze_all, generate_markdown_report
 from deals_exporter import run_export
@@ -528,16 +529,22 @@ async def run_pipeline(args):
             hotels_engine = SerpApiHotelsEngine()
             if hotels_engine.available:
                 try:
-                    hotel_deals = await asyncio.wait_for(
+                    raw_hotels = await asyncio.wait_for(
                         hotels_engine.search_top_destinations(),
                         timeout=240,  # 4 min — 50 reqs con sem=4 = ~2-3 min
                     )
-                    print(f"   🏨 SerpAPI Hotels: {len(hotel_deals)} hoteles")
+                    print(f"   🏨 SerpAPI Hotels: {len(raw_hotels)} hoteles raw")
+                    # SSS31: filtro DEAL DETECTOR — solo exporta hoteles con
+                    # drop significativo. Booking afiliado ya cubre el resto.
+                    hotel_deals, hotels_regular = detect_hotel_deals(raw_hotels)
+                    print(f"   💰 Hotel Deals detectados: {len(hotel_deals)} con drop ≥20% "
+                          f"({len(hotels_regular)} regulares omitidos — disponibles via Booking widget)")
                 except asyncio.TimeoutError:
                     print(f"   ⏱️  SerpAPI Hotels: timeout 4 min — descartado")
                     hotel_deals = []
                 except Exception as e:
                     print(f"   ⚠️  SerpAPI Hotels: {type(e).__name__}: {e}")
+                    import traceback; traceback.print_exc()
                     hotel_deals = []
             else:
                 print(f"   ℹ️  SerpAPI Hotels: SERPAPI_KEY no configurada, hoteles omitidos")

@@ -185,6 +185,21 @@ class SerpApiHotelsEngine:
         properties = data.get("properties") or []
         nights_count = max(1, (datetime.strptime(checkout, "%Y-%m-%d") -
                                 datetime.strptime(checkin, "%Y-%m-%d")).days)
+
+        # SSS31: SerpAPI Google Hotels devuelve `prices` insights que sirven
+        # como baseline cuando no tenemos histórico propio (primeras 14 días).
+        # Si no vienen, dejamos None y el detector solo usa stats propios.
+        prices_meta = data.get("prices") or {}
+        baseline_low = None
+        baseline_avg = None
+        try:
+            if prices_meta.get("low_price"):
+                baseline_low = float(prices_meta["low_price"])
+            if prices_meta.get("typical_price"):
+                baseline_avg = float(prices_meta["typical_price"])
+        except (ValueError, TypeError):
+            pass
+
         out: List[Dict] = []
         for p in properties[:10]:  # top 10 más baratos
             try:
@@ -220,6 +235,9 @@ class SerpApiHotelsEngine:
                     "score": min(95, 50 + int(price < 100) * 10 + int(p.get("overall_rating", 0) >= 8) * 15),
                     "savings_pct": 0,
                     "savings_eur": 0,
+                    # SSS31: baselines para hotel_deal_detector
+                    "baseline_low_price": baseline_low,
+                    "baseline_avg_price": baseline_avg,
                 }
                 out.append(hotel)
             except (ValueError, TypeError, KeyError):
