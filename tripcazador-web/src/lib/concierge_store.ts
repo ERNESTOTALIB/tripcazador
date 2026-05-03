@@ -14,6 +14,8 @@
  * `appendOrder` a usar `kv.lpush("concierge_orders", JSON.stringify(order))`.
  */
 
+import type { ConciergeTier } from "./concierge_tiers";
+
 export interface ConciergeOrder {
   id: string;             // ord_<timestamp>_<rand>
   email: string;
@@ -31,6 +33,8 @@ export interface ConciergeOrder {
   amount_paid_eur: number;
   stripe_session_id?: string;
   delivered_at?: string;
+  /** Tier comprado. Optional para retro-compat con pedidos antiguos. */
+  tier?: ConciergeTier;
 }
 
 const KEY = "tc_concierge_orders_v1";

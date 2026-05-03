@@ -1,17 +1,20 @@
 import { NextResponse } from "next/server";
+import { CONCIERGE_TIERS, isValidTier, type ConciergeTier } from "@/lib/concierge_tiers";
 
 /**
- * /api/concierge/webhook — fase ppp PPP1 (May 2026)
+ * /api/concierge/webhook — fase sss SSS10 (May 2026, tiered)
  *
- * Stripe webhook para `checkout.session.completed` del flujo /concierge €19.
+ * Stripe webhook para `checkout.session.completed` del flujo Concierge tiered.
  *
  * Comportamiento:
  *   1. Verifica firma Stripe con STRIPE_WEBHOOK_SECRET (si no está → 503)
  *   2. Si event.type === "checkout.session.completed":
- *        - Forwardea metadata del pedido al backend FastAPI VPS para
- *          marcarlo paid + disparar email de confirmación al cliente.
- *        - Notifica a Telegram (canal owner) si TELEGRAM_BOT_TOKEN/CHAT_ID
- *          están configurados, para que Ernesto lo vea en tiempo real.
+ *        - Lee metadata.tier (express|standard|premium|pro). Fallback a
+ *          "standard" si está ausente o inválido (retro-compat).
+ *        - Forwardea metadata + tier al backend FastAPI VPS para marcarlo
+ *          paid + disparar email de confirmación al cliente.
+ *        - Notifica a Telegram (canal owner) con formato tier-aware:
+ *            "🎯 Nuevo pedido Concierge {TIER}\n..."
  *   3. Devuelve { received: true } para todos los eventos válidos.
  *
  * IMPORTANTE: Stripe requiere raw body para verificar firma. Por eso usamos
@@ -148,12 +151,23 @@ export async function POST(req: Request) {
     const paymentStatus = obj.payment_status || "unknown";
 
     if (paymentStatus === "paid" || paymentStatus === "no_payment_required") {
+      // tier-aware con fallback retro-compat a "standard"
+      const tier: ConciergeTier = isValidTier(meta.tier) ? meta.tier : "standard";
+      const tierDef = CONCIERGE_TIERS[tier];
+
+      const amountTotalEur =
+        typeof obj.amount_total === "number"
+          ? obj.amount_total / 100
+          : tierDef.amount_eur;
+
       const orderPayload = {
         order_id: meta.order_id || "",
         stripe_session_id: obj.id || "",
         email: obj.customer_email || meta.email || "",
-        amount_total: typeof obj.amount_total === "number" ? obj.amount_total / 100 : 19,
+        amount_total: amountTotalEur,
         currency: (obj.currency || "eur").toUpperCase(),
+        tier,
+        tier_name: tierDef.name,
         origin: meta.origin || "",
         destination: meta.destination || "",
         date_from: meta.date_from || "",
@@ -168,12 +182,13 @@ export async function POST(req: Request) {
       await notifyBackend(orderPayload);
 
       const tgMsg =
-        `🛎️ *Nuevo pedido Concierge €19*\n\n` +
+        `🎯 *Nuevo pedido Concierge ${tierDef.name.toUpperCase()}*\n\n` +
         `📧 ${orderPayload.email}\n` +
         `✈️ ${orderPayload.origin} → ${orderPayload.destination}\n` +
         `📅 ${orderPayload.date_from}${orderPayload.date_to ? ` → ${orderPayload.date_to}` : ""} (±${orderPayload.flex_days}d)\n` +
         `👥 ${orderPayload.travelers} pax · ${orderPayload.hotel_stars}★\n` +
-        `💰 Presupuesto: ${orderPayload.budget}€\n` +
+        `💰 Presupuesto cliente: ${orderPayload.budget}€\n` +
+        `💳 Pagado: *${amountTotalEur}€* (${tierDef.delivery_label})\n` +
         `🆔 ${orderPayload.order_id}`;
       await notifyTelegram(tgMsg);
     }

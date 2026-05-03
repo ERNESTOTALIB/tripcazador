@@ -1,34 +1,42 @@
 import { NextResponse } from "next/server";
 import { generateOrderId, type ConciergeOrder } from "@/lib/concierge_store";
+import {
+  CONCIERGE_TIERS,
+  DEFAULT_TIER,
+  getTier,
+  isValidTier,
+  resolvePriceIdForTier,
+  type ConciergeTier,
+} from "@/lib/concierge_tiers";
 
 /**
- * /api/concierge/checkout — fase ppp PPP1 (May 2026)
+ * /api/concierge/checkout — fase sss SSS10 (May 2026, tiered)
  *
- * Recibe POST del ConciergeForm con los datos del viaje. Comportamiento:
- *   - Si STRIPE_SECRET_KEY + STRIPE_PRICE_CONCIERGE están en env →
- *       crea Stripe Checkout Session (mode "payment") con metadata del pedido
- *       y devuelve { url } para redirect.
+ * Recibe POST del ConciergeForm con los datos del viaje + `tier`. Comportamiento:
+ *   - `tier` ∈ {express, standard, premium, pro} (allowlist anti-injection).
+ *     Si falta o es inválido → fallback a "standard".
+ *   - Si STRIPE_SECRET_KEY + STRIPE_PRICE_CONCIERGE_<TIER> están en env →
+ *       crea Stripe Checkout Session (mode "payment", one-time NO suscripción)
+ *       con metadata.tier para que el webhook sepa qué se pagó.
  *   - Si no →
  *       guarda el pedido en backend FastAPI (best-effort) y devuelve
- *       503 { error: "stripe_not_configured" } para que el form muestre
- *       "Pago aún no operativo". El pedido queda registrado para que cuando
- *       se enchufe Stripe se pueda contactar al usuario.
+ *       200 { status: "pending_setup", order } para que el form muestre
+ *       "lista de espera". El pedido queda registrado para que cuando se
+ *       enchufe Stripe se pueda contactar al usuario.
+ *
+ * Retro-compat:
+ *   - Soporta env legacy `STRIPE_PRICE_CONCIERGE` para tier "standard"
+ *     (si STRIPE_PRICE_CONCIERGE_STANDARD no está seteado).
  *
  * IMPORTANTE: nunca lanza 500 hacia el cliente — siempre devuelve JSON
  * estructurado con `error` o `url`/`status`.
- *
- * Cuando se enchufe Stripe (5 min):
- *   1. npm i stripe
- *   2. uncomment dynamic import de stripe abajo
- *   3. setear STRIPE_SECRET_KEY (sk_test_...) + STRIPE_PRICE_CONCIERGE (price_...)
- *      en Vercel env (Production + Preview)
- *   4. configurar webhook /api/concierge/webhook con STRIPE_WEBHOOK_SECRET
  */
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 interface CheckoutInput {
+  tier?: string;
   email?: string;
   origin?: string;
   destination?: string;
@@ -46,9 +54,11 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "";
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
 
-function buildOrder(input: CheckoutInput): ConciergeOrder | null {
+function buildOrder(input: CheckoutInput, tier: ConciergeTier): ConciergeOrder | null {
   if (!input.email || !EMAIL_RE.test(input.email)) return null;
   if (!input.origin || !input.destination || !input.date_from) return null;
+
+  const tierDef = CONCIERGE_TIERS[tier];
 
   return {
     id: generateOrderId(),
@@ -64,7 +74,8 @@ function buildOrder(input: CheckoutInput): ConciergeOrder | null {
     travelers: clampInt(input.travelers, 1, 10, 2),
     hotel_stars: clampInt(input.hotel_stars, 3, 5, 4),
     notes: (input.notes || "").slice(0, 1000),
-    amount_paid_eur: 19,
+    amount_paid_eur: tierDef.amount_eur,
+    tier,
   };
 }
 
@@ -98,6 +109,20 @@ async function persistToBackend(order: ConciergeOrder): Promise<void> {
   }
 }
 
+/**
+ * Resuelve el price ID respetando legacy: si tier = standard y solo está
+ * seteada la env legacy `STRIPE_PRICE_CONCIERGE`, usar esa.
+ */
+function resolvePriceIdWithLegacy(tier: ConciergeTier): string | null {
+  const fresh = resolvePriceIdForTier(tier);
+  if (fresh) return fresh;
+  if (tier === "standard") {
+    const legacy = process.env.STRIPE_PRICE_CONCIERGE;
+    if (legacy && legacy.startsWith("price_")) return legacy;
+  }
+  return null;
+}
+
 export async function POST(req: Request) {
   let body: CheckoutInput = {};
   try {
@@ -106,7 +131,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const order = buildOrder(body);
+  // Validación tier — allowlist (anti-injection)
+  const tier: ConciergeTier = isValidTier(body.tier) ? body.tier : DEFAULT_TIER;
+  const tierDef = getTier(tier);
+  if (!tierDef) {
+    return NextResponse.json({ error: "invalid_tier" }, { status: 400 });
+  }
+
+  const order = buildOrder(body, tier);
   if (!order) {
     return NextResponse.json(
       { error: "invalid_input", hint: "email + origin + destination + date_from son obligatorios" },
@@ -118,15 +150,14 @@ export async function POST(req: Request) {
   void persistToBackend(order);
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
-  const priceId = process.env.STRIPE_PRICE_CONCIERGE;
+  const priceId = resolvePriceIdWithLegacy(tier);
 
   // Sin Stripe → modo "lista de espera": pedido guardado, pago próximamente.
-  // Devolvemos 200 con status="pending_setup" para que el cliente lo guarde
-  // local (en lugar de tratar como error). El form ya maneja este caso.
   if (!stripeKey || !priceId) {
     return NextResponse.json({
       status: "pending_setup",
       order_id: order.id,
+      tier,
       message:
         "Pedido recibido. El pago aún no está activo — te contactaremos por email cuando se active.",
       order: {
@@ -142,16 +173,15 @@ export async function POST(req: Request) {
         hotel_stars: order.hotel_stars,
         notes: order.notes,
         amount_paid_eur: order.amount_paid_eur,
+        tier: order.tier,
         status: order.status,
         createdAt: order.createdAt,
       },
     });
   }
 
-  // Stripe está configurado: crear Checkout Session
+  // Stripe está configurado: crear Checkout Session (mode "payment" — one-time)
   try {
-    // Dynamic import: si stripe no está instalado, fallback a 503
-    // ts-bypass: stripe es peer dep opcional, se instala con `npm i stripe` cuando se enchufan keys
     const stripeModule = (await import(
       /* webpackIgnore: true */ "stripe" as string
     ).catch(() => null)) as
@@ -172,14 +202,18 @@ export async function POST(req: Request) {
     const stripe = new stripeModule.default(stripeKey, { apiVersion: "2024-12-18.acacia" });
 
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
+      mode: "payment", // one-time, NUNCA subscription
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: order.email,
       success_url: `${SITE_URL}/concierge/success?order_id=${encodeURIComponent(order.id)}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${SITE_URL}/concierge?status=cancel`,
+      cancel_url: `${SITE_URL}/concierge?status=cancel&tier=${encodeURIComponent(tier)}`,
       metadata: {
         order_id: order.id,
+        tier, // ← clave para que webhook sepa qué se pagó
+        tier_name: tierDef.name,
+        amount_eur: String(tierDef.amount_eur),
+        delivery_hours: String(tierDef.delivery_hours),
         email: order.email,
         origin: order.origin,
         destination: order.destination,
@@ -199,11 +233,11 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({ url: session.url, order_id: order.id });
+    return NextResponse.json({ url: session.url, order_id: order.id, tier });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     return NextResponse.json(
-      { error: "stripe_session_failed", detail: msg, order_id: order.id },
+      { error: "stripe_session_failed", detail: msg, order_id: order.id, tier },
       { status: 502 },
     );
   }
