@@ -99,6 +99,7 @@ jobs:
           TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
           TP_MARKER:           ${{ secrets.TP_MARKER }}
           DUFFEL_TOKEN:        ${{ secrets.DUFFEL_TOKEN }}
+          DUFFEL_NO_CAP:       ${{ secrets.DUFFEL_NO_CAP }}
           AMADEUS_API_KEY:     ${{ secrets.AMADEUS_API_KEY }}
           AMADEUS_API_SECRET:  ${{ secrets.AMADEUS_API_SECRET }}
           # SSS29: hotels run flag — 2x/día para no agotar SerpAPI Hobby

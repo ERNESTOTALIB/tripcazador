@@ -130,8 +130,13 @@ def _stats_for_key(history_rows: List[Dict], key: str,
 def detect_deals(hotels: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
     """
     Para una lista de hoteles del run actual, devuelve:
-      - deals: hoteles que cumplen criterios (type=hotel_deal, score elevado)
-      - regular: el resto (se omiten del output worker)
+      - exports: hoteles para incluir en deals.json (con type=hotel_deal si
+        cumplen drop, o type=hotel cuando estamos en bootstrap fase)
+      - omitted: hoteles que NO se exportan (son ruido o ya ranqueados bajo)
+
+    Bootstrap: si no hay history para ningún hotel (primeros 14d), el primer
+    hotel de cada ciudad sale como type=hotel (representativo) — luego con
+    history acumulada solo saldrán los que tengan drops reales.
 
     También append-ea al histórico ANTES de calcular stats (para que el
     sample del run actual cuente al cabo de 14 días).
@@ -142,8 +147,16 @@ def detect_deals(hotels: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
     # Recargar histórico (ahora incluye este run)
     history = _load_history()
 
+    # Bootstrap detection: si no hay datos suficientes, exportar 1 hotel
+    # representativo por ciudad para no dejar /hoteles vacío
+    has_meaningful_history = any(
+        len([r for r in history if r.get("key") == _hotel_key(h)]) >= HISTORY_MIN_SAMPLES
+        for h in hotels
+    )
+
     deals: List[Dict] = []
     regular: List[Dict] = []
+    bootstrap_seen_cities: set = set()
 
     for h in hotels:
         price = h.get("price_eur") or 0
@@ -182,6 +195,24 @@ def detect_deals(hotels: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
         # Decisión: ≥1 señal fuerte (drop_pct ≥30%) o ≥2 señales mixtas
         max_drop = max(drop_pct_history, drop_pct_baseline)
         is_deal = (max_drop >= 0.30) or (len(signals) >= 2)
+
+        # Bootstrap: si no hay history suficiente en TODA la corrida,
+        # incluir el 1er hotel de cada ciudad como representativo
+        # (para que /hoteles no esté vacío durante los primeros 14 días).
+        is_bootstrap_pick = (
+            not has_meaningful_history
+            and h.get("city_to") not in bootstrap_seen_cities
+            and price >= MIN_PRICE_EUR
+        )
+        if is_bootstrap_pick:
+            bootstrap_seen_cities.add(h.get("city_to"))
+            h_boot = dict(h)
+            h_boot["type"] = "hotel"  # mantenido como "hotel" durante bootstrap
+            h_boot["classification"] = "TRACKING"
+            h_boot["headline"] = f"{h.get('hotel_name','Hotel')} desde {int(price)}€/noche"
+            h_boot["score"] = 50
+            deals.append(h_boot)
+            continue
 
         if is_deal:
             # Enriquecer hotel con metadata de deal
