@@ -89,6 +89,9 @@ def parse_origins(args) -> List[str]:
         return config.EUROPEAN_BEST_TRANSATLANTIC
     elif args.origins == "asia":
         return config.EUROPEAN_BEST_ASIA
+    elif args.origins == "spain":
+        # SSS38: orígenes ES completos para audiencia local
+        return config.SPANISH_HUBS_COMPLETE
     else:
         # Códigos custom separados por coma
         return [o.strip().upper() for o in args.origins.split(",") if o.strip()]

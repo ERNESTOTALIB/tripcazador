@@ -109,9 +109,8 @@ class TestPhaseRIntegration:
         assert (WEB / "src/components/DestinationsMap.tsx").exists()
 
     def test_destinations_map_used_correctly_in_destinos_page(self):
-        """destinos/page.tsx usa nextDynamic — no debe revertir."""
+        """destinos/page.tsx usa DestinationsMap (SSS36: dynamic import movido al componente)."""
         c = (WEB / "src/app/destinos/page.tsx").read_text(encoding="utf-8")
-        assert "nextDynamic" in c
         assert "DestinationsMap" in c
 
     def test_speculation_rules_persist(self):

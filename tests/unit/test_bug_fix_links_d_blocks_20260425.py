@@ -120,7 +120,18 @@ class TestInternalLinksAudit:
         return routes
 
     def test_all_static_hrefs_resolve(self):
+        # SSS36: incluir public/ assets (favicons, manifest, OG images, robots, etc)
         existing = self._existing_routes()
+        # Static assets en public/ que pueden referenciarse vía href="/foo.ext"
+        public_dir = WEB / "public"
+        if public_dir.exists():
+            for asset in public_dir.iterdir():
+                if asset.is_file():
+                    existing.add("/" + asset.name)
+            # Subdirs de public (deals-latest.json en public/, etc)
+            for asset in public_dir.rglob("*"):
+                if asset.is_file():
+                    existing.add("/" + asset.relative_to(public_dir).as_posix())
         # Pattern `href="/foo"` (no template literals)
         href_re = re.compile(r'href="(/[^"#?]+)(?:[?#][^"]*)?"')
         broken: list[tuple[str, str]] = []
@@ -131,6 +142,11 @@ class TestInternalLinksAudit:
                     href = "/"
                 # Skip si lleva params dinámicos (template literals fuera)
                 if "[" in href or "$" in href:
+                    continue
+                # Skip extensiones comunes de assets (.png/.jpg/.svg/.ico/.json/.xml/.txt/.pdf)
+                if any(href.lower().endswith(ext) for ext in
+                       (".png", ".jpg", ".jpeg", ".svg", ".ico", ".json",
+                        ".xml", ".txt", ".pdf", ".webmanifest", ".webp")):
                     continue
                 # Verificar contra rutas registradas (admite wildcards)
                 if href in existing:

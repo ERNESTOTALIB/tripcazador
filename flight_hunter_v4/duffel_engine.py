@@ -37,13 +37,14 @@ DUFFEL_LONG_HAUL = ["JFK", "LAX", "BKK", "NRT", "SIN", "GRU", "EZE", "JNB", "DXB
 # concurrentes sin throttle agresivo + budget global 6 min para no acaparar
 # el worker GitHub Actions (45 min total).
 _CONCURRENCY_DEFAULT = 1   # cuentas test/free
-_CONCURRENCY_NO_CAP  = 4   # cuentas Live verificadas
+_CONCURRENCY_NO_CAP  = 2   # cuentas Live verificadas (SSS35: 4 → 2 = menos cascada 429)
 _REQUEST_TIMEOUT = 25      # s por petición HTTP individual
 _SEARCH_TIMEOUT = 30       # s por búsqueda completa (create + retrieve)
-_GLOBAL_BUDGET_SEC = int(os.getenv("DUFFEL_BUDGET_SEC", "360"))  # 6 min total
-# Throttle entre requests, distinto por modo. Sin throttle agresivo en NO_CAP.
+_GLOBAL_BUDGET_SEC = int(os.getenv("DUFFEL_BUDGET_SEC", "420"))  # 7 min total
+# Throttle entre requests, distinto por modo. Cuenta Live nueva ~10-20 req/min,
+# por eso en NO_CAP ponemos 2s sleep × sem=2 = ~30 reqs/min sostenido.
 _THROTTLE_DEFAULT = 7.0    # s entre requests en modo conservador
-_THROTTLE_NO_CAP = 0.5     # s entre requests en modo escalado
+_THROTTLE_NO_CAP = 2.0     # SSS35: 0.5 → 2.0s para no saturar rate-limit
 
 # Conversión a EUR — rates aproximados; sync con travelpayouts si desvía >5%.
 _FX_TO_EUR = {
@@ -313,14 +314,15 @@ class DuffelEngine:
         Test mode: 3 origins × 5 dests × 4 dates = 60 requests (≈ 1.5 min con sem=4).
         Live mode: 25 origins × 10 dests × 11 dates = 2750 requests.
         """
-        # SSS33: scope realista que cabe en budget 6 min con sem=4 + throttle 0.5s.
-        # NO_CAP: 10 orígenes × 8 destinos × step=14d = ~6 fechas → ~480 reqs.
-        # Con sem=4 + 0.5s throttle = 480/4 × 1.5s ≈ 3 min teóricos.
+        # SSS35: scope conservador para evitar cascada 429 en cuenta Live nueva.
+        # NO_CAP: 5 origins × 6 dests × step=21d (~4 fechas) = ~120 reqs.
+        # Con sem=2 + 2.0s throttle = 120/2 × 2s ≈ 2 min runtime.
+        # Cuando la cuenta Live escale en límites, se puede subir scope.
         # CAPPED (test/free): scope mínimo conservador para no quemar quota.
         if self._no_cap:
-            origins_capped = origins[:10]
-            dests_capped = DUFFEL_LONG_HAUL[:8]
-            step = 14
+            origins_capped = origins[:5]
+            dests_capped = DUFFEL_LONG_HAUL[:6]
+            step = 21
         else:
             origins_capped = origins[:3]
             dests_capped = DUFFEL_LONG_HAUL[:4]

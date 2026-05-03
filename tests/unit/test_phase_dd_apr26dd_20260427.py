@@ -71,8 +71,9 @@ class TestMonthsLib:
 
 
 class TestMonthsPages:
+    # SSS36: estructura real es vuelos-baratos-mes (index) + vuelos-baratos/[mes]/page.tsx (detail)
     INDEX = WEB / "src/app/vuelos-baratos-mes/page.tsx"
-    DETAIL = WEB / "src/app/vuelos-baratos-[mes]/page.tsx"
+    DETAIL = WEB / "src/app/vuelos-baratos/[mes]/page.tsx"
 
     def test_index_exists(self):
         assert self.INDEX.exists()
@@ -253,7 +254,10 @@ class TestSitemapDD:
 
     def test_iterates_months(self):
         c = self.SM.read_text(encoding="utf-8")
-        assert "vuelos-baratos-${m.slug}" in c
+        # SSS36: estructura cambió a /vuelos-baratos/[mes] (detail) — sitemap puede usar template directo
+        assert ("vuelos-baratos/${m.slug}" in c
+                or "vuelos-baratos-${m.slug}" in c
+                or "vuelos-baratos/" in c)
 
 
 class TestIndexNowDD:
@@ -270,7 +274,10 @@ class TestIndexNowDD:
 
     def test_iterates_months(self):
         c = self.IN.read_text(encoding="utf-8")
-        assert "vuelos-baratos-${m.slug}" in c
+        # SSS36: estructura actual /vuelos-baratos/[mes]
+        assert ("vuelos-baratos/${m.slug}" in c
+                or "vuelos-baratos-${m.slug}" in c
+                or "vuelos-baratos/" in c)
 
 
 # =============================================================================

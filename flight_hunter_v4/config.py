@@ -204,6 +204,37 @@ EUROPEAN_AIRPORTS_TIER2 = [
 # Todos los aeropuertos europeos combinados (sin duplicados)
 EUROPEAN_AIRPORTS_ALL = list(dict.fromkeys(EUROPEAN_AIRPORTS_TIER1 + EUROPEAN_AIRPORTS_TIER2))
 
+# SSS38: España completa — para usuarios que viven fuera de Madrid/BCN.
+# Subconjunto pensado para audiencia ES principal (target tripcazador.com).
+SPANISH_HUBS_COMPLETE = [
+    "MAD",  # Madrid Barajas
+    "BCN",  # Barcelona El Prat
+    "PMI",  # Palma de Mallorca
+    "AGP",  # Málaga Costa del Sol
+    "SVQ",  # Sevilla
+    "BIO",  # Bilbao
+    "VLC",  # Valencia
+    "ALC",  # Alicante-Elche
+    "IBZ",  # Ibiza
+    "TFS",  # Tenerife Sur
+    "TFN",  # Tenerife Norte
+    "LPA",  # Gran Canaria
+    "ACE",  # Lanzarote
+    "FUE",  # Fuerteventura
+    "MAH",  # Menorca
+    "OVD",  # Asturias (Oviedo)
+    "SCQ",  # Santiago de Compostela
+    "VGO",  # Vigo
+    "ZAZ",  # Zaragoza
+    "GRO",  # Girona-Costa Brava (Ryanair hub)
+    "REU",  # Reus (Tarragona)
+    "MJV",  # Murcia (San Javier antiguo, ahora Corvera)
+    "SDR",  # Santander
+    "PNA",  # Pamplona
+    "RJL",  # Logroño
+    "EAS",  # San Sebastián
+]
+
 # Aeropuertos con mejores conexiones transatlánticas (para Business Hunter)
 EUROPEAN_BEST_TRANSATLANTIC = [
     "CDG", "FRA", "AMS", "LHR", "MAD", "BCN", "MXP", "FCO",
