@@ -2,8 +2,8 @@ name: Health — watchdog
 
 on:
   schedule:
-    # Cada 30 minutos
-    - cron: "*/30 * * * *"
+    # SSS51: cada 60 min (era 30) para preservar Vercel invocations
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 jobs:

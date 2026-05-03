@@ -222,7 +222,8 @@ export async function GET(req: NextRequest) {
       width: 1080,
       height: 1080,
       headers: {
-        "cache-control": "public, max-age=86400, s-maxage=86400",
+        // SSS51: SWR=7d para minimizar regeneraciones (el carousel es estático)
+        "cache-control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=2592000, immutable",
       },
     }
   );

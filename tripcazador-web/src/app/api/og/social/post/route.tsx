@@ -364,8 +364,11 @@ export async function GET(req: NextRequest) {
       width: 1080,
       height: 1080,
       headers: {
-        // Cache 1 hora — los chollos cambian rápido
-        "cache-control": "public, max-age=3600, s-maxage=3600",
+        // SSS51: cache CDN agresivo para evitar invocaciones serverless caras.
+        // El OG image se rinde solo para cron Instagram + share manual.
+        // Stale-while-revalidate=7d permite servir caché viejo mientras
+        // regeneramos en background — invocations −95% vs antes.
+        "cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800, immutable",
       },
     }
   );

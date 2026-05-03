@@ -241,7 +241,8 @@ export async function GET(req: NextRequest) {
       width: 1080,
       height: 1920,
       headers: {
-        "cache-control": "public, max-age=3600, s-maxage=3600",
+        // SSS51: cache CDN agresivo (ver post/route.tsx para racional)
+        "cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800, immutable",
       },
     }
   );

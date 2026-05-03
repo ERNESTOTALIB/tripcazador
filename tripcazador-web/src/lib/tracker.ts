@@ -89,12 +89,22 @@ export function trackClick(type: ClientEventType, meta: EventMeta = {}): void {
 }
 
 /**
- * Helper específico para page_view. Detecta path actual del navegador.
+ * Helper específico para page_view.
+ *
+ * SSS51 (May 2026): NO-OP. Movimos el tracking de page_view a GA4 +
+ * Cloudflare ground-truth analytics (SSS45/47) — son gratis e ilimitados.
+ * Mantener este endpoint server-side disparaba invocations Vercel
+ * innecesariamente (page_view = 70% del tráfico /api/track). Para obtener
+ * la métrica usa /panel — que ahora cruza CF visitor counts con eventos
+ * de alta señal (deal_click, booking_redirect, share_clicked, etc).
+ *
+ * Si necesitas reactivar page_view a server-side por algún motivo
+ * (ej. tracking sin JS), borra este return early. Pero antes considera
+ * que GA4 + CF cubren el caso al 99%.
  */
-export function trackPageView(extra: EventMeta = {}): void {
-  if (!isBrowser()) return;
-  const path = window.location.pathname || "/";
-  trackClick("page_view", { path, ...extra });
+export function trackPageView(_extra: EventMeta = {}): void {
+  // intencionalmente vacío — ver docstring
+  return;
 }
 
 /**

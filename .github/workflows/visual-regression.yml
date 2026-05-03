@@ -9,7 +9,10 @@ name: Visual Regression — UI overlap + broken images detector
 #   - Overflow horizontal en mobile viewport
 #   - Trending widget mostrando solo MAD/BCN
 #
-# Corre 4× al día + on workflow_dispatch + después de cada deploy.
+# SSS51 (May 2026): reducido a 1× al día (era 4×) para preservar
+# Vercel invocations. Playwright cargaba ~50 páginas × 4 = 200 invocs/día
+# solo en este job. Ahora 50/día. Sigue corriendo on workflow_dispatch
+# + después de cada deploy para regresiones críticas.
 # Si falla envía alerta Telegram con screenshot artifact link.
 
 permissions:
@@ -17,8 +20,8 @@ permissions:
 
 on:
   schedule:
-    # 4× al día — UTC: 06:00, 12:00, 18:00, 00:00
-    - cron: "0 0,6,12,18 * * *"
+    # SSS51: 1× al día UTC 06:00 (era 4×) para preservar Vercel invocations
+    - cron: "0 6 * * *"
   workflow_dispatch:
   workflow_run:
     workflows: ["Deploy Web → Vercel"]
