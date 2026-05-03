@@ -33,6 +33,13 @@ export interface TierDefinition {
   popular?: boolean;
   /** env var con el price_xxxxx Stripe (server-side only). */
   envVarPriceId: string;
+  /**
+   * Fallback price ID si la env var no está seteada en Vercel.
+   * Estos IDs corresponden a los productos creados via /tmp/create_concierge_tiers.py
+   * en la cuenta Stripe LIVE acct_1TSy2AEM1wgB3igS (mayo 2026).
+   * Public-safe: un price_id sin la secret key no puede cobrar.
+   */
+  fallbackPriceId: string;
 }
 
 export const CONCIERGE_TIERS: Record<ConciergeTier, TierDefinition> = {
@@ -50,6 +57,7 @@ export const CONCIERGE_TIERS: Record<ConciergeTier, TierDefinition> = {
       "Email con links directos a aerolínea",
     ],
     envVarPriceId: "STRIPE_PRICE_CONCIERGE_EXPRESS",
+    fallbackPriceId: "price_1TT0htEM1wgB3igSX4NUogB3",
   },
   standard: {
     id: "standard",
@@ -66,6 +74,7 @@ export const CONCIERGE_TIERS: Record<ConciergeTier, TierDefinition> = {
     ],
     popular: true,
     envVarPriceId: "STRIPE_PRICE_CONCIERGE_STANDARD",
+    fallbackPriceId: "price_1TT0hvEM1wgB3igSIeqcfKZs",
   },
   premium: {
     id: "premium",
@@ -81,6 +90,7 @@ export const CONCIERGE_TIERS: Record<ConciergeTier, TierDefinition> = {
       "Recomendaciones cabina business si aplica",
     ],
     envVarPriceId: "STRIPE_PRICE_CONCIERGE_PREMIUM",
+    fallbackPriceId: "price_1TT0hwEM1wgB3igSxUJGXPWZ",
   },
   pro: {
     id: "pro",
@@ -96,6 +106,7 @@ export const CONCIERGE_TIERS: Record<ConciergeTier, TierDefinition> = {
       "Cancelación / replanteo incluidos durante 7d",
     ],
     envVarPriceId: "STRIPE_PRICE_CONCIERGE_PRO",
+    fallbackPriceId: "price_1TT0hyEM1wgB3igScEq3x7Wl",
   },
 };
 
@@ -114,11 +125,19 @@ export function getTier(id: unknown): TierDefinition | null {
 export const DEFAULT_TIER: ConciergeTier = "standard";
 
 /**
- * Lee el price ID Stripe desde env. Devuelve null si no está seteado.
+ * Lee el price ID Stripe desde env, con fallback al price ID hardcoded.
  * Server-side only — no exponer al cliente.
+ *
+ * Orden de resolución:
+ *   1. process.env.STRIPE_PRICE_CONCIERGE_<TIER> si está seteado y empieza por price_
+ *   2. fallbackPriceId hardcoded (price IDs de la cuenta Stripe LIVE)
+ *
+ * Esto evita depender de configurar 4 env vars en Vercel — el sistema
+ * funciona out-of-the-box con la STRIPE_SECRET_KEY ya seteada.
  */
 export function resolvePriceIdForTier(tier: ConciergeTier): string | null {
   const def = CONCIERGE_TIERS[tier];
-  const v = process.env[def.envVarPriceId];
-  return v && v.startsWith("price_") ? v : null;
+  const fromEnv = process.env[def.envVarPriceId];
+  if (fromEnv && fromEnv.startsWith("price_")) return fromEnv;
+  return def.fallbackPriceId || null;
 }
