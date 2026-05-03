@@ -44,12 +44,13 @@ interface Props {
   destinations: DestinationPin[];
 }
 
-// TopoJSON object shape — solo necesitamos saber que es un objeto Topology válido
-type TopoJsonData = Record<string, unknown>;
+// SSS53b: react-simple-maps@3 typing del prop `geography` es restrictiva.
+// Usamos `unknown` y casteamos al pasarlo (es un objeto Topology válido).
+type TopoJsonData = unknown;
 
 export function DestinationsMap({ destinations }: Props) {
   const [active, setActive] = useState<string | null>(null);
-  const [topoData, setTopoData] = useState<TopoJsonData | null>(null);
+  const [topoData, setTopoData] = useState<TopoJsonData>(null);
   const [loadError, setLoadError] = useState(false);
 
   // SSS52: fetch manual del TopoJSON. Pasamos el objeto al prop `geography`
@@ -115,7 +116,7 @@ export function DestinationsMap({ destinations }: Props) {
           projectionConfig={{ scale: 160 }}
           style={{ width: "100%", height: "auto" }}
         >
-          <Geographies geography={topoData}>
+          <Geographies geography={topoData as string}>
             {({ geographies }) =>
               geographies.map((geo) => (
                 <Geography
