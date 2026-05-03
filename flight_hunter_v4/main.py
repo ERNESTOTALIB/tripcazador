@@ -444,9 +444,9 @@ async def run_pipeline(args):
         vueling_task = _vueling_with_timeout()
 
         # Duffel: motor real-time GDS-grade (300+ aerolíneas).
-        # SSS27: con throttle 7s/req × 48 reqs ≈ 5.5 min. Subimos timeout
-        # a 12 min para que termine sin matarlo. Sigue corriendo en paralelo
-        # con Ryanair/TP/Vueling, así que no bloquea el resto.
+        # SSS33: con NO_CAP + sem=4 + throttle 0.5s × 480 reqs ≈ 3 min.
+        # Wrapper externo 7 min; el engine ya tiene budget global propio.
+        # Si Duffel devuelve parciales (timeout interno), ya están dedupados.
         duffel = DuffelEngine()
         async def _duffel_with_timeout():
             if not duffel.available:
@@ -458,10 +458,10 @@ async def run_pipeline(args):
                         date_from=args.date_from,
                         date_to=args.date_to,
                     ),
-                    timeout=720,  # 12 min máx (SSS27: throttle 7s × ~48 reqs serializados)
+                    timeout=420,  # 7 min máx — dejamos margen sobre budget interno (6 min)
                 )
             except asyncio.TimeoutError:
-                print("   ⏱️  Duffel: timeout 12 min — descartado, seguimos sin él")
+                print("   ⏱️  Duffel: timeout 7 min outer — descartado, seguimos sin él")
                 return []
             except Exception as e:
                 print(f"   ⚠️  Duffel: error {type(e).__name__}: {e}")

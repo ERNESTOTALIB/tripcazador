@@ -32,9 +32,18 @@ BASE_URL = "https://api.duffel.com/air"
 # Long-haul prioritarios (los que Ryanair / low-cost no cubren).
 DUFFEL_LONG_HAUL = ["JFK", "LAX", "BKK", "NRT", "SIN", "GRU", "EZE", "JNB", "DXB", "SYD"]
 
-_CONCURRENCY = 1  # SSS27: cuentas Live nuevas tienen ~5-10 req/min, sem=1+sleep
-_REQUEST_TIMEOUT = 25   # s por petición HTTP
-_SEARCH_TIMEOUT = 30    # s por búsqueda completa (create + retrieve)
+# SSS33 (may-2026): la combinación sem=1 + sleep 7s causaba runtime 7h con
+# scope NO_CAP (2,750 reqs). Solución: con NO_CAP la cuenta Live aguanta 4
+# concurrentes sin throttle agresivo + budget global 6 min para no acaparar
+# el worker GitHub Actions (45 min total).
+_CONCURRENCY_DEFAULT = 1   # cuentas test/free
+_CONCURRENCY_NO_CAP  = 4   # cuentas Live verificadas
+_REQUEST_TIMEOUT = 25      # s por petición HTTP individual
+_SEARCH_TIMEOUT = 30       # s por búsqueda completa (create + retrieve)
+_GLOBAL_BUDGET_SEC = int(os.getenv("DUFFEL_BUDGET_SEC", "360"))  # 6 min total
+# Throttle entre requests, distinto por modo. Sin throttle agresivo en NO_CAP.
+_THROTTLE_DEFAULT = 7.0    # s entre requests en modo conservador
+_THROTTLE_NO_CAP = 0.5     # s entre requests en modo escalado
 
 # Conversión a EUR — rates aproximados; sync con travelpayouts si desvía >5%.
 _FX_TO_EUR = {
@@ -128,7 +137,12 @@ class DuffelEngine:
         # Token desde env (config.py ya lo expone como DUFFEL_TOKEN).
         self.token = getattr(config, "DUFFEL_TOKEN", "") or ""
         self.available = bool(self.token)
-        self._semaphore = asyncio.Semaphore(_CONCURRENCY)
+        # SSS33: concurrency depende del modo. NO_CAP escala para cuentas Live.
+        no_cap = os.getenv("DUFFEL_NO_CAP", "").lower() in ("1", "true", "yes")
+        self._no_cap = no_cap
+        self._concurrency = _CONCURRENCY_NO_CAP if no_cap else _CONCURRENCY_DEFAULT
+        self._throttle = _THROTTLE_NO_CAP if no_cap else _THROTTLE_DEFAULT
+        self._semaphore = asyncio.Semaphore(self._concurrency)
         if not self.available:
             print("⚠️  DUFFEL_TOKEN no configurado.")
 
@@ -205,7 +219,7 @@ class DuffelEngine:
                     rid = await self._create_offer_request(session, origin, destination, departure_date)
                     if not rid:
                         # Sleep aún en fallo para no saturar el rate-limit
-                        await asyncio.sleep(7)
+                        await asyncio.sleep(self._throttle)
                         return []
                     offers = await self._retrieve_offers(session, rid)
                     flights = []
@@ -213,8 +227,7 @@ class DuffelEngine:
                         f = _offer_to_dict(offer, origin, destination)
                         if f and f["price_eur"] > 0:
                             flights.append(f)
-                    # Sleep después del éxito también — total 7s/request en serie
-                    await asyncio.sleep(7)
+                    await asyncio.sleep(self._throttle)
                     return flights
 
                 return await asyncio.wait_for(_flow(), timeout=_SEARCH_TIMEOUT + 8)
@@ -241,7 +254,9 @@ class DuffelEngine:
         if not dates:
             return []
 
-        print(f"\n   🦆 Duffel: {len(origins)} orígenes × {len(destinations)} destinos × {len(dates)} fechas")
+        total = len(origins) * (len(destinations) - 1) * len(dates)
+        mode = "NO_CAP" if self._no_cap else "CAPPED"
+        print(f"\n   🦆 Duffel ({mode}): {len(origins)} orígenes × {len(destinations)} destinos × {len(dates)} fechas = ~{total} reqs (sem={self._concurrency}, budget={_GLOBAL_BUDGET_SEC}s)")
 
         all_flights: List[Dict] = []
         async with aiohttp.ClientSession() as session:
@@ -253,7 +268,26 @@ class DuffelEngine:
                     for d in dates:
                         tasks.append(self._search_one(session, origin, dest, d))
 
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+            # SSS33: budget global — si las tareas no terminan en N segundos,
+            # cancelamos lo pendiente y devolvemos lo que ya tengamos.
+            try:
+                results = await asyncio.wait_for(
+                    asyncio.gather(*tasks, return_exceptions=True),
+                    timeout=_GLOBAL_BUDGET_SEC,
+                )
+            except asyncio.TimeoutError:
+                print(f"   ⏱️  Duffel: budget {_GLOBAL_BUDGET_SEC}s agotado — recopilando parciales")
+                # Cancelar tasks pendientes y juntar las completadas
+                for t in tasks:
+                    if not t.done():
+                        t.cancel()
+                results = []
+                for t in tasks:
+                    if t.done() and not t.cancelled():
+                        try:
+                            results.append(t.result())
+                        except Exception:
+                            results.append([])
 
         for r in results:
             if isinstance(r, list):
@@ -279,20 +313,15 @@ class DuffelEngine:
         Test mode: 3 origins × 5 dests × 4 dates = 60 requests (≈ 1.5 min con sem=4).
         Live mode: 25 origins × 10 dests × 11 dates = 2750 requests.
         """
-        # SSS24: Duffel Live mode también tiene rate limits agresivos en cuentas
-        # nuevas (~10-20 req/min). El cap "live=full fan-out" causaba 2,750 reqs
-        # → todas rate-limited → 0 deals. Fix: cap conservador para AMBOS modos
-        # hasta que la cuenta Live escale en límites.
-        no_cap = os.getenv("DUFFEL_NO_CAP", "").lower() in ("1", "true", "yes")
-        if no_cap:
-            origins_capped = origins
-            dests_capped = DUFFEL_LONG_HAUL
-            step = 7
+        # SSS33: scope realista que cabe en budget 6 min con sem=4 + throttle 0.5s.
+        # NO_CAP: 10 orígenes × 8 destinos × step=14d = ~6 fechas → ~480 reqs.
+        # Con sem=4 + 0.5s throttle = 480/4 × 1.5s ≈ 3 min teóricos.
+        # CAPPED (test/free): scope mínimo conservador para no quemar quota.
+        if self._no_cap:
+            origins_capped = origins[:10]
+            dests_capped = DUFFEL_LONG_HAUL[:8]
+            step = 14
         else:
-            # SSS27: Duffel Live accounts nuevas tienen ~5-10 req/min.
-            # 5×6×6=180 reqs todas se rate-limit. Reducimos drásticamente:
-            # 3 origins × 4 dests × step=21d = ~12-20 requests.
-            # Con sem=1 + sleep 7s entre requests = ~2-3 min runtime, 0 rate-limits.
             origins_capped = origins[:3]
             dests_capped = DUFFEL_LONG_HAUL[:4]
             step = 21
