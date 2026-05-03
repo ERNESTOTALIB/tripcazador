@@ -75,7 +75,7 @@ jobs:
           echo "to=$DATE_TO" >> $GITHUB_OUTPUT
           echo "Ventana: $DATE_FROM → $DATE_TO"
 
-      - name: Determine if hotels run (every 12h: 06:00 + 18:00 UTC)
+      - name: "Determine if hotels run (every 12h at 06 and 18 UTC)"
         id: hotels_flag
         run: |
           HOUR=$(date -u +%H)
