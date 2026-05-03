@@ -201,9 +201,9 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
           }}
         />
 
-        {/* Badge verificado */}
+        {/* Badge verificado — SSS20 movido a bottom-left para liberar top-right (heart) */}
         {verified && (
-          <div className="absolute top-3 right-3">
+          <div className="absolute bottom-3 left-3">
             <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">
               <CheckCircle size={10} />
               2+ fuentes

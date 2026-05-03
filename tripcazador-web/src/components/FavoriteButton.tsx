@@ -59,8 +59,10 @@ export function FavoriteButton({
   const baseStyles =
     "inline-flex items-center justify-center rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300";
   const sizes = {
+    // SSS20: corazón en top-right (no left-12 que tapaba el badge clasificación).
+    // El verified badge se movió a bottom-left para liberar la esquina top-right.
     card:
-      "w-9 h-9 bg-gray-900/70 backdrop-blur-md hover:bg-gray-900/90 absolute top-3 left-12 z-10",
+      "w-9 h-9 bg-gray-900/70 backdrop-blur-md hover:bg-gray-900/90 absolute top-3 right-3 z-10",
     row: "w-9 h-9 bg-transparent hover:bg-gray-800",
     inline: "w-8 h-8 hover:bg-gray-800",
   } as const;

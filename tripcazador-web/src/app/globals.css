@@ -485,6 +485,12 @@ h1, h2 {
   font-weight: 600;
   color: #fff;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  /* SSS20 fix: reservar 56px para el badge -95% que está absolute top-right */
+  padding-right: 56px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
 }
 
 .sky-fc-price {

@@ -14,6 +14,8 @@
  */
 import { NextResponse } from "next/server";
 import { aggregate24h } from "@/lib/event_store";
+import { promises as fs } from "fs";
+import path from "path";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -102,7 +104,45 @@ export async function GET() {
     }
   }
 
-  // Si no llegaron datos suficientes, usar fallback estático para no mostrar widget vacío
+  // SSS21: si no hay datos de clicks, derivar trending de deals reales
+  // (en vez de fallback estático que siempre mostraba MAD/BCN). Lee el
+  // deals-latest.json del worker y muestra las 5 rutas con mayor score.
+  if (topRoutes.length < 3) {
+    try {
+      const dealsPath = path.join(process.cwd(), "public", "deals-latest.json");
+      const raw = await fs.readFile(dealsPath, "utf-8");
+      const data = JSON.parse(raw);
+      const deals: Array<{ origin?: string; destination?: string; score?: number }> =
+        Array.isArray(data) ? data : data.deals || [];
+      // Score-weighted route ranking — para que veamos diversidad de orígenes
+      const routeMap = new Map<string, number>();
+      for (const d of deals) {
+        if (!d.origin || !d.destination) continue;
+        const route = `${d.origin}-${d.destination}`;
+        routeMap.set(route, Math.max(routeMap.get(route) || 0, d.score || 50));
+      }
+      const sortedRoutes = Array.from(routeMap.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      if (sortedRoutes.length >= 3) {
+        topRoutes = sortedRoutes.map(([route, score]) => ({
+          route,
+          clicks: Math.round(score * 0.6), // proxy "interest" basado en score
+        }));
+        const destMap = new Map<string, number>();
+        for (const [route, score] of sortedRoutes) {
+          const dest = route.split("-")[1];
+          if (dest) destMap.set(dest, Math.max(destMap.get(dest) || 0, score));
+        }
+        topDestinations = Array.from(destMap.entries())
+          .map(([destination, score]) => ({ destination, clicks: Math.round(score * 0.6) }))
+          .slice(0, 5);
+        source = "fallback"; // marca que viene de deals, no de clicks reales
+      }
+    } catch {
+      // Si ni deals.json existe, último recurso: fallback estático
+    }
+  }
   if (topRoutes.length < 3) {
     topRoutes = FALLBACK_ROUTES;
     topDestinations = FALLBACK_DESTINATIONS;
