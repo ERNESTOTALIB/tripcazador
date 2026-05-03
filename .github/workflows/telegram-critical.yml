@@ -1,0 +1,75 @@
+name: Telegram Critical Deals — top 1-2 cada 30min
+
+# SSS34 (may-2026): publisher anti-spam para canal Telegram público.
+# Cada 30 min mira deals-latest.json (commiteado por worker.yml cada 4h),
+# filtra TOP 1-2 chollos REALMENTE críticos (CRÍTICO/ERROR + score≥75 +
+# precio≤300€ + <6h frescura), dedupea contra .telegram_critical_sent.json
+# y envía solo los nuevos. Si no hay nada nuevo: silencio total.
+
+permissions:
+  contents: write     # Para commitear .telegram_critical_sent.json actualizado
+
+on:
+  schedule:
+    # Cada 30 min en horario diurno UTC (08:00-22:00 = 09:00-23:00 hora ES)
+    # Evita madrugada para no molestar suscriptores. Cron min */30
+    - cron: "*/30 8-22 * * *"
+  workflow_dispatch:
+
+concurrency:
+  # Solo una instancia a la vez para evitar conflictos en el dedup file
+  group: telegram-critical
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Filtrar + publicar TOP 2 críticos
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Necesitamos historial corto solo, pero token con write permission
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify deals + dedup files
+        run: |
+          if [ ! -f tripcazador-web/public/deals-latest.json ]; then
+            echo "::warning::deals-latest.json no existe — worker no ha corrido todavía"
+            exit 0
+          fi
+          ls -la tripcazador-web/public/deals-latest.json flight_hunter_v4/.telegram_critical_sent.json || true
+
+      - name: Run publisher
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python flight_hunter_v4/telegram_critical_publisher.py
+
+      - name: Commit dedup file if changed
+        run: |
+          git config user.email "telegram-critical@tripcazador.com"
+          git config user.name "TripCazador Telegram Bot"
+          git add flight_hunter_v4/.telegram_critical_sent.json
+          if git diff --staged --quiet; then
+            echo "Sin alertas nuevas — nada que commitear"
+          else
+            git commit -m "chore(telegram): update critical sent dedup [skip ci]"
+            # Push con retry simple para conflictos race
+            for attempt in 1 2 3; do
+              if git push origin HEAD:main; then
+                echo "✅ Dedup pusheado (attempt $attempt)"
+                break
+              fi
+              echo "⚠️  Push falló attempt $attempt — pull rebase + retry"
+              git pull --rebase origin main || true
+              sleep 2
+            done
+          fi
