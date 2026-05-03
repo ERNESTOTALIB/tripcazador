@@ -11,9 +11,13 @@ name: Deploy Web → Vercel
 # (TRIPCAZADOR_PROD_SMOKE=1) lo detectan ahora.
 
 on:
-  # SSS 2026-05-02: push trigger desactivado para parar spam Telegram + ahorrar
-  # runner minutes. Vercel Git integration ya redeploya en push a main.
-  # Este workflow queda como fallback manual.
+  # SSS6 2026-05-02: re-activado. Vercel Git integration NO redeploya
+  # automáticamente (verificado prod). Este workflow es el único path real.
+  push:
+    branches: [main]
+    paths:
+      - "tripcazador-web/**"
+      - ".github/workflows/vercel-deploy.yml"
   workflow_dispatch:
 
 jobs:
@@ -60,8 +64,3 @@ jobs:
           curl -fsS --max-time 15 https://tripcazador.com/ | grep -q TripCazador || (echo "home failed" && exit 1)
           curl -fsS --max-time 15 https://tripcazador.com/calculadora | grep -q -i calculadora || (echo "calc failed" && exit 1)
           echo "smoke OK"
-
-Commit: ${{ github.sha }}
-Deploy: ${DEPLOY_URL:-n/a}
-Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" || true
-          fi
