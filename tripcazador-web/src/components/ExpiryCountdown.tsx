@@ -86,7 +86,33 @@ export function ExpiryCountdown({ expiresAt, foundAt, critical }: Props) {
     );
   }
 
-  // Formateo legible
+  // SSS53 (May 2026): si el expires_at es >72h en el futuro, NO mostramos
+  // contador (es claramente una vigencia indicativa, no un countdown real).
+  // Caía cosas como "Expira en 89d 23h" — sin sentido y mata la urgencia.
+  // En ese caso, fallback al chip de frescura "Hace X" si tenemos foundAt.
+  if (remainingH > 72) {
+    if (foundAt) {
+      const diffMin = Math.max(0, (now - new Date(foundAt).getTime()) / 60_000);
+      const fLabel =
+        diffMin < 60
+          ? `Hace ${Math.round(diffMin)} min`
+          : diffMin < 60 * 24
+            ? `Hace ${Math.round(diffMin / 60)}h`
+            : `Hace ${Math.round(diffMin / (60 * 24))}d`;
+      return (
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-800 text-gray-300 text-xs"
+          title={`Último escaneo: ${new Date(foundAt).toLocaleString("es-ES")}`}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+          Visto {fLabel}
+        </span>
+      );
+    }
+    return null; // sin foundAt y expiración lejana → no renderizamos nada
+  }
+
+  // Formateo legible (≤72h)
   const totalMin = Math.floor(remainingMs / 60_000);
   const days = Math.floor(totalMin / (60 * 24));
   const hours = Math.floor((totalMin % (60 * 24)) / 60);

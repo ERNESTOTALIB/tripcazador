@@ -304,19 +304,29 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
           </div>
         )}
 
-        {/* Tags */}
-        {tags && tags.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {tags.slice(0, 4).map(tag => (
-              <span
-                key={tag}
-                className="px-1.5 py-0.5 bg-gray-800 rounded text-xs text-gray-500"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
+        {/* Tags (SSS53: filtra etiquetas internas que no son para usuario) */}
+        {(() => {
+          const INTERNAL_TAG_PREFIXES = ["engine:", "real_engine:", "src:", "internal:"];
+          const INTERNAL_TAG_EXACT = new Set(["seed", "fallback", "synthetic", "stub", "mock"]);
+          const publicTags = (tags || []).filter(
+            (t) =>
+              !INTERNAL_TAG_EXACT.has(t.toLowerCase()) &&
+              !INTERNAL_TAG_PREFIXES.some((p) => t.toLowerCase().startsWith(p)),
+          );
+          if (publicTags.length === 0) return null;
+          return (
+            <div className="flex flex-wrap gap-1">
+              {publicTags.slice(0, 4).map((tag) => (
+                <span
+                  key={tag}
+                  className="px-1.5 py-0.5 bg-gray-800 rounded text-xs text-gray-500"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          );
+        })()}
 
         {/* CTA — fase ii: copy diferente según destino del link */}
         {(() => {
