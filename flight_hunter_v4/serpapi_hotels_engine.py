@@ -36,12 +36,28 @@ SERPAPI_KEY = os.environ.get("SERPAPI_KEY", _SERPAPI_KEY or "")
 TP_MARKER = os.environ.get("TP_MARKER", _TP_MARKER or "")
 BASE = "https://serpapi.com/search.json"
 
-# Top 50 ciudades para hunter — incluye los grandes hubs y destinos
-# turísticos top mundiales. Con 2 runs/día (cron 12h) = 100 queries/día =
-# ~3,000 queries/mes — cabe holgadamente en SerpAPI Hobby ($50/mes 5K queries).
-# Hoteles cambian precio lento (refresh real 24-48h) → 2x/día es suficiente.
+# SSS30 — cuotas REALES SerpAPI:
+#   Plan FREE = 250 queries/mes (NO 5,000 — Hobby es $50/mes)
+#   Disponible para hotels = ~200/mes (50 reserva business class)
+#   Budget = ~7 queries/día → 6 ciudades × 1/día = 180/mes ✅
+#
+# Top 6 ciudades = los destinos más buscados desde España (orígenes
+# Tier1 del hunter). Para más cobertura, frontend /hoteles usa
+# hotel_seed.ts con 12 ciudades curated + booking via TP_MARKER (gratis).
 TOP_CITIES: List[Tuple[str, str, str]] = [
-    # ─── Europa Occidental (15) ────────────────────────────
+    ("Madrid, Spain", "España", "Europa"),
+    ("Barcelona, Spain", "España", "Europa"),
+    ("Paris, France", "Francia", "Europa"),
+    ("Rome, Italy", "Italia", "Europa"),
+    ("London, UK", "Reino Unido", "Europa"),
+    ("Lisbon, Portugal", "Portugal", "Europa"),
+]
+
+# Lista extendida — usar sólo si DUFFEL_NO_CAP=1 o usuario actualiza
+# SerpAPI a plan Hobby ($50/mes 5K queries). Para activar: setear
+# env var SERPAPI_HOTELS_FULL_CITIES=1.
+TOP_CITIES_FULL: List[Tuple[str, str, str]] = [
+    # Europa Occidental
     ("Madrid, Spain", "España", "Europa"),
     ("Barcelona, Spain", "España", "Europa"),
     ("Sevilla, Spain", "España", "Europa"),
@@ -57,7 +73,7 @@ TOP_CITIES: List[Tuple[str, str, str]] = [
     ("Porto, Portugal", "Portugal", "Europa"),
     ("Amsterdam, Netherlands", "Países Bajos", "Europa"),
     ("Brussels, Belgium", "Bélgica", "Europa"),
-    # ─── Europa Central / Norte (10) ───────────────────────
+    # Europa Central / Norte
     ("Berlin, Germany", "Alemania", "Europa"),
     ("Munich, Germany", "Alemania", "Europa"),
     ("Vienna, Austria", "Austria", "Europa"),
@@ -68,19 +84,19 @@ TOP_CITIES: List[Tuple[str, str, str]] = [
     ("Stockholm, Sweden", "Suecia", "Europa"),
     ("Reykjavik, Iceland", "Islandia", "Europa"),
     ("Dublin, Ireland", "Irlanda", "Europa"),
-    # ─── UK + Mediterráneo (5) ─────────────────────────────
+    # UK + Mediterráneo
     ("London, UK", "Reino Unido", "Europa"),
     ("Edinburgh, UK", "Reino Unido", "Europa"),
     ("Athens, Greece", "Grecia", "Europa"),
     ("Santorini, Greece", "Grecia", "Europa"),
     ("Mykonos, Greece", "Grecia", "Europa"),
-    # ─── Oriente Medio + África Norte (5) ──────────────────
+    # Oriente Medio + África
     ("Istanbul, Turkey", "Turquía", "Oriente Medio"),
     ("Dubai, UAE", "Emiratos Árabes", "Oriente Medio"),
     ("Marrakech, Morocco", "Marruecos", "África"),
     ("Cairo, Egypt", "Egipto", "África"),
     ("Cape Town, South Africa", "Sudáfrica", "África"),
-    # ─── Asia (8) ──────────────────────────────────────────
+    # Asia
     ("Tokyo, Japan", "Japón", "Asia"),
     ("Kyoto, Japan", "Japón", "Asia"),
     ("Bangkok, Thailand", "Tailandia", "Asia"),
@@ -89,7 +105,7 @@ TOP_CITIES: List[Tuple[str, str, str]] = [
     ("Singapore", "Singapur", "Asia"),
     ("Hong Kong", "Hong Kong", "Asia"),
     ("Hanoi, Vietnam", "Vietnam", "Asia"),
-    # ─── Américas (7) ──────────────────────────────────────
+    # Américas
     ("New York, USA", "Estados Unidos", "América Norte"),
     ("Miami, USA", "Estados Unidos", "América Norte"),
     ("Los Angeles, USA", "Estados Unidos", "América Norte"),
@@ -98,6 +114,13 @@ TOP_CITIES: List[Tuple[str, str, str]] = [
     ("Buenos Aires, Argentina", "Argentina", "América Sur"),
     ("Rio de Janeiro, Brazil", "Brasil", "América Sur"),
 ]
+
+
+def _get_cities_for_run() -> List[Tuple[str, str, str]]:
+    """Devuelve TOP_CITIES_FULL si SERPAPI_HOTELS_FULL_CITIES=1, sino TOP_CITIES."""
+    if os.getenv("SERPAPI_HOTELS_FULL_CITIES", "").lower() in ("1", "true", "yes"):
+        return TOP_CITIES_FULL
+    return TOP_CITIES
 
 
 def _next_window(days_ahead: int = 30, nights: int = 3) -> Tuple[str, str]:
@@ -210,7 +233,7 @@ class SerpApiHotelsEngine:
         """Compatible con HotellookEngine.search_top_destinations(). date_from/to ignorados — usamos próximo mes día 15."""
         if not self.available:
             return []
-        cities = destinations or TOP_CITIES
+        cities = destinations or _get_cities_for_run()
         checkin, checkout = _next_window(days_ahead=30, nights=3)
         print(f"   🏨 SerpAPI Hotels: {len(cities)} ciudades × 1 ventana ({checkin} → {checkout})")
 

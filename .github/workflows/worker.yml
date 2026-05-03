@@ -75,18 +75,19 @@ jobs:
           echo "to=$DATE_TO" >> $GITHUB_OUTPUT
           echo "Ventana: $DATE_FROM → $DATE_TO"
 
-      - name: "Determine if hotels run (every 12h at 06 and 18 UTC)"
+      - name: "Determine if hotels run (1x per day at 04 UTC)"
         id: hotels_flag
         run: |
           HOUR=$(date -u +%H)
-          # SSS29: hotels solo en cron 06:00 y 18:00 UTC. Manual trigger
-          # (workflow_dispatch) también activa hotels.
-          if [ "$HOUR" = "06" ] || [ "$HOUR" = "18" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          # SSS30: SerpAPI plan FREE = 250 queries/mes (NO 5000 — Hobby es $50/mo).
+          # Budget 6 ciudades × 1 run/día = 180/mes (deja 70 reserva business class).
+          # Hotels solo en cron 04:00 UTC. workflow_dispatch manual también activa.
+          if [ "$HOUR" = "04" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "hunt=1" >> $GITHUB_OUTPUT
             echo "✅ Hotels enabled this run (hour=$HOUR or manual)"
           else
             echo "hunt=0" >> $GITHUB_OUTPUT
-            echo "⏭️  Hotels skipped this run (hour=$HOUR, save SerpAPI quota)"
+            echo "⏭️  Hotels skipped this run (hour=$HOUR, save SerpAPI free quota 250/mes)"
           fi
 
       - name: Run Flight Hunter
