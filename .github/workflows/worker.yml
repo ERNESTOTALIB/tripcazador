@@ -75,6 +75,20 @@ jobs:
           echo "to=$DATE_TO" >> $GITHUB_OUTPUT
           echo "Ventana: $DATE_FROM → $DATE_TO"
 
+      - name: Determine if hotels run (every 12h: 06:00 + 18:00 UTC)
+        id: hotels_flag
+        run: |
+          HOUR=$(date -u +%H)
+          # SSS29: hotels solo en cron 06:00 y 18:00 UTC. Manual trigger
+          # (workflow_dispatch) también activa hotels.
+          if [ "$HOUR" = "06" ] || [ "$HOUR" = "18" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "hunt=1" >> $GITHUB_OUTPUT
+            echo "✅ Hotels enabled this run (hour=$HOUR or manual)"
+          else
+            echo "hunt=0" >> $GITHUB_OUTPUT
+            echo "⏭️  Hotels skipped this run (hour=$HOUR, save SerpAPI quota)"
+          fi
+
       - name: Run Flight Hunter
         env:
           # API keys (añadir todas como secrets en GitHub · Settings → Secrets)
@@ -84,6 +98,10 @@ jobs:
           TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
           TP_MARKER:           ${{ secrets.TP_MARKER }}
           DUFFEL_TOKEN:        ${{ secrets.DUFFEL_TOKEN }}
+          AMADEUS_API_KEY:     ${{ secrets.AMADEUS_API_KEY }}
+          AMADEUS_API_SECRET:  ${{ secrets.AMADEUS_API_SECRET }}
+          # SSS29: hotels run flag — 2x/día para no agotar SerpAPI Hobby
+          HUNT_HOTELS:         ${{ steps.hotels_flag.outputs.hunt }}
           # Telegram alerts (opcional)
           TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}

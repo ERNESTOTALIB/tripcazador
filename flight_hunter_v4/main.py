@@ -516,25 +516,33 @@ async def run_pipeline(args):
 
         # ── Hotels: SerpAPI Google Hotels ──────────────────────────────
         # SSS28: HotellookEngine deshabilitado (endpoint público dead).
-        # Usamos SerpAPI google_hotels que devuelve datos reales agregados de
-        # Booking/Hotels.com/Expedia. Booking URLs incluyen TP_MARKER aid.
-        print(f"\n   🏨 Buscando hoteles top destinations (SerpAPI Google Hotels)...")
-        hotels_engine = SerpApiHotelsEngine()
-        if hotels_engine.available:
-            try:
-                hotel_deals = await asyncio.wait_for(
-                    hotels_engine.search_top_destinations(),
-                    timeout=180,  # 3 min — 16 reqs paralelas con sem=4 = ~30-60s
-                )
-                print(f"   🏨 SerpAPI Hotels: {len(hotel_deals)} hoteles")
-            except asyncio.TimeoutError:
-                print(f"   ⏱️  SerpAPI Hotels: timeout 3 min — descartado")
-                hotel_deals = []
-            except Exception as e:
-                print(f"   ⚠️  SerpAPI Hotels: {type(e).__name__}: {e}")
-                hotel_deals = []
+        # SSS29: 50 ciudades × 2 runs/día = 3K queries/mes — cabe en Hobby plan.
+        # Solo corre si HUNT_HOTELS=1 (flag explícito). Configurar:
+        #   - cron flights cada 4h: HUNT_HOTELS=0 → solo vuelos (rápido)
+        #   - cron hotels cada 12h: HUNT_HOTELS=1 → vuelos + hoteles
+        # Ahorra ~70% de queries SerpAPI sin sacrificar frescura (hotels
+        # cambian precio lento, refresh real 24-48h).
+        hunt_hotels = os.getenv("HUNT_HOTELS", "").lower() in ("1", "true", "yes")
+        if hunt_hotels:
+            print(f"\n   🏨 Buscando hoteles top destinations (SerpAPI Google Hotels)...")
+            hotels_engine = SerpApiHotelsEngine()
+            if hotels_engine.available:
+                try:
+                    hotel_deals = await asyncio.wait_for(
+                        hotels_engine.search_top_destinations(),
+                        timeout=240,  # 4 min — 50 reqs con sem=4 = ~2-3 min
+                    )
+                    print(f"   🏨 SerpAPI Hotels: {len(hotel_deals)} hoteles")
+                except asyncio.TimeoutError:
+                    print(f"   ⏱️  SerpAPI Hotels: timeout 4 min — descartado")
+                    hotel_deals = []
+                except Exception as e:
+                    print(f"   ⚠️  SerpAPI Hotels: {type(e).__name__}: {e}")
+                    hotel_deals = []
+            else:
+                print(f"   ℹ️  SerpAPI Hotels: SERPAPI_KEY no configurada, hoteles omitidos")
         else:
-            print(f"   ℹ️  SerpAPI Hotels: SERPAPI_KEY no configurada, hoteles omitidos")
+            print(f"\n   ⏭️  Hoteles omitidos (HUNT_HOTELS no activo). Solo vuelos en este run.")
 
     elif mode == "amadeus":
         # Modo AMADEUS: GDS completo — Eurowings, Condor, TUIfly, LOT, airBaltic...

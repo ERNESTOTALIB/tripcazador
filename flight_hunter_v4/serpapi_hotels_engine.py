@@ -36,26 +36,67 @@ SERPAPI_KEY = os.environ.get("SERPAPI_KEY", _SERPAPI_KEY or "")
 TP_MARKER = os.environ.get("TP_MARKER", _TP_MARKER or "")
 BASE = "https://serpapi.com/search.json"
 
-# Top 16 ciudades para hunter — coinciden con el frontend hotel_seed.ts
-# para que los hotels.json cubran lo que el usuario verá en /hoteles.
+# Top 50 ciudades para hunter — incluye los grandes hubs y destinos
+# turísticos top mundiales. Con 2 runs/día (cron 12h) = 100 queries/día =
+# ~3,000 queries/mes — cabe holgadamente en SerpAPI Hobby ($50/mes 5K queries).
+# Hoteles cambian precio lento (refresh real 24-48h) → 2x/día es suficiente.
 TOP_CITIES: List[Tuple[str, str, str]] = [
-    # (query, country, region) — query es lo que SerpAPI espera
+    # ─── Europa Occidental (15) ────────────────────────────
     ("Madrid, Spain", "España", "Europa"),
     ("Barcelona, Spain", "España", "Europa"),
+    ("Sevilla, Spain", "España", "Europa"),
+    ("Valencia, Spain", "España", "Europa"),
+    ("Mallorca, Spain", "España", "Europa"),
+    ("Tenerife, Spain", "España", "Europa"),
     ("Paris, France", "Francia", "Europa"),
+    ("Nice, France", "Francia", "Europa"),
     ("Rome, Italy", "Italia", "Europa"),
+    ("Florence, Italy", "Italia", "Europa"),
+    ("Venice, Italy", "Italia", "Europa"),
     ("Lisbon, Portugal", "Portugal", "Europa"),
-    ("Berlin, Germany", "Alemania", "Europa"),
+    ("Porto, Portugal", "Portugal", "Europa"),
     ("Amsterdam, Netherlands", "Países Bajos", "Europa"),
-    ("Prague, Czech Republic", "Chequia", "Europa"),
+    ("Brussels, Belgium", "Bélgica", "Europa"),
+    # ─── Europa Central / Norte (10) ───────────────────────
+    ("Berlin, Germany", "Alemania", "Europa"),
+    ("Munich, Germany", "Alemania", "Europa"),
     ("Vienna, Austria", "Austria", "Europa"),
+    ("Prague, Czech Republic", "Chequia", "Europa"),
+    ("Budapest, Hungary", "Hungría", "Europa"),
+    ("Zurich, Switzerland", "Suiza", "Europa"),
+    ("Copenhagen, Denmark", "Dinamarca", "Europa"),
+    ("Stockholm, Sweden", "Suecia", "Europa"),
+    ("Reykjavik, Iceland", "Islandia", "Europa"),
+    ("Dublin, Ireland", "Irlanda", "Europa"),
+    # ─── UK + Mediterráneo (5) ─────────────────────────────
+    ("London, UK", "Reino Unido", "Europa"),
+    ("Edinburgh, UK", "Reino Unido", "Europa"),
     ("Athens, Greece", "Grecia", "Europa"),
+    ("Santorini, Greece", "Grecia", "Europa"),
+    ("Mykonos, Greece", "Grecia", "Europa"),
+    # ─── Oriente Medio + África Norte (5) ──────────────────
     ("Istanbul, Turkey", "Turquía", "Oriente Medio"),
+    ("Dubai, UAE", "Emiratos Árabes", "Oriente Medio"),
     ("Marrakech, Morocco", "Marruecos", "África"),
+    ("Cairo, Egypt", "Egipto", "África"),
+    ("Cape Town, South Africa", "Sudáfrica", "África"),
+    # ─── Asia (8) ──────────────────────────────────────────
     ("Tokyo, Japan", "Japón", "Asia"),
+    ("Kyoto, Japan", "Japón", "Asia"),
     ("Bangkok, Thailand", "Tailandia", "Asia"),
-    ("New York, USA", "Estados Unidos", "América Norte"),
+    ("Phuket, Thailand", "Tailandia", "Asia"),
     ("Bali, Indonesia", "Indonesia", "Asia"),
+    ("Singapore", "Singapur", "Asia"),
+    ("Hong Kong", "Hong Kong", "Asia"),
+    ("Hanoi, Vietnam", "Vietnam", "Asia"),
+    # ─── Américas (7) ──────────────────────────────────────
+    ("New York, USA", "Estados Unidos", "América Norte"),
+    ("Miami, USA", "Estados Unidos", "América Norte"),
+    ("Los Angeles, USA", "Estados Unidos", "América Norte"),
+    ("Cancun, Mexico", "México", "América Norte"),
+    ("Mexico City, Mexico", "México", "América Norte"),
+    ("Buenos Aires, Argentina", "Argentina", "América Sur"),
+    ("Rio de Janeiro, Brazil", "Brasil", "América Sur"),
 ]
 
 
