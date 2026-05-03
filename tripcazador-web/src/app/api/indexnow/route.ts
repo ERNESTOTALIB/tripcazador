@@ -121,6 +121,13 @@ export async function GET(req: NextRequest) {
     `https://${HOST}/vuelos-baratos-mes`,
     `https://${HOST}/calculadora-upgrade`,
     ...MONTHS.map((m) => `https://${HOST}/vuelos-baratos/${m.slug}`),
+    // SSS40 social OG endpoints (alta probabilidad share / OG image rich preview)
+    `https://${HOST}/api/og/social/post`,
+    `https://${HOST}/api/og/social/story`,
+    `https://${HOST}/api/og/social/carousel?topic=trucos&slide=1`,
+    `https://${HOST}/api/og/social/carousel?topic=chollos&slide=1`,
+    // SSS36 alertas page (creada en este ciclo)
+    `https://${HOST}/alertas`,
   ];
 
   const body = {
