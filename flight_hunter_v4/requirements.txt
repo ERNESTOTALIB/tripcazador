@@ -20,5 +20,10 @@ openpyxl>=3.1.0
 # Variables de entorno desde .env (alternativa a hardcodear credenciales en config.py)
 python-dotenv>=1.0.0
 
+# Ryanair scraper — accede a la API interna no documentada de Ryanair
+# para obtener vuelos one-way + return desde 100+ aeropuertos europeos.
+# Sin esto el RyanairEngine devuelve 0 vuelos (fallback a Travelpayouts).
+ryanair-py>=2.0.0
+
 # Notificaciones Telegram — descomenta si usas el bot de alertas
 # python-telegram-bot>=20.0

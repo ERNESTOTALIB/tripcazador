@@ -254,8 +254,8 @@ class HotellookEngine:
             print("⚠️  Hotellook: TP_MARKER no configurado — engine deshabilitado.")
 
     async def _get(self, session: aiohttp.ClientSession, url: str,
-                   params: Dict) -> Optional[List[Dict]]:
-        """GET con semáforo y manejo de errores."""
+                   params: Dict, debug_label: str = "") -> Optional[List[Dict]]:
+        """GET con semáforo y manejo de errores. SSS19: log status para debug."""
         async with self._semaphore:
             try:
                 async with session.get(
@@ -263,6 +263,10 @@ class HotellookEngine:
                     timeout=aiohttp.ClientTimeout(total=15),
                 ) as resp:
                     if resp.status not in (200, 201):
+                        # SSS19: log primer fallo para diagnóstico
+                        if not getattr(self, "_logged_status", False):
+                            print(f"   ⚠️  Hotellook HTTP {resp.status} {debug_label}")
+                            self._logged_status = True
                         return None
                     data = await resp.json(content_type=None)
                     if isinstance(data, list):
@@ -270,14 +274,27 @@ class HotellookEngine:
                     if isinstance(data, dict):
                         return [data]
                     return None
-            except (aiohttp.ClientError, asyncio.TimeoutError, ValueError):
+            except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+                if not getattr(self, "_logged_err", False):
+                    print(f"   ⚠️  Hotellook err {type(e).__name__}: {e}")
+                    self._logged_err = True
                 return None
 
     async def fetch_city_window(self, session: aiohttp.ClientSession,
                                  city: str, checkin: str, checkout: str,
                                  limit: int = 20) -> List[Dict]:
-        """Llama /cache.json para una (city, checkin, checkout) concreta."""
+        """
+        Llama /cache.json para una (city, checkin, checkout) concreta.
+
+        SSS19: estrategia dual — intenta primero con `location=City Name`,
+        y si falla (404 o cero hoteles) reintenta con `iata=XXX` que es
+        el path canónico de la API y más estable que la búsqueda por texto.
+        """
         city_query = CITY_QUERY_OVERRIDE.get(city, city)
+        meta = CITY_META.get(city)
+        iata = meta[0] if meta else None
+
+        # Intento 1: location-based (search-friendly)
         params = {
             "location": city_query,
             "currency": "eur",
@@ -288,7 +305,23 @@ class HotellookEngine:
         if self.marker:
             params["marker"] = self.marker
 
-        raw = await self._get(session, f"{BASE}/cache.json", params)
+        raw = await self._get(session, f"{BASE}/cache.json", params,
+                              debug_label=f"loc={city_query}")
+
+        # Intento 2 (fallback): iata-based si el primero falló o devolvió vacío
+        if not raw and iata:
+            params2 = {
+                "iata":     iata,
+                "currency": "eur",
+                "checkIn":  checkin,
+                "checkOut": checkout,
+                "limit":    str(limit),
+            }
+            if self.marker:
+                params2["marker"] = self.marker
+            raw = await self._get(session, f"{BASE}/cache.json", params2,
+                                  debug_label=f"iata={iata}")
+
         if not raw:
             return []
         try:
