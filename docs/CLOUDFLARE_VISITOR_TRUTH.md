@@ -13,6 +13,13 @@ CF_API_TOKEN          # Token con permiso "Analytics:Read" (account-level)
 CF_ZONE_ID            # 0324bdbe74cdf0b60248b0dbf74864eb (tripcazador.com)
 ```
 
+## Estado actual (3 may 2026 SSS47)
+
+**Yo dejé Chrome abierto en el formulario "Create Custom Token"** —
+los inputs de texto (token name, permissions dropdown) no son alcanzables
+por la AX tree desde ghost-os, así que tienes que terminar TÚ los 3 clicks
+restantes (te toma ~90 segundos). Pasos abajo.
+
 ## Cómo crear el CF_API_TOKEN (paso a paso)
 
 1. Ir a https://dash.cloudflare.com/profile/api-tokens
