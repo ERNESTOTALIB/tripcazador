@@ -449,8 +449,11 @@ const FALLBACK_CHOLLOS: Partial<Deal>[] = [
 ];
 
 export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
-  // 1. Pool DIRECTO del VPS (no diversify, evita templates business)
-  let pool: Deal[];
+  // 1. Pool: prioriza VPS, pero si está vacío/down, lee deals-latest.json
+  // (worker commit cada 6h con deals reales del hunter — 478+ deals típicos).
+  // SSS8: bug detectado — antes solo leía VPS y caía a FALLBACK_CHOLLOS, así
+  // los 478 deals reales del worker (Wizz/Ryanair/etc.) nunca llegaban a featured.
+  let pool: Deal[] = [];
   try {
     const res = await fetch(`${API_BASE}/api/deals/top?limit=50`, {
       next: { revalidate: 300 },
@@ -458,11 +461,19 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
     if (res.ok) {
       const arr = await res.json();
       pool = Array.isArray(arr) ? arr : [];
-    } else {
-      pool = [];
     }
   } catch {
     pool = [];
+  }
+
+  // Si VPS no devolvió nada, leer worker deals-latest.json
+  if (pool.length === 0) {
+    try {
+      const fallback = await getDealsFromStatic();
+      pool = Array.isArray(fallback?.deals) ? fallback.deals : [];
+    } catch {
+      pool = [];
+    }
   }
 
   // 2. HARD reject business/first SIEMPRE (nunca en featured)
