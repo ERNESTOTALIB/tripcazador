@@ -221,9 +221,14 @@ def main() -> int:
     deal = deals[0]
     log(f"Selected deal: {deal.get('id')} â {deal.get('headline')}")
 
-    # Image URL servida por Vercel
-    image_url = f"{SITE_URL}/api/og/instagram?dealId={urllib.parse.quote(deal.get('id', ''))}"
-    log(f"Image URL: {image_url}")
+    # SSS40: usar el endpoint premium nuevo si IG_OG_VERSION=v2 (default v2 = nuevo)
+    # Fallback a /api/og/instagram (legacy 1080×1350) si v1.
+    og_version = os.environ.get("IG_OG_VERSION", "v2")
+    if og_version == "v2":
+        image_url = f"{SITE_URL}/api/og/social/post?dealId={urllib.parse.quote(deal.get('id', ''))}"
+    else:
+        image_url = f"{SITE_URL}/api/og/instagram?dealId={urllib.parse.quote(deal.get('id', ''))}"
+    log(f"Image URL ({og_version}): {image_url}")
 
     # Caption + hashtags
     caption = caption_for(deal)
