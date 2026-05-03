@@ -95,6 +95,10 @@ def parse_origins(args) -> List[str]:
     elif args.origins == "latam":
         # SSS41: hubs Latam para audiencia hispanohablante
         return config.LATAM_HUBS
+    elif args.origins == "mega":
+        # SSS46: 170+ orígenes — TIER1 + TIER2 + ES + Latam
+        # Para hunter rotation por día/semana — más cobertura
+        return config.MEGA_ORIGINS
     else:
         # Códigos custom separados por coma
         return [o.strip().upper() for o in args.origins.split(",") if o.strip()]

@@ -291,6 +291,21 @@ DEST_EUROPA_NORTE = [
     "FAE",  # Faroe Islands
 ]
 
+# ═══════════════════════════════════════════════════════════════════
+# SSS46 — MEGA_ORIGINS: cualquier IATA puede ser origen
+# Combina TIER1 + TIER2 + SPANISH_HUBS + LATAM_HUBS (170+ unique)
+# Permite al hunter rotar entre 170 orígenes para detectar deals
+# desde cualquier ciudad — no solo MAD/BCN.
+# ═══════════════════════════════════════════════════════════════════
+def _build_mega_origins():
+    """Lazy-build para que las dependencias estén ya definidas."""
+    return list(dict.fromkeys(
+        EUROPEAN_AIRPORTS_TIER1
+        + EUROPEAN_AIRPORTS_TIER2
+        + SPANISH_HUBS_COMPLETE
+        + LATAM_HUBS
+    ))
+
 # SSS38: España completa — para usuarios que viven fuera de Madrid/BCN.
 # Subconjunto pensado para audiencia ES principal (target tripcazador.com).
 SPANISH_HUBS_COMPLETE = [
@@ -1385,11 +1400,15 @@ EXECUTION_MODES = {
 }
 
 
+# SSS46: MEGA_ORIGINS lazy-build después de todas las definiciones
+MEGA_ORIGINS = _build_mega_origins()
+
 if __name__ == "__main__":
     print("Flight Hunter V4 — Configuración cargada")
     print(f"✈️  Aeropuertos europeos Tier1: {len(EUROPEAN_AIRPORTS_TIER1)}")
     print(f"✈️  Aeropuertos europeos Tier2: {len(EUROPEAN_AIRPORTS_TIER2)}")
     print(f"✈️  Total aeropuertos europeos: {len(EUROPEAN_AIRPORTS_ALL)}")
+    print(f"🌎 MEGA_ORIGINS (TIER1+TIER2+ES+Latam): {len(MEGA_ORIGINS)}")
     print(f"🌍 Destinos long-haul: {len(DEST_ALL_LONG_HAUL)}")
     print(f"🔥 Destinos volátiles prioritarios: {len(DEST_VOLATILES_PRIORITARIOS)}")
     print(f"🤖 Telegram configurado: {bool(TELEGRAM_BOT_TOKEN)}")
