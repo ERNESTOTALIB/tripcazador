@@ -441,8 +441,10 @@ async def run_pipeline(args):
                 return []
         vueling_task = _vueling_with_timeout()
 
-        # Duffel: motor real-time GDS-grade (300+ aerolíneas). Mismo patrón
-        # de timeout que Vueling — si tarda > 5 min lo descartamos.
+        # Duffel: motor real-time GDS-grade (300+ aerolíneas).
+        # SSS27: con throttle 7s/req × 48 reqs ≈ 5.5 min. Subimos timeout
+        # a 12 min para que termine sin matarlo. Sigue corriendo en paralelo
+        # con Ryanair/TP/Vueling, así que no bloquea el resto.
         duffel = DuffelEngine()
         async def _duffel_with_timeout():
             if not duffel.available:
@@ -454,10 +456,10 @@ async def run_pipeline(args):
                         date_from=args.date_from,
                         date_to=args.date_to,
                     ),
-                    timeout=300,  # 5 min máx
+                    timeout=720,  # 12 min máx (SSS27: throttle 7s × ~48 reqs serializados)
                 )
             except asyncio.TimeoutError:
-                print("   ⏱️  Duffel: timeout 5 min — descartado, seguimos sin él")
+                print("   ⏱️  Duffel: timeout 12 min — descartado, seguimos sin él")
                 return []
             except Exception as e:
                 print(f"   ⚠️  Duffel: error {type(e).__name__}: {e}")
