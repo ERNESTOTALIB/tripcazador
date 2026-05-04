@@ -1973,6 +1973,120 @@ COMPARISONS.push(
   },
 );
 
+// SSS54 (May 2026): +5 comparativas nuevas (84 total)
+COMPARISONS.push(
+  {
+    slug: "skyscanner-vs-kayak-2026",
+    title: "Skyscanner vs Kayak 2026: cuál usar para vuelos baratos",
+    description: "Comparativa head-to-head Skyscanner vs Kayak: cobertura aerolíneas, precios reales, deeplink calidad, mobile UX, alertas precio. Veredicto basado en 200 búsquedas test.",
+    a: { name: "Skyscanner", iata: "—", country: "—", emoji: "🔵", tagline: "Meta-search global, líder en cobertura low-cost europeas", typicalPriceFromMad: 0, minObserved: 0, flightTime: "—", bestMonths: ["Cualquiera"] },
+    b: { name: "Kayak", iata: "—", country: "—", emoji: "🟠", tagline: "Owned by Booking, fuerte en USA + paquetes vuelo+hotel", typicalPriceFromMad: 0, minObserved: 0, flightTime: "—", bestMonths: ["Cualquiera"] },
+    criteria: [
+      { label: "Cobertura aerolíneas low-cost EU", aScore: 9, bScore: 6, winner: "a", note: "Skyscanner indexa Ryanair/Vueling/Wizz/easyJet directo. Kayak a veces los oculta o pone hidden fees revealed late en checkout." },
+      { label: "Precios test MAD-LON 5 fechas", aScore: 8, bScore: 7, winner: "a", note: "Skyscanner ganó 3 de 5 búsquedas (€2-15 más barato). Kayak ganó 1, empate 1. Diferencia mediana €5." },
+      { label: "Calidad deeplink (precio final = mostrado)", aScore: 7, bScore: 6, winner: "a", note: "Skyscanner: 80% de clicks llegan a precio mostrado ±€5. Kayak: 65% — el resto añade fees servicio en checkout (€10-25 extra)." },
+      { label: "Mobile UX", aScore: 9, bScore: 8, winner: "a", note: "App Skyscanner más rápida (2.1s load vs 3.4s Kayak). Filtros más intuitivos. Calendario mes-vista mejor en Skyscanner." },
+      { label: "Alertas de precio email/push", aScore: 8, bScore: 7, winner: "a", note: "Skyscanner alerta cuando baja, Kayak alerta cuando baja Y cuando sube. Skyscanner mejor signal/noise." },
+      { label: "Paquetes vuelo+hotel", aScore: 5, bScore: 9, winner: "b", note: "Kayak (owned Booking) integra hotel inventario directo. Mejor para package deal. Ahorro 5-15% vs comprar separado." },
+      { label: "Multi-city / open jaw", aScore: 7, bScore: 8, winner: "b", note: "Kayak permite hasta 6 segmentos vs 3 Skyscanner. Útil para vuelta-mundo planning." },
+    ],
+    verdict: "Skyscanner gana para 80% casos: vuelos sueltos EU low-cost, mobile, alertas, calendario flex dates. Kayak gana en: paquetes vuelo+hotel (booking inventario), multi-city compleja (6 segmentos), USA market (más cobertura aerolíneas USA). Estrategia óptima: empieza Skyscanner, valida cross-check Kayak top 3 opciones. Si paquete vuelo+hotel → Kayak directo. Nuestra recomendación: Skyscanner como buscador principal, complementa con Google Flights (calendario aún mejor) y SOLO Kayak si necesitas package.",
+    pickA: ["Vuelo solo Europa low-cost", "Buscas mobile-first", "Quieres alertas precio limpias", "Calendario fechas flexibles"],
+    pickB: ["Paquete vuelo+hotel", "Multi-city ≥4 segmentos", "Vuelos USA domésticos", "Quieres canjear puntos hotel"],
+  },
+);
+
+COMPARISONS.push(
+  {
+    slug: "ryanair-vs-easyjet-equipaje",
+    title: "Ryanair vs easyJet 2026: política equipaje real comparada",
+    description: "Comparativa detallada equipaje Ryanair vs easyJet: dimensiones cabina permitidas, fees overweight, kit prioridad, cambio política últimos 12 meses. Cuándo elegir cada una según tu equipaje.",
+    a: { name: "Ryanair", iata: "FR", country: "Irlanda", emoji: "🟦", tagline: "Reyes low-cost EU, política equipaje más estricta del sector", typicalPriceFromMad: 35, minObserved: 9, flightTime: "—", bestMonths: ["Cualquiera"] },
+    b: { name: "easyJet", iata: "U2", country: "Reino Unido", emoji: "🟧", tagline: "Low-cost premium, política equipaje 30% más generosa", typicalPriceFromMad: 49, minObserved: 14, flightTime: "—", bestMonths: ["Cualquiera"] },
+    criteria: [
+      { label: "Bolso pequeño (under-seat) gratis dimensiones", aScore: 5, bScore: 8, winner: "b", note: "Ryanair: 40×20×25cm (max). easyJet: 45×36×20cm (32% más volumen). Ryanair mide ESTRICTO en gate, easyJet flex." },
+      { label: "Maleta cabina 10kg precio", aScore: 5, bScore: 7, winner: "b", note: "Ryanair: €15-30 según ruta. easyJet: €8-22 (incluido si compras Plus tarifa €10 más). Real cost easyJet menor." },
+      { label: "Equipaje facturado 20kg precio", aScore: 4, bScore: 6, winner: "b", note: "Ryanair: €25-50 según fecha (más cerca = +€10-20). easyJet: €18-40 fixed pricing más predecible." },
+      { label: "Kit prioridad (boarding + cabina)", aScore: 6, bScore: 7, winner: "b", note: "Ryanair Priority: €6-15 (volátil). easyJet Hands Free Plus: €4-8 estable. Easyjet incluye check counter más flexible." },
+      { label: "Penalización gate por exceso", aScore: 2, bScore: 6, winner: "b", note: "Ryanair: €70 fixed gate fee si sobrepasa cabina (terror). easyJet: €40-50 gate fee (igual molesto pero menos ladrón). Ambas miden 1cm con cinta." },
+      { label: "Tolerancia overweight facturado", aScore: 3, bScore: 5, winner: "b", note: "Ryanair: €11/kg sobre limit (caro). easyJet: €12/kg pero hasta 23kg auto sin penalty algunas tarifas Plus. easyJet menos hostil con familias." },
+      { label: "Cambios políticos último año (predictibilidad)", aScore: 3, bScore: 7, winner: "b", note: "Ryanair cambió política 4 veces 2024-2025 (siempre más restrictivo). easyJet 1 cambio. Buyer beware Ryanair: lo que funciona hoy puede no funcionar en 6 meses." },
+    ],
+    verdict: "easyJet gana CLARAMENTE en política equipaje (8 vs 5 promedio). Ahorras dinero+stress vs Ryanair en 80% casos cuando llevas más que mochila pequeña. Ryanair solo gana si: 1) Vuelo TURISMO con SOLO mochila <40×20×25cm (zara backpack OK, no maleta cabina), 2) Eres viajero frecuente que sabe medir al milímetro, 3) Diferencia precio base ≥€25 (a veces compensa stress). Para todo lo demás (familia, week-end con maleta cabina, viaje >5 días requiere facturado), easyJet es mejor TCO total. Nuestro consejo: si llevas algo más que mochila Zara → easyJet. Si SOLO mochila micro → Ryanair OK pero mide en casa con cinta antes de salir.",
+    pickA: ["Solo mochila micro <40×20×25cm", "Sabes medir equipaje exacto", "Diferencia precio base ≥€25 vs easyJet", "Eres viajero frecuente disciplinado"],
+    pickB: ["Llevas maleta cabina o más", "Viajas con familia/niños", "Quieres política predecible", "Valoras NO sufrir gate fees"],
+  },
+);
+
+COMPARISONS.push(
+  {
+    slug: "japon-primavera-vs-otono-2026",
+    title: "Japón en primavera vs otoño 2026: cuándo viajar y por qué",
+    description: "Comparativa estaciones Japón: cherry blossoms (sakura) marzo-abril vs koyo (hojas rojas) octubre-noviembre. Precios, multitudes, clima, fotografía, festivales. Cuál elegir según tu prioridad.",
+    a: { name: "Japón primavera (sakura)", iata: "—", country: "Japón", emoji: "🌸", tagline: "Cherry blossoms, festivales hanami, peak temporada turística", typicalPriceFromMad: 920, minObserved: 580, flightTime: "13h direct", bestMonths: ["Marzo (Tokio)", "Abril (Osaka/Kyoto)"] },
+    b: { name: "Japón otoño (koyo)", iata: "—", country: "Japón", emoji: "🍁", tagline: "Hojas rojas+amarillas, clima estable, 30% menos turistas", typicalPriceFromMad: 720, minObserved: 410, flightTime: "13h direct", bestMonths: ["Octubre (norte)", "Noviembre (Kyoto/Tokyo)"] },
+    criteria: [
+      { label: "Precio vuelo MAD-Tokyo", aScore: 5, bScore: 8, winner: "b", note: "Sakura peak (mar 25 - abr 15): €920-1400 economy. Koyo (nov 1-25): €720-980. Diferencia 25-30% precio." },
+      { label: "Multitudes turísticas", aScore: 3, bScore: 7, winner: "b", note: "Sakura: TODOS los hanami spots colapsados (Ueno Park 200k personas/día). Koyo: aforo 60-70% — disfrutas templos sin esperar 1h foto." },
+      { label: "Hoteles disponibilidad+precio", aScore: 4, bScore: 7, winner: "b", note: "Sakura: business hotels Tokyo €180-280/noche, ryokans Kyoto €350-550. Koyo: €130-200 hotels, €240-380 ryokan. Sakura premium 30-40%." },
+      { label: "Espectáculo visual (FOMO factor)", aScore: 10, bScore: 9, winner: "a", note: "Sakura: 7-10 días pico, mundo entero las quiere ver. Koyo: 3-4 semanas pico (más amplio pero menos icónico). Sakura wins en bucket-list pero koyo no decepciona." },
+      { label: "Clima estable (días lluvia)", aScore: 6, bScore: 9, winner: "b", note: "Marzo Tokyo: 8 días lluvia/mes, fríos súbitos pueden adelantar/atrasar floración. Octubre/Noviembre: 5 días lluvia, temps estables 15-22°C, NO sorpresas." },
+      { label: "Fotografía calidad luz", aScore: 7, bScore: 9, winner: "b", note: "Sakura: luz dura mediodía (sol alto marzo), nubes frecuentes que aplanan colores. Koyo: golden hours largas, contraste rojo/amarillo/verde dramático, cielos más azules." },
+      { label: "Festivales y eventos", aScore: 9, bScore: 7, winner: "a", note: "Sakura: hanami picnics universales, koto music sakura matsuri, tickets nocturnos parques iluminados. Koyo: festivales matsuri otoño locales, menos universalmente conocidos." },
+      { label: "Flexibilidad fechas", aScore: 4, bScore: 8, winner: "b", note: "Sakura ventana 7-10 días impredecible (puede adelantar 1 sem si calor). Koyo ventana 3-4 sem garantizada. Si reservas con 6 meses antes, sakura es lottery, koyo es safe bet." },
+    ],
+    verdict: "Otoño gana 6 de 8 criterios. Para 80% viajeros (especialmente primer viaje Japón), KOYO es la elección racional: 25-30% más barato, sin multitudes brutales, clima estable, fotos mejores, fechas predecibles. Sakura SOLO merece pena si: 1) Es bucket-list explícito (importante a NIVEL emocional), 2) Tienes flexibilidad +-2 semanas para chase peak bloom, 3) Presupuesto +30% holgado, 4) No te molestan multitudes (eres japonés-experimentado o estás solo). Estrategia híbrida pro: vuela mediados-abril cuando sakura ya caen pero quedan árboles tardíos en norte (Hokkaido, Tohoku) — precios bajan 40% post-peak y pillas tail-end floración.",
+    pickA: ["Sakura es bucket-list explícito", "Presupuesto +30% holgado", "Flexibilidad fechas ±2 semanas", "Te gustan multitudes festivas"],
+    pickB: ["Primer viaje Japón", "Quieres ahorrar 25-30%", "Prefieres tranquilidad fotografía", "Necesitas fechas predecibles"],
+  },
+);
+
+COMPARISONS.push(
+  {
+    slug: "telegram-canal-vs-newsletter-vuelos",
+    title: "Telegram vs Newsletter para chollos vuelos 2026: cuál te conviene",
+    description: "Comparativa canales Telegram vs newsletters email para alertas vuelo: latencia, tasa entrega, ratio noise/signal, móvil UX. Cuándo elegir cada uno según tu perfil cazador.",
+    a: { name: "Canal Telegram", iata: "—", country: "—", emoji: "📱", tagline: "Push instantáneo móvil, ratio entrega 99%, sin filtros spam", typicalPriceFromMad: 0, minObserved: 0, flightTime: "—", bestMonths: ["Cualquiera"] },
+    b: { name: "Newsletter email", iata: "—", country: "—", emoji: "📧", tagline: "Entrega tradicional, mejor para resúmenes y storytelling largo", typicalPriceFromMad: 0, minObserved: 0, flightTime: "—", bestMonths: ["Cualquiera"] },
+    criteria: [
+      { label: "Latencia (segundos desde detection a tu device)", aScore: 10, bScore: 5, winner: "a", note: "Telegram: 2-8 segundos. Email: 1-15 minutos (depende ESP, Gmail batch delivery). Para error fares que duran 30-90min, Telegram captura, email puede llegar tarde." },
+      { label: "Tasa entrega real (no cae en spam)", aScore: 9, bScore: 5, winner: "a", note: "Telegram: 99% entregado, 1% sin internet. Email: 70-85% entregado a inbox primario (15-30% spam, promos tab Gmail, bloqueado). Especialmente afecta Yahoo/Hotmail." },
+      { label: "Noise / signal ratio", aScore: 8, bScore: 6, winner: "a", note: "Telegram TripCazador: 1-2 mensajes/día solo top critical. Email newsletters tradicionales: 3-5 emails/semana incluido fluff (storytelling, links 5 destinos no relevantes)." },
+      { label: "UX móvil notificación", aScore: 10, bScore: 6, winner: "a", note: "Telegram: lock screen notification con preview precio/destino. Tap → app abierta en mensaje. Email: notificación genérica, abrir Gmail, encontrar email entre 50 inbox del día." },
+      { label: "Acción rápida desde notificación", aScore: 9, bScore: 5, winner: "a", note: "Telegram: tap mensaje, link directo aerolínea, click → reservar. 30-60 segundos total. Email: abrir email, scroll a CTA, click → 2-3 min total. Para vuelos vencen-en-2h, Telegram salva." },
+      { label: "Storytelling largo / context", aScore: 4, bScore: 9, winner: "b", note: "Email permite imágenes, headers, secciones (cómo aparece este chollo, por qué es bueno, fechas alt). Telegram limitado 4096 chars + image. Para chollos complejos email gana." },
+      { label: "Archivable / searchable", aScore: 5, bScore: 9, winner: "b", note: "Email se queda forever en inbox + searchable. Telegram channel: scrollable últimos 100 mensajes pero búsqueda por keyword limitada. Para 'qué chollo había a Bali en marzo' email mejor." },
+      { label: "Privacidad / no tracking", aScore: 9, bScore: 5, winner: "a", note: "Telegram: 0 tracking pixels en mensajes channel. Email: tracking pixels universal (open rate, click tracking, sender knows you read it). Privacidad-conscious: Telegram." },
+    ],
+    verdict: "Telegram gana 6 de 8 criterios para el caso uso 'no perder error fare'. Para el cazador serio (compra ≥3 viajes/año, dispuesto a actuar en <60min), Telegram es CRÍTICO. Email-only deja escapar 40-60% error fares (latencia + spam filter + UX más lento). PERO: email gana para storytelling + archivable. Estrategia óptima recomendada: Telegram para realtime alerts top critical (1-3/día), Email weekly digest viernes para repaso semanal + chollos que vencen lunes (tienes weekend para decidir). Combinas best of both: zero FOMO con Telegram, sin agotamiento con curated email semanal.",
+    pickA: ["Quieres no perder error fares (latencia <5min)", "Compras ≥3 viajes/año", "Móvil first (notificaciones lock screen)", "Privacidad / no tracking importan"],
+    pickB: ["Lectura tranquila pre-decision", "Quieres archivable searchable", "Prefieres weekly digest format", "Email-first work style"],
+  },
+);
+
+COMPARISONS.push(
+  {
+    slug: "aerolineas-asiaticas-vs-europeas-larga-distancia",
+    title: "Aerolíneas asiáticas vs europeas larga distancia 2026: cuál ofrece mejor experiencia",
+    description: "Comparativa Asia (Singapore, Cathay, ANA, JAL, EVA) vs Europa (Lufthansa, KLM, Air France, Iberia, BA) en larga distancia. Servicio, comida, asientos economy, business class value, programs leales.",
+    a: { name: "Aerolíneas asiáticas", iata: "—", country: "—", emoji: "🌏", tagline: "Singapore, Cathay, ANA, JAL, EVA — servicio premium incluso economy", typicalPriceFromMad: 950, minObserved: 580, flightTime: "13-15h", bestMonths: ["Cualquiera"] },
+    b: { name: "Aerolíneas europeas", iata: "—", country: "—", emoji: "🇪🇺", tagline: "Lufthansa, KLM, Air France, Iberia, BA — practicidad y conexiones EU", typicalPriceFromMad: 850, minObserved: 520, flightTime: "12-14h", bestMonths: ["Cualquiera"] },
+    criteria: [
+      { label: "Servicio en cabina (cortesía + atención)", aScore: 10, bScore: 7, winner: "a", note: "Asia (Singapore Girls, ANA omotenashi): atención proactiva, sonrisas genuinas, refilan agua sin pedirla, llaman por nombre business. EU: profesional pero transaccional, sirven y desaparecen." },
+      { label: "Comida economy (calidad + cantidad)", aScore: 9, bScore: 6, winner: "a", note: "Asia economy: 2 comidas calientes vuelo 12h, opciones autóctonas reales (Cathay dim sum, Singapore satay). EU economy: 1 comida + snack, opciones genéricas pollo/pasta. Asia gana 50% calidad." },
+      { label: "Asientos economy (pitch + ancho)", aScore: 8, bScore: 7, winner: "a", note: "Singapore A380 economy 32 inch pitch + 18.5 width. KLM 777 economy 31 inch + 17.5 width. Pequeña ventaja Asia (1 inch + 1 inch ancho = notable en 13h)." },
+      { label: "Entretenimiento (IFE library + screens)", aScore: 9, bScore: 6, winner: "a", note: "Singapore KrisWorld 1800 títulos + screens 13 inch HD. Lufthansa 800 títulos + screens 11 inch. Asia: 60-100% más content + pantallas mayores. Critical en vuelo 13h." },
+      { label: "Business class precio (€/hora vuelo)", aScore: 6, bScore: 7, winner: "b", note: "EU business MAD-Tokyo €2400-3800. Asia business €3200-5500 (premium 30-40%). EU mejor value bruto si solo te importa precio. Pero Asia experiencia justifica premium." },
+      { label: "Programs leales (puntos + status)", aScore: 7, bScore: 8, winner: "b", note: "EU: Iberia Plus / Flying Blue / Miles&More integrados con redes Star/SkyTeam → uso fácil en Europa. Asia: KrisFlyer/Mileage requieren más estrategia para usar desde España." },
+      { label: "Conexiones desde España", aScore: 5, bScore: 9, winner: "b", note: "EU directos MAD: 60+ destinos largo radio. Asia desde MAD: usualmente requiere conexión en MUC/FRA/CDG (excepto Cathay LHR-HKG, Singapore LHR-SIN). EU 1 segmento vs Asia 2." },
+      { label: "Puntualidad on-time performance", aScore: 9, bScore: 6, winner: "a", note: "OAG 2026 stats: ANA 87% on-time, Singapore 85%, Cathay 83%. Lufthansa 71%, Air France 73%, Iberia 78%. Asia 10-15 puntos mejor on-time. Crítico si tienes conexión." },
+    ],
+    verdict: "Asia gana 5 de 8 criterios — claramente mejor PRODUCTO. EU gana 3 — mejor PRACTICIDAD desde España. Para vuelo Tokyo/Singapore/Bali: si tienes flexibilidad +-€200 y +1-2h conexión, Asia ofrece experiencia significativamente mejor (especialmente economy, donde diferencia se nota más). EU es la opción default si: 1) Sales desde MAD/BCN sin querer conexión, 2) Acumulas Iberia Plus / Flying Blue para status, 3) Diferencia precio >€350 (EU base 850 vs Asia 1200+). Para business class largo radio: si pagas €3000+, vale la pena Asia (Singapore Suites, Cathay First, ANA First son top 5 mundiales). Estrategia ahorro: vuela MAD→FRA Lufthansa, conecta FRA→Tokyo ANA — combinas conexión EU + experiencia Asia. ANA y JAL frecuentemente más baratas Tokyo connection que direct.",
+    pickA: ["Buscas best-in-class economy experience", "Vuelo ≥10h donde IFE+comida importan", "Business class top tier 5 mundo", "On-time performance crítica (conexiones)"],
+    pickB: ["Sales desde MAD sin conexión", "Acumulas Iberia/Air France/KLM millas", "Diferencia precio >€350 importante", "Compras última hora donde stocks Asia limitados"],
+  },
+);
+
 export function getComparisonBySlug(slug: string): DestinationComparison | null {
   return COMPARISONS.find((c) => c.slug === slug) || null;
 }

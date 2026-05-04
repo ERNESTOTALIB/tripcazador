@@ -33,7 +33,8 @@ class TestDestinationsMapFix:
     def test_passes_topodata_object_not_url(self):
         c = _read(self.COMP)
         # geography ya no es URL string en JSX, sino el state topoData
-        assert "geography={topoData}" in c
+        # (con cast `as string` para satisfacer typing react-simple-maps@3)
+        assert "geography={topoData" in c
         # GEO_URL solo se usa dentro del fetch, no como prop
         assert 'geography="/world-110m.json"' not in c
 
