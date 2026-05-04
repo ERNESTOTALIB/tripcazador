@@ -137,14 +137,17 @@ export function getDestImage(input: string | undefined | null): DestImage {
 
 /**
  * Construye URL Unsplash optimizada para dimensiones IG.
- * Los IDs son `photo-XXXXX`, sin el prefix `1` que Unsplash usa.
+ * Los photoIds ya incluyen el dígito inicial completo (ej "1537996194471-..."),
+ * solo necesitamos prefijar con "photo-".
+ *
+ * SSS56b BUG FIX: antes prefixaba "photo-1" duplicando el 1 inicial → URL
+ * inválida → fetch fallaba silenciosamente → ImageResponse sin bg.
  */
 export function buildUnsplashUrl(
   photoId: string,
   width = 1080,
   height = 1080,
 ): string {
-  // photoId ya viene sin prefix "photo-1" — lo añadimos
-  const id = photoId.startsWith("photo-") ? photoId : `photo-1${photoId}`;
+  const id = photoId.startsWith("photo-") ? photoId : `photo-${photoId}`;
   return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&h=${height}&q=80`;
 }
