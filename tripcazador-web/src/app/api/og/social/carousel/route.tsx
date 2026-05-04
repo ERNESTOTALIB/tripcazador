@@ -100,11 +100,13 @@ export async function GET(req: NextRequest) {
             display: "flex",
           }}
         />
+        {/* Overlay MUY oscuro — la foto es solo "atmósfera"; el contenido
+            (listas con datos) tiene que leerse perfecto. SSS57d fix. */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(180deg, rgba(10,21,48,0.85) 0%, rgba(10,21,48,0.92) 50%, rgba(10,21,48,0.96) 100%)",
+            background: "linear-gradient(180deg, rgba(10,21,48,0.92) 0%, rgba(10,21,48,0.96) 50%, rgba(10,21,48,0.98) 100%)",
             display: "flex",
           }}
         />
@@ -196,7 +198,7 @@ export async function GET(req: NextRequest) {
                   display: "flex",
                   alignItems: "center",
                   gap: "20px",
-                  background: "rgba(255,255,255,0.08)",
+                  background: "rgba(255,255,255,0.14)",
                   border: "2px solid rgba(251,191,36,0.3)",
                   padding: "20px 26px",
                   borderRadius: "20px",
@@ -218,7 +220,7 @@ export async function GET(req: NextRequest) {
                   display: "flex",
                   alignItems: "center",
                   gap: "20px",
-                  background: "rgba(255,255,255,0.08)",
+                  background: "rgba(255,255,255,0.14)",
                   border: "2px solid rgba(16,185,129,0.4)",
                   padding: "22px 28px",
                   borderRadius: "20px",
