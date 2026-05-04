@@ -89,12 +89,12 @@ export async function GET(req: NextRequest) {
             display: "flex",
           }}
         />
-        {/* Dark overlay navy (legibilidad) */}
+        {/* Dark overlay navy (legibilidad) — más oscuro en zona central */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(180deg, rgba(10,21,48,0.55) 0%, rgba(10,21,48,0.85) 65%, rgba(10,21,48,0.95) 100%)",
+            background: "linear-gradient(180deg, rgba(10,21,48,0.45) 0%, rgba(10,21,48,0.75) 35%, rgba(10,21,48,0.92) 70%, rgba(10,21,48,0.98) 100%)",
             display: "flex",
           }}
         />
@@ -141,7 +141,7 @@ export async function GET(req: NextRequest) {
           )}
         </div>
 
-        {/* MIDDLE — MEGA PRICE */}
+        {/* MIDDLE — MEGA PRICE PANEL (navy box con border ámbar) */}
         <div
           style={{
             display: "flex",
@@ -150,84 +150,95 @@ export async function GET(req: NextRequest) {
             justifyContent: "center",
             flex: 1,
             zIndex: 1,
+            padding: "0 60px",
           }}
         >
           <div
             style={{
               display: "flex",
-              fontSize: "26px",
-              fontWeight: 700,
-              letterSpacing: "10px",
-              color: "rgba(255,255,255,0.85)",
-              marginBottom: "8px",
-              textShadow: "0 2px 12px rgba(0,0,0,0.5)",
-            }}
-          >
-            DESDE
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "baseline",
-              gap: "16px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                fontSize: "300px",
-                fontWeight: 900,
-                color: "#fbbf24",
-                lineHeight: 0.9,
-                letterSpacing: "-12px",
-                textShadow: "0 8px 32px rgba(0,0,0,0.4)",
-              }}
-            >
-              {price}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                fontSize: "120px",
-                fontWeight: 800,
-                color: "#fbbf24",
-                textShadow: "0 4px 20px rgba(0,0,0,0.4)",
-              }}
-            >
-              €
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
+              flexDirection: "column",
               alignItems: "center",
-              gap: "20px",
-              marginTop: "20px",
+              background: "rgba(10,21,48,0.88)",
+              border: "5px solid #fbbf24",
+              borderRadius: "32px",
+              padding: "40px 70px 50px",
+              boxShadow: "0 16px 64px rgba(0,0,0,0.5)",
+              gap: "8px",
             }}
           >
             <div
               style={{
                 display: "flex",
-                fontSize: "30px",
-                color: "rgba(255,255,255,0.75)",
-                textDecoration: "line-through",
-                fontWeight: 600,
+                fontSize: "26px",
+                fontWeight: 800,
+                letterSpacing: "12px",
+                color: "#fbbf24",
               }}
             >
-              antes {oldPrice}€
+              DESDE
             </div>
             <div
               style={{
                 display: "flex",
-                background: "#10B981",
-                color: "#0a1530",
-                padding: "10px 22px",
-                borderRadius: "999px",
-                fontSize: "32px",
-                fontWeight: 900,
+                alignItems: "baseline",
+                gap: "12px",
               }}
             >
-              −{savingsPct}%
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: "240px",
+                  fontWeight: 900,
+                  color: "#fbbf24",
+                  lineHeight: 1,
+                  letterSpacing: "-8px",
+                }}
+              >
+                {price}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: "100px",
+                  fontWeight: 800,
+                  color: "#fbbf24",
+                }}
+              >
+                €
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "20px",
+                marginTop: "16px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: "28px",
+                  color: "rgba(255,255,255,0.7)",
+                  textDecoration: "line-through",
+                  fontWeight: 600,
+                }}
+              >
+                antes {oldPrice}€
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  background: "#10B981",
+                  color: "#0a1530",
+                  padding: "10px 22px",
+                  borderRadius: "999px",
+                  fontSize: "30px",
+                  fontWeight: 900,
+                }}
+              >
+                −{savingsPct}%
+              </div>
             </div>
           </div>
         </div>
