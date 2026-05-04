@@ -1,230 +1,378 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
+import { getDeals } from "@/lib/api";
+import { getDestImage, buildUnsplashUrl } from "@/lib/dest_images";
+import { getDestContent, getBlogForDest } from "@/lib/dest_content";
 
 export const runtime = "edge";
 
 /**
- * /api/og/social/carousel?slide=1..5&topic=trucos|chollos
+ * /api/og/social/carousel?dealId=X&slide=N — fase SSS57 (May 2026)
  *
- * Genera slides 1080×1080 para carousel storytelling.
+ * Genera 1 de 4 slides de un carousel Instagram para un deal:
+ *   slide=places  →  TOP atracciones turísticas del destino
+ *   slide=food    →  Comida típica + restaurantes
+ *   slide=tips    →  Tips locales (transporte, ahorro)
+ *   slide=blog    →  CTA al blog post matched (si existe)
  *
- * Slide 1: Hook (navy + headline + "DESLIZA →")
- * Slide 2: Datos / problema (cream + big number + chart mini)
- * Slide 3: Solución (cream + visual concept)
- * Slide 4: Testimonio (navy + quote + avatar)
- * Slide 5: CTA cierre (ámbar + brand + follow CTA)
+ * Slide 1 (deal principal) sigue siendo /api/og/social/post-v2.
+ * Workflow IG: post-v2 + carousel(places) + carousel(food) + carousel(tips)
+ *              + carousel(blog) → 5 slides total (limit IG: 10).
  */
+
+type SlideKind = "places" | "food" | "tips" | "blog";
+
+function isSlide(s: string | null): s is SlideKind {
+  return s === "places" || s === "food" || s === "tips" || s === "blog";
+}
+
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
-  const slide = parseInt(sp.get("slide") || "1", 10);
-  const topic = sp.get("topic") || "trucos";
+  const dealId = sp.get("dealId");
+  const slide = (sp.get("slide") || "places") as string;
 
-  // Plantillas predefinidas por topic — puedes añadir más
-  const templates: Record<string, Array<{
-    headline: string;
-    subhead?: string;
-    accent?: string;
-    bg: "navy" | "cream" | "amber";
-  }>> = {
-    trucos: [
-      {
-        headline: "5 errores que te encarecen 200€ por vuelo",
-        subhead: "y cómo evitarlos en 2 min",
-        accent: "200€",
-        bg: "navy",
-      },
-      {
-        headline: "Reservar martes vs sábado",
-        subhead: "Las aerolíneas suben precio en horas pico de oficina",
-        accent: "×3",
-        bg: "cream",
-      },
-      {
-        headline: "El truco: domingos 23:00",
-        subhead: "Las aerolíneas refrescan precios al final del fin de semana",
-        accent: "23:00",
-        bg: "cream",
-      },
-      {
-        headline: "\"Madrid → Tokio por 389€ ida y vuelta\"",
-        subhead: "Lucía M. · Sevilla · usuaria desde 2025",
-        accent: "1.247€ ahorrados",
-        bg: "navy",
-      },
-      {
-        headline: "¿No querer perderte el siguiente?",
-        subhead: "Síguenos · 1-2 chollos al día",
-        accent: "@tripcazador",
-        bg: "amber",
-      },
-    ],
-    chollos: [
-      {
-        headline: "Top 5 chollos de la semana",
-        subhead: "elegidos por nuestro radar",
-        accent: "−96%",
-        bg: "navy",
-      },
-      {
-        headline: "Madrid → Marrakech",
-        subhead: "Solo 17€ ida con Ryanair",
-        accent: "17€",
-        bg: "cream",
-      },
-      {
-        headline: "Atenas → Malta",
-        subhead: "15€ ida con Ryanair · directo",
-        accent: "15€",
-        bg: "cream",
-      },
-      {
-        headline: "Lisboa → Marrakech",
-        subhead: "17€ ida con TAP · 1 escala corta",
-        accent: "17€",
-        bg: "navy",
-      },
-      {
-        headline: "¿Quieres alertas en tu móvil?",
-        subhead: "Activa Telegram · 1-2 chollos al día",
-        accent: "@tripcazador",
-        bg: "amber",
-      },
-    ],
+  if (!isSlide(slide)) {
+    return new Response(`Invalid slide: ${slide}`, { status: 400 });
+  }
+
+  let cityTo = "destino";
+  let destKey = "world";
+  let region: string | undefined;
+
+  if (dealId) {
+    try {
+      const data = await getDeals({ limit: 200 });
+      const deal = data.deals.find((d) => d.id === dealId);
+      if (deal) {
+        cityTo = deal.city_to || deal.destination || "destino";
+        destKey = deal.destination || deal.city_to || deal.region || "world";
+        region = deal.region;
+      }
+    } catch {
+      /* fallback */
+    }
+  }
+
+  const dest = getDestImage(destKey);
+  const bgUrl = buildUnsplashUrl(dest.photoId, 1080, 1080);
+  const content = getDestContent(destKey, region);
+  const blog = getBlogForDest(destKey);
+
+  const slideTitle: Record<SlideKind, string> = {
+    places: "QUÉ VER",
+    food: "QUÉ COMER",
+    tips: "TIPS LOCALES",
+    blog: "GUÍA COMPLETA",
   };
-
-  const data = templates[topic] || templates.trucos;
-  const idx = Math.max(1, Math.min(5, slide)) - 1;
-  const t = data[idx];
-
-  const bgStyles = {
-    navy: { bg: "linear-gradient(180deg,#0a1530 0%,#1a2952 100%)", text: "#fff", accent: "#fbbf24", number: "08" },
-    cream: { bg: "#FFFAEC", text: "#0a1530", accent: "#DC2626", number: "08" },
-    amber: { bg: "#FFD93D", text: "#0a1530", accent: "#0a1530", number: "08" },
-  }[t.bg];
+  const slideEmoji: Record<SlideKind, string> = {
+    places: "📍",
+    food: "🍽️",
+    tips: "💡",
+    blog: "📖",
+  };
 
   return new ImageResponse(
     (
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          width: "1080px",
+          height: "1080px",
           display: "flex",
           flexDirection: "column",
-          background: bgStyles.bg,
+          background: "#0a1530",
           fontFamily: "Inter, system-ui, sans-serif",
-          padding: "70px 60px",
+          color: "#fff",
           position: "relative",
         }}
       >
-        {/* Slide indicator */}
-        <div
+        <img
+          src={bgUrl}
+          width={1080}
+          height={1080}
+          alt={dest.alt}
           style={{
-            fontSize: "22px",
-            fontWeight: 700,
-            color: bgStyles.text,
-            opacity: 0.55,
-            letterSpacing: "5px",
-            marginBottom: "30px",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "1080px",
+            height: "1080px",
+            objectFit: "cover",
             display: "flex",
           }}
-        >
-          {String(slide).padStart(2, "0")} / 05
-        </div>
-
-        {/* Accent (precio o número) */}
-        {t.accent && (
-          <div
-            style={{
-              fontSize: t.accent.length <= 5 ? "200px" : "120px",
-              fontWeight: 800,
-              color: bgStyles.accent,
-              lineHeight: 1,
-              letterSpacing: "-6px",
-              marginBottom: "30px",
-              display: "flex",
-            }}
-          >
-            {t.accent}
-          </div>
-        )}
-
-        {/* Headline */}
-        <div
-          style={{
-            fontSize: t.headline.length > 40 ? "44px" : "60px",
-            fontWeight: 800,
-            color: bgStyles.text,
-            lineHeight: 1.1,
-            letterSpacing: "-1px",
-            marginBottom: "24px",
-            display: "flex",
-          }}
-        >
-          {t.headline}
-        </div>
-
-        {/* Subhead */}
-        {t.subhead && (
-          <div
-            style={{
-              fontSize: "28px",
-              fontWeight: 500,
-              color: bgStyles.text,
-              opacity: 0.75,
-              lineHeight: 1.4,
-              display: "flex",
-            }}
-          >
-            {t.subhead}
-          </div>
-        )}
-
-        {/* Brand corner */}
+        />
         <div
           style={{
             position: "absolute",
-            bottom: "40px",
-            left: "60px",
-            fontSize: "20px",
-            fontWeight: 700,
-            color: bgStyles.text,
-            opacity: 0.7,
-            letterSpacing: "3px",
+            inset: 0,
+            background: "linear-gradient(180deg, rgba(10,21,48,0.85) 0%, rgba(10,21,48,0.92) 50%, rgba(10,21,48,0.96) 100%)",
             display: "flex",
           }}
-        >
-          TRIPCAZADOR.COM
-        </div>
+        />
 
-        {/* Swipe arrow (no en último slide) */}
-        {slide < 5 && (
+        {/* HEADER */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "60px 70px 0",
+            zIndex: 1,
+          }}
+        >
           <div
             style={{
-              position: "absolute",
-              bottom: "40px",
-              right: "60px",
-              fontSize: "24px",
-              fontWeight: 700,
-              color: bgStyles.text,
-              opacity: 0.85,
-              letterSpacing: "3px",
               display: "flex",
               alignItems: "center",
-              gap: "12px",
+              gap: "14px",
+              background: "#fff",
+              padding: "14px 26px",
+              borderRadius: "999px",
+              fontSize: "26px",
+              fontWeight: 800,
+              color: "#0a1530",
             }}
           >
-            DESLIZA  →
+            <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: dest.accent, display: "flex" }} />
+            {cityTo}
           </div>
-        )}
+          <div
+            style={{
+              display: "flex",
+              background: "#fbbf24",
+              padding: "14px 26px",
+              borderRadius: "999px",
+              fontSize: "22px",
+              fontWeight: 900,
+              letterSpacing: "3px",
+              color: "#0a1530",
+            }}
+          >
+            ✈ TC
+          </div>
+        </div>
+
+        {/* TITLE */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: "30px 0 20px",
+            zIndex: 1,
+          }}
+        >
+          <div style={{ display: "flex", fontSize: "70px" }}>{slideEmoji[slide]}</div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "44px",
+              fontWeight: 900,
+              color: "#fbbf24",
+              letterSpacing: "8px",
+              marginTop: "6px",
+            }}
+          >
+            {slideTitle[slide]}
+          </div>
+        </div>
+
+        {/* CONTENT */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            padding: "10px 70px 30px",
+            gap: "20px",
+            zIndex: 1,
+            justifyContent: "center",
+          }}
+        >
+          {slide === "places" &&
+            content.attractions.slice(0, 4).map((a, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "20px",
+                  background: "rgba(255,255,255,0.08)",
+                  border: "2px solid rgba(251,191,36,0.3)",
+                  padding: "20px 26px",
+                  borderRadius: "20px",
+                }}
+              >
+                <div style={{ display: "flex", fontSize: "48px", flexShrink: 0 }}>{a.emoji}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
+                  <div style={{ display: "flex", fontSize: "32px", fontWeight: 800, color: "#fff" }}>{a.name}</div>
+                  <div style={{ display: "flex", fontSize: "22px", color: "rgba(255,255,255,0.85)" }}>{a.desc}</div>
+                </div>
+              </div>
+            ))}
+
+          {slide === "food" &&
+            content.food.slice(0, 4).map((f, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "20px",
+                  background: "rgba(255,255,255,0.08)",
+                  border: "2px solid rgba(16,185,129,0.4)",
+                  padding: "22px 28px",
+                  borderRadius: "20px",
+                }}
+              >
+                <div style={{ display: "flex", fontSize: "52px", flexShrink: 0 }}>{f.emoji}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
+                  <div style={{ display: "flex", fontSize: "32px", fontWeight: 800, color: "#fff" }}>{f.name}</div>
+                  <div style={{ display: "flex", fontSize: "22px", color: "rgba(255,255,255,0.85)" }}>{f.desc}</div>
+                </div>
+              </div>
+            ))}
+
+          {slide === "tips" &&
+            content.tips.slice(0, 3).map((t, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "24px",
+                  background: "rgba(251,191,36,0.12)",
+                  border: "2px solid rgba(251,191,36,0.5)",
+                  padding: "26px 30px",
+                  borderRadius: "20px",
+                }}
+              >
+                <div style={{ display: "flex", fontSize: "60px", flexShrink: 0 }}>{t.emoji}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    fontSize: "28px",
+                    color: "#fff",
+                    fontWeight: 600,
+                    lineHeight: 1.35,
+                    flex: 1,
+                  }}
+                >
+                  {t.text}
+                </div>
+              </div>
+            ))}
+
+          {slide === "blog" && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "24px",
+                background: "rgba(10,21,48,0.85)",
+                border: "5px solid #fbbf24",
+                padding: "50px 50px",
+                borderRadius: "32px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: "26px",
+                  color: "#fbbf24",
+                  fontWeight: 800,
+                  letterSpacing: "8px",
+                }}
+              >
+                LEE LA GUÍA COMPLETA
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: "42px",
+                  fontWeight: 900,
+                  color: "#fff",
+                  textAlign: "center",
+                  lineHeight: 1.2,
+                }}
+              >
+                {blog?.title || `Vuelos baratos a ${cityTo}: la guía completa`}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: "24px",
+                  color: "rgba(255,255,255,0.85)",
+                  textAlign: "center",
+                  fontWeight: 500,
+                }}
+              >
+                {blog
+                  ? "Datos reales, fechas óptimas, hubs alternativos y trucos para cazar tu vuelo."
+                  : "Contenido nuevo cada semana: hubs, fechas óptimas y errores de tarifa."}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  background: "#fbbf24",
+                  color: "#0a1530",
+                  padding: "20px 40px",
+                  borderRadius: "16px",
+                  fontSize: "30px",
+                  fontWeight: 900,
+                  letterSpacing: "3px",
+                  marginTop: "12px",
+                }}
+              >
+                LINK EN BIO →
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* FOOTER */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "20px 70px 50px",
+            borderTop: "2px solid rgba(251,191,36,0.3)",
+            zIndex: 1,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              fontSize: "26px",
+              color: "#fbbf24",
+              fontWeight: 800,
+              letterSpacing: "4px",
+            }}
+          >
+            tripcazador.com
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "20px",
+              color: "rgba(255,255,255,0.8)",
+              fontWeight: 700,
+              letterSpacing: "2px",
+            }}
+          >
+            DESLIZA →
+          </div>
+        </div>
       </div>
     ),
     {
       width: 1080,
       height: 1080,
       headers: {
-        // SSS51: SWR=7d para minimizar regeneraciones (el carousel es estático)
-        "cache-control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=2592000, immutable",
+        "cache-control":
+          "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800, immutable",
       },
-    }
+    },
   );
 }

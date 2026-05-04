@@ -172,6 +172,73 @@ def publish_to_instagram(image_url: str, caption: str) -> Optional[str]:
     return pub.get("id")
 
 
+def publish_carousel_to_instagram(image_urls: list, caption: str) -> Optional[str]:
+    """SSS57: Publica carrusel multi-slide en Instagram.
+
+    Flow Graph API carousel:
+      1) Crear N media containers con is_carousel_item=true
+      2) Crear parent container con media_type=CAROUSEL + children=[ids]
+      3) Publicar parent
+    Limit IG: 2-10 slides.
+    """
+    if not IG_USER_ID or not IG_ACCESS_TOKEN:
+        log("WARN: IG creds missing - skip carousel publish")
+        return None
+    if len(image_urls) < 2 or len(image_urls) > 10:
+        log(f"WARN: carousel needs 2-10 slides, got {len(image_urls)}")
+        return None
+
+    child_ids = []
+    for idx, url in enumerate(image_urls):
+        try:
+            result = http_post(
+                f"https://graph.facebook.com/v18.0/{IG_USER_ID}/media",
+                {
+                    "image_url": url,
+                    "is_carousel_item": "true",
+                    "access_token": IG_ACCESS_TOKEN,
+                },
+            )
+        except Exception as e:
+            log(f"ERROR child container [{idx}]: {e}")
+            return None
+        cid = result.get("id")
+        if not cid:
+            log(f"ERROR no id child [{idx}]: {result}")
+            return None
+        child_ids.append(cid)
+        log(f"  child {idx+1}/{len(image_urls)}: {cid}")
+
+    try:
+        parent = http_post(
+            f"https://graph.facebook.com/v18.0/{IG_USER_ID}/media",
+            {
+                "media_type": "CAROUSEL",
+                "children": ",".join(child_ids),
+                "caption": caption,
+                "access_token": IG_ACCESS_TOKEN,
+            },
+        )
+    except Exception as e:
+        log(f"ERROR parent container: {e}")
+        return None
+    parent_id = parent.get("id")
+    if not parent_id:
+        log(f"ERROR no parent id: {parent}")
+        return None
+
+    time.sleep(12)
+    try:
+        pub = http_post(
+            f"https://graph.facebook.com/v18.0/{IG_USER_ID}/media_publish",
+            {"creation_id": parent_id, "access_token": IG_ACCESS_TOKEN},
+        )
+    except Exception as e:
+        log(f"ERROR publishing carousel: {e}")
+        return None
+    return pub.get("id")
+
+
 def echo_telegram(deal: Dict[str, Any], post_id: str) -> None:
     """Notifica en Telegram channel que se publicÃ³ nuevo post Instagram"""
     if not TG_BOT_TOKEN or not TG_CHAT_ID:
@@ -232,10 +299,26 @@ def main() -> int:
 
     # Caption + hashtags
     caption = caption_for(deal)
-    log(f"Caption preview: {caption[:140]}â¦")
+    log(f"Caption preview: {caption[:140]}...")
 
-    # Publish
-    post_id = publish_to_instagram(image_url, caption)
+    # SSS57: si IG_CAROUSEL_MODE=1, publicar 5 slides:
+    #   1) deal principal (post-v2)
+    #   2) lugares que ver  (carousel?slide=places)
+    #   3) que comer        (carousel?slide=food)
+    #   4) tips locales     (carousel?slide=tips)
+    #   5) blog completo    (carousel?slide=blog)
+    if os.environ.get("IG_CAROUSEL_MODE") == "1":
+        deal_qid = urllib.parse.quote(deal.get("id", ""))
+        slide1 = f"{SITE_URL}/api/og/social/post-v2?dealId={deal_qid}"
+        slide2 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=places"
+        slide3 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=food"
+        slide4 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=tips"
+        slide5 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=blog"
+        slides = [slide1, slide2, slide3, slide4, slide5]
+        log(f"CAROUSEL MODE: {len(slides)} slides")
+        post_id = publish_carousel_to_instagram(slides, caption)
+    else:
+        post_id = publish_to_instagram(image_url, caption)
     if post_id:
         log(f"â Published to Instagram: {post_id}")
         echo_telegram(deal, post_id)

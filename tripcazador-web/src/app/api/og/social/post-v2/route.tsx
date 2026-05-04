@@ -243,14 +243,18 @@ export async function GET(req: NextRequest) {
           </div>
         </div>
 
-        {/* BOTTOM — ruta + fecha + CTA */}
+        {/* BOTTOM — ruta + fecha + CTA con bottom panel sólido para legibilidad */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            padding: "0 80px 60px",
-            gap: "20px",
+            padding: "32px 60px 50px",
+            gap: "16px",
             zIndex: 1,
+            // Panel bottom solid navy — garantiza legibilidad
+            // independientemente del fondo de foto destino (cielo claro,
+            // hierba verde, agua turquesa, etc.). SSS57a fix.
+            background: "linear-gradient(180deg,rgba(10,21,48,0.0) 0%,rgba(10,21,48,0.85) 30%,rgba(10,21,48,0.98) 100%)",
           }}
         >
           <div
@@ -259,10 +263,9 @@ export async function GET(req: NextRequest) {
               alignItems: "center",
               justifyContent: "center",
               gap: "24px",
-              fontSize: "60px",
+              fontSize: "58px",
               fontWeight: 800,
               color: "#fff",
-              textShadow: "0 4px 20px rgba(0,0,0,0.5)",
             }}
           >
             <span style={{ display: "flex" }}>{route.from}</span>
@@ -276,7 +279,7 @@ export async function GET(req: NextRequest) {
               alignItems: "center",
               gap: "14px",
               fontSize: "26px",
-              color: "rgba(255,255,255,0.85)",
+              color: "rgba(255,255,255,0.92)",
               fontWeight: 600,
             }}
           >
@@ -287,17 +290,17 @@ export async function GET(req: NextRequest) {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              borderTop: "2px solid rgba(255,255,255,0.15)",
-              paddingTop: "24px",
-              marginTop: "10px",
+              borderTop: "2px solid rgba(251,191,36,0.4)",
+              paddingTop: "20px",
+              marginTop: "6px",
             }}
           >
             <div
               style={{
                 display: "flex",
-                fontSize: "24px",
+                fontSize: "26px",
                 color: "#fbbf24",
-                fontWeight: 700,
+                fontWeight: 800,
                 letterSpacing: "3px",
               }}
             >
@@ -313,6 +316,7 @@ export async function GET(req: NextRequest) {
                 fontSize: "22px",
                 fontWeight: 900,
                 letterSpacing: "2px",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
               }}
             >
               CAZAR ESTE →
