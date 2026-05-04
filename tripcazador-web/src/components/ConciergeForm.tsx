@@ -23,6 +23,7 @@ import {
   isValidTier,
   type ConciergeTier,
 } from "@/lib/concierge_tiers";
+import { tcTrack, tcTrackOnce } from "@/lib/track_client";
 
 const FORM_KEY = "tc_concierge_form_draft_v2";
 
@@ -74,6 +75,10 @@ export function ConciergeForm({ initialTier }: { initialTier?: ConciergeTier } =
     } catch {
       /* no-op */
     }
+    // SSS63: emit concierge_view 1× sesión
+    tcTrackOnce("concierge_view", "concierge_form", {
+      path: typeof location !== "undefined" ? location.pathname : "/concierge",
+    });
   }, []);
 
   function update<K extends keyof FormData>(key: K, value: FormData[K]) {
@@ -106,6 +111,13 @@ export function ConciergeForm({ initialTier }: { initialTier?: ConciergeTier } =
     }
 
     setSubmitting(true);
+    // SSS63: emit concierge_click_pay (intent click, antes de saber si Stripe responde)
+    tcTrack("concierge_click_pay", {
+      tier: data.tier,
+      amount_eur: CONCIERGE_TIERS[data.tier].amount_eur,
+      origin: data.origin,
+      destination: data.destination,
+    });
     try {
       const res = await fetch("/api/concierge/checkout", {
         method: "POST",

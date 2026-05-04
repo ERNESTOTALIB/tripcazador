@@ -4,6 +4,7 @@ import { getTopHotels } from "@/lib/api";
 import { SectionHero } from "@/components/SectionHero";
 import { HotelFilters } from "@/components/HotelFilters";
 import { HotelSearchBar } from "@/components/HotelSearchBar";
+import { HotelStarTierTabs } from "@/components/HotelStarTierTabs";
 
 export const revalidate = 900; // 15 minutos
 
@@ -102,7 +103,11 @@ export default async function HotelesPage() {
           </Link>
         </div>
       ) : (
-        <HotelFilters hotels={hotels} />
+        <>
+          {/* SSS63: Top hoteles agrupados por categoría de estrellas (5★/4★/3★) */}
+          <HotelStarTierTabs hotels={hotels} />
+          <HotelFilters hotels={hotels} />
+        </>
       )}
 
       {/* SEO content block */}

@@ -3,9 +3,11 @@
 import { Deal, formatDate, formatDuration, getCabinLabel, getClassificationColor, safeExternalUrl, safeImageUrl } from "@/lib/api";
 import { Plane, Clock, MapPin, Star, ExternalLink, CheckCircle } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 import { ShareDealInline } from "@/components/ShareDealInline";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { tcTrackOnce } from "@/lib/track_client";
 
 interface DealCardProps {
   deal: Deal;
@@ -108,8 +110,36 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
   const classColor = getClassificationColor(classification);
   const isCritical = classification === "CRÍTICO" || classification === "ERROR";
 
+  // SSS63: dispara result_viewed cuando la card entra en viewport (1× sesión por deal_id)
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const node = cardRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            tcTrackOnce("result_viewed", `deal:${deal.id}`, {
+              deal_id: deal.id,
+              destination,
+              origin,
+              price: price_eur,
+              classification,
+            });
+            io.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(node);
+    return () => io.disconnect();
+  }, [deal.id, destination, origin, price_eur, classification]);
+
   return (
     <div
+      ref={cardRef}
       className={`
         group relative flex flex-col rounded-xl overflow-hidden border card-hover
         glass

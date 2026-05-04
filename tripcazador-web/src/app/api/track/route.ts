@@ -7,6 +7,8 @@ export const dynamic = "force-dynamic";
 
 // fase tt-TT2: ampliados — calc_used / share_clicked / telegram_clicked permiten
 // saber qué calculadoras usan, qué se comparte, qué Telegram conversions.
+// SSS63: 9 eventos nuevos del funnel (landing/result/scroll/favorite/share/
+// premium/concierge) — instrumentados desde frontend (lib/track_client.ts).
 const VALID_TYPES: string[] = [
   "page_view",
   "deal_click",
@@ -17,6 +19,16 @@ const VALID_TYPES: string[] = [
   "calc_used",
   "share_clicked",
   "telegram_clicked",
+  // SSS63 funnel events
+  "landing_arrived",
+  "result_viewed",
+  "share_completed",
+  "favorite_added",
+  "scroll_75",
+  "concierge_view",
+  "concierge_click_pay",
+  "premium_cta_view",
+  "premium_cta_click",
 ];
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "";

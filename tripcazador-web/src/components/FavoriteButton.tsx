@@ -17,6 +17,7 @@ import {
   subscribeFavorites,
   type FavoriteDeal,
 } from "@/lib/favorites";
+import { tcTrack } from "@/lib/track_client";
 
 interface FavoriteButtonProps {
   deal: Omit<FavoriteDeal, "saved_at">;
@@ -45,7 +46,16 @@ export function FavoriteButton({
     e.stopPropagation();
     const next = toggleFavorite(deal);
     setActive(next);
-    // tracking opcional
+    // SSS63: emit favorite_added a /api/track cuando se añade (no en remove)
+    if (next) {
+      tcTrack("favorite_added", {
+        deal_id: deal.id,
+        destination: deal.destination,
+        origin: deal.origin,
+        price: deal.price_eur,
+      });
+    }
+    // tracking opcional GA4 (legacy)
     if (typeof window !== "undefined" && (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag) {
       (window as unknown as { gtag: (...a: unknown[]) => void }).gtag("event", "favorite_toggle", {
         deal_id: deal.id,

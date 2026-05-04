@@ -13,6 +13,8 @@
  * navigator.share, mostramos icono "Compartir" nativo a la izquierda.
  */
 
+import { tcTrack } from "@/lib/track_client";
+
 interface ShareDealInlineProps {
   dealId: string;
   headline: string;
@@ -22,6 +24,8 @@ interface ShareDealInlineProps {
 }
 
 function track(channel: string, dealId: string) {
+  // SSS63: emit share_completed → funnel
+  tcTrack("share_completed", { channel, deal_id: dealId });
   if (typeof window === "undefined") return;
   const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
   if (gtag) {

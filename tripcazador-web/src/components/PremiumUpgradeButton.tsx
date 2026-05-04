@@ -1,18 +1,19 @@
 "use client";
 
 /**
- * PremiumUpgradeButton — fase ww WW8
+ * PremiumUpgradeButton — fase ww WW8 + SSS63 instrumentación
  *
  * CTA principal de la página /premium. Lanza el flow de upgrade:
  *   1. Si STRIPE_PRICE_ID está configurado → POST /api/premium/checkout → redirect Stripe Checkout
  *   2. Si no (modo MVP sin Stripe) → activa trial 7 días en localStorage para validar
  *      conversión antes de gastar en Stripe API
  *
- * Cuando se conecte Stripe webhook esto se reemplazará por server-side state
- * con cookie httpOnly. De momento client-only es suficiente para validar mercado.
+ * SSS63: emite premium_cta_view (IntersectionObserver, 1× sesión) +
+ * premium_cta_click → funnel monitoring.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { activateTrial, getPremiumStatus, type PremiumStatus } from "@/lib/premium";
+import { tcTrack, tcTrackOnce } from "@/lib/track_client";
 
 export function PremiumUpgradeButton() {
   const [status, setStatus] = useState<PremiumStatus>({
@@ -21,6 +22,7 @@ export function PremiumUpgradeButton() {
     source: "manual",
   });
   const [loading, setLoading] = useState(false);
+  const btnRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     setStatus(getPremiumStatus());
@@ -31,8 +33,35 @@ export function PremiumUpgradeButton() {
     return () => window.removeEventListener("tc:premium-changed", onChange);
   }, []);
 
+  // SSS63: dispara premium_cta_view cuando el botón entra en viewport
+  useEffect(() => {
+    const node = btnRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            tcTrackOnce("premium_cta_view", "premium_upgrade_btn", {
+              source: typeof location !== "undefined" ? location.pathname : "/",
+            });
+            io.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(node);
+    return () => io.disconnect();
+  }, []);
+
   async function handleClick() {
     setLoading(true);
+    // SSS63: emit premium_cta_click sin importar si Stripe responde o no
+    tcTrack("premium_cta_click", {
+      source: typeof location !== "undefined" ? location.pathname : "/",
+      tier: status.tier,
+    });
 
     // Intento Stripe Checkout
     try {
@@ -53,7 +82,7 @@ export function PremiumUpgradeButton() {
     setStatus(getPremiumStatus());
     setLoading(false);
 
-    // Track conversion intent
+    // Track conversion intent (legacy event, mantener para retro-compat)
     try {
       navigator.sendBeacon(
         "/api/track",
@@ -80,6 +109,7 @@ export function PremiumUpgradeButton() {
 
   return (
     <button
+      ref={btnRef}
       onClick={handleClick}
       disabled={loading}
       className="w-full px-6 py-4 bg-amber-500 hover:bg-amber-400 disabled:opacity-60 text-black font-bold text-lg rounded-xl transition-colors shadow-lg shadow-amber-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
