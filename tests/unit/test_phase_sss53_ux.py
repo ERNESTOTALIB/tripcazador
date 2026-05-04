@@ -121,4 +121,4 @@ class TestIGLayoutV2:
     def test_cta_present(self):
         c = _read(self.EP)
         assert "CAZAR ESTE" in c
-        assert "tripcazador.com" in c
+        assert "TripCazador" in c or "logo-horizontal" in c  # SSS58 logo

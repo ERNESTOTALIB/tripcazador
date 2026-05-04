@@ -74,11 +74,11 @@ class TestOGSocialEndpoints:
         # Verificar que existen los 5 templates por topic
         # Y que el slug acepta slide=1..5
         assert "slide" in c
-        assert "Math.max(1, Math.min(5" in c
+        assert "slide === \"places\"" in c
 
     def test_carousel_has_topics(self):
         c = _read(self.CAROUSEL)
-        for topic in ("trucos", "chollos"):
+        for topic in ("places", "food"):  # SSS57b carousel slides
             assert topic in c
 
 

@@ -68,31 +68,40 @@ export function SiteHeader() {
               aria-label="TripCazador — ir a la página principal"
               className="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-md"
             >
+              {/* SSS60: bird silhouette del logo brand A1 + wordmark
+                  con tagline "el cazador de chollos · europa" en hover */}
               <span
-                className={`w-9 h-9 rounded-full grid place-items-center transition-colors ${
+                className={`w-10 h-10 rounded-xl grid place-items-center transition-all ${
                   scrolled
-                    ? "bg-gray-900 shadow-md"
-                    : "bg-white/95 backdrop-blur-md shadow-lg"
+                    ? "bg-gradient-to-br from-amber-400 to-amber-500 shadow-md"
+                    : "bg-gradient-to-br from-amber-300 to-amber-500 shadow-xl ring-1 ring-amber-200/30"
                 }`}
                 aria-hidden="true"
               >
+                {/* Bird silhouette aprox al logo brand: alas extendidas + cola */}
                 <svg
-                  viewBox="0 0 24 24"
+                  viewBox="0 0 32 32"
+                  className="w-6 h-6 text-[#0a1530]"
                   fill="currentColor"
-                  className={`w-5 h-5 transition-colors ${
-                    scrolled ? "text-amber-400" : "text-amber-500"
-                  }`}
+                  aria-hidden="true"
                 >
-                  <path d="M21 16v-2l-8-5V3.5C13 2.67 12.33 2 11.5 2S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+                  <path d="M2 12 L8 8 L12 11 L16 6 L20 11 L24 8 L30 12 L24 14 L26 18 L20 16 L16 24 L18 28 L16 30 L14 28 L12 16 L6 18 L8 14 Z" />
                 </svg>
               </span>
               <span
-                className={`font-bold text-lg tracking-tight transition-colors ${
-                  scrolled ? "text-gray-900" : "text-white"
-                }`}
-                style={!scrolled ? { textShadow: "0 1px 8px rgba(0,0,0,0.2)" } : undefined}
+                className={`font-bold text-lg tracking-tight transition-colors leading-none flex flex-col`}
+                style={!scrolled ? { textShadow: "0 1px 8px rgba(0,0,0,0.25)" } : undefined}
               >
-                Trip<span className={scrolled ? "text-amber-500" : "text-amber-300"}>Cazador</span>
+                <span className={scrolled ? "text-gray-900" : "text-white"}>
+                  Trip<span className={scrolled ? "text-amber-500" : "text-amber-300"}>Cazador</span>
+                </span>
+                <span
+                  className={`text-[10px] font-medium tracking-widest mt-0.5 transition-colors ${
+                    scrolled ? "text-gray-500" : "text-white/70"
+                  }`}
+                >
+                  EL CAZADOR DE CHOLLOS
+                </span>
               </span>
             </a>
 

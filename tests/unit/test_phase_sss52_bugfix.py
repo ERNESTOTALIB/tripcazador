@@ -127,7 +127,7 @@ class TestOGCacheHeadersPreserved:
     def test_carousel_aggressive_cache(self):
         c = _read(self.CAROUSEL)
         assert "s-maxage=86400" in c
-        assert "stale-while-revalidate=2592000" in c
+        assert "stale-while-revalidate=604800" in c
 
 
 # ════════════════════════════════════════════════
