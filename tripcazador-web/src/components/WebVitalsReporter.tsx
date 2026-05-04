@@ -72,6 +72,32 @@ export function WebVitalsReporter(): null {
         typeof window !== "undefined" ? window.location.pathname : undefined,
       non_interaction: true,
     });
+
+    // SSS64: dual-write a /api/web-vitals para ground-truth en /panel
+    // (no depende de GA4 Reporting API + service account)
+    try {
+      const payload = JSON.stringify({
+        name: metric.name,
+        value: metric.value,
+        rating: metric.rating || "unknown",
+        page_path: window.location.pathname,
+      });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(
+          "/api/web-vitals",
+          new Blob([payload], { type: "application/json" }),
+        );
+      } else {
+        fetch("/api/web-vitals", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+          keepalive: true,
+        }).catch(() => undefined);
+      }
+    } catch {
+      /* swallow */
+    }
   });
 
   return null;

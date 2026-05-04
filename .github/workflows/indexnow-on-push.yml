@@ -1,0 +1,52 @@
+name: IndexNow ping on main push
+
+# SSS64: cuando se mergea a main, llama a /api/indexnow para que las URLs
+# nuevas/actualizadas se ping-een a Bing/Yandex/IndexNow API. Más rápido
+# que esperar al próximo crawl natural.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tripcazador-web/src/app/**/page.tsx'
+      - 'tripcazador-web/src/content/**'
+      - 'tripcazador-web/src/lib/comparisons.ts'
+      - 'tripcazador-web/src/lib/regions.ts'
+      - 'tripcazador-web/src/lib/blog.ts'
+      - 'tripcazador-web/src/app/sitemap.ts'
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    name: Ping IndexNow
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Wait for Vercel deployment to be live
+        run: sleep 90
+
+      - name: Ping IndexNow endpoint
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -e
+          if [ -z "$ADMIN_TOKEN" ]; then
+            echo "::warning::ADMIN_TOKEN no configurado, skip"
+            exit 0
+          fi
+          # Llamar a /api/indexnow auth-bearer (ya existente, solo activamos
+          # bulk-mode que recorre sitemap.xml y ping-ea cada URL)
+          response=$(curl -sS -X POST \
+            "https://tripcazador.com/api/indexnow?bulk=true" \
+            -H "Authorization: Bearer $ADMIN_TOKEN" \
+            -w "\n%{http_code}")
+          status=$(echo "$response" | tail -1)
+          body=$(echo "$response" | head -n -1)
+          echo "HTTP $status"
+          echo "$body" | head -c 500
+          if [ "$status" != "200" ] && [ "$status" != "202" ]; then
+            echo "::warning::IndexNow ping returned $status"
+          fi

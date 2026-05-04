@@ -151,3 +151,92 @@ export function buildUnsplashUrl(
   const id = photoId.startsWith("photo-") ? photoId : `photo-${photoId}`;
   return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&h=${height}&q=80`;
 }
+
+/**
+ * SSS64 — variantes estacionales para destinos donde el momento del año
+ * cambia drásticamente la imagen icónica. Devuelve la variante adecuada
+ * según el mes (UTC) actual, o la base si no hay variante.
+ *
+ * Uso: imagen Tokio en marzo-abril → sakura en flor (rosa)
+ *      imagen Reikiavik en oct-marzo → auroras boreales (verde sobre nieve)
+ *      imagen Bali en jul-sept → terrazas de arroz seco doradas
+ *
+ * Mapping season → photoId distinto al base. El accent también cambia
+ * para reflejar la paleta del momento.
+ */
+const SEASONAL_VARIANTS: Record<string, Array<{ months: number[]; image: DestImage }>> = {
+  tokio: [
+    {
+      months: [3, 4],
+      image: { photoId: "1522383225653-ed111181a951", alt: "Tokyo cherry blossoms", accent: "#EC4899" },
+    },
+    {
+      months: [11, 12, 1],
+      image: { photoId: "1542051841857-5f90071e7989", alt: "Tokyo winter illuminations", accent: "#F59E0B" },
+    },
+  ],
+  tokyo: [
+    {
+      months: [3, 4],
+      image: { photoId: "1522383225653-ed111181a951", alt: "Tokyo cherry blossoms", accent: "#EC4899" },
+    },
+  ],
+  reikiavik: [
+    {
+      months: [10, 11, 12, 1, 2, 3],
+      image: { photoId: "1483347756197-71ef80e95f73", alt: "Iceland aurora borealis", accent: "#10B981" },
+    },
+  ],
+  bali: [
+    {
+      months: [7, 8, 9],
+      image: { photoId: "1500964757637-c85e8a162699", alt: "Bali dry-season terraces", accent: "#D97706" },
+    },
+  ],
+  paris: [
+    {
+      months: [11, 12],
+      image: { photoId: "1551866442-67c95cc7e0ef", alt: "Paris winter Christmas", accent: "#DC2626" },
+    },
+  ],
+  nueva_york: [
+    {
+      months: [11, 12],
+      image: { photoId: "1543341724-13ec3196c47c", alt: "New York Christmas tree", accent: "#10B981" },
+    },
+  ],
+  amsterdam: [
+    {
+      months: [3, 4],
+      image: { photoId: "1576763595295-c0371a3e6e6f", alt: "Amsterdam tulip fields", accent: "#EC4899" },
+    },
+  ],
+};
+
+/**
+ * Get destination image with optional seasonal variant.
+ * If `month` is provided (1-12) and there's a seasonal variant for that
+ * destination + month, returns the variant. Otherwise base image.
+ */
+export function getSeasonalDestImage(
+  input: string | undefined | null,
+  month?: number,
+): DestImage {
+  const base = getDestImage(input);
+  if (!input || month === undefined) return base;
+
+  const key = String(input).toLowerCase().trim();
+  const variants = SEASONAL_VARIANTS[key];
+  if (!variants) return base;
+
+  const matching = variants.find((v) => v.months.includes(month));
+  return matching ? matching.image : base;
+}
+
+/**
+ * Convenience: returns variant for current UTC month.
+ */
+export function getCurrentSeasonalDestImage(input: string | undefined | null): DestImage {
+  const month = new Date().getUTCMonth() + 1; // 1-12
+  return getSeasonalDestImage(input, month);
+}

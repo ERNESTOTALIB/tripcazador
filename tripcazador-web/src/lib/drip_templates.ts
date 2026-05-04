@@ -198,3 +198,51 @@ Cancelar: {{unsubscribe_url}}`,
 export function getTemplate(stage: number): DripTemplate | null {
   return DRIP_TEMPLATES[stage] ?? null;
 }
+
+/**
+ * SSS64 — drip de recuperación concierge: cuando el usuario ve /concierge
+ * pero NO completa pago en 24h, le mandamos este email recordatorio.
+ *
+ * Trigger: workflow GH `concierge-recovery.yml` cron 6h que:
+ *   1. Lee /api/admin/funnel-v2 → identifica visitantes con concierge_view
+ *      en últimas 24h sin concierge_click_pay correspondiente
+ *   2. Si tenemos email del visitante (cookie cv_email_hint o newsletter
+ *      signup previo), manda este template via Resend
+ *
+ * Uso:
+ *   import { CONCIERGE_RECOVERY_TEMPLATE } from "@/lib/drip_templates";
+ *   await sendEmail(email, CONCIERGE_RECOVERY_TEMPLATE);
+ */
+export const CONCIERGE_RECOVERY_TEMPLATE: DripTemplate = {
+  stage: -1, // Marker: no es parte de la secuencia welcome
+  subject: "¿Te quedaste a medias con tu búsqueda Concierge?",
+  html: wrap(
+    0,
+    "Tu búsqueda personalizada está esperando",
+    `<p>Hola,</p>
+<p>Vimos que ayer empezaste a configurar una búsqueda <strong>Concierge</strong> pero no llegaste a finalizar el pago.</p>
+<p><strong>¿Por qué te puede compensar?</strong></p>
+<ul style="margin:0 0 18px;padding-left:20px;color:#d1d5db">
+<li style="margin:6px 0">Buscamos manualmente entre 30+ aerolíneas, no solo las 3-4 grandes</li>
+<li style="margin:6px 0">Te avisamos por email cuando encontramos el precio óptimo</li>
+<li style="margin:6px 0">Pago único, sin suscripción ni letra pequeña</li>
+<li style="margin:6px 0">Si no encontramos nada mejor que lo que tú ya viste online, te devolvemos el 100%</li>
+</ul>
+<p>Si tienes dudas, responde a este email — Ernesto contesta personalmente.</p>`,
+    "Volver a mi búsqueda",
+    `${SITE_URL}/concierge`,
+  ),
+  text: `Hola,
+
+Vimos que ayer empezaste a configurar una búsqueda Concierge pero no llegaste a finalizar.
+
+Buscamos manualmente entre 30+ aerolíneas. Pago único. Si no encontramos nada mejor, devolvemos el 100%.
+
+Vuelve a tu búsqueda: ${SITE_URL}/concierge
+
+Si tienes dudas, responde a este email.
+
+— Ernesto, TripCazador
+
+Cancelar: {{unsubscribe_url}}`,
+};

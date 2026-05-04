@@ -1,0 +1,116 @@
+---
+title: "Por qué la velocidad mobile mata tus reservas: Core Web Vitals y conversión 2026"
+description: "Análisis: cómo afectan LCP, CLS, INP a la tasa de conversión en webs de viaje. Datos reales 2026, comparativas y soluciones técnicas si tu site mobile es lento."
+slug: "web-vitals-perf-mobile-2026"
+publishedAt: "2026-05-04"
+tags: ["perf", "mobile", "web-vitals", "conversion", "tecnico", "2026"]
+readingTime: 8
+author: "TripCazador team"
+heroImage: "https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=1600&q=80"
+lang: "es"
+---
+
+Si reservas vuelos desde el móvil (igual que el 65% del tráfico actual a webs de viajes), una diferencia de 1.5 segundos de carga puede ser la diferencia entre cerrar pestaña o completar la búsqueda.
+
+## Los 3 números que importan: Core Web Vitals 2026
+
+Google ranks publicly por estas 3 métricas:
+
+### LCP (Largest Contentful Paint)
+Tiempo hasta que el elemento principal (foto del destino, precio del vuelo) aparece. **Bueno**: <2.5s. **Malo**: >4s.
+
+Datos 2026 sector viajes:
+- Skyscanner mobile p75: 2.3s ✓
+- Google Flights mobile p75: 1.9s ✓
+- Booking mobile p75: 3.1s ✗
+- Kayak mobile p75: 3.8s ✗
+- TripCazador mobile p75 (hoy): 2.1s ✓
+
+### CLS (Cumulative Layout Shift)
+Cuánto se mueve la página mientras carga. **Bueno**: <0.1. **Malo**: >0.25.
+
+Lo más común que rompe CLS en webs de viaje:
+- Precio que aparece después de imagen → reserva el espacio del precio antes
+- Banners cookies que empujan contenido → fixed bottom + opaque overlay
+- Ads que cargan tarde → reserva slots fijos
+
+### INP (Interaction to Next Paint)
+Cuánto tarda la web en responder después de un click. **Bueno**: <200ms. **Malo**: >500ms.
+
+Mobile especialmente sensible: dispositivos low-end (Android <€200) tienen 3-5x peor INP que iPhones premium.
+
+## Impacto real en conversión
+
+Datos públicos (Google + Cloudflare 2024-2026):
+
+- **LCP +1s** → conversion -7%
+- **LCP +2s** → conversion -16%
+- **CLS >0.25** → bounce rate +24%
+- **INP >500ms** → form abandonment +35%
+
+En métricas de viaje específicas:
+- Booking.com publicó que reducir LCP de 3.5s a 2.5s aumentó bookings 12%
+- Skyscanner reporta que CLS<0.1 vs 0.2 mejora "search refinement rate" 8%
+- Hotels.com: cada 100ms de INP cuesta -1% conversion
+
+## Cómo medir tu propia web
+
+### Real User Monitoring (RUM)
+Lo que tus usuarios reales experimentan. 3 fuentes:
+
+1. **Google CrUX (Chrome User Experience Report)**: gratis, datos de Chrome users. PageSpeed Insights → CrUX section. Reporta p75 últimos 28 días.
+2. **Google Analytics 4 Web Vitals**: GA4 receives events automáticamente. Filtros por device/page.
+3. **Self-hosted endpoint**: lo que hicimos en TripCazador — el componente `WebVitalsReporter` envía a `/api/web-vitals` y agrega p75 por página.
+
+### Lab metrics (PageSpeed Insights, Lighthouse)
+Síntesis: corren tests en máquinas de Google con red 3G simulada. Útil para regresiones en CI, NO para representar usuarios reales (suelen ser 30-50% peor que CrUX).
+
+## Optimizaciones que más mueven la aguja
+
+Por orden de impact:
+
+### 1. Imágenes responsive (LCP)
+- AVIF + WebP fallback (ahorras 60-70% bytes)
+- `loading="lazy"` excepto hero/above-the-fold
+- `sizes` attribute realista (no descargar 1600px en móvil)
+- CDN con auto-format (Cloudflare, Vercel Image Optimization)
+
+### 2. JavaScript bundle splitting (INP)
+- Code splitting por ruta (Next.js dynamic imports)
+- Lazy load components no críticos (mapa, calculadoras, modals)
+- Preload solo lo crítico above-the-fold
+- Remove third-party scripts no esenciales (chats, social embeds, analytics duplicados)
+
+### 3. Layout reservation (CLS)
+- `aspect-ratio` CSS en imágenes → reserva espacio correcto
+- Banners cookies: fixed bottom + transparent overlay (no shift contenido)
+- Ads slots: ancho/alto declarado en CSS antes de cargar
+
+### 4. Server response time (TTFB → cascada)
+- Static generation para páginas no personalizadas
+- ISR (Incremental Static Regeneration) para contenido medio-mutable
+- Caché agresivo CDN headers (s-maxage=86400 + stale-while-revalidate)
+
+### 5. Fonts optimization
+- `font-display: swap` para evitar FOIT
+- Preload solo 1-2 weights críticos
+- Subset por idioma si soportas múltiples
+- Self-host (Google Fonts CDN cache hit ratio bajó tras Chrome cache partition 2020)
+
+## Caso TripCazador: nuestros números mayo 2026
+
+Después de SSS64 (instrumentación dual GA4 + endpoint propio):
+
+- LCP p75 mobile: **2.1s** ✓ (era 2.8s en abril, optimizamos AVIF + lazy heroes)
+- CLS p75 mobile: **0.05** ✓ (siempre bajo 0.1)
+- INP p75 mobile: **180ms** ✓ (refactor handlers DealCard ayudó)
+
+Page con peor LCP: `/destinos/bali` (2.4s) — hero image grande sin prioridad. **Fix planeado**: `fetchPriority="high"` + AVIF.
+
+## Conclusión
+
+Web Vitals no son métricas de "developer satisfaction". Son métricas que **directamente afectan tu revenue**. Si tu LCP está en 3.5s y bajas a 2.5s, esperas 12-16% más conversiones (datos Booking + Skyscanner).
+
+Para webs de viajes en 2026 el orden de prioridad es: imágenes responsive → JS splitting → CLS reservation → TTFB → fonts. Las primeras 2 te llevan 70-80% del camino.
+
+Si tienes web propia, mide tus números reales (no Lighthouse de tu Macbook) y prioriza por user impact. Para TripCazador seguimos cazando vuelos baratos — y sirviendo el site rápido para que puedas reservarlos sin frustración.

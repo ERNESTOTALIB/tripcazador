@@ -1,0 +1,84 @@
+name: Revenue snapshot diario
+
+# SSS64: cron daily 02:00 UTC que llama /api/admin/funnel-v2 para obtener
+# el revenue del día y lo persiste vía /api/admin/revenue-history POST.
+# Genera la serie histórica para el gráfico /panel.
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: revenue-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    name: Snapshot revenue del día anterior
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fetch funnel-v2 for previous 24h
+        id: fetch
+        env:
+          PANEL_USER: ${{ secrets.PANEL_USER }}
+          PANEL_PASS: ${{ secrets.PANEL_PASS }}
+        run: |
+          set -e
+          # Login obtiene cookie panel
+          login=$(curl -sS -c /tmp/cookies.txt -X POST \
+            "https://tripcazador.com/api/panel/login" \
+            -H "Content-Type: application/json" \
+            -d "{\"username\":\"$PANEL_USER\",\"password\":\"$PANEL_PASS\"}" \
+            -w "\n%{http_code}")
+          status=$(echo "$login" | tail -1)
+          if [ "$status" != "200" ]; then
+            echo "::error::Login fallo HTTP $status"
+            exit 1
+          fi
+          funnel=$(curl -sS -b /tmp/cookies.txt \
+            "https://tripcazador.com/api/admin/funnel-v2?window=24h")
+          echo "$funnel" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+revenue = data.get('estimated_revenue_window_eur', 0)
+kpis = data.get('kpis_vs_prev', {})
+deal_clicks = (kpis.get('deal_clicks') or {}).get('cur', 0)
+bookings_out = (kpis.get('bookings_out') or {}).get('cur', 0)
+visitors = (kpis.get('visitors') or {}).get('cur', 0)
+by_type = data.get('by_type_current') or {}
+prem = (by_type.get('premium_cta_click') or 0) + (by_type.get('concierge_click_pay') or 0)
+print(f'revenue={revenue}')
+print(f'deal_clicks={deal_clicks}')
+print(f'bookings={bookings_out}')
+print(f'premium_clicks={prem}')
+print(f'visitors={visitors}')
+" >> $GITHUB_OUTPUT
+
+      - name: POST snapshot to revenue-history
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -e
+          if [ -z "$ADMIN_TOKEN" ]; then
+            echo "::error::ADMIN_TOKEN missing"
+            exit 1
+          fi
+          DATE=$(date -u -d "yesterday" +%Y-%m-%d)
+          payload=$(cat <<EOF
+{
+  "date": "$DATE",
+  "revenue_eur": ${{ steps.fetch.outputs.revenue }},
+  "deal_clicks": ${{ steps.fetch.outputs.deal_clicks }},
+  "bookings_out": ${{ steps.fetch.outputs.bookings }},
+  "premium_clicks": ${{ steps.fetch.outputs.premium_clicks }},
+  "visitors": ${{ steps.fetch.outputs.visitors }}
+}
+EOF
+)
+          curl -sS -X POST "https://tripcazador.com/api/admin/revenue-history" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $ADMIN_TOKEN" \
+            -d "$payload" \
+            -w "\nHTTP %{http_code}\n"

@@ -2087,6 +2087,101 @@ COMPARISONS.push(
   },
 );
 
+// SSS64 — 5 comparativas head-to-head adicionales (target 65)
+
+COMPARISONS.push(
+  {
+    slug: "barcelona-vs-madrid-fin-de-semana",
+    title: "Barcelona vs Madrid fin de semana 2026: cuál se adapta mejor a tu viaje corto",
+    description: "Comparativa BCN vs MAD para escapada 2-3 días. Vuelos baratos, gastronomía, vida nocturna, transporte aeropuerto-centro y opciones culturales.",
+    a: { name: "Barcelona", iata: "BCN", country: "España", emoji: "🌊", tagline: "Mediterráneo + Gaudí + tapas", typicalPriceFromMad: 65, minObserved: 25, flightTime: "1h 15m", bestMonths: ["Abr", "May", "Sep", "Oct"] },
+    b: { name: "Madrid", iata: "MAD", country: "España", emoji: "🏛️", tagline: "Capital + museos + tapeo nocturno", typicalPriceFromMad: 60, minObserved: 22, flightTime: "1h 10m desde BCN", bestMonths: ["Abr", "May", "Oct", "Nov"] },
+    criteria: [
+      { label: "Vuelos low cost frecuencia", aScore: 9, bScore: 9, winner: "tie", note: "Ambos hubs Vueling/Iberia/Ryanair con 30+ vuelos diarios entre sí + resto EU. Empate." },
+      { label: "Comida y precio medio menú", aScore: 8, bScore: 9, winner: "b", note: "Madrid menú del día €11-14 (cocido, callos, tortilla). Barcelona €13-17 (paella suplemento, marisco más caro). Madrid más value puro." },
+      { label: "Vida nocturna fin de semana", aScore: 9, bScore: 9, winner: "tie", note: "Barcelona Razzmatazz/Apolo + chiringuitos playa. Madrid Malasaña/Lavapiés/Chueca. Empate por estilo distinto." },
+      { label: "Cultura museos top", aScore: 8, bScore: 10, winner: "b", note: "Madrid Prado + Reina Sofía + Thyssen = triángulo único mundial. Barcelona Picasso + MNAC. Madrid clara ventaja arte." },
+      { label: "Playa accesible centro", aScore: 10, bScore: 1, winner: "a", note: "Barcelona: metro L4 a Barceloneta 15min desde plaza Catalunya. Madrid: 5h coche playa más cercana." },
+      { label: "Aeropuerto → centro", aScore: 8, bScore: 8, winner: "tie", note: "BCN: aerobús 35min €5,90. MAD: metro L8 30min €5. Empate." },
+    ],
+    verdict: "Empate global con perfiles diferentes. Madrid si: cultura/museos eres prioridad, presupuesto justo, primera vez España. Barcelona si: combinar ciudad + playa, arquitectura modernista, gastro mediterránea más que castiza. Para no españoles ambos imprescindibles, mejor 2 días+2 días con AVE en medio (€40 ida) que un solo destino entero.",
+    pickA: ["Quieres playa caminable", "Arquitectura Gaudí + modernisme", "Gastro mediterránea/marisco", "Combinar ciudad + relax"],
+    pickB: ["Museos top mundiales", "Más value comida/copas", "Centro histórico denso caminable", "Vida nocturna castiza"],
+  },
+  {
+    slug: "ryanair-vs-easyjet-vs-vueling-low-cost-eu",
+    title: "Ryanair vs easyJet vs Vueling 2026: comparativa low cost europeas desde España",
+    description: "Las 3 low cost dominantes en España analizadas: tarifas reales, equipaje, asientos, puntualidad, customer service y red de rutas desde MAD/BCN/AGP.",
+    a: { name: "Ryanair", iata: "FR", country: "Irlanda", emoji: "💚", tagline: "El más barato bruto, sin compromisos", typicalPriceFromMad: 39, minObserved: 9, flightTime: "1-3h EU", bestMonths: ["Cualquiera"] },
+    b: { name: "easyJet / Vueling (mix)", iata: "U2/VY", country: "UK / España", emoji: "🟠", tagline: "Service tier intermedio, mejor experiencia", typicalPriceFromMad: 65, minObserved: 25, flightTime: "1-3h EU", bestMonths: ["Cualquiera"] },
+    criteria: [
+      { label: "Tarifa base media (sin extras)", aScore: 10, bScore: 7, winner: "a", note: "Ryanair MAD-Roma €19-39 frecuente. Vueling/easyJet €45-75 mismo trayecto. Ryanair siempre 30-50% más barata bruto." },
+      { label: "Equipaje cabina included", aScore: 4, bScore: 8, winner: "b", note: "Ryanair: solo personal item 40x20x25cm gratis. Trolley 55x40x20 = €15-30 extra. Vueling/easyJet: trolley INCLUIDO. Si llevas trolley, easyJet base + €0 vs Ryanair base + €25." },
+      { label: "Puntualidad on-time %", aScore: 7, bScore: 8, winner: "b", note: "OAG 2026: Ryanair 75%, Vueling 78%, easyJet 81%. easyJet mejor en 6 puntos. Crítico si tienes conexión." },
+      { label: "Cancellation/disrupciones response", aScore: 5, bScore: 7, winner: "b", note: "Ryanair customer service notoriamente lento, EU 261 paga peor. easyJet/Vueling más profesionales en disrupciones (auto-rebooking más común)." },
+      { label: "Red destinos desde España", aScore: 9, bScore: 8, winner: "a", note: "Ryanair: 220+ rutas desde MAD/BCN/AGP/PMI/etc. Vueling+easyJet combinadas: 180. Ryanair gana en aeropuertos secundarios." },
+      { label: "Asientos comfort + pitch", aScore: 5, bScore: 7, winner: "b", note: "Ryanair 737-800 28 inch pitch (apretado). Vueling/easyJet A320 30 inch. Marginal en vuelo 1h, perceptible en 3h." },
+    ],
+    verdict: "Ryanair gana en precio bruto y red. easyJet/Vueling ganan en TODO lo demás. Si tu vuelo es <2h y solo personal item, Ryanair es no-brainer (ahorras 50%). Si llevas trolley, considera Vueling/easyJet con trolley incluido — el precio final suele ser muy parejo y la experiencia mejor. Para vuelos +3h, paga el premium easyJet/Vueling — 30 inch pitch vs 28 hace diferencia.",
+    pickA: ["Vuelo <2h con solo mochila", "Aeropuertos secundarios (BGY, GRO, etc)", "Buscas precio mínimo absoluto", "Eres flexible con horarios"],
+    pickB: ["Llevas trolley cabina (precio total similar)", "Vuelo >3h donde comodidad importa", "Conexión apretada con otra aerolínea", "Tolerancia cero a customer service kafkiano"],
+  },
+  {
+    slug: "viaje-organizado-vs-por-libre-2026",
+    title: "Viaje organizado vs por libre 2026: cuándo conviene cada uno",
+    description: "Análisis honesto de cuándo un tour organizado (paquete completo) supera a viajar por tu cuenta. Costos, comodidad, flexibilidad, tipos de viajeros y tipos de destino.",
+    a: { name: "Viaje organizado", iata: "—", country: "—", emoji: "📋", tagline: "Paquete cerrado: vuelo + hotel + traslados + actividades", typicalPriceFromMad: 1450, minObserved: 850, flightTime: "—", bestMonths: ["Cualquiera"] },
+    b: { name: "Viaje por libre", iata: "—", country: "—", emoji: "🗺️", tagline: "Tú decides cada elemento, máxima flexibilidad", typicalPriceFromMad: 1200, minObserved: 650, flightTime: "—", bestMonths: ["Cualquiera"] },
+    criteria: [
+      { label: "Coste total mismos 7 días", aScore: 7, bScore: 8, winner: "b", note: "Por libre 10-25% más barato típicamente. Pero organizado tiene economías de escala vuelo + hotel grupo (mejor en Cuba, Egipto, Tanzania donde solo tarifas grupo bajan)." },
+      { label: "Tiempo de planificación previo", aScore: 10, bScore: 4, winner: "a", note: "Organizado: 30 min reserva + listo. Libre: 8-15h investigación (vuelos, hoteles, actividades, transporte interno). Critical si tu hora vale ≥€20." },
+      { label: "Flexibilidad in situ", aScore: 3, bScore: 10, winner: "b", note: "Organizado: itinerario cerrado, intentar cambiar penalty 100€+. Libre: cambias plan al día. Diferencia abismal." },
+      { label: "Seguridad / soporte 24/7", aScore: 9, bScore: 5, winner: "a", note: "Organizado: guía local + emergency contact + asistencia salud incluida. Libre: tú resuelves todo. Importa más en destinos lejanos/culturalmente distintos (China, Marruecos rural, India)." },
+      { label: "Profundidad cultural", aScore: 5, bScore: 9, winner: "b", note: "Organizado: parada 30 min cada highlight, comida turística. Libre: te puedes quedar 3 días en pueblo perdido, comer donde locales. Libre gana cultura." },
+      { label: "Familias con niños", aScore: 9, bScore: 6, winner: "a", note: "Niños cambian todo: traslados sin esperas, hoteles testados kid-friendly, comida segura. Organizado quita 80% del estrés logístico familiar." },
+    ],
+    verdict: "Organizado gana cuando: 1) primer viaje fuera de EU/USA, 2) destino con barrera idiomática y poca infraestructura turística (China, Egipto, India rural, Tanzania safari), 3) viajas con familia con niños <10 años, 4) tienes <10h para planificar. Por libre gana en TODO lo demás: cualquier capital europea, USA/Canadá, Latinoamérica con español/portugués, sudeste asiático urbano, viajes >14 días. Híbrido: organizado los primeros 4 días + libre el resto en mismo país (saltar barrera inicial).",
+    pickA: ["Primer viaje fuera Europa", "Destino con barrera idiomática", "Familia con niños", "Tiempo cero planificación"],
+    pickB: ["Viajas regular (≥3/año)", "Destino con buena infra turística", "Quieres profundidad cultural", "Hablas idioma local básico"],
+  },
+  {
+    slug: "wizz-vs-ryanair-este-europa",
+    title: "Wizz Air vs Ryanair Este Europa 2026: cuál domina rutas a Polonia, Hungría, Rumanía",
+    description: "Las 2 low cost dominantes Este Europa: red rutas desde España (BCN/MAD/PMI) a WAW/BUD/OTP/SOF/CRA. Tarifas, equipaje, customer service, frecuencias.",
+    a: { name: "Wizz Air", iata: "W6", country: "Hungría", emoji: "💗", tagline: "El rey del Este Europa, especializada en rutas Polonia-Hungría-Rumanía", typicalPriceFromMad: 49, minObserved: 14, flightTime: "2-3h", bestMonths: ["Cualquiera"] },
+    b: { name: "Ryanair", iata: "FR", country: "Irlanda", emoji: "💚", tagline: "Cobertura EU + Este, más barata bruta", typicalPriceFromMad: 39, minObserved: 9, flightTime: "2-3h", bestMonths: ["Cualquiera"] },
+    criteria: [
+      { label: "Red rutas Este Europa desde España", aScore: 10, bScore: 7, winner: "a", note: "Wizz BCN/MAD a 12 destinos Este (WAW, KRK, BUD, DEB, CLJ, OTP, BUH, SOF, BEG, ZAG, LJU, TIA). Ryanair 7. Wizz especialista clara." },
+      { label: "Tarifa base media", aScore: 7, bScore: 9, winner: "b", note: "Ryanair 25-40% más barata bruta. Wizz €49-79 base, Ryanair €19-49 misma ruta. Diferencia palpable." },
+      { label: "Equipaje included (10kg cabina trolley)", aScore: 8, bScore: 4, winner: "a", note: "Wizz Discount Club permite trolley 10kg incluido. Ryanair siempre extra €15-30. Wizz win." },
+      { label: "Puntualidad on-time", aScore: 7, bScore: 7, winner: "tie", note: "Wizz 76%, Ryanair 75% en 2026. Empate." },
+      { label: "Customer service responsiveness", aScore: 6, bScore: 4, winner: "a", note: "Wizz mejor en EU 261 disrupciones (paga rápido), customer service más humano. Ryanair famosamente kafkiano." },
+      { label: "Frecuencias diarias misma ruta", aScore: 8, bScore: 8, winner: "tie", note: "Ambos 1-3 vuelos/día rutas top. Wizz tiene rutas únicas (DEB, CLJ) no servidas por Ryanair." },
+    ],
+    verdict: "Wizz gana para Este Europa específicamente — más rutas, mejor producto base con trolley. Ryanair gana si la ruta existe y solo llevas mochila. Estrategia: Wizz default para Polonia/Hungría/Rumanía/Bulgaria. Ryanair fallback si vas con personal item only y Ryanair tiene la misma ruta. Wizz Discount Club (€34/año) merece la pena si vuelas Wizz ≥2 viajes/año (descuento €10-25/billete).",
+    pickA: ["Vuelas Este Europa (PL/HU/RO/BG)", "Llevas trolley 10kg", "Vuelos ≥2h donde producto importa", "Customer service decente importa"],
+    pickB: ["Solo mochila personal", "Ruta corta <2h donde precio reina", "Aeropuertos secundarios donde Wizz no llega", "Buscas precio absoluto mínimo"],
+  },
+  {
+    slug: "tarjeta-revolut-vs-curve-vs-wise-viajar",
+    title: "Revolut vs Curve vs Wise 2026: qué tarjeta usar viajando",
+    description: "Análisis 3 tarjetas multi-divisa más populares en España: comisiones cambio, retiradas ATM, cashback, soporte y para qué tipo de viajero conviene cada una.",
+    a: { name: "Revolut", iata: "—", country: "Reino Unido", emoji: "🟣", tagline: "All-in-one app + tarjetas físicas/virtuales + crypto/stocks", typicalPriceFromMad: 0, minObserved: 0, flightTime: "—", bestMonths: ["Cualquiera"] },
+    b: { name: "Wise (Curve mention)", iata: "—", country: "Reino Unido", emoji: "🟡", tagline: "El mejor cambio a divisa, sin sorpresas", typicalPriceFromMad: 0, minObserved: 0, flightTime: "—", bestMonths: ["Cualquiera"] },
+    criteria: [
+      { label: "Comisión cambio divisa", aScore: 8, bScore: 10, winner: "b", note: "Wise siempre TC interbancario + 0,3-0,5% fee transparente. Revolut TC interbancario fines de semana +1% markup (oculto). Wise gana honestidad." },
+      { label: "Retirada ATM extranjero gratis", aScore: 7, bScore: 8, winner: "b", note: "Revolut Standard: 200€/mes gratis, después 2%. Wise: depende país, hasta 200€/mes gratis. Wise ligeramente más generoso." },
+      { label: "Cashback / rewards", aScore: 8, bScore: 4, winner: "a", note: "Revolut Premium 1% cashback fuera EU. Wise sin cashback. Revolut gana si gastas mucho en viajes." },
+      { label: "Apertura cuenta + KYC", aScore: 9, bScore: 9, winner: "tie", note: "Ambas: 5-10min con DNI + selfie. Empate." },
+      { label: "Soporte cliente humano", aScore: 5, bScore: 7, winner: "b", note: "Wise: chat humano <30min respuesta. Revolut Standard: chatbot, escalamiento difícil. Premium mejor pero pagas €10/mes. Wise gana free tier." },
+      { label: "Funcionalidades extra (crypto, stocks, stays)", aScore: 9, bScore: 4, winner: "a", note: "Revolut: stocks, crypto, gold, vacation rentals booking, presupuestos. Wise: solo cuenta multi-divisa. Revolut gana feature breadth." },
+    ],
+    verdict: "Wise gana en transparencia + cambio + soporte. Revolut gana en features + cashback + ecosistema. Para 90% viajeros: Wise como default — sabes exactamente qué pagas, no hay sorpresas fines de semana, soporte humano. Revolut como complemento si: 1) viajas mucho (Premium €10/mes con 1% cashback se paga solo gastando €1000/mes), 2) usas stocks/crypto, 3) quieres app todo-en-uno. Curve menciono brevemente: capa sobre tus tarjetas existentes, sin TC propio — útil solo si quieres consolidar varias tarjetas pero no es competitiva con Wise/Revolut como tarjeta principal.",
+    pickA: ["Viajas frecuente (≥4 viajes/año)", "Quieres app todo-en-uno", "Te interesan cashback + stocks/crypto", "Premium €10/mes ROI claro"],
+    pickB: ["Quieres TC honesto sin markup", "Viajas ocasional (1-3/año)", "Soporte humano importa", "Free tier max valor"],
+  },
+);
+
 export function getComparisonBySlug(slug: string): DestinationComparison | null {
   return COMPARISONS.find((c) => c.slug === slug) || null;
 }
