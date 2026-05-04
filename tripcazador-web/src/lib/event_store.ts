@@ -24,7 +24,17 @@ export type EventType =
   | "alert_created"
   | "calc_used"          // fase tt-TT4: alguna calculadora usada
   | "share_clicked"      // fase tt-TT4: share button clickeado
-  | "telegram_clicked";  // fase tt-TT4: link a Telegram clickeado
+  | "telegram_clicked"   // fase tt-TT4: link a Telegram clickeado
+  // SSS61: funnel completo — instrumentación pendiente del HANDOFF
+  | "landing_arrived"    // primer page_view de sesión con utm_*
+  | "result_viewed"      // deal entra en viewport (IntersectionObserver)
+  | "share_completed"    // share efectivo (no solo intent)
+  | "favorite_added"     // heart click
+  | "scroll_75"          // 75% de página scrolled
+  | "concierge_view"     // landing /concierge
+  | "concierge_click_pay" // CTA Stripe pago premium
+  | "premium_cta_view"   // banner premium visible en viewport
+  | "premium_cta_click"; // click en cualquier CTA premium
 
 export interface TrackedEvent {
   ts: number;          // epoch ms

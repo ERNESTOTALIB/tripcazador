@@ -1,0 +1,36 @@
+name: Health watch — alertas Telegram al owner
+
+# SSS61: dispara /api/admin/health-watch cada 15min. Si detecta caída
+# de tráfico, hunter caído, backend down → notifica Telegram al owner.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: health-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: Run health watch
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Hit health-watch endpoint
+        env:
+          KEY: ${{ secrets.HEALTH_WATCH_KEY }}
+        run: |
+          set -e
+          URL="https://tripcazador.com/api/admin/health-watch"
+          if [ -n "$KEY" ]; then URL="$URL?key=$KEY"; fi
+          # Capture both body and status separately
+          body=$(curl -sS "$URL" -w "\n%{http_code}")
+          status=$(echo "$body" | tail -1)
+          json=$(echo "$body" | head -n -1)
+          echo "HTTP $status"
+          echo "$json" | head -c 1000
+          if [ "$status" != "200" ] && [ "$status" != "401" ]; then
+            echo "::warning::health-watch returned $status"
+            exit 1
+          fi
