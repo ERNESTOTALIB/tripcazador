@@ -58,6 +58,7 @@ export async function GET(req: NextRequest) {
 
   const dest = getDestImage(destKey);
   const bgUrl = buildUnsplashUrl(dest.photoId, 1080, 1080);
+  const logoUrl = `${req.nextUrl.origin}/logo-horizontal-dark.png`;
 
   return new ImageResponse(
     (
@@ -295,17 +296,19 @@ export async function GET(req: NextRequest) {
               marginTop: "6px",
             }}
           >
-            <div
+            {/* Logo Tripcazador horizontal real (SSS58) */}
+            <img
+              src={logoUrl}
+              alt="TripCazador"
+              width={260}
+              height={70}
               style={{
                 display: "flex",
-                fontSize: "26px",
-                color: "#fbbf24",
-                fontWeight: 800,
-                letterSpacing: "3px",
+                width: "260px",
+                height: "70px",
+                objectFit: "contain",
               }}
-            >
-              tripcazador.com
-            </div>
+            />
             <div
               style={{
                 display: "flex",

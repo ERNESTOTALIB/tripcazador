@@ -58,6 +58,9 @@ export async function GET(req: NextRequest) {
   const content = getDestContent(destKey, region);
   const blog = getBlogForDest(destKey);
 
+  // SSS58: usar logo horizontal real (PNG dark) para branding consistente
+  const logoUrl = `${req.nextUrl.origin}/logo-horizontal-dark.png`;
+
   const slideTitle: Record<SlideKind, string> = {
     places: "QUÉ VER",
     food: "QUÉ COMER",
@@ -100,13 +103,14 @@ export async function GET(req: NextRequest) {
             display: "flex",
           }}
         />
-        {/* Overlay MUY oscuro — la foto es solo "atmósfera"; el contenido
-            (listas con datos) tiene que leerse perfecto. SSS57d fix. */}
+        {/* Overlay casi opaco — la foto es solo "atmósfera". Cards
+            tienen su propio fondo solid navy → texto blanco SIEMPRE legible
+            sin importar la foto destino. SSS58 fix. */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(180deg, rgba(10,21,48,0.92) 0%, rgba(10,21,48,0.96) 50%, rgba(10,21,48,0.98) 100%)",
+            background: "linear-gradient(180deg, rgba(10,21,48,0.78) 0%, rgba(10,21,48,0.88) 30%, rgba(10,21,48,0.96) 70%, rgba(10,21,48,0.98) 100%)",
             display: "flex",
           }}
         />
@@ -137,20 +141,19 @@ export async function GET(req: NextRequest) {
             <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: dest.accent, display: "flex" }} />
             {cityTo}
           </div>
-          <div
+          {/* Logo Tripcazador horizontal real (SSS58) */}
+          <img
+            src={logoUrl}
+            alt="TripCazador"
+            width={240}
+            height={64}
             style={{
               display: "flex",
-              background: "#fbbf24",
-              padding: "14px 26px",
-              borderRadius: "999px",
-              fontSize: "22px",
-              fontWeight: 900,
-              letterSpacing: "3px",
-              color: "#0a1530",
+              width: "240px",
+              height: "64px",
+              objectFit: "contain",
             }}
-          >
-            ✈ TC
-          </div>
+          />
         </div>
 
         {/* TITLE */}
@@ -198,7 +201,7 @@ export async function GET(req: NextRequest) {
                   display: "flex",
                   alignItems: "center",
                   gap: "20px",
-                  background: "rgba(255,255,255,0.14)",
+                  background: "rgba(10,21,48,0.92)",
                   border: "2px solid rgba(251,191,36,0.3)",
                   padding: "20px 26px",
                   borderRadius: "20px",
@@ -220,7 +223,7 @@ export async function GET(req: NextRequest) {
                   display: "flex",
                   alignItems: "center",
                   gap: "20px",
-                  background: "rgba(255,255,255,0.14)",
+                  background: "rgba(10,21,48,0.92)",
                   border: "2px solid rgba(16,185,129,0.4)",
                   padding: "22px 28px",
                   borderRadius: "20px",
@@ -242,8 +245,8 @@ export async function GET(req: NextRequest) {
                   display: "flex",
                   alignItems: "flex-start",
                   gap: "24px",
-                  background: "rgba(251,191,36,0.12)",
-                  border: "2px solid rgba(251,191,36,0.5)",
+                  background: "rgba(10,21,48,0.92)",
+                  border: "2px solid rgba(251,191,36,0.6)",
                   padding: "26px 30px",
                   borderRadius: "20px",
                 }}
