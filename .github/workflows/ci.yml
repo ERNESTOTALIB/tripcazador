@@ -50,6 +50,9 @@ jobs:
             --cov-fail-under=30 \
             -v
 
+      - name: Validate blog hero images (SSS56g — Unsplash 404 detector)
+        run: python3 scripts/validate_blog_hero_images.py
+
       - name: Upload coverage to artifact
         if: always()
         uses: actions/upload-artifact@v4
