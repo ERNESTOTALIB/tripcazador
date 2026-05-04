@@ -72,8 +72,14 @@ export function aggregate24h() {
   const routesMap = new Map<string, number>();
   const airlinesMap = new Map<string, number>();
 
+  // SSS56e: by_type registra TODOS los event types — útil para
+  // /api/admin/funnel que busca page_view/favorite_added/share/scroll_75/
+  // deal_click/booking_url_opened independientemente del rename a *_24h.
+  const byType: Record<string, number> = {};
+
   for (const e of events) {
     visitors.add(e.visitor_id);
+    byType[e.type] = (byType[e.type] || 0) + 1;
     if (e.type === "page_view") totals.page_views_24h++;
     else if (e.type === "deal_click") {
       totals.deal_clicks_24h++;
@@ -115,6 +121,7 @@ export function aggregate24h() {
 
   return {
     totals,
+    by_type: byType,
     conversion: {
       click_through_rate: Math.round(ctr * 1000) / 1000,
       booking_rate: Math.round(bookingRate * 1000) / 1000,

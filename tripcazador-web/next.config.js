@@ -87,16 +87,16 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // SSS56b: revertimos a ignoreBuildErrors=true.
-  // El build falló cuando lo puse a false (run #90 de GH Actions),
-  // confirmando que hay otro TS error real más allá del cast SSS53b.
-  // Sin acceso al log completo (truncado a "Checking validity of types"),
-  // no puedo arreglar a ciegas. ci.yml typechequea separado igual,
-  // y es el camino para identificar la línea exacta cuando haya tiempo.
-  // ROADMAP fix: instalar node_modules local + correr `npx tsc --noEmit`
-  // para ver el error real, arreglar con cirugía, luego volver a false.
+  // SSS56e: REACTIVADO typing strict. Tras instalar node_modules local
+  // y correr `npx tsc --noEmit`, identifiqué 6 errores en
+  // src/app/api/admin/funnel/route.ts (Property 'page_view' does not
+  // exist on type '{}') causados porque aggregate24h() devolvía totals
+  // con keys hardcodeadas (*_24h) pero funnel buscaba keys dinámicas
+  // (page_view/favorite_added/share/scroll_75/deal_click/booking_url_opened).
+  // Fix: añadir by_type: Record<string, number> a aggregate24h y usar
+  // ese mapa en funnel route. Ahora tsc --noEmit pasa limpio (exit 0).
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   images: {
     remotePatterns: [

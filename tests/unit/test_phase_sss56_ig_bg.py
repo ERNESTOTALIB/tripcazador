@@ -131,14 +131,13 @@ class TestSSS56StoryBackground:
 class TestSSS56TypingFix:
     CONFIG = WEB / "next.config.js"
 
-    def test_ignore_build_errors_true(self):
+    def test_ignore_build_errors_false(self):
         c = _read(self.CONFIG)
-        # SSS56b: REVERTIDO a true. Run #90 falló al ponerlo en false →
-        # hay otro TS error oculto. Mantener escape valve hasta tener
-        # node_modules local para arreglar con cirugía precisa.
-        assert "ignoreBuildErrors: true" in c
+        # SSS56e: REACTIVADO. Errores TS reales en funnel/route.ts arreglados
+        # vía by_type: Record<string, number> en aggregate24h. tsc pasa limpio.
+        assert "ignoreBuildErrors: false" in c
 
     def test_explanatory_comment_present(self):
         c = _read(self.CONFIG)
-        # Comentario explica que ci.yml hace typecheck separado igual
-        assert "ci.yml" in c
+        # Comentario debe explicar el fix concreto (funnel/route.ts)
+        assert "funnel/route.ts" in c or "by_type" in c

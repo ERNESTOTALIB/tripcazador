@@ -39,17 +39,20 @@ export async function GET(_req: NextRequest) {
   }
 
   // Tomamos events de últimas 24h del event_store local
+  // SSS56e: usamos by_type (Record<string, number>) que cuenta TODOS los
+  // event types dinámicamente, no solo los hardcodeados en `totals`.
   const agg = aggregate24h();
-  const totals = agg.totals || {};
+  const byType = agg.by_type || {};
 
   // Stages — ordenados de top de funnel a bottom
-  const pageViews = (totals.page_view as number) || 0;
+  const pageViews = byType.page_view || 0;
   const engagement =
-    ((totals.favorite_added as number) || 0) +
-    ((totals.share as number) || 0) +
-    ((totals.scroll_75 as number) || 0);
-  const dealClicks = (totals.deal_click as number) || 0;
-  const bookingRedirects = (totals.booking_url_opened as number) || 0;
+    (byType.favorite_added || 0) +
+    (byType.share || 0) +
+    (byType.scroll_75 || 0);
+  const dealClicks = byType.deal_click || 0;
+  // booking_url_opened es el nombre legacy; booking_redirect es el actual
+  const bookingRedirects = (byType.booking_url_opened || 0) + (byType.booking_redirect || 0);
 
   // Booking confirmation — 7% rate medio industria travel affiliate
   const estimatedBookings = Math.round(bookingRedirects * 0.07);
