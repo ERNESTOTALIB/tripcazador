@@ -340,8 +340,57 @@ def main() -> int:
         return -score  # ascending = best first
     deals.sort(key=score_key)
 
+    # SSS65: dedup origen+destino vs últimos N posts publicados.
+    # Si el cron anterior publicó MUC→NRT, el siguiente no puede tener
+    # MUC ni NRT como origen ni destino. Tras N=2 posts puede repetirse.
+    DEDUP_WINDOW = int(os.environ.get("IG_DEDUP_WINDOW", "2"))
+    HISTORY_FILE = ".instagram_post_history.json"
+    recent_airports = set()
+    history: List[Dict[str, Any]] = []
+    try:
+        if os.path.exists(HISTORY_FILE):
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                history = json.load(f) or []
+            for entry in history[-DEDUP_WINDOW:]:
+                o = (entry.get("origin") or "").upper()
+                d_ = (entry.get("destination") or "").upper()
+                if o: recent_airports.add(o)
+                if d_: recent_airports.add(d_)
+    except Exception as e:
+        log(f"WARN reading {HISTORY_FILE}: {e}")
+
+    if recent_airports:
+        log(f"Antirepeticion: bloqueados {sorted(recent_airports)} (ventana {DEDUP_WINDOW})")
+        filtered = [
+            d for d in deals
+            if (d.get("origin") or "").upper() not in recent_airports
+            and (d.get("destination") or "").upper() not in recent_airports
+        ]
+        if filtered:
+            deals = filtered
+        else:
+            log("WARN: nada tras dedup; uso lista completa")
+
     deal = deals[0]
     log(f"Selected deal: {deal.get('id')} â {deal.get('headline')}")
+
+    # SSS65: registrar post en historial para futuros dedups
+    try:
+        history.append({
+            "timestamp": time.time(),
+            "deal_id": deal.get("id", ""),
+            "origin": (deal.get("origin") or "").upper(),
+            "destination": (deal.get("destination") or "").upper(),
+            "city_from": deal.get("city_from", ""),
+            "city_to": deal.get("city_to", ""),
+            "price_eur": deal.get("price_eur"),
+        })
+        history = history[-20:]
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(history, f, indent=2, default=str)
+        log(f"Historial: {len(history)} entradas en {HISTORY_FILE}")
+    except Exception as e:
+        log(f"WARN history write: {e}")
 
     # SSS40: usar el endpoint premium nuevo si IG_OG_VERSION=v2 (default v2 = nuevo)
     # Fallback a /api/og/instagram (legacy 1080×1350) si v1.

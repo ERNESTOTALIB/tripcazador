@@ -19,6 +19,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      # SSS65: persistir historial de posts entre runs vía cache.
+      # Permite que el script lea los últimos 2 destinos publicados y
+      # filtre deals para no repetir origen/destino consecutivamente.
+      - name: Restore post history cache
+        id: history-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .instagram_post_history.json
+          key: ig-post-history-v1-${{ github.run_id }}
+          # Fallback prefix: GH cache picks most recent matching this prefix.
+          # Permite que cada run lea el historial del run anterior.
+          restore-keys: |
+            ig-post-history-v1-
+
       - name: Run script
         env:
           SITE_URL: https://tripcazador.com
@@ -26,4 +41,15 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           TG_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          IG_DEDUP_WINDOW: "2"
         run: python scripts/instagram_publish_deals.py
+
+      # Save updated history back. cache@save creates a new entry with
+      # the run_id-suffixed key; restore step picks up most recent matching
+      # prefix automatically next run.
+      - name: Save post history cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .instagram_post_history.json
+          key: ig-post-history-v1-${{ github.run_id }}-${{ github.run_attempt }}
