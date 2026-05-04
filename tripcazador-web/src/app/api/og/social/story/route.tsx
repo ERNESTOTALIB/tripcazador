@@ -78,77 +78,138 @@ export async function GET(req: NextRequest) {
           fontFamily: "Inter, system-ui, sans-serif",
         }}
       >
-        {/* Top: sky destino */}
+        {/* Top: sky destino — SSS55 rediseño con menos vacío */}
         <div
           style={{
             width: "100%",
             height: "1340px",
             display: "flex",
+            flexDirection: "column",
             background: skyGradient,
             position: "relative",
             padding: "80px 60px",
             justifyContent: "space-between",
-            alignItems: "flex-start",
           }}
         >
-          {/* Sticker location pill IG-style */}
+          {/* TOP ROW: location pill + brand badge */}
           <div
             style={{
               display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
-              gap: "14px",
-              background: "#fff",
-              padding: "16px 28px",
-              borderRadius: "999px",
-              fontSize: "30px",
-              fontWeight: 700,
-              color: "#0a1530",
+              width: "100%",
             }}
           >
             <div
               style={{
-                width: "16px",
-                height: "16px",
-                borderRadius: "50%",
-                background: "#DC2626",
+                display: "flex",
+                alignItems: "center",
+                gap: "14px",
+                background: "#fff",
+                padding: "16px 30px",
+                borderRadius: "999px",
+                fontSize: "32px",
+                fontWeight: 800,
+                color: "#0a1530",
+                boxShadow: "0 6px 24px rgba(0,0,0,0.15)",
+              }}
+            >
+              <div style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#DC2626", display: "flex" }} />
+              {route.to}
+            </div>
+            <div
+              style={{
+                background: "#0a1530",
+                padding: "16px 28px",
+                borderRadius: "999px",
+                color: "#fbbf24",
+                fontSize: "26px",
+                fontWeight: 900,
+                letterSpacing: "3px",
                 display: "flex",
               }}
-            />
-            {route.to}
+            >
+              ✈ TC
+            </div>
           </div>
 
-          {/* Brand badge top-right */}
+          {/* MIDDLE — emoji enorme + precio flotante */}
           <div
             style={{
-              width: "60px",
-              height: "60px",
-              borderRadius: "50%",
-              background: "#0a1530",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              flex: 1,
+              gap: "30px",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "480px",
+                lineHeight: 1,
+                display: "flex",
+                filter: "drop-shadow(0 12px 40px rgba(0,0,0,0.35))",
+              }}
+            >
+              {emoji}
+            </div>
+            {/* Price preview flotante */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                background: "rgba(10,21,48,0.92)",
+                padding: "20px 40px",
+                borderRadius: "20px",
+                gap: "6px",
+                border: "3px solid #fbbf24",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "20px",
+                  color: "#fbbf24",
+                  letterSpacing: "5px",
+                  fontWeight: 700,
+                  display: "flex",
+                }}
+              >
+                DESDE
+              </div>
+              <div
+                style={{
+                  fontSize: "120px",
+                  fontWeight: 900,
+                  color: "#fbbf24",
+                  letterSpacing: "-4px",
+                  lineHeight: 1,
+                  display: "flex",
+                }}
+              >
+                {price}€
+              </div>
+            </div>
+          </div>
+
+          {/* BOTTOM gradient label */}
+          <div
+            style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#fbbf24",
-              fontSize: "28px",
+              background: "rgba(255,255,255,0.92)",
+              padding: "18px 32px",
+              borderRadius: "16px",
+              fontSize: "32px",
               fontWeight: 800,
+              color: "#0a1530",
+              alignSelf: "center",
             }}
           >
-            ✈
-          </div>
-
-          {/* Emoji destino enorme abajo del sky */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "80px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              fontSize: "320px",
-              opacity: 0.92,
-              display: "flex",
-              filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.4))",
-            }}
-          >
-            {emoji}
+            🔥 {dateOut}  ·  ahorra {oldPrice - price}€
           </div>
         </div>
 

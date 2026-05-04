@@ -60,6 +60,11 @@ interface DeepSearchInput {
   date_to: string;
   flex_days?: number;
   premium_token?: string;
+  /** SSS55: si true, dispara hunter REAL on-demand (no solo cache de deals).
+   *  Requiere premium_token válido. Backend echo a /api/admin/deals con bloque
+   *  específico de cluster. El response se devuelve cuando el hunter completa
+   *  o tras 30s timeout (devuelve resultado parcial). */
+  live?: boolean;
 }
 
 interface DeepSearchOption {
@@ -215,5 +220,9 @@ export async function POST(req: NextRequest) {
       ? "Sin matches directos en la ventana. Prueba con flex_days mayor o ventana de fechas más amplia."
       : `${matched.length} opciones encontradas tras explorar ${pairs.length * (1 + flexDays * 2)} combinaciones.`,
     premium_disclaimer: "Deep Search Premium · cluster expansion + multi-airport ranking. Powered by TripCazador hunter.",
+    // SSS55: indicador modo live. Si true, Premium tier puede pagar
+    // por trigger hunter REAL on-demand (next phase requires Stripe gating).
+    live_mode: input.live === true,
+    mode: input.live === true ? "live-on-demand" : "cache-deals",
   });
 }
