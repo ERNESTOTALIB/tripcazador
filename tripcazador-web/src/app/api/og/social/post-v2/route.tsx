@@ -296,19 +296,23 @@ export async function GET(req: NextRequest) {
               marginTop: "6px",
             }}
           >
-            {/* Logo Tripcazador horizontal real (SSS58) */}
-            <img
-              src={logoUrl}
-              alt="TripCazador"
-              width={260}
-              height={70}
-              style={{
-                display: "flex",
-                width: "260px",
-                height: "70px",
-                objectFit: "contain",
-              }}
-            />
+            {/* SSS62: Logo SVG inline transparente (sin caja navy) */}
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <svg width="50" height="50" viewBox="0 0 100 100" style={{ display: "flex" }}>
+                <path
+                  d="M10 42 L26 30 L40 38 L50 22 L60 38 L74 30 L90 42 L74 48 L80 62 L62 56 L50 78 L56 90 L50 94 L44 90 L38 56 L20 62 L26 48 Z"
+                  fill="#fbbf24"
+                />
+              </svg>
+              <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+                <div style={{ display: "flex", fontSize: "32px", fontWeight: 800, color: "#fff", letterSpacing: "-0.5px" }}>
+                  <span style={{ color: "#fbbf24" }}>Trip</span>Cazador
+                </div>
+                <div style={{ display: "flex", fontSize: "10px", fontWeight: 600, color: "rgba(255,255,255,0.65)", letterSpacing: "2.5px", marginTop: "3px" }}>
+                  EL CAZADOR DE CHOLLOS
+                </div>
+              </div>
+            </div>
             <div
               style={{
                 display: "flex",

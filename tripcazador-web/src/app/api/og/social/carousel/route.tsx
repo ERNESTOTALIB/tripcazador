@@ -141,19 +141,23 @@ export async function GET(req: NextRequest) {
             <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: dest.accent, display: "flex" }} />
             {cityTo}
           </div>
-          {/* Logo Tripcazador horizontal real (SSS59b: bigger + sin caja) */}
-          <img
-            src={logoUrl}
-            alt="TripCazador"
-            width={360}
-            height={96}
-            style={{
-              display: "flex",
-              width: "360px",
-              height: "96px",
-              objectFit: "contain",
-            }}
-          />
+          {/* SSS62: Logo SVG inline transparente (sin caja navy negra) */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <svg width="68" height="68" viewBox="0 0 100 100" style={{ display: "flex" }}>
+              <path
+                d="M10 42 L26 30 L40 38 L50 22 L60 38 L74 30 L90 42 L74 48 L80 62 L62 56 L50 78 L56 90 L50 94 L44 90 L38 56 L20 62 L26 48 Z"
+                fill="#fbbf24"
+              />
+            </svg>
+            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+              <div style={{ display: "flex", fontSize: "44px", fontWeight: 800, color: "#fff", letterSpacing: "-1px" }}>
+                <span style={{ color: "#fbbf24" }}>Trip</span>Cazador
+              </div>
+              <div style={{ display: "flex", fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.7)", letterSpacing: "3px", marginTop: "4px" }}>
+                EL CAZADOR DE CHOLLOS
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* TITLE — encerrado en pill navy sólido para evitar texto ámbar
@@ -344,35 +348,46 @@ export async function GET(req: NextRequest) {
           )}
         </div>
 
-        {/* FOOTER */}
+        {/* FOOTER — pills sólidos con contraste fuerte (SSS62 fix) */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "20px 70px 50px",
-            borderTop: "2px solid rgba(251,191,36,0.3)",
+            padding: "24px 60px 50px",
+            borderTop: "3px solid rgba(251,191,36,0.5)",
             zIndex: 1,
           }}
         >
+          {/* URL pill blanca */}
           <div
             style={{
               display: "flex",
+              alignItems: "center",
+              background: "#fff",
+              padding: "12px 26px",
+              borderRadius: "999px",
               fontSize: "26px",
-              color: "#fbbf24",
               fontWeight: 800,
-              letterSpacing: "4px",
+              color: "#0a1530",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
             }}
           >
             tripcazador.com
           </div>
+          {/* DESLIZA pill ámbar */}
           <div
             style={{
               display: "flex",
-              fontSize: "20px",
-              color: "rgba(255,255,255,0.8)",
-              fontWeight: 700,
-              letterSpacing: "2px",
+              alignItems: "center",
+              background: "#fbbf24",
+              padding: "12px 24px",
+              borderRadius: "999px",
+              fontSize: "22px",
+              fontWeight: 900,
+              color: "#0a1530",
+              letterSpacing: "3px",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
             }}
           >
             DESLIZA →
