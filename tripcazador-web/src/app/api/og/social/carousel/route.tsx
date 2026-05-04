@@ -141,43 +141,54 @@ export async function GET(req: NextRequest) {
             <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: dest.accent, display: "flex" }} />
             {cityTo}
           </div>
-          {/* Logo Tripcazador horizontal real (SSS58) */}
+          {/* Logo Tripcazador horizontal real (SSS59b: bigger + sin caja) */}
           <img
             src={logoUrl}
             alt="TripCazador"
-            width={240}
-            height={64}
+            width={360}
+            height={96}
             style={{
               display: "flex",
-              width: "240px",
-              height: "64px",
+              width: "360px",
+              height: "96px",
               objectFit: "contain",
             }}
           />
         </div>
 
-        {/* TITLE */}
+        {/* TITLE — encerrado en pill navy sólido para evitar texto ámbar
+            washed-out sobre cielos claros. SSS59b fix. */}
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: "30px 0 20px",
+            justifyContent: "center",
+            padding: "30px 70px 20px",
             zIndex: 1,
           }}
         >
-          <div style={{ display: "flex", fontSize: "70px" }}>{slideEmoji[slide]}</div>
           <div
             style={{
               display: "flex",
-              fontSize: "44px",
-              fontWeight: 900,
-              color: "#fbbf24",
-              letterSpacing: "8px",
-              marginTop: "6px",
+              alignItems: "center",
+              gap: "20px",
+              background: "rgba(10,21,48,0.95)",
+              border: "3px solid #fbbf24",
+              padding: "18px 40px",
+              borderRadius: "999px",
             }}
           >
-            {slideTitle[slide]}
+            <div style={{ display: "flex", fontSize: "48px" }}>{slideEmoji[slide]}</div>
+            <div
+              style={{
+                display: "flex",
+                fontSize: "40px",
+                fontWeight: 900,
+                color: "#fff",
+                letterSpacing: "6px",
+              }}
+            >
+              {slideTitle[slide]}
+            </div>
           </div>
         </div>
 

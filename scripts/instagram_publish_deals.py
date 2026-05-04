@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Instagram auto-publisher cron â fase ww XX3.
+Instagram auto-publisher cron → fase ww XX3.
 
 Cada 4h:
   1. GET /api/deals top deals con score>80 y NOT posted_to_instagram <72h
@@ -84,55 +84,110 @@ def fetch_top_deals(limit: int = 30) -> List[Dict[str, Any]]:
 
 
 def hashtags_for(deal: Dict[str, Any]) -> str:
-    """Hashtags base + por destino + por tipo de deal"""
-    base = "#tripcazador #vuelosbaratos #errorfares #chollos #viajes #cazachollos"
+    """SSS59: hashtags ricos — base + destino-específico + región + tipo deal.
+    Target ~25-30 hashtags para max alcance IG sin parecer spam."""
+    base = (
+        "#tripcazador #vuelosbaratos #errorfares #chollos #viajes "
+        "#cazachollos #travelhacks #vacacionesbaratas #escapadas #ofertasvuelos"
+    )
+    dest = (deal.get("destination") or "").upper()
+    dest_specific = {
+        "MAD": "#madrid #vuelosamadrid #viajeresmadrid",
+        "BCN": "#barcelona #bcn #sagradafamilia",
+        "LIS": "#lisboa #portugal #fado #pasteldenata",
+        "PMI": "#mallorca #palmademallorca #baleares",
+        "AGP": "#malaga #costadelsol",
+        "VLC": "#valencia #ciudaddelasartes",
+        "DPS": "#bali #ubud #balitemple",
+        "BKK": "#bangkok #tailandia #streetfood",
+        "NRT": "#tokio #japon #sakura",
+        "ICN": "#seul #corea #kpop",
+        "JFK": "#nyc #nuevayork #bigapple",
+        "LAX": "#losangeles #california #hollywood",
+        "MIA": "#miami #southbeach",
+        "CUN": "#cancun #mexico #caribe #playadelcarmen #tulum",
+        "EZE": "#buenosaires #argentina #tango",
+        "GIG": "#rio #brasil #copacabana",
+        "FCO": "#roma #italia #coliseo",
+        "CDG": "#paris #francia #torreeiffel",
+        "LHR": "#londres #london #bigben",
+        "AMS": "#amsterdam #holanda #canales",
+        "PRG": "#praga #chequia",
+        "IST": "#estambul #turquia #bosforo",
+        "RAK": "#marrakech #marruecos #medina",
+        "CAI": "#cairo #egipto #piramides",
+    }.get(dest, "")
     region = (deal.get("region") or "").lower()
     region_tags = {
         "europa": "#europa #vueloseuropa",
-        "asia": "#asia #vuelosasia #tailandia #japon #bali",
-        "caribe": "#caribe #vueloscarib #puntacana #cuba",
-        "amÃ©rica norte": "#usa #nuevayork #losangeles",
-        "amÃ©rica sur": "#sudamerica #buenosaires #brasil",
-        "oriente medio": "#dubai #estambul",
-        "Ã¡frica": "#marruecos #egipto #africa",
-        "oceanÃ­a": "#australia #sydney",
+        "asia": "#asia #vuelosasia",
+        "caribe": "#caribe #vueloscarib",
+        "américa norte": "#usa #norteamerica",
+        "america norte": "#usa #norteamerica",
+        "américa sur": "#sudamerica #latam",
+        "america sur": "#sudamerica #latam",
+        "oriente medio": "#orientemedio",
+        "áfrica": "#africa",
+        "africa": "#africa",
+        "oceanía": "#australia #oceania",
+        "oceania": "#australia #oceania",
     }.get(region, "")
     classification = (deal.get("classification") or "").upper()
     class_tags = {
-        "ERROR": "#errorfare #fallodelsistema",
-        "CRÃTICO": "#oferta #vueloimposible",
-        "OFERTA": "#oferta",
-        "ANOMALÃA": "#chollo",
+        "ERROR": "#errorfare #fallodelsistema #vuelobarato24h",
+        "CRÍTICO": "#oferta24h #vueloimposible #ultimasplazas",
+        "OFERTA": "#ofertaviaje",
+        "ANOMALÍA": "#chollovuelo",
     }.get(classification, "")
-    cabin_tags = "#businessclass" if deal.get("cabin") == "business" else ""
-    return " ".join(filter(None, [base, region_tags, class_tags, cabin_tags]))
+    cabin_tags = "#businessclass #premiumeconomy" if deal.get("cabin") == "business" else ""
+    return " ".join(filter(None, [base, dest_specific, region_tags, class_tags, cabin_tags]))
 
 
 def caption_for(deal: Dict[str, Any]) -> str:
-    route = f"{deal.get('city_from') or deal.get('origin')} â {deal.get('city_to') or deal.get('destination')}"
+    """SSS59: caption rica con hooks para carousel + más urgencia + CTA."""
+    route_from = deal.get("city_from") or deal.get("origin") or "?"
+    route_to = deal.get("city_to") or deal.get("destination") or "?"
     price = int(deal.get("price_eur", 0))
-    savings = int(deal.get("savings_pct", 0))
+    savings_pct = int(deal.get("savings_pct", 0))
+    savings_eur = int(deal.get("savings_eur", 0))
     cabin = (deal.get("cabin") or "economy").replace("_", " ")
     nights = deal.get("nights", "?")
     airline = deal.get("airline_name") or deal.get("airline") or "varias"
-    classification = deal.get("classification") or "OFERTA"
+    classification = (deal.get("classification") or "OFERTA").upper()
 
-    body = (
-        f"ð¥ {classification}\n"
-        f"{route}\n\n"
-        f"ð° {price}â¬ ({cabin} Â· {nights} noches)\n"
-        f"ð -{savings}% del precio normal\n"
-        f"âï¸ {airline}\n\n"
-        f"â¡ Los precios cambian en horas. Reserva en {SITE_URL}\n"
-        f"(Link en bio)\n\n"
-        f"{hashtags_for(deal)}"
-    )
-    return body[:2200]  # Instagram caption lÃ­mite 2200
+    badge = {
+        "ERROR": "🚨 ERROR FARE — 24-48H",
+        "CRÍTICO": "🔥 CHOLLO CRÍTICO 24H",
+        "OFERTA": "✨ OFERTA DEL DÍA",
+        "ANOMALÍA": "🎯 ANOMALÍA DETECTADA",
+    }.get(classification, "✨ OFERTA DEL DÍA")
+
+    is_carousel = os.environ.get("IG_CAROUSEL_MODE") == "1"
+    swipe_hook = "→ Desliza para ver QUÉ VER, QUÉ COMER y los TIPS 📍" if is_carousel else ""
+
+    parts = [
+        f"{badge}",
+        f"📍 {route_from} → {route_to}",
+        "",
+        f"💰 {price}€ ({cabin} · {nights} noches)",
+        f"📉 -{savings_pct}% del precio normal (ahorras {savings_eur}€)",
+        f"✈️ {airline}",
+        "",
+        swipe_hook,
+        f"⚡ Los precios cambian en horas. Reserva ya en {SITE_URL}",
+        "🔗 Link en bio",
+        "",
+        "🧭 Cazado por TripCazador — motor anti-error fare 24/7",
+        "",
+        hashtags_for(deal),
+    ]
+    body = "\n".join(p for p in parts if p)
+    return body[:2200]
 
 
 def publish_to_instagram(image_url: str, caption: str) -> Optional[str]:
     """Publica imagen en Instagram via Graph API.
-    Returns post id en caso de Ã©xito, None si falla."""
+    Returns post id en caso de éxito, None si falla."""
     if not IG_USER_ID or not IG_ACCESS_TOKEN:
         log("WARN: IG_USER_ID o IG_ACCESS_TOKEN no configurados â skip publish")
         return None

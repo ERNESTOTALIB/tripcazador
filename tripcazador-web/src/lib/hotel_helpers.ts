@@ -441,3 +441,102 @@ function hashCode(s: string): number {
   for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
   return Math.abs(h);
 }
+
+// ════════════════════════════════════════════════════════════════════
+// SSS59a — Hotel deal scoring + categorización por estrellas
+// ════════════════════════════════════════════════════════════════════
+
+/**
+ * Score de "valor" 0-100. Combina:
+ *   - rating Booking (peso 40%)
+ *   - estrellas vs precio mediano de su categoría estrellas (peso 40%)
+ *   - descuento sobre precio típico ciudad (peso 20%)
+ *
+ * Un hotel 5★ a 90€/noche en Tailandia con rating 9.2 → score ~88
+ * Un hotel 5★ a 525€/noche con rating 9.5 → score ~55 (caro pero bueno)
+ * Un hotel 3★ a 35€/noche con rating 8.0 → score ~78 (cumple para precio)
+ *
+ * Útil para "estos sí son chollos vs estos solo son hoteles famosos".
+ */
+export function hotelValueScore(h: Deal, peerMedianPrice: number): number {
+  const price = h.price_per_night ?? 0;
+  if (price <= 0) return 0;
+  // @ts-expect-error custom field
+  const rating = h.review_score ?? 0;
+  const starsTag = (h.tags || []).find((t) => t.endsWith("-stars"));
+  const stars = starsTag ? parseInt(starsTag.split("-")[0], 10) : 0;
+
+  // Componente rating (0-40)
+  const ratingComp = Math.max(0, Math.min(40, (rating - 7) * 10));
+
+  // Componente precio vs peer mediano de misma categoría (0-40)
+  // Si el hotel cuesta menos que el mediano, score sube; si más, baja.
+  let priceComp = 20; // default neutral
+  if (peerMedianPrice > 0) {
+    const ratio = peerMedianPrice / price; // >1 = más barato que mediano
+    priceComp = Math.max(0, Math.min(40, 20 + (ratio - 1) * 30));
+  }
+
+  // Componente "stars premium" (0-20) — más estrellas = más valor base
+  const starsComp = Math.max(0, Math.min(20, stars * 4));
+
+  return Math.round(ratingComp + priceComp + starsComp);
+}
+
+/**
+ * Agrupa hoteles por tier de estrellas: 5★, 4★, 3★ y resto. Cada grupo
+ * ordenado por hotelValueScore desc — top "deals" primero.
+ *
+ * Output:
+ *   { five: [...], four: [...], three: [...], other: [...] }
+ *
+ * Útil para la UI tipo "Descuentos en hoteles VIP 5★", "Top hoteles 4★"...
+ */
+export function groupByStarTier(hotels: Deal[]): {
+  five: Deal[];
+  four: Deal[];
+  three: Deal[];
+  other: Deal[];
+} {
+  // Calcular peer median por tier para fairness del score
+  const byTier: Record<number, Deal[]> = { 5: [], 4: [], 3: [], 0: [] };
+  for (const h of hotels) {
+    const tag = (h.tags || []).find((t) => t.endsWith("-stars"));
+    const s = tag ? parseInt(tag.split("-")[0], 10) : 0;
+    if (s === 5) byTier[5].push(h);
+    else if (s === 4) byTier[4].push(h);
+    else if (s === 3) byTier[3].push(h);
+    else byTier[0].push(h);
+  }
+  const sortByValue = (arr: Deal[]) => {
+    const med = medianPricePerNight(arr);
+    return [...arr].sort(
+      (a, b) => hotelValueScore(b, med) - hotelValueScore(a, med),
+    );
+  };
+  return {
+    five: sortByValue(byTier[5]),
+    four: sortByValue(byTier[4]),
+    three: sortByValue(byTier[3]),
+    other: sortByValue(byTier[0]),
+  };
+}
+
+/**
+ * Compara hoteles dentro de la misma ciudad. Devuelve los TOP N por
+ * valueScore con peer median de esa ciudad como referencia.
+ *
+ * Ej: cityHotelDeals(allHotels, "Milán", 5) → 5 mejores hoteles de Milán
+ * priorizando ratio calidad/precio + rating.
+ */
+export function cityHotelDeals(hotels: Deal[], city: string, limit = 5): Deal[] {
+  const cityNorm = city.toLowerCase().trim();
+  const inCity = hotels.filter(
+    (h) => (h.city_to ?? "").toLowerCase().includes(cityNorm),
+  );
+  if (inCity.length === 0) return [];
+  const med = medianPricePerNight(inCity);
+  return [...inCity]
+    .sort((a, b) => hotelValueScore(b, med) - hotelValueScore(a, med))
+    .slice(0, limit);
+}
