@@ -253,7 +253,6 @@ export async function GET(req: NextRequest) {
                     fontSize: "28px",
                     color: "#fff",
                     fontWeight: 600,
-                    lineHeight: 1.35,
                     flex: 1,
                   }}
                 >
@@ -293,7 +292,6 @@ export async function GET(req: NextRequest) {
                   fontWeight: 900,
                   color: "#fff",
                   textAlign: "center",
-                  lineHeight: 1.2,
                 }}
               >
                 {blog?.title || `Vuelos baratos a ${cityTo}: la guía completa`}
