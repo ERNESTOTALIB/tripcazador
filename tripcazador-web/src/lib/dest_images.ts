@@ -58,7 +58,7 @@ const PHOTOS: Record<string, DestImage> = {
   buenos_aires: { photoId: "1589909202802-8f4aadce1849", alt: "Buenos Aires architecture", accent: "#0EA5E9" },
   rio: { photoId: "1483729558449-99ef09a8c325", alt: "Rio de Janeiro beach", accent: "#10B981" },
   cdmx: { photoId: "1547504717-65b6395b3a7b", alt: "Mexico City colonial", accent: "#F59E0B" },
-  cancun: { photoId: "1502602898657-3e91760cbb34", alt: "Cancun beach", accent: "#06B6D4" },
+  cancun: { photoId: "1552074284-5e88ef1aef18", alt: "Cancún beach aerial Caribbean", accent: "#06B6D4" },
 
   // ── España ──
   madrid: { photoId: "1543783207-ec64e4d95325", alt: "Madrid Plaza Mayor", accent: "#DC2626" },
@@ -66,7 +66,7 @@ const PHOTOS: Record<string, DestImage> = {
   malaga: { photoId: "1518002171953-a080ee817e1f", alt: "Málaga Costa del Sol", accent: "#06B6D4" },
   valencia: { photoId: "1564507592333-c60657eea523", alt: "Valencia city of arts", accent: "#3B82F6" },
   sevilla: { photoId: "1562979314-bee7453e911c", alt: "Seville Plaza España", accent: "#F59E0B" },
-  palma: { photoId: "1496442226666-8d4d0e62e6e9", alt: "Palma cathedral", accent: "#0EA5E9" },
+  palma: { photoId: "1473496169904-658ba7c44d8a", alt: "Palma de Mallorca Mediterranean beach", accent: "#0EA5E9" },
 
   // ── África ──
   cairo: { photoId: "1572252009286-268acec5ca0a", alt: "Cairo pyramids", accent: "#F59E0B" },
