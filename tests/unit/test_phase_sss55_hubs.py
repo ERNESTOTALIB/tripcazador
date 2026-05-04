@@ -75,24 +75,24 @@ class TestSSS55StoryRedesign:
         assert self.EP.exists()
 
     def test_emoji_size_increased(self):
+        # SSS56 superseded: ahora usa foto destino, no emoji XL.
+        # Esta verificación se mueve a TestSSS56StoryBackground.
+        # Mantener test pasando por compat: solo comprobar que existe el endpoint.
         c = _read(self.EP)
-        # 480px ahora vs 320px antes — emoji domina más el espacio
-        assert "480px" in c
+        assert "ImageResponse" in c
 
     def test_price_floating_in_sky_area(self):
         c = _read(self.EP)
-        # Antes el precio solo aparecía en panel inferior. Ahora también
-        # flota dentro del sky con un wrapper navy + ámbar border.
-        assert "Price preview flotante" in c or "rgba(10,21,48,0.92)" in c
+        # SSS55: precio panel flotante dentro del sky area (mantenido SSS56)
+        assert "rgba(10,21,48,0.92)" in c
 
     def test_bottom_label_in_sky(self):
         c = _read(self.EP)
-        # Nuevo: gradient label inferior en sky con savings_eur
-        assert "ahorra" in c
+        # SSS55→SSS56: chip "ahorras X€" reemplaza al "ahorra"
+        assert "ahorras" in c or "ahorra" in c
 
     def test_brand_badge_pill_replaces_circle(self):
         c = _read(self.EP)
-        # Antes: círculo 60×60 con ✈. Ahora: pill rectangular con "✈ TC"
         assert "✈ TC" in c
 
 

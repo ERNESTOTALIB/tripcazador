@@ -1,31 +1,23 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { getDeals } from "@/lib/api";
+import { getDestImage, buildUnsplashUrl } from "@/lib/dest_images";
 
 export const runtime = "edge";
 
 /**
- * /api/og/social/post-v2?dealId=X — fase SSS53 (May 2026)
+ * /api/og/social/post-v2?dealId=X — fase SSS56 (May 2026)
  *
- * Layout v2: HOPPER-INSPIRED — Mega-precio centrado, alto contraste,
- * mínimo texto. Probado para mayor stopping power en feed (engagement
- * +30-40% vs editorial layout v1 según benchmarks Going.com / Hopper /
- * Secret Flying).
+ * Layout v2 con FONDO REAL del destino (Unsplash) + overlay navy.
+ * Diseño inspirado en Going.com / Hopper / Skyscanner posts:
+ *   - Foto destino full-bleed con overlay 40-60% navy
+ *   - Top: badge ámbar "CHOLLO DETECTADO" + emoji
+ *   - Center: precio MEGA 320px ámbar con savings badge
+ *   - Bottom: ruta + fechas + CTA
  *
- * Composición 1080×1080:
- *   - Top 25% — gradient destino con avión silueta
- *   - Middle 50% — PRECIO GIGANTE 320px ámbar (#fbbf24) sobre fondo navy
- *     · "DESDE" tiny eyebrow encima
- *     · "€" más pequeño al lado del número
- *     · Tachado precio original sutil
- *   - Bottom 25% — Ruta + fechas + CTA
- *
- * Diseño optimizado para:
- *   - Stop-scroll en mobile (precio enorme = legible 1m de distancia)
- *   - Memorabilidad (un solo número, una sola decisión)
- *   - Brand recall consistente (paleta navy/ámbar siempre)
- *
- * Cache: idéntico a v1 (s-maxage=86400 + SWR=7d)
+ * Resultado: el usuario ve INMEDIATAMENTE de qué destino estamos
+ * hablando (Bali=arrozales, Tokyo=neón, NYC=skyline, etc.) y no un
+ * gradient genérico aburrido.
  */
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
@@ -37,8 +29,7 @@ export async function GET(req: NextRequest) {
   let savingsPct = 62;
   let dateOut = "15 sep 2026";
   let airline = "Qatar Airways";
-  let region = "Asia";
-  let emoji = "🌴";
+  let destKey: string = "DPS"; // Bali default
 
   if (dealId) {
     try {
@@ -57,29 +48,16 @@ export async function GET(req: NextRequest) {
           ? deal.date_out
           : `${d.getDate()} ${["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][d.getMonth()]} ${d.getFullYear()}`;
         airline = deal.airline_name || deal.airline || "";
-        region = deal.region || "Europa";
-        emoji =
-          region === "Asia" ? "🌴" :
-          region === "Caribe" ? "🏝️" :
-          region === "Oriente Medio" ? "🕌" :
-          region === "África" ? "🐘" :
-          region === "Oceanía" ? "🦘" :
-          region.startsWith("América") ? "🗽" : "🏛️";
+        // Usar destination IATA como key — fallback a city_to si no hay
+        destKey = deal.destination || deal.city_to || deal.region || "world";
       }
     } catch {
       /* fallback */
     }
   }
 
-  // Gradient esquina top — sutil, no domina
-  const accent =
-    region === "Asia" ? "#0EA5E9" :
-    region === "Caribe" ? "#06B6D4" :
-    region === "África" ? "#F59E0B" :
-    region === "Norteamérica" ? "#3B82F6" :
-    region === "Sudamérica" ? "#10B981" :
-    region === "Oceanía" ? "#8B5CF6" :
-    "#fbbf24";
+  const dest = getDestImage(destKey);
+  const bgUrl = buildUnsplashUrl(dest.photoId, 1080, 1080);
 
   return new ImageResponse(
     (
@@ -95,20 +73,33 @@ export async function GET(req: NextRequest) {
           position: "relative",
         }}
       >
-        {/* Accent corner gradient */}
-        <div
+        {/* BACKGROUND: foto real del destino */}
+        <img
+          src={bgUrl}
+          width={1080}
+          height={1080}
+          alt={dest.alt}
           style={{
             position: "absolute",
             top: 0,
-            right: 0,
-            width: "600px",
-            height: "600px",
-            background: `radial-gradient(circle at top right, ${accent}33 0%, transparent 70%)`,
+            left: 0,
+            width: "1080px",
+            height: "1080px",
+            objectFit: "cover",
+            display: "flex",
+          }}
+        />
+        {/* Dark overlay navy (legibilidad) */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(180deg, rgba(10,21,48,0.55) 0%, rgba(10,21,48,0.85) 65%, rgba(10,21,48,0.95) 100%)",
             display: "flex",
           }}
         />
 
-        {/* TOP — eyebrow + emoji */}
+        {/* TOP — badge + airline */}
         <div
           style={{
             display: "flex",
@@ -121,15 +112,33 @@ export async function GET(req: NextRequest) {
           <div
             style={{
               display: "flex",
-              fontSize: "20px",
-              fontWeight: 700,
-              letterSpacing: "6px",
-              color: "#fbbf24",
+              background: "#fbbf24",
+              color: "#0a1530",
+              padding: "12px 24px",
+              borderRadius: "999px",
+              fontSize: "22px",
+              fontWeight: 900,
+              letterSpacing: "4px",
             }}
           >
             CHOLLO DETECTADO
           </div>
-          <div style={{ display: "flex", fontSize: "100px" }}>{emoji}</div>
+          {airline && (
+            <div
+              style={{
+                display: "flex",
+                background: "rgba(255,255,255,0.15)",
+                color: "#fff",
+                padding: "10px 20px",
+                borderRadius: "999px",
+                fontSize: "20px",
+                fontWeight: 700,
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              ✈ {airline}
+            </div>
+          )}
         </div>
 
         {/* MIDDLE — MEGA PRICE */}
@@ -147,10 +156,11 @@ export async function GET(req: NextRequest) {
             style={{
               display: "flex",
               fontSize: "26px",
-              fontWeight: 600,
-              letterSpacing: "8px",
-              color: "rgba(255,255,255,0.6)",
+              fontWeight: 700,
+              letterSpacing: "10px",
+              color: "rgba(255,255,255,0.85)",
               marginBottom: "8px",
+              textShadow: "0 2px 12px rgba(0,0,0,0.5)",
             }}
           >
             DESDE
@@ -165,11 +175,12 @@ export async function GET(req: NextRequest) {
             <div
               style={{
                 display: "flex",
-                fontSize: "320px",
+                fontSize: "300px",
                 fontWeight: 900,
                 color: "#fbbf24",
                 lineHeight: 0.9,
                 letterSpacing: "-12px",
+                textShadow: "0 8px 32px rgba(0,0,0,0.4)",
               }}
             >
               {price}
@@ -180,6 +191,7 @@ export async function GET(req: NextRequest) {
                 fontSize: "120px",
                 fontWeight: 800,
                 color: "#fbbf24",
+                textShadow: "0 4px 20px rgba(0,0,0,0.4)",
               }}
             >
               €
@@ -196,20 +208,20 @@ export async function GET(req: NextRequest) {
             <div
               style={{
                 display: "flex",
-                fontSize: "32px",
-                color: "rgba(255,255,255,0.5)",
+                fontSize: "30px",
+                color: "rgba(255,255,255,0.75)",
                 textDecoration: "line-through",
-                fontWeight: 500,
+                fontWeight: 600,
               }}
             >
-              {oldPrice}€
+              antes {oldPrice}€
             </div>
             <div
               style={{
                 display: "flex",
                 background: "#10B981",
                 color: "#0a1530",
-                padding: "8px 20px",
+                padding: "10px 22px",
                 borderRadius: "999px",
                 fontSize: "32px",
                 fontWeight: 900,
@@ -236,34 +248,35 @@ export async function GET(req: NextRequest) {
               alignItems: "center",
               justifyContent: "center",
               gap: "24px",
-              fontSize: "56px",
+              fontSize: "60px",
               fontWeight: 800,
               color: "#fff",
+              textShadow: "0 4px 20px rgba(0,0,0,0.5)",
             }}
           >
             <span style={{ display: "flex" }}>{route.from}</span>
-            <span style={{ display: "flex", color: accent }}>→</span>
+            <span style={{ display: "flex", color: dest.accent }}>→</span>
             <span style={{ display: "flex" }}>{route.to}</span>
           </div>
           <div
             style={{
               display: "flex",
               justifyContent: "center",
-              gap: "30px",
-              fontSize: "24px",
-              color: "rgba(255,255,255,0.7)",
-              fontWeight: 500,
+              alignItems: "center",
+              gap: "14px",
+              fontSize: "26px",
+              color: "rgba(255,255,255,0.85)",
+              fontWeight: 600,
             }}
           >
-            <div style={{ display: "flex" }}>📅 {dateOut}</div>
-            {airline && <div style={{ display: "flex" }}>✈ {airline}</div>}
+            <span style={{ display: "flex" }}>📅 {dateOut}</span>
           </div>
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              borderTop: "2px solid rgba(255,255,255,0.1)",
+              borderTop: "2px solid rgba(255,255,255,0.15)",
               paddingTop: "24px",
               marginTop: "10px",
             }}
@@ -271,10 +284,10 @@ export async function GET(req: NextRequest) {
             <div
               style={{
                 display: "flex",
-                fontSize: "22px",
+                fontSize: "24px",
                 color: "#fbbf24",
                 fontWeight: 700,
-                letterSpacing: "2px",
+                letterSpacing: "3px",
               }}
             >
               tripcazador.com
@@ -284,9 +297,9 @@ export async function GET(req: NextRequest) {
                 display: "flex",
                 background: "#fbbf24",
                 color: "#0a1530",
-                padding: "12px 28px",
-                borderRadius: "8px",
-                fontSize: "20px",
+                padding: "14px 30px",
+                borderRadius: "12px",
+                fontSize: "22px",
                 fontWeight: 900,
                 letterSpacing: "2px",
               }}

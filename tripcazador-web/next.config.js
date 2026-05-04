@@ -87,11 +87,12 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // SSS53c: skip TS check durante build para desbloquear deploy.
-  // El typecheck se ejecuta en CI separado (workflow ci.yml) y pre-commit.
-  // Sin esto, react-simple-maps@3 typing issue en DestinationsMap rompía build.
+  // SSS56: re-habilitamos type check en build. SSS53b ya añadió cast
+  // `as string` en DestinationsMap.tsx (era el culpable). Si vuelve a
+  // fallar, hay otro typing issue real que debemos arreglar — no
+  // tapar con ignoreBuildErrors. ci.yml typechequea separado de todos modos.
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   images: {
     remotePatterns: [
