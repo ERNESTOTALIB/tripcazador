@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken, COOKIE_KEY } from "@/lib/panel_auth";
-import { getVitalsSamples } from "@/app/api/web-vitals/route";
+import { getVitalsSamples } from "@/lib/vitals_store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

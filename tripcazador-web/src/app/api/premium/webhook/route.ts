@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { upsertPremium, deactivateByCustomerId } from "@/lib/premium_store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,6 +12,10 @@ export const dynamic = "force-dynamic";
  * `customer.subscription.deleted` para mantener el estado premium de los
  * usuarios server-side via cookie httpOnly + JSONL persistente.
  *
+ * SSS73 (May 2026): el store y getPremiumByEmail/upsertPremium se movieron
+ * a `lib/premium_store.ts` porque Next.js 14 no permite exports adicionales
+ * en archivos route.ts (solo HTTP verbs + segment config como `runtime`).
+ *
  * Setup en Stripe dashboard:
  *   1. Developers → Webhooks → Add endpoint
  *   2. URL: https://tripcazador.com/api/premium/webhook
@@ -20,38 +25,6 @@ export const dynamic = "force-dynamic";
  *
  * Sin STRIPE_WEBHOOK_SECRET configurado devuelve 503 (no acepta nada).
  */
-
-interface PremiumStateEntry {
-  email: string;
-  customer_id: string;
-  subscription_id?: string;
-  active: boolean;
-  expires_at?: number;
-  source: "stripe";
-  updated_at: number;
-}
-
-// Persistencia in-memory + best-effort backend
-const store: { entries: PremiumStateEntry[] } = (
-  globalThis as unknown as { __tc_premium_store?: { entries: PremiumStateEntry[] } }
-).__tc_premium_store ?? { entries: [] };
-
-(globalThis as unknown as { __tc_premium_store: typeof store }).__tc_premium_store = store;
-
-function upsertPremium(entry: PremiumStateEntry) {
-  const idx = store.entries.findIndex(
-    (e) => e.email === entry.email || e.customer_id === entry.customer_id,
-  );
-  if (idx >= 0) {
-    store.entries[idx] = { ...store.entries[idx], ...entry };
-  } else {
-    store.entries.push(entry);
-  }
-}
-
-export function getPremiumByEmail(email: string): PremiumStateEntry | null {
-  return store.entries.find((e) => e.email === email && e.active) ?? null;
-}
 
 /**
  * Verifica firma Stripe webhook:
@@ -139,10 +112,7 @@ export async function POST(req: NextRequest) {
   ) {
     const customerId = String(obj?.customer || "");
     if (customerId) {
-      const idx = store.entries.findIndex((e) => e.customer_id === customerId);
-      if (idx >= 0) {
-        store.entries[idx] = { ...store.entries[idx], active: false, updated_at: Date.now() };
-      }
+      deactivateByCustomerId(customerId);
     }
   }
 

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { pushSample } from "@/lib/vitals_store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,39 +16,11 @@ export const dynamic = "force-dynamic";
  *
  * Rate limit: 50 reqs/min/IP (más permisivo que /api/track porque cada
  * pageview emite 5+ métricas).
+ *
+ * SSS73 (May 2026): el store y getVitalsSamples se movieron a
+ * `lib/vitals_store.ts` porque Next.js 14 no permite exports adicionales
+ * en archivos route.ts (solo HTTP verbs + segment config como `runtime`).
  */
-
-interface VitalSample {
-  ts: number;
-  name: string;        // LCP / CLS / INP / FCP / TTFB
-  value: number;
-  rating: string;
-  page_path: string;
-  visitor_hash: string; // anonimo
-}
-
-const RING_SIZE = 10000;
-const TTL_MS = 24 * 3600 * 1000;
-
-const store: { ring: VitalSample[]; idx: number } = (
-  globalThis as unknown as { __tc_vitals_store?: { ring: VitalSample[]; idx: number } }
-).__tc_vitals_store ?? { ring: [], idx: 0 };
-
-(globalThis as unknown as { __tc_vitals_store: typeof store }).__tc_vitals_store = store;
-
-function pushSample(s: VitalSample) {
-  if (store.ring.length < RING_SIZE) {
-    store.ring.push(s);
-  } else {
-    store.ring[store.idx] = s;
-    store.idx = (store.idx + 1) % RING_SIZE;
-  }
-}
-
-export function getVitalsSamples(): VitalSample[] {
-  const now = Date.now();
-  return store.ring.filter((s) => s && now - s.ts < TTL_MS);
-}
 
 const VALID_NAMES = new Set(["LCP", "CLS", "INP", "FCP", "TTFB"]);
 const RATE_LIMIT = 50;
