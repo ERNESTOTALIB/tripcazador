@@ -1,10 +1,11 @@
 name: Instagram auto-publish deals
 
 on:
-  # SSS73: cron pausado mientras rediseñamos el endpoint /api/og/social/post v3.
-  # Reactivar tras verificar que el primer manual run publica el diseño nuevo.
-  # schedule:
-  #   - cron: "0 */4 * * *"
+  # SSS73 (May 2026): cron reactivado tras verificar que el endpoint v3.1
+  # sirve el diseño nuevo (foto destino + precio hero + IDA+VUELTA fix).
+  # Smoke verde 2026-05-05: GET /api/og/social/post → 782KB PNG válido.
+  schedule:
+    - cron: "0 */4 * * *"
   workflow_dispatch:
 
 concurrency:
