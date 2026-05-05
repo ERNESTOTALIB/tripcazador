@@ -424,19 +424,19 @@ def main() -> int:
     caption = caption_for(deal)
     log(f"Caption preview: {caption[:140]}...")
 
-    # SSS57: si IG_CAROUSEL_MODE=1, publicar 5 slides:
-    #   1) deal principal (post-v2)
-    #   2) lugares que ver  (carousel?slide=places)
-    #   3) que comer        (carousel?slide=food)
-    #   4) tips locales     (carousel?slide=tips)
-    #   5) blog completo    (carousel?slide=blog)
+    # SSS74 (May 2026): carrusel Barcelona magazine 5 plates.
+    #   Plate I:   /api/og/social/post (hero serif + price panel)
+    #   Plate II:  carousel?slide=places (lugar nº 1 — torn paper)
+    #   Plate III: carousel?slide=food   (qué comer)
+    #   Plate IV:  carousel?slide=tips   (tip local de ahorro)
+    #   Plate V:   carousel?slide=cta    (cierre)
     if os.environ.get("IG_CAROUSEL_MODE") == "1":
         deal_qid = urllib.parse.quote(deal.get("id", ""))
-        slide1 = f"{SITE_URL}/api/og/social/post-v2?dealId={deal_qid}"
+        slide1 = f"{SITE_URL}/api/og/social/post?dealId={deal_qid}"
         slide2 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=places"
         slide3 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=food"
         slide4 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=tips"
-        slide5 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=blog"
+        slide5 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=cta"
         slides = [slide1, slide2, slide3, slide4, slide5]
         log(f"CAROUSEL MODE: {len(slides)} slides")
         post_id = publish_carousel_to_instagram(slides, caption)

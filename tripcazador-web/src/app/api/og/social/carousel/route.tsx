@@ -2,51 +2,72 @@ import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { getDeals } from "@/lib/api";
 import { getDestImage, buildUnsplashUrl } from "@/lib/dest_images";
-import { getDestContent, getBlogForDest } from "@/lib/dest_content";
+import { getDestContent } from "@/lib/dest_content";
+import { getCoordForDeal } from "@/lib/dest_coords";
 
 export const runtime = "edge";
 
 /**
- * /api/og/social/carousel?dealId=X&slide=N — fase SSS57 (May 2026)
+ * /api/og/social/carousel?dealId=X&slide=N — fase SSS74 (May 2026)
  *
- * Genera 1 de 4 slides de un carousel Instagram para un deal:
- *   slide=places  →  TOP atracciones turísticas del destino
- *   slide=food    →  Comida típica + restaurantes
- *   slide=tips    →  Tips locales (transporte, ahorro)
- *   slide=blog    →  CTA al blog post matched (si existe)
+ * Slides 2-5 del carrusel Instagram con estética Barcelona magazine
+ * (canva v3 reference: 2_park_guell.png / 3_casa_batllo.png / etc).
  *
- * Slide 1 (deal principal) sigue siendo /api/og/social/post-v2.
- * Workflow IG: post-v2 + carousel(places) + carousel(food) + carousel(tips)
- *              + carousel(blog) → 5 slides total (limit IG: 10).
+ *   slide=places  →  Plate II — lugar nº 1 que ver (atracción top 1)
+ *   slide=food    →  Plate III — qué comer (1 plato típico hero)
+ *   slide=tips    →  Plate IV — tip clave para ahorrar
+ *   slide=cta     →  Plate V — CTA cierre + URL
+ *
+ * Formato cada slide:
+ *   - Foto de fondo (Unsplash destino) con tint navy
+ *   - Top pills: "PLATE N · LABEL" amber + coord white-dim
+ *   - Card central tipo "torn paper" cream PAPER:
+ *       · Título serif italic terracotta + thin line below
+ *       · Descripción serif navy wrap centrado
+ *   - Bottom strip ámbar: TC + URL + plate N/05
  */
 
-type SlideKind = "places" | "food" | "tips" | "blog";
+type SlideKind = "places" | "food" | "tips" | "cta" | "blog";
 
 function isSlide(s: string | null): s is SlideKind {
-  return s === "places" || s === "food" || s === "tips" || s === "blog";
+  return s === "places" || s === "food" || s === "tips" || s === "cta" || s === "blog";
 }
+
+const SLIDE_CONFIG: Record<SlideKind, { num: number; label: string }> = {
+  places: { num: 2, label: "LUGAR  Nº 1  ·  TOP" },
+  food: { num: 3, label: "GASTRO  ·  TÍPICO" },
+  tips: { num: 4, label: "TIP  LOCAL  ·  AHORRO" },
+  cta: { num: 5, label: "CIERRE  ·  TU TURNO" },
+  // legacy alias
+  blog: { num: 5, label: "CIERRE  ·  TU TURNO" },
+};
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const dealId = sp.get("dealId");
-  const slide = (sp.get("slide") || "places") as string;
+  const slideRaw = sp.get("slide") || "places";
 
-  if (!isSlide(slide)) {
-    return new Response(`Invalid slide: ${slide}`, { status: 400 });
+  if (!isSlide(slideRaw)) {
+    return new Response(`Invalid slide: ${slideRaw}`, { status: 400 });
   }
+  const slide: SlideKind = slideRaw === "blog" ? "cta" : slideRaw;
 
-  let cityTo = "destino";
-  let destKey = "world";
+  let cityTo = "Barcelona";
+  let destKey = "barcelona";
   let region: string | undefined;
+  let dealLat: number | undefined;
+  let dealLon: number | undefined;
 
   if (dealId) {
     try {
       const data = await getDeals({ limit: 200 });
       const deal = data.deals.find((d) => d.id === dealId);
       if (deal) {
-        cityTo = deal.city_to || deal.destination || "destino";
+        cityTo = deal.city_to || deal.destination || "Barcelona";
         destKey = deal.destination || deal.city_to || deal.region || "world";
         region = deal.region;
+        dealLat = deal.lat;
+        dealLon = deal.lon;
       }
     } catch {
       /* fallback */
@@ -54,25 +75,44 @@ export async function GET(req: NextRequest) {
   }
 
   const dest = getDestImage(destKey);
-  const bgUrl = buildUnsplashUrl(dest.photoId, 1080, 1080);
+  const photoUrl = buildUnsplashUrl(dest.photoId, 1200, 1200);
   const content = getDestContent(destKey, region);
-  const blog = getBlogForDest(destKey);
+  const coord = getCoordForDeal({ lat: dealLat, lon: dealLon, destination: destKey, cityTo });
 
-  // SSS58: usar logo horizontal real (PNG dark) para branding consistente
-  const logoUrl = `${req.nextUrl.origin}/logo-horizontal-dark.png`;
+  // Pick title + description per slide
+  let title = "";
+  let description = "";
+  if (slide === "places" && content.attractions.length > 0) {
+    const a = content.attractions[0];
+    title = `${a.name}, ${cityTo}`;
+    description = a.desc;
+  } else if (slide === "food" && content.food.length > 0) {
+    const f = content.food[0];
+    title = `${f.name}, ${cityTo}`;
+    description = f.desc;
+  } else if (slide === "tips" && content.tips.length > 0) {
+    const t = content.tips[0];
+    title = `Tip local`;
+    description = t.text;
+  } else if (slide === "cta") {
+    title = `${cityTo}, te espera`;
+    description = `El próximo chollo ya está saliendo en tripcazador.com — síguenos para no perdértelo.`;
+  } else {
+    // Fallback genérico
+    title = cityTo;
+    description = "Más detalles en tripcazador.com.";
+  }
 
-  const slideTitle: Record<SlideKind, string> = {
-    places: "QUÉ VER",
-    food: "QUÉ COMER",
-    tips: "TIPS LOCALES",
-    blog: "GUÍA COMPLETA",
-  };
-  const slideEmoji: Record<SlideKind, string> = {
-    places: "📍",
-    food: "🍽️",
-    tips: "💡",
-    blog: "📖",
-  };
+  const cfg = SLIDE_CONFIG[slide];
+
+  const NAVY = "#0a1530";
+  const AMBER = "#fbbf24";
+  const WHITE_DIM = "#e5e7eb";
+  const TERRACOTTA = "#c83c32";
+  const PAPER = "#faf8f3";
+
+  const cityUpper = cityTo.toUpperCase();
+  const topRight = coord ? `${cityUpper}  ·  ${coord}` : cityUpper;
 
   return new ImageResponse(
     (
@@ -82,315 +122,181 @@ export async function GET(req: NextRequest) {
           height: "1080px",
           display: "flex",
           flexDirection: "column",
-          background: "#0a1530",
-          fontFamily: "Inter, system-ui, sans-serif",
-          color: "#fff",
+          background: NAVY,
+          fontFamily: "Georgia, 'Times New Roman', serif",
           position: "relative",
         }}
       >
-        <img
-          src={bgUrl}
-          width={1080}
-          height={1080}
-          alt={dest.alt}
+        {/* ─── PHOTO BG TOP 970px ─── */}
+        <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
             width: "1080px",
-            height: "1080px",
-            objectFit: "cover",
+            height: "970px",
             display: "flex",
-          }}
-        />
-        {/* Overlay casi opaco — la foto es solo "atmósfera". Cards
-            tienen su propio fondo solid navy → texto blanco SIEMPRE legible
-            sin importar la foto destino. SSS58 fix. */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(180deg, rgba(10,21,48,0.78) 0%, rgba(10,21,48,0.88) 30%, rgba(10,21,48,0.96) 70%, rgba(10,21,48,0.98) 100%)",
-            display: "flex",
-          }}
-        />
-
-        {/* HEADER */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "60px 70px 0",
-            zIndex: 1,
+            position: "relative",
+            backgroundImage: `linear-gradient(180deg, rgba(10,21,48,0.35) 0%, rgba(10,21,48,0.1) 30%, rgba(10,21,48,0.1) 60%, rgba(10,21,48,0.4) 100%), url(${photoUrl})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         >
+          {/* TOP PILLS — label + coord */}
           <div
             style={{
+              position: "absolute",
+              top: "50px",
+              left: "50px",
+              padding: "10px 22px",
+              borderRadius: "24px",
+              background: "rgba(10,21,48,0.85)",
               display: "flex",
-              alignItems: "center",
-              gap: "14px",
-              background: "#fff",
-              padding: "14px 26px",
-              borderRadius: "999px",
-              fontSize: "26px",
-              fontWeight: 800,
-              color: "#0a1530",
+              fontSize: "16px",
+              fontWeight: 700,
+              color: AMBER,
+              letterSpacing: "2.5px",
+              fontFamily: "ui-monospace, 'Courier New', monospace",
             }}
           >
-            <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: dest.accent, display: "flex" }} />
-            {cityTo}
+            PLATE  {romanNumeral(cfg.num)}  ·  {cfg.label}
           </div>
-          {/* SSS62: Logo SVG inline transparente (sin caja navy negra) */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <svg width="68" height="68" viewBox="0 0 100 100" style={{ display: "flex" }}>
-              <path
-                d="M10 42 L26 30 L40 38 L50 22 L60 38 L74 30 L90 42 L74 48 L80 62 L62 56 L50 78 L56 90 L50 94 L44 90 L38 56 L20 62 L26 48 Z"
-                fill="#fbbf24"
-              />
-            </svg>
-            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-              <div style={{ display: "flex", fontSize: "44px", fontWeight: 800, color: "#fff", letterSpacing: "-1px" }}>
-                <span style={{ color: "#fbbf24" }}>Trip</span>Cazador
-              </div>
-              <div style={{ display: "flex", fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.7)", letterSpacing: "3px", marginTop: "4px" }}>
-                EL CAZADOR DE CHOLLOS
-              </div>
-            </div>
+          <div
+            style={{
+              position: "absolute",
+              top: "50px",
+              right: "50px",
+              padding: "10px 22px",
+              borderRadius: "24px",
+              background: "rgba(10,21,48,0.85)",
+              display: "flex",
+              fontSize: "14px",
+              fontWeight: 600,
+              color: WHITE_DIM,
+              letterSpacing: "2px",
+              fontFamily: "ui-monospace, 'Courier New', monospace",
+            }}
+          >
+            {topRight}
           </div>
-        </div>
 
-        {/* TITLE — encerrado en pill navy sólido para evitar texto ámbar
-            washed-out sobre cielos claros. SSS59b fix. */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            padding: "30px 70px 20px",
-            zIndex: 1,
-          }}
-        >
+          {/* ─── CARD CENTRAL ESTILO TORN PAPER ─── */}
+          {/* Drop shadow box (offset 10/12) */}
           <div
             style={{
+              position: "absolute",
+              top: "320px",
+              left: "120px",
+              width: "840px",
+              height: "360px",
+              background: "rgba(0,0,0,0.35)",
               display: "flex",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "310px",
+              left: "110px",
+              width: "840px",
+              height: "360px",
+              background: PAPER,
+              border: "1px solid #ddd6c4",
+              display: "flex",
+              flexDirection: "column",
               alignItems: "center",
-              gap: "20px",
-              background: "rgba(10,21,48,0.95)",
-              border: "3px solid #fbbf24",
-              padding: "18px 40px",
-              borderRadius: "999px",
+              padding: "44px 60px",
             }}
           >
-            <div style={{ display: "flex", fontSize: "48px" }}>{slideEmoji[slide]}</div>
+            {/* Title serif italic terracotta */}
             <div
               style={{
                 display: "flex",
-                fontSize: "40px",
+                fontSize: title.length > 28 ? "44px" : "56px",
                 fontWeight: 900,
-                color: "#fff",
-                letterSpacing: "6px",
+                fontStyle: "italic",
+                color: TERRACOTTA,
+                fontFamily: "Georgia, 'Times New Roman', serif",
+                textAlign: "center",
+                lineHeight: 1.05,
+                maxWidth: "720px",
               }}
             >
-              {slideTitle[slide]}
+              {title}
+            </div>
+
+            {/* Thin line */}
+            <div
+              style={{
+                width: "180px",
+                height: "1px",
+                background: TERRACOTTA,
+                marginTop: "20px",
+                display: "flex",
+              }}
+            />
+
+            {/* Description serif navy */}
+            <div
+              style={{
+                display: "flex",
+                fontSize: "22px",
+                fontWeight: 400,
+                color: NAVY,
+                fontFamily: "Georgia, 'Times New Roman', serif",
+                textAlign: "center",
+                marginTop: "24px",
+                lineHeight: 1.4,
+                maxWidth: "700px",
+              }}
+            >
+              {description}
             </div>
           </div>
         </div>
 
-        {/* CONTENT */}
+        {/* ─── BOTTOM STRIP — TC + URL + plate number ─── */}
         <div
           style={{
+            width: "1080px",
+            height: "110px",
+            background: NAVY,
+            borderTop: `4px solid ${AMBER}`,
             display: "flex",
-            flexDirection: "column",
-            flex: 1,
-            padding: "10px 70px 30px",
-            gap: "20px",
-            zIndex: 1,
-            justifyContent: "center",
-          }}
-        >
-          {slide === "places" &&
-            content.attractions.slice(0, 4).map((a, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "20px",
-                  background: "rgba(10,21,48,0.92)",
-                  border: "2px solid rgba(251,191,36,0.3)",
-                  padding: "20px 26px",
-                  borderRadius: "20px",
-                }}
-              >
-                <div style={{ display: "flex", fontSize: "48px", flexShrink: 0 }}>{a.emoji}</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
-                  <div style={{ display: "flex", fontSize: "32px", fontWeight: 800, color: "#fff" }}>{a.name}</div>
-                  <div style={{ display: "flex", fontSize: "22px", color: "rgba(255,255,255,0.85)" }}>{a.desc}</div>
-                </div>
-              </div>
-            ))}
-
-          {slide === "food" &&
-            content.food.slice(0, 4).map((f, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "20px",
-                  background: "rgba(10,21,48,0.92)",
-                  border: "2px solid rgba(16,185,129,0.4)",
-                  padding: "22px 28px",
-                  borderRadius: "20px",
-                }}
-              >
-                <div style={{ display: "flex", fontSize: "52px", flexShrink: 0 }}>{f.emoji}</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
-                  <div style={{ display: "flex", fontSize: "32px", fontWeight: 800, color: "#fff" }}>{f.name}</div>
-                  <div style={{ display: "flex", fontSize: "22px", color: "rgba(255,255,255,0.85)" }}>{f.desc}</div>
-                </div>
-              </div>
-            ))}
-
-          {slide === "tips" &&
-            content.tips.slice(0, 3).map((t, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "24px",
-                  background: "rgba(10,21,48,0.92)",
-                  border: "2px solid rgba(251,191,36,0.6)",
-                  padding: "26px 30px",
-                  borderRadius: "20px",
-                }}
-              >
-                <div style={{ display: "flex", fontSize: "60px", flexShrink: 0 }}>{t.emoji}</div>
-                <div
-                  style={{
-                    display: "flex",
-                    fontSize: "28px",
-                    color: "#fff",
-                    fontWeight: 600,
-                    flex: 1,
-                  }}
-                >
-                  {t.text}
-                </div>
-              </div>
-            ))}
-
-          {slide === "blog" && (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "24px",
-                background: "rgba(10,21,48,0.85)",
-                border: "5px solid #fbbf24",
-                padding: "50px 50px",
-                borderRadius: "32px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: "26px",
-                  color: "#fbbf24",
-                  fontWeight: 800,
-                  letterSpacing: "8px",
-                }}
-              >
-                LEE LA GUÍA COMPLETA
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: "42px",
-                  fontWeight: 900,
-                  color: "#fff",
-                  textAlign: "center",
-                }}
-              >
-                {blog?.title || `Vuelos baratos a ${cityTo}: la guía completa`}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: "24px",
-                  color: "rgba(255,255,255,0.85)",
-                  textAlign: "center",
-                  fontWeight: 500,
-                }}
-              >
-                {blog
-                  ? "Datos reales, fechas óptimas, hubs alternativos y trucos para cazar tu vuelo."
-                  : "Contenido nuevo cada semana: hubs, fechas óptimas y errores de tarifa."}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  background: "#fbbf24",
-                  color: "#0a1530",
-                  padding: "20px 40px",
-                  borderRadius: "16px",
-                  fontSize: "30px",
-                  fontWeight: 900,
-                  letterSpacing: "3px",
-                  marginTop: "12px",
-                }}
-              >
-                LINK EN BIO →
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* FOOTER — pills sólidos con contraste fuerte (SSS62 fix) */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
-            padding: "24px 60px 50px",
-            borderTop: "3px solid rgba(251,191,36,0.5)",
-            zIndex: 1,
+            justifyContent: "space-between",
+            padding: "0 40px",
+            fontFamily: "system-ui, sans-serif",
           }}
         >
-          {/* URL pill blanca */}
+          {/* TC Brand */}
           <div
             style={{
               display: "flex",
-              alignItems: "center",
-              background: "#fff",
-              padding: "12px 26px",
-              borderRadius: "999px",
-              fontSize: "26px",
-              fontWeight: 800,
-              color: "#0a1530",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              borderLeft: `3px solid ${AMBER}`,
+              paddingLeft: "12px",
             }}
           >
+            <div style={{ display: "flex", fontSize: "20px", fontWeight: 900, color: "#fff", letterSpacing: "1px", lineHeight: 1 }}>
+              TRIPCAZADOR
+            </div>
+            <div style={{ display: "flex", fontSize: "11px", fontWeight: 700, color: AMBER, letterSpacing: "3px", marginTop: "4px", lineHeight: 1 }}>
+              · RADAR DE CHOLLOS ·
+            </div>
+          </div>
+
+          {/* URL center */}
+          <div style={{ display: "flex", fontSize: "28px", fontWeight: 800, color: AMBER, letterSpacing: "1px" }}>
             tripcazador.com
           </div>
-          {/* DESLIZA pill ámbar */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              background: "#fbbf24",
-              padding: "12px 24px",
-              borderRadius: "999px",
-              fontSize: "22px",
-              fontWeight: 900,
-              color: "#0a1530",
-              letterSpacing: "3px",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
-            }}
-          >
-            DESLIZA →
+
+          {/* Plate number */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <div style={{ display: "flex", fontSize: "14px", fontWeight: 600, color: WHITE_DIM, letterSpacing: "1px" }}>
+              @tripcazador
+            </div>
+            <div style={{ display: "flex", fontSize: "13px", fontWeight: 700, color: AMBER, letterSpacing: "3px", marginTop: "4px", fontFamily: "ui-monospace, 'Courier New', monospace" }}>
+              {String(cfg.num).padStart(2, "0")}  /  05
+            </div>
           </div>
         </div>
       </div>
@@ -399,9 +305,13 @@ export async function GET(req: NextRequest) {
       width: 1080,
       height: 1080,
       headers: {
-        "cache-control":
-          "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800, immutable",
+        "Cache-Control": "public, max-age=300",
       },
     },
   );
+}
+
+function romanNumeral(n: number): string {
+  const map: Record<number, string> = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V" };
+  return map[n] || String(n);
 }

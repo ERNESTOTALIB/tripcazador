@@ -1,11 +1,9 @@
 name: Instagram auto-publish deals
 
 on:
-  # SSS74 (May 2026): cron pausado de nuevo — usuario reporta que v3.1
-  # no coincide con el diseño Barcelona Canva (magazine editorial con
-  # top strip + serif gigante + tagline italic) y NO es carrusel.
-  # Reactivar tras: (1) rewrite endpoint con estética Barcelona,
-  # (2) wired IG_CAROUSEL_MODE=1, (3) fix tachado split en spans.
+  # SSS74 (May 2026): cron pausado durante validación del nuevo diseño
+  # Barcelona magazine 5-plate carousel. Reactivar tras smoke verde de
+  # los 5 endpoints + verificación del primer post manual.
   # schedule:
   #   - cron: "0 */4 * * *"
   workflow_dispatch:
@@ -51,6 +49,10 @@ jobs:
           # Quitar/relajar después del primer post si quieres también hoteles.
           IG_FILTER_TYPE: "flight"
           IG_MAX_PRICE: "100"
+          # SSS74 (May 2026): activado modo carrusel 5-plate Barcelona magazine.
+          # Slide 1 = /api/og/social/post (hero serif + price panel)
+          # Slides 2-5 = /api/og/social/carousel?slide={places|food|tips|cta}
+          IG_CAROUSEL_MODE: "1"
         run: python scripts/instagram_publish_deals.py
 
       # Save updated history back. cache@save creates a new entry with

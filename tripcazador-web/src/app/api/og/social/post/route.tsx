@@ -2,29 +2,36 @@ import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { getDeals } from "@/lib/api";
 import { getDestImage, buildUnsplashUrl } from "@/lib/dest_images";
+import { getCoordForDeal } from "@/lib/dest_coords";
 
 export const runtime = "edge";
 
 /**
- * /api/og/social/post?dealId=X — fase SSS73 (May 2026)
+ * /api/og/social/post?dealId=X — fase SSS74 (May 2026)
  *
- * Diseño v3.1 — versión simplificada para Edge runtime / Satori.
- *
- * v3.0 inicial fallaba con body vacío (Satori no soporta SVG con
- * paths/transforms ni `inset: 0` ni `<img>` con position absolute).
+ * Plate I — diseño Barcelona magazine editorial (canva v3 reference):
+ * https://github.com/.../canva_propuesta_barcelona/1_hero_sagrada.png
  *
  * Estructura 1080×1080:
- *   - Top 55% (594px): foto destino full-bleed via background-image
- *     + overlay gradient navy bottom + chip eyebrow + city name BL
- *   - Bottom 45% (486px): panel navy editorial
- *     + "DESDE" eyebrow ámbar + precio 220px ámbar bold
- *     + ruta "Origen → Destino" + meta line (IDA+VUELTA fix vs SSS40)
- *     + hook ámbar italic
- *   - Bottom strip 76px: tripcazador.com ámbar bold center
+ *   - Foto destino full-bleed via background-image + gradient navy
+ *   - Top strip metadata (mono): "PLATE I · CHOLLO DETECTADO" + "CITY · LAT · LON"
+ *   - 4 corner brackets ámbar (estilo magazine cover)
+ *   - Hero: city name SERIF BOLD 110px white centered + tagline italic
+ *   - Big price panel navy (border ámbar 6px):
+ *       · DESDE eyebrow ámbar
+ *       · Price 220px serif amber bold
+ *       · "antes XXX€" tachado SOLO esa parte (fix span split SSS73 bug)
+ *         + "ahorras YY€" sin tachado
+ *       · Ruta "X → Y" 38px serif bold white
+ *       · Meta line "AIRLINE · IDA → VUELTA · noches · directo Xh Ym"
+ *       · Hook italic ámbar
+ *   - Bottom strip ámbar: TC mini badge + tripcazador.com center + 01 / 05 right
  *
- * Bug fix vs SSS40: si deal tiene date_ret, mostrar "IDA + VUELTA" no "VUELO IDA".
+ * Bug fix vs v3.1: el line-through ahora va dentro de un <span> separado
+ * para que solo "antes 209€" aparezca tachado, no "ahorras 115€".
  *
- * Consumido por: workflow instagram-publish.yml + share manual + og:image meta.
+ * Carrusel: este endpoint es slide 1. Slides 2-5 vienen de
+ * /api/og/social/carousel?dealId=X&slide={places|food|tips|cta}.
  */
 
 const MONTHS_ES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
@@ -40,24 +47,26 @@ function fmtDuration(min: number | undefined): string {
   if (!min || min <= 0) return "";
   const h = Math.floor(min / 60);
   const m = min % 60;
-  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+  return m === 0 ? `${h} h` : `${h} h ${m} m`;
 }
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const dealId = sp.get("dealId");
 
-  // Defaults — Basilea → Palma demo
-  let route = { from: "Basilea", to: "Palma de Mallorca" };
-  let destKey = "palma";
-  let price = 69;
-  let oldPrice = 173;
-  let savingsPct = 60;
-  let dateOut: string | null = "9 jun";
-  let dateRet: string | null = "13 jun";
+  // Defaults — Múnich → Barcelona (matches Canva reference exactly)
+  let route = { from: "Múnich", to: "Barcelona" };
+  let destKey = "barcelona";
+  let dealLat: number | undefined;
+  let dealLon: number | undefined;
+  let price = 79;
+  let oldPrice = 178;
+  let savingsPct = 56;
+  let dateOut: string | null = "08 jun";
+  let dateRet: string | null = "12 jun";
   let nights = 4;
-  let durationStr = "2h 15m";
-  let airline = "Condor";
+  let durationStr = "2 h 15 m";
+  let airline = "Vueling";
   let stops = 0;
 
   if (dealId) {
@@ -70,6 +79,8 @@ export async function GET(req: NextRequest) {
           to: deal.city_to || deal.destination || "?",
         };
         destKey = deal.destination || deal.city_to || "";
+        dealLat = deal.lat;
+        dealLon = deal.lon;
         price = Math.round(deal.price_eur);
         savingsPct = Math.round(deal.savings_pct ?? 0);
         oldPrice = price + Math.round(deal.savings_eur ?? 0);
@@ -85,27 +96,32 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Foto destino real via dest_images
   const dest = getDestImage(destKey);
-  const photoUrl = buildUnsplashUrl(dest.photoId, 1200, 700);
+  const photoUrl = buildUnsplashUrl(dest.photoId, 1200, 1200);
+  const coord = getCoordForDeal({
+    lat: dealLat,
+    lon: dealLon,
+    destination: destKey,
+    cityTo: route.to,
+  });
 
-  // Construir meta line
+  // Construir meta line (igual que Canva: AIRLINE · IDA → VUELTA · noches · directo Xh Ym)
   const metaParts: string[] = [];
   if (airline) metaParts.push(airline.toUpperCase());
   if (dateOut && dateRet) {
-    metaParts.push(`IDA ${dateOut} → VUELTA ${dateRet}`);
+    metaParts.push(`IDA ${dateOut}  →  VUELTA ${dateRet}`);
   } else if (dateOut) {
     metaParts.push(`IDA ${dateOut}`);
   }
   if (nights > 0) metaParts.push(`${nights} ${nights === 1 ? "noche" : "noches"}`);
-  if (stops === 0 && durationStr) metaParts.push(`directo ${durationStr}`);
+  if (stops === 0 && durationStr) metaParts.push(`directo  ${durationStr}`);
   else if (durationStr) metaParts.push(`${stops} ${stops === 1 ? "escala" : "escalas"} · ${durationStr}`);
-  const metaLine = metaParts.join(" · ");
+  const metaLine = metaParts.join("  ·  ");
 
   // Hook frase
   let hook = "";
   if (durationStr && stops === 0) {
-    hook = `¿Listo para que en ${durationStr} estés en ${route.to}?`;
+    hook = `¿Listo para que en ${durationStr} estés conociendo ${route.to}?`;
   } else if (nights > 0) {
     hook = `${nights} ${nights === 1 ? "noche" : "noches"} en ${route.to}, ida y vuelta incluidos`;
   } else {
@@ -116,6 +132,10 @@ export async function GET(req: NextRequest) {
   const AMBER = "#fbbf24";
   const WHITE_DIM = "#e5e7eb";
 
+  // Top strip text — uppercase city + coord (formato magazine)
+  const cityUpper = route.to.toUpperCase();
+  const topRight = coord ? `${cityUpper}  ·  ${coord}` : cityUpper;
+
   return new ImageResponse(
     (
       <div
@@ -125,286 +145,262 @@ export async function GET(req: NextRequest) {
           display: "flex",
           flexDirection: "column",
           background: NAVY,
-          fontFamily: "system-ui, sans-serif",
+          fontFamily: "Georgia, 'Times New Roman', serif",
+          position: "relative",
         }}
       >
-        {/* ─── TOP 55% — FOTO DESTINO ─── */}
+        {/* ─── PHOTO BG — toda la imagen 970px alto, strip queda 110 abajo ─── */}
         <div
           style={{
             width: "1080px",
-            height: "594px",
+            height: "970px",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
-            backgroundImage: `linear-gradient(180deg, rgba(10,21,48,0.15) 0%, rgba(10,21,48,0.0) 30%, rgba(10,21,48,0.55) 80%, rgba(10,21,48,0.95) 100%), url(${photoUrl})`,
+            backgroundImage: `linear-gradient(180deg, rgba(10,21,48,0.4) 0%, rgba(10,21,48,0.18) 22%, rgba(10,21,48,0.18) 45%, rgba(10,21,48,0.92) 100%), url(${photoUrl})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            padding: "32px 44px 36px 44px",
+            position: "relative",
           }}
         >
-          {/* Top row: brand badge + savings chip */}
+          {/* ─── 4 CORNER BRACKETS ─── */}
+          {/* TL */}
+          <div style={{ position: "absolute", top: "42px", left: "42px", width: "35px", height: "3px", background: AMBER, display: "flex" }} />
+          <div style={{ position: "absolute", top: "42px", left: "42px", width: "3px", height: "35px", background: AMBER, display: "flex" }} />
+          {/* TR */}
+          <div style={{ position: "absolute", top: "42px", right: "42px", width: "35px", height: "3px", background: AMBER, display: "flex" }} />
+          <div style={{ position: "absolute", top: "42px", right: "42px", width: "3px", height: "35px", background: AMBER, display: "flex" }} />
+          {/* BL */}
+          <div style={{ position: "absolute", bottom: "42px", left: "42px", width: "35px", height: "3px", background: AMBER, display: "flex" }} />
+          <div style={{ position: "absolute", bottom: "42px", left: "42px", width: "3px", height: "35px", background: AMBER, display: "flex" }} />
+          {/* BR */}
+          <div style={{ position: "absolute", bottom: "42px", right: "42px", width: "35px", height: "3px", background: AMBER, display: "flex" }} />
+          <div style={{ position: "absolute", bottom: "42px", right: "42px", width: "3px", height: "35px", background: AMBER, display: "flex" }} />
+
+          {/* ─── TOP STRIP METADATA ─── */}
           <div
             style={{
+              position: "absolute",
+              top: "70px",
+              left: "90px",
+              right: "90px",
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              width: "100%",
+              flexDirection: "column",
+              gap: "4px",
+              fontFamily: "ui-monospace, 'Courier New', monospace",
             }}
           >
-            {/* Brand badge — text only (no SVG, Edge-safe) */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                padding: "14px 22px",
-                background: "rgba(10,21,48,0.85)",
-                borderRadius: "16px",
-                borderLeft: `4px solid ${AMBER}`,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "22px",
-                  fontWeight: 900,
-                  color: "#fff",
-                  letterSpacing: "1px",
-                  display: "flex",
-                  lineHeight: 1,
-                }}
-              >
-                TRIPCAZADOR
-              </div>
-              <div
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  color: AMBER,
-                  letterSpacing: "3px",
-                  marginTop: "4px",
-                  display: "flex",
-                  lineHeight: 1,
-                }}
-              >
-                · RADAR DE CHOLLOS ·
-              </div>
+            <div style={{ display: "flex", fontSize: "18px", fontWeight: 700, color: AMBER, letterSpacing: "3px" }}>
+              PLATE  I  ·  CHOLLO  DETECTADO
             </div>
-
-            {/* Savings chip */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "12px 22px",
-                background: AMBER,
-                borderRadius: "999px",
-                fontSize: "20px",
-                fontWeight: 900,
-                color: NAVY,
-                letterSpacing: "1px",
-              }}
-            >
-              −{savingsPct}% CHOLLO
+            <div style={{ display: "flex", fontSize: "16px", fontWeight: 500, color: WHITE_DIM, letterSpacing: "2px" }}>
+              {topRight}
             </div>
           </div>
 
-          {/* Bottom row: city name big */}
+          {/* ─── CITY HUGE SERIF ─── */}
           <div
             style={{
+              position: "absolute",
+              top: "210px",
+              left: 0,
+              right: 0,
               display: "flex",
-              flexDirection: "column",
-              gap: "6px",
-              width: "100%",
+              justifyContent: "center",
+              fontSize: "108px",
+              fontWeight: 900,
+              color: "#fff",
+              letterSpacing: "2px",
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              textTransform: "uppercase",
             }}
           >
-            <div
-              style={{
-                fontSize: "20px",
-                fontWeight: 700,
-                color: AMBER,
-                letterSpacing: "5px",
-                display: "flex",
-              }}
-            >
-              CHOLLO DETECTADO
-            </div>
-            <div
-              style={{
-                fontSize: "92px",
-                fontWeight: 900,
-                color: "#fff",
-                lineHeight: 1,
-                letterSpacing: "-3px",
-                display: "flex",
-              }}
-            >
-              {route.to}
-            </div>
+            {route.to}
+          </div>
+
+          {/* ─── TAGLINE ITALIC ─── */}
+          <div
+            style={{
+              position: "absolute",
+              top: "350px",
+              left: "60px",
+              right: "60px",
+              display: "flex",
+              justifyContent: "center",
+              fontSize: "26px",
+              fontWeight: 400,
+              fontStyle: "italic",
+              color: WHITE_DIM,
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              textAlign: "center",
+            }}
+          >
+            Cinco lugares imprescindibles  ·  y un precio cazado que lo paga todo
+          </div>
+
+          {/* ─── BIG PRICE PANEL ─── */}
+          <div
+            style={{
+              position: "absolute",
+              top: "445px",
+              left: "80px",
+              width: "920px",
+              height: "440px",
+              background: "rgba(10,21,48,0.94)",
+              border: `5px solid ${AMBER}`,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              paddingTop: "26px",
+            }}
+          >
+            {/* DESDE eyebrow */}
             <div
               style={{
                 fontSize: "22px",
-                fontWeight: 500,
-                color: WHITE_DIM,
-                fontStyle: "italic",
+                fontWeight: 800,
+                color: AMBER,
+                letterSpacing: "6px",
                 display: "flex",
+                fontFamily: "system-ui, sans-serif",
+              }}
+            >
+              DESDE
+            </div>
+
+            {/* Precio MEGA serif */}
+            <div
+              style={{
+                fontSize: "210px",
+                fontWeight: 900,
+                color: AMBER,
+                lineHeight: 0.95,
+                letterSpacing: "-4px",
+                display: "flex",
+                fontFamily: "Georgia, 'Times New Roman', serif",
                 marginTop: "4px",
               }}
             >
-              cazado por nuestro radar — desde {route.from}
+              {price}€
+            </div>
+
+            {/* Old price tachado SOLO esa parte + savings sin tachado */}
+            {oldPrice > price && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  marginTop: "4px",
+                  fontSize: "20px",
+                  fontFamily: "system-ui, sans-serif",
+                }}
+              >
+                <span style={{ display: "flex", color: "#9ca3af", textDecoration: "line-through" }}>
+                  antes {oldPrice}€
+                </span>
+                <span style={{ display: "flex", color: AMBER, fontWeight: 700 }}>
+                  ↓ ahorras {oldPrice - price}€  ·  −{savingsPct}%
+                </span>
+              </div>
+            )}
+
+            {/* Ruta serif bold */}
+            <div
+              style={{
+                fontSize: "38px",
+                fontWeight: 700,
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                marginTop: "12px",
+                fontFamily: "Georgia, 'Times New Roman', serif",
+              }}
+            >
+              <span style={{ display: "flex" }}>{route.from}</span>
+              <span style={{ display: "flex", color: AMBER, margin: "0 22px" }}>→</span>
+              <span style={{ display: "flex" }}>{route.to}</span>
+            </div>
+
+            {/* Meta line sans */}
+            <div
+              style={{
+                fontSize: "19px",
+                fontWeight: 500,
+                color: WHITE_DIM,
+                letterSpacing: "0.3px",
+                display: "flex",
+                marginTop: "16px",
+                maxWidth: "880px",
+                textAlign: "center",
+                fontFamily: "system-ui, sans-serif",
+              }}
+            >
+              {metaLine}
+            </div>
+
+            {/* Hook serif italic ámbar */}
+            <div
+              style={{
+                fontSize: "23px",
+                fontWeight: 500,
+                fontStyle: "italic",
+                color: AMBER,
+                display: "flex",
+                marginTop: "16px",
+                maxWidth: "860px",
+                textAlign: "center",
+                fontFamily: "Georgia, 'Times New Roman', serif",
+              }}
+            >
+              {hook}
             </div>
           </div>
         </div>
 
-        {/* ─── BOTTOM 45% — PANEL NAVY EDITORIAL ─── */}
+        {/* ─── BOTTOM STRIP — TC + URL + 01 / 05 ─── */}
         <div
           style={{
             width: "1080px",
-            height: "486px",
+            height: "110px",
             background: NAVY,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            paddingTop: "30px",
             borderTop: `4px solid ${AMBER}`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 40px",
+            fontFamily: "system-ui, sans-serif",
           }}
         >
-          {/* DESDE eyebrow */}
+          {/* TC Brand badge mini */}
           <div
             style={{
-              fontSize: "20px",
-              fontWeight: 800,
-              color: AMBER,
-              letterSpacing: "5px",
               display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              borderLeft: `3px solid ${AMBER}`,
+              paddingLeft: "12px",
             }}
           >
-            DESDE
-          </div>
-
-          {/* Precio MEGA */}
-          <div
-            style={{
-              fontSize: "210px",
-              fontWeight: 900,
-              color: AMBER,
-              lineHeight: 0.95,
-              letterSpacing: "-6px",
-              display: "flex",
-              marginTop: "4px",
-            }}
-          >
-            {price}€
-          </div>
-
-          {/* Old price tachado */}
-          {oldPrice > price && (
-            <div
-              style={{
-                fontSize: "20px",
-                color: "#9ca3af",
-                textDecoration: "line-through",
-                display: "flex",
-                marginTop: "4px",
-                marginBottom: "4px",
-              }}
-            >
-              antes {oldPrice}€  ·  ahorras {oldPrice - price}€
+            <div style={{ display: "flex", fontSize: "20px", fontWeight: 900, color: "#fff", letterSpacing: "1px", lineHeight: 1 }}>
+              TRIPCAZADOR
             </div>
-          )}
-
-          {/* Ruta */}
-          <div
-            style={{
-              fontSize: "40px",
-              fontWeight: 700,
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              marginTop: "10px",
-            }}
-          >
-            <span style={{ display: "flex" }}>{route.from}</span>
-            <span style={{ display: "flex", color: AMBER, fontSize: "34px", margin: "0 16px" }}>→</span>
-            <span style={{ display: "flex" }}>{route.to}</span>
-          </div>
-
-          {/* Meta line */}
-          <div
-            style={{
-              fontSize: "20px",
-              fontWeight: 500,
-              color: WHITE_DIM,
-              letterSpacing: "0.5px",
-              display: "flex",
-              marginTop: "12px",
-              maxWidth: "960px",
-              textAlign: "center",
-            }}
-          >
-            {metaLine}
-          </div>
-
-          {/* Hook ámbar italic */}
-          <div
-            style={{
-              fontSize: "22px",
-              fontWeight: 500,
-              fontStyle: "italic",
-              color: AMBER,
-              display: "flex",
-              marginTop: "16px",
-              maxWidth: "960px",
-              textAlign: "center",
-            }}
-          >
-            {hook}
-          </div>
-
-          {/* Bottom URL strip — flex spacer pushes to bottom */}
-          <div style={{ flex: 1, display: "flex" }} />
-          <div
-            style={{
-              width: "1080px",
-              height: "76px",
-              background: "rgba(0,0,0,0.35)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0 40px",
-              borderTop: `2px solid ${AMBER}`,
-            }}
-          >
-            <div
-              style={{
-                fontSize: "16px",
-                fontWeight: 600,
-                color: WHITE_DIM,
-                letterSpacing: "2px",
-                display: "flex",
-              }}
-            >
-              EL CAZADOR DE CHOLLOS
+            <div style={{ display: "flex", fontSize: "11px", fontWeight: 700, color: AMBER, letterSpacing: "3px", marginTop: "4px", lineHeight: 1 }}>
+              · RADAR DE CHOLLOS ·
             </div>
-            <div
-              style={{
-                fontSize: "30px",
-                fontWeight: 800,
-                color: AMBER,
-                letterSpacing: "1px",
-                display: "flex",
-              }}
-            >
-              tripcazador.com
+          </div>
+
+          {/* URL center */}
+          <div style={{ display: "flex", fontSize: "32px", fontWeight: 800, color: AMBER, letterSpacing: "1px" }}>
+            tripcazador.com
+          </div>
+
+          {/* @handle + plate number */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <div style={{ display: "flex", fontSize: "16px", fontWeight: 600, color: WHITE_DIM, letterSpacing: "1px" }}>
+              @tripcazador  ·  desliza  →
             </div>
-            <div
-              style={{
-                fontSize: "16px",
-                fontWeight: 600,
-                color: WHITE_DIM,
-                display: "flex",
-              }}
-            >
-              @tripcazador
+            <div style={{ display: "flex", fontSize: "13px", fontWeight: 700, color: AMBER, letterSpacing: "3px", marginTop: "4px", fontFamily: "ui-monospace, 'Courier New', monospace" }}>
+              01  /  05
             </div>
           </div>
         </div>
