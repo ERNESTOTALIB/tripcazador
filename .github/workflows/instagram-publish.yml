@@ -1,11 +1,13 @@
 name: Instagram auto-publish deals
 
 on:
-  # SSS73 (May 2026): cron reactivado tras verificar que el endpoint v3.1
-  # sirve el diseño nuevo (foto destino + precio hero + IDA+VUELTA fix).
-  # Smoke verde 2026-05-05: GET /api/og/social/post → 782KB PNG válido.
-  schedule:
-    - cron: "0 */4 * * *"
+  # SSS74 (May 2026): cron pausado de nuevo — usuario reporta que v3.1
+  # no coincide con el diseño Barcelona Canva (magazine editorial con
+  # top strip + serif gigante + tagline italic) y NO es carrusel.
+  # Reactivar tras: (1) rewrite endpoint con estética Barcelona,
+  # (2) wired IG_CAROUSEL_MODE=1, (3) fix tachado split en spans.
+  # schedule:
+  #   - cron: "0 */4 * * *"
   workflow_dispatch:
 
 concurrency:
