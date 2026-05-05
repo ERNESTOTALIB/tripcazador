@@ -42,6 +42,10 @@ jobs:
           TG_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           IG_DEDUP_WINDOW: "2"
+          # SSS72: primer arranque debe ser un vuelo bajo 100€ ida+vuelta.
+          # Quitar/relajar después del primer post si quieres también hoteles.
+          IG_FILTER_TYPE: "flight"
+          IG_MAX_PRICE: "100"
         run: python scripts/instagram_publish_deals.py
 
       # Save updated history back. cache@save creates a new entry with

@@ -324,6 +324,25 @@ def main() -> int:
         log("No deals found")
         return 1
 
+    # SSS72: opcional, filtrar por tipo y precio máximo via env vars.
+    # Útil para forzar primer post a vuelo barato (ej. IG_FILTER_TYPE=flight + IG_MAX_PRICE=100).
+    filter_type = os.environ.get("IG_FILTER_TYPE", "").strip().lower()
+    max_price_str = os.environ.get("IG_MAX_PRICE", "").strip()
+    try:
+        max_price = float(max_price_str) if max_price_str else None
+    except ValueError:
+        max_price = None
+    if filter_type or max_price is not None:
+        before = len(deals)
+        if filter_type:
+            deals = [d for d in deals if (d.get("type") or "").lower() == filter_type]
+        if max_price is not None:
+            deals = [d for d in deals if (d.get("price_eur") or 0) <= max_price]
+        log(f"Filtros aplicados (type={filter_type or 'any'}, max_price={max_price or 'none'}): {before} -> {len(deals)} deals")
+        if not deals:
+            log("Sin deals tras filtros — abort")
+            return 1
+
     # Score-based ordering, prefer deals younger than 24h
     now_ms = int(time.time() * 1000)
     def score_key(d: Dict[str, Any]) -> float:
