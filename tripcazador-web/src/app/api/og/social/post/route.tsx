@@ -1,41 +1,66 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { getDeals } from "@/lib/api";
+import { getDestImage, buildUnsplashUrl } from "@/lib/dest_images";
 
 export const runtime = "edge";
 
 /**
- * /api/og/social/post?dealId=X — fase SSS40 (May 2026)
+ * /api/og/social/post?dealId=X — fase SSS73 (May 2026)
  *
- * Genera un post 1080×1080 editorial premium para Instagram feed.
+ * Diseño v3 oficial (radar A1 + foto destino real + price hero + Taganga inspired).
+ * Sustituye al diseño SSS40 (gradient sunset + emoji genérico) que se publicó
+ * por error en el primer post de IG.
  *
- * Diseño basado en el kit social premium (estilo Going.com / Hoteltonight):
- *   - Top 60%: gradiente sunset evocador del destino + skyline silueta + avión
- *   - Bottom 40%: panel navy con eyebrow + ruta gigante + precio ámbar 80px + CTA
- *   - Branding: logo radar mini esquina + badge urgencia "DISPONIBLE 6h"
+ * Estructura 1080×1080:
+ *   - Top 55% (594px): foto destino real full-bleed (dest_images Unsplash)
+ *     + overlay gradient navy bottom + logo radar A1 esquina TL
+ *     + eyebrow "PLATE I · CHOLLO" TL + coord TR
+ *     + city name overlay BL (gigante)
+ *   - Bottom 45% (486px): panel navy editorial
+ *     + "DESDE" eyebrow ámbar + precio 220px ámbar bold
+ *     + ruta "Basilea → Palma de Mallorca" serif bold
+ *     + meta line: aerolínea · IDA + VUELTA · noches · duración
+ *     + hook frase ámbar italic
+ *   - Bottom strip 80px: tripcazador.com ámbar bold center
  *
- * Diferencia vs /api/og/instagram (legacy):
- *   - Cuadrado 1080×1080 (no portrait 1080×1350)
- *   - Composición editorial con foto + panel info, no full gradient
- *   - Tipografía pro: precio 80px display, ruta 44px, eyebrow 14px tracking
- *   - Brand consistency con paleta navy #0a1530 + ámbar #fbbf24
+ * Bug fix vs SSS40: si deal tiene date_ret, mostrar "IDA + VUELTA" no "VUELO IDA".
  *
- * Consumido por: workflow instagram-publish.yml + share manual
+ * Consumido por: workflow instagram-publish.yml + share manual + og:image meta.
  */
+
+const MONTHS_ES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+
+function fmtDate(d: string | undefined): string | null {
+  if (!d) return null;
+  const dt = new Date(d);
+  if (isNaN(dt.getTime())) return null;
+  return `${dt.getDate()} ${MONTHS_ES[dt.getMonth()]}`;
+}
+
+function fmtDuration(min: number | undefined): string {
+  if (!min || min <= 0) return "";
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+}
+
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const dealId = sp.get("dealId");
 
-  // Defaults (fallback si no hay dealId)
-  let route = { from: "Madrid", to: "Marrakech" };
-  let price = 17;
-  let oldPrice = 418;
-  let savingsPct = 96;
-  let dateOut = "15 sep 2026";
-  let airline = "Ryanair";
-  let badge: "CRÍTICO" | "ERROR" | "ANOMALÍA" | "OFERTA" = "CRÍTICO";
-  let emoji = "🇲🇦";
-  let region = "África";
+  // Defaults — Basilea → Palma demo
+  let route = { from: "Basilea", to: "Palma de Mallorca" };
+  let destKey = "palma";
+  let price = 69;
+  let oldPrice = 173;
+  let savingsPct = 60;
+  let dateOut: string | null = "9 jun";
+  let dateRet: string | null = "13 jun";
+  let nights = 4;
+  let durationStr = "2h 15m";
+  let airline = "Condor";
+  let stops = 0;
 
   if (dealId) {
     try {
@@ -46,316 +71,378 @@ export async function GET(req: NextRequest) {
           from: deal.city_from || deal.origin || "?",
           to: deal.city_to || deal.destination || "?",
         };
+        destKey = deal.destination || deal.city_to || "";
         price = Math.round(deal.price_eur);
         savingsPct = Math.round(deal.savings_pct ?? 0);
-        oldPrice = price + Math.round(deal.savings_eur ?? price);
-        const d = new Date(deal.date_out);
-        dateOut = isNaN(d.getTime())
-          ? deal.date_out
-          : `${d.getDate()} ${["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][d.getMonth()]} ${d.getFullYear()}`;
-        airline = deal.airline_name || deal.airline || "Aerolínea";
-        const cls = (deal.classification || "OFERTA").toUpperCase();
-        badge = (["CRÍTICO", "ERROR", "ANOMALÍA"].includes(cls)
-          ? cls
-          : "OFERTA") as typeof badge;
-        region = deal.region || "Europa";
-        emoji =
-          region === "Asia" ? "🌏" :
-          region === "Caribe" ? "🏝️" :
-          region === "Oriente Medio" ? "🕌" :
-          region === "África" ? "🇲🇦" :
-          region === "Oceanía" ? "🇦🇺" :
-          region.startsWith("América") ? "🌎" : "🇪🇺";
+        oldPrice = price + Math.round(deal.savings_eur ?? 0);
+        dateOut = fmtDate(deal.date_out);
+        dateRet = fmtDate(deal.date_ret);
+        nights = deal.nights ?? 0;
+        durationStr = fmtDuration(deal.duration_min);
+        airline = deal.airline_name || deal.airline || "";
+        stops = deal.stops ?? 0;
       }
     } catch {
-      /* fallback */
+      /* keep defaults */
     }
   }
 
-  // Color scheme por destino/region — gradient sky
-  const skyGradient =
-    region === "África"
-      ? "linear-gradient(180deg,#FCD9A8 0%,#F4A363 35%,#C84B2A 65%,#3E1E2A 100%)"
-      : region === "Asia"
-      ? "linear-gradient(180deg,#FFE5B4 0%,#F2A1A1 50%,#7A3B61 100%)"
-      : region === "Caribe"
-      ? "linear-gradient(180deg,#06B6D4 0%,#0891B2 50%,#0a1530 100%)"
-      : region === "Norteamérica"
-      ? "linear-gradient(180deg,#1E3A8A 0%,#5EAAD8 60%,#E0F2FE 100%)"
-      : "linear-gradient(180deg,#FCD34D 0%,#F97316 40%,#9A3412 75%,#1E1B4B 100%)";
+  // Foto destino real via dest_images
+  const dest = getDestImage(destKey);
+  const photoUrl = buildUnsplashUrl(dest.photoId, 1200, 700);
 
-  const badgeColor = {
-    CRÍTICO: "#DC2626",
-    ERROR: "#EA580C",
-    ANOMALÍA: "#F59E0B",
-    OFERTA: "#10B981",
-  }[badge];
+  // Construir meta line
+  const metaParts: string[] = [];
+  if (airline) metaParts.push(airline.toUpperCase());
+  if (dateOut && dateRet) {
+    metaParts.push(`IDA ${dateOut} → VUELTA ${dateRet}`);
+  } else if (dateOut) {
+    metaParts.push(`IDA ${dateOut}`);
+  }
+  if (nights > 0) metaParts.push(`${nights} ${nights === 1 ? "noche" : "noches"}`);
+  if (stops === 0 && durationStr) metaParts.push(`directo ${durationStr}`);
+  else if (durationStr) metaParts.push(`${stops} ${stops === 1 ? "escala" : "escalas"} · ${durationStr}`);
+  const metaLine = metaParts.join(" · ");
+
+  // Hook frase: si ida+vuelta y duración corta = "¿Listo para que en X estés en Y?"
+  let hook = "";
+  if (durationStr && stops === 0) {
+    hook = `¿Listo para que en ${durationStr} estés en ${route.to}?`;
+  } else if (nights > 0) {
+    hook = `${nights} ${nights === 1 ? "noche" : "noches"} en ${route.to}, ida y vuelta incluidos`;
+  } else {
+    hook = `Ruta directa hacia ${route.to}, sin sorpresas`;
+  }
+
+  const NAVY = "#0a1530";
+  const AMBER = "#fbbf24";
+  const WHITE_DIM = "#e5e7eb";
 
   return new ImageResponse(
     (
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          width: "1080px",
+          height: "1080px",
           display: "flex",
           flexDirection: "column",
-          background: "#0a1530",
+          background: NAVY,
           fontFamily: "Inter, system-ui, sans-serif",
         }}
       >
-        {/* Top: foto/sky + brand chips */}
+        {/* ─── TOP 55% — FOTO DESTINO + OVERLAYS ─── */}
         <div
           style={{
-            width: "100%",
-            height: "640px",
-            display: "flex",
-            background: skyGradient,
+            width: "1080px",
+            height: "594px",
             position: "relative",
-            padding: "48px 56px",
-            justifyContent: "space-between",
+            display: "flex",
           }}
         >
-          {/* Brand corner top-left */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                background: "rgba(10,21,48,0.72)",
-                padding: "10px 18px 10px 14px",
-                borderRadius: "999px",
-                fontSize: "20px",
-                fontWeight: 700,
-                color: "#fbbf24",
-                letterSpacing: "2px",
-              }}
-            >
-              <div
-                style={{
-                  width: "22px",
-                  height: "22px",
-                  borderRadius: "50%",
-                  background: "#fbbf24",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#0a1530",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                }}
-              >
-                ✈
-              </div>
-              TRIPCAZADOR
-            </div>
-          </div>
+          {/* Foto destino full-bleed */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={photoUrl}
+            alt={dest.alt}
+            width={1080}
+            height={594}
+            style={{
+              width: "1080px",
+              height: "594px",
+              objectFit: "cover",
+              position: "absolute",
+              inset: 0,
+            }}
+          />
 
-          {/* Badge urgencia top-right */}
+          {/* Gradient overlay navy bottom para asegurar contraste con city name */}
           <div
             style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, rgba(10,21,48,0.15) 0%, rgba(10,21,48,0.0) 30%, rgba(10,21,48,0.0) 55%, rgba(10,21,48,0.85) 100%)",
+              display: "flex",
+            }}
+          />
+
+          {/* Logo radar A1 inline (esquina TL) */}
+          <div
+            style={{
+              position: "absolute",
+              top: "32px",
+              left: "32px",
+              width: "120px",
+              height: "120px",
+              borderRadius: "20px",
+              background: NAVY,
               display: "flex",
               alignItems: "center",
-              gap: "10px",
-              background: "rgba(10,21,48,0.85)",
-              padding: "12px 22px",
+              justifyContent: "center",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+            }}
+          >
+            {/* SVG radar simplificado — 3 anillos + sweep + plane */}
+            <svg
+              width="100"
+              height="100"
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {/* Anillos punteados */}
+              <circle cx="50" cy="44" r="36" fill="none" stroke={AMBER} strokeWidth="1.5" strokeDasharray="2 4" opacity="0.55" />
+              <circle cx="50" cy="44" r="24" fill="none" stroke={AMBER} strokeWidth="1.2" strokeDasharray="1 4" opacity="0.5" />
+              <circle cx="50" cy="44" r="12" fill="none" stroke={AMBER} strokeWidth="1" opacity="0.4" />
+              {/* Sweep line */}
+              <line x1="50" y1="44" x2="76" y2="22" stroke={AMBER} strokeWidth="2" strokeLinecap="round" />
+              {/* Avión silueta simple ámbar rotado */}
+              <g transform="translate(50,44) rotate(-30)">
+                <path d="M -16,-2 L 18,-2 L 14,-5 L 0,-5 L -10,-12 L -14,-5 L -16,-2 Z" fill={AMBER} />
+                <circle cx="-1" cy="-1" r="1.5" fill={NAVY} />
+              </g>
+              {/* Tag TRIP/CAZADOR mini */}
+              <text x="50" y="92" textAnchor="middle" fontSize="9" fontWeight="800" fill={WHITE_DIM} letterSpacing="0.5">TRIP</text>
+              <text x="50" y="100" textAnchor="middle" fontSize="6" fontWeight="700" fill={AMBER} letterSpacing="1">CAZADOR</text>
+            </svg>
+          </div>
+
+          {/* Eyebrow top — chip pill */}
+          <div
+            style={{
+              position: "absolute",
+              top: "52px",
+              left: "176px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "10px 18px",
+              background: "rgba(10,21,48,0.78)",
               borderRadius: "999px",
-              fontSize: "20px",
+              fontSize: "16px",
               fontWeight: 700,
-              color: "#fff",
-              letterSpacing: "1.5px",
-              border: `2px solid ${badgeColor}`,
+              color: AMBER,
+              letterSpacing: "2.5px",
             }}
           >
-            <div
-              style={{
-                width: "10px",
-                height: "10px",
-                borderRadius: "50%",
-                background: badgeColor,
-              }}
-            />
-            {badge}  ·  −{savingsPct}%
+            CHOLLO DETECTADO · −{savingsPct}%
           </div>
 
-          {/* Big emoji destino abajo derecha (silhouette evocadora) */}
+          {/* Coord top-right */}
           <div
             style={{
               position: "absolute",
-              bottom: "40px",
-              right: "60px",
-              fontSize: "180px",
-              opacity: 0.85,
-              display: "flex",
-            }}
-          >
-            {emoji}
-          </div>
-
-          {/* Ciudad destino label sutil */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "30px",
-              left: "56px",
-              fontSize: "26px",
-              fontWeight: 700,
-              color: "#fff",
-              letterSpacing: "6px",
-              textTransform: "uppercase",
-              opacity: 0.92,
-              display: "flex",
-              textShadow: "0 2px 12px rgba(0,0,0,0.4)",
-            }}
-          >
-            {route.to}
-          </div>
-        </div>
-
-        {/* Bottom panel navy */}
-        <div
-          style={{
-            width: "100%",
-            height: "440px",
-            background: "linear-gradient(180deg,#0a1530 0%,#163a78 100%)",
-            display: "flex",
-            flexDirection: "column",
-            padding: "44px 56px",
-            position: "relative",
-            borderTop: "4px solid #fbbf24",
-          }}
-        >
-          {/* Eyebrow */}
-          <div
-            style={{
-              fontSize: "20px",
-              fontWeight: 700,
-              color: "#fbbf24",
-              letterSpacing: "5px",
-              marginBottom: "18px",
-              display: "flex",
-            }}
-          >
-            VUELO IDA · DIRECTO
-          </div>
-
-          {/* Ruta gigante */}
-          <div
-            style={{
-              fontSize: "62px",
-              fontWeight: 800,
-              color: "#fff",
-              lineHeight: 1,
-              marginBottom: "12px",
-              letterSpacing: "-1.5px",
+              top: "52px",
+              right: "32px",
               display: "flex",
               alignItems: "center",
-              gap: "24px",
+              padding: "10px 18px",
+              background: "rgba(10,21,48,0.78)",
+              borderRadius: "999px",
+              fontSize: "14px",
+              fontWeight: 600,
+              color: WHITE_DIM,
+              letterSpacing: "1.5px",
+              fontFamily: "ui-monospace, monospace",
             }}
           >
-            <span style={{ display: "flex" }}>{route.from}</span>
-            <span
-              style={{
-                fontSize: "44px",
-                color: "#fbbf24",
-                display: "flex",
-              }}
-            >
-              →
-            </span>
-            <span style={{ display: "flex" }}>{route.to}</span>
+            {route.to.toUpperCase()}
           </div>
 
-          {/* Detalles */}
-          <div
-            style={{
-              fontSize: "20px",
-              color: "#94A3B8",
-              marginBottom: "24px",
-              display: "flex",
-            }}
-          >
-            {dateOut} · {airline} · sin escalas
-          </div>
-
-          {/* Precio block */}
-          <div style={{ display: "flex", alignItems: "flex-end", gap: "24px" }}>
-            <div
-              style={{
-                fontSize: "120px",
-                fontWeight: 800,
-                color: "#fbbf24",
-                lineHeight: 1,
-                letterSpacing: "-4px",
-                display: "flex",
-              }}
-            >
-              {price}€
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                paddingBottom: "20px",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "26px",
-                  color: "#94A3B8",
-                  textDecoration: "line-through",
-                  display: "flex",
-                }}
-              >
-                {oldPrice}€
-              </div>
-              <div
-                style={{
-                  fontSize: "20px",
-                  color: "#10B981",
-                  fontWeight: 700,
-                  letterSpacing: "0.5px",
-                  display: "flex",
-                }}
-              >
-                ↓ ahorras {oldPrice - price}€
-              </div>
-            </div>
-          </div>
-
-          {/* CTA pill bottom-right */}
+          {/* City name overlay big BL */}
           <div
             style={{
               position: "absolute",
               bottom: "44px",
-              right: "56px",
-              background: "linear-gradient(135deg,#fbbf24 0%,#f59e0b 100%)",
-              padding: "20px 36px",
-              borderRadius: "999px",
-              fontSize: "24px",
-              fontWeight: 800,
-              color: "#0a1530",
-              letterSpacing: "2px",
+              left: "44px",
+              right: "44px",
               display: "flex",
+              flexDirection: "column",
+              gap: "8px",
             }}
           >
-            RESERVAR  →
+            <div
+              style={{
+                fontSize: "84px",
+                fontWeight: 900,
+                color: "#fff",
+                lineHeight: 1,
+                letterSpacing: "-2px",
+                display: "flex",
+                textShadow: "0 2px 12px rgba(0,0,0,0.4)",
+              }}
+            >
+              {route.to}
+            </div>
+            <div
+              style={{
+                fontSize: "22px",
+                fontWeight: 500,
+                color: WHITE_DIM,
+                fontStyle: "italic",
+                display: "flex",
+              }}
+            >
+              Cazado por nuestro radar · cinco días en el mediterráneo
+            </div>
+          </div>
+        </div>
+
+        {/* ─── BOTTOM 45% — PANEL NAVY EDITORIAL ─── */}
+        <div
+          style={{
+            width: "1080px",
+            height: "486px",
+            background: NAVY,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            paddingTop: "32px",
+            paddingBottom: "0px",
+            position: "relative",
+            borderTop: `4px solid ${AMBER}`,
+          }}
+        >
+          {/* DESDE eyebrow */}
+          <div
+            style={{
+              fontSize: "20px",
+              fontWeight: 800,
+              color: AMBER,
+              letterSpacing: "5px",
+              display: "flex",
+              marginBottom: "4px",
+            }}
+          >
+            DESDE
           </div>
 
-          {/* URL footer */}
+          {/* Precio MEGA */}
+          <div
+            style={{
+              fontSize: "220px",
+              fontWeight: 900,
+              color: AMBER,
+              lineHeight: 0.95,
+              letterSpacing: "-6px",
+              display: "flex",
+              fontFamily: "Inter, system-ui, sans-serif",
+            }}
+          >
+            {price}€
+          </div>
+
+          {/* Old price tachado */}
+          {oldPrice > price && (
+            <div
+              style={{
+                fontSize: "20px",
+                color: "#9ca3af",
+                textDecoration: "line-through",
+                display: "flex",
+                marginTop: "-8px",
+                marginBottom: "10px",
+              }}
+            >
+              antes {oldPrice}€  ·  ahorras {oldPrice - price}€
+            </div>
+          )}
+
+          {/* Ruta */}
+          <div
+            style={{
+              fontSize: "44px",
+              fontWeight: 700,
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              marginTop: oldPrice > price ? "0" : "12px",
+            }}
+          >
+            <span style={{ display: "flex" }}>{route.from}</span>
+            <span style={{ display: "flex", color: AMBER, fontSize: "36px" }}>→</span>
+            <span style={{ display: "flex" }}>{route.to}</span>
+          </div>
+
+          {/* Meta line */}
+          <div
+            style={{
+              fontSize: "20px",
+              fontWeight: 500,
+              color: WHITE_DIM,
+              letterSpacing: "0.8px",
+              display: "flex",
+              marginTop: "14px",
+              maxWidth: "960px",
+              textAlign: "center",
+            }}
+          >
+            {metaLine}
+          </div>
+
+          {/* Hook ámbar italic */}
+          <div
+            style={{
+              fontSize: "22px",
+              fontWeight: 500,
+              fontStyle: "italic",
+              color: AMBER,
+              display: "flex",
+              marginTop: "20px",
+              maxWidth: "960px",
+              textAlign: "center",
+            }}
+          >
+            {hook}
+          </div>
+
+          {/* Bottom strip URL */}
           <div
             style={{
               position: "absolute",
-              bottom: "16px",
-              left: "56px",
-              fontSize: "16px",
-              color: "rgba(255,255,255,0.4)",
-              letterSpacing: "1px",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: "76px",
+              background: "rgba(0,0,0,0.35)",
               display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0 40px",
+              borderTop: `2px solid ${AMBER}`,
             }}
           >
-            tripcazador.com
+            <div
+              style={{
+                fontSize: "16px",
+                fontWeight: 600,
+                color: WHITE_DIM,
+                letterSpacing: "2px",
+                display: "flex",
+              }}
+            >
+              EL CAZADOR DE CHOLLOS
+            </div>
+            <div
+              style={{
+                fontSize: "30px",
+                fontWeight: 800,
+                color: AMBER,
+                letterSpacing: "1px",
+                display: "flex",
+              }}
+            >
+              tripcazador.com
+            </div>
+            <div
+              style={{
+                fontSize: "16px",
+                fontWeight: 600,
+                color: WHITE_DIM,
+                display: "flex",
+              }}
+            >
+              @tripcazador
+            </div>
           </div>
         </div>
       </div>
@@ -364,12 +451,8 @@ export async function GET(req: NextRequest) {
       width: 1080,
       height: 1080,
       headers: {
-        // SSS51: cache CDN agresivo para evitar invocaciones serverless caras.
-        // El OG image se rinde solo para cron Instagram + share manual.
-        // Stale-while-revalidate=7d permite servir caché viejo mientras
-        // regeneramos en background — invocations −95% vs antes.
-        "cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800, immutable",
+        "Cache-Control": "public, max-age=3600, immutable",
       },
-    }
+    },
   );
 }

@@ -1,8 +1,10 @@
 name: Instagram auto-publish deals
 
 on:
-  schedule:
-    - cron: "0 */4 * * *"
+  # SSS73: cron pausado mientras rediseñamos el endpoint /api/og/social/post v3.
+  # Reactivar tras verificar que el primer manual run publica el diseño nuevo.
+  # schedule:
+  #   - cron: "0 */4 * * *"
   workflow_dispatch:
 
 concurrency:
