@@ -363,6 +363,14 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
     # Resolve coord (deal.lat/lon → DD°MM' format) — opcional
     coord = _fmt_coord(deal.get("lat"), deal.get("lon"))
 
+    # Fallback photo URL — usar deal.image_url o landmark genérico
+    fallback_photo = (
+        deal.get("image_url")
+        or "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/"
+        "Aerial_view_of_Barcelona_from_helicopter%2C_2014.jpg/1280px-"
+        "Aerial_view_of_Barcelona_from_helicopter%2C_2014.jpg"
+    )
+
     # Args para el generator
     args = [
         sys.executable,
@@ -381,6 +389,7 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
         "--duration-str", _fmt_duration(deal.get("duration_min")),
         "--stops", str(int(deal.get("stops") or 0)),
         "--coord", coord,
+        "--fallback-photo", fallback_photo,
     ]
 
     # Logo path relativo al cwd del runner (root del repo)
