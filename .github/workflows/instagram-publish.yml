@@ -1,11 +1,13 @@
 name: Instagram auto-publish deals
 
+# SSS75 (May 2026): carrusel Canva-style con PIL+cairosvg generado en runtime.
+# Output: 5 PNGs commiteados a ig-assets/{date-slug}/ y servidos via raw GH.
+permissions:
+  contents: write     # Para commitear ig-assets/{slug}/{N}.png
+
 on:
-  # SSS74 (May 2026): cron pausado durante validación del nuevo diseño
-  # Barcelona magazine 5-plate carousel. Reactivar tras smoke verde de
-  # los 5 endpoints + verificación del primer post manual.
-  # schedule:
-  #   - cron: "0 */4 * * *"
+  schedule:
+    - cron: "0 */4 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -14,26 +16,37 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish top deal to Instagram
+    name: Publish top deal to Instagram (Canva carousel)
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # SSS75: cairosvg requiere libcairo + libpango (PIL trae el resto)
+      - name: Install system deps for cairosvg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -q libcairo2 libpango-1.0-0 libpangocairo-1.0-0 fonts-dejavu
+
+      - name: Install Python deps
+        run: |
+          pip install --quiet Pillow cairosvg requests
+
       # SSS65: persistir historial de posts entre runs vía cache.
-      # Permite que el script lea los últimos 2 destinos publicados y
-      # filtre deals para no repetir origen/destino consecutivamente.
       - name: Restore post history cache
         id: history-cache
         uses: actions/cache/restore@v4
         with:
           path: .instagram_post_history.json
           key: ig-post-history-v1-${{ github.run_id }}
-          # Fallback prefix: GH cache picks most recent matching this prefix.
-          # Permite que cada run lea el historial del run anterior.
           restore-keys: |
             ig-post-history-v1-
 
@@ -45,19 +58,14 @@ jobs:
           TG_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           IG_DEDUP_WINDOW: "2"
-          # SSS72: primer arranque debe ser un vuelo bajo 100€ ida+vuelta.
-          # Quitar/relajar después del primer post si quieres también hoteles.
           IG_FILTER_TYPE: "flight"
           IG_MAX_PRICE: "100"
-          # SSS74 (May 2026): activado modo carrusel 5-plate Barcelona magazine.
-          # Slide 1 = /api/og/social/post (hero serif + price panel)
-          # Slides 2-5 = /api/og/social/carousel?slide={places|food|tips|cta}
+          # SSS75: carrusel Canva-style (PIL+cairosvg local + commit a ig-assets/)
           IG_CAROUSEL_MODE: "1"
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
         run: python scripts/instagram_publish_deals.py
 
-      # Save updated history back. cache@save creates a new entry with
-      # the run_id-suffixed key; restore step picks up most recent matching
-      # prefix automatically next run.
       - name: Save post history cache
         if: always()
         uses: actions/cache/save@v4

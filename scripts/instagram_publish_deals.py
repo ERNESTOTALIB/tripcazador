@@ -25,17 +25,23 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import subprocess
 import sys
 import time
 import urllib.parse
 import urllib.request
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 SITE_URL = os.environ.get("SITE_URL", "https://tripcazador.com").rstrip("/")
 IG_USER_ID = os.environ.get("IG_USER_ID", "").strip()
 IG_ACCESS_TOKEN = os.environ.get("IG_ACCESS_TOKEN", "").strip()
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "").strip()
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "").strip()
+GITHUB_REPO = os.environ.get("GITHUB_REPOSITORY", "ERNESTOTALIB/tripcazador").strip()
+GITHUB_REF = os.environ.get("GITHUB_REF_NAME", "main").strip() or "main"
 
 
 def log(msg: str) -> None:
@@ -294,6 +300,162 @@ def publish_carousel_to_instagram(image_urls: list, caption: str) -> Optional[st
     return pub.get("id")
 
 
+def _slugify(s: str) -> str:
+    """Convierte texto a slug seguro para git/path. Quita acentos + lower."""
+    if not s:
+        return "x"
+    s = s.lower().strip()
+    repl = {"á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u", "ñ": "n", "ü": "u"}
+    for k, v in repl.items():
+        s = s.replace(k, v)
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    return s or "x"
+
+
+def _fmt_short_date(d: str) -> str:
+    """ISO date → 'DD MMM' (ej '2026-06-08' → '08 jun')."""
+    if not d:
+        return ""
+    try:
+        dt = datetime.fromisoformat(d[:10])
+    except Exception:
+        return d
+    months = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]
+    return f"{dt.day:02d} {months[dt.month - 1]}"
+
+
+def _fmt_duration(min_total: Optional[int]) -> str:
+    if not min_total or min_total <= 0:
+        return ""
+    h = min_total // 60
+    m = min_total % 60
+    return f"{h} h {m} m" if m else f"{h} h"
+
+
+def _fmt_coord(lat: Optional[float], lon: Optional[float]) -> str:
+    if lat is None or lon is None:
+        return ""
+    def to_deg_min(v: float, pos: str, neg: str) -> str:
+        a = abs(v)
+        d = int(a)
+        mi = round((a - d) * 60)
+        return f"{d}°{mi:02d}′ {pos if v >= 0 else neg}"
+    return f"{to_deg_min(lat, 'N', 'S')} · {to_deg_min(lon, 'E', 'W')}"
+
+
+def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
+    """SSS75: Genera 5 PNGs Canva-style + commit a ig-assets/{slug}/ + raw URLs.
+
+    Devuelve lista de 5 URLs raw.githubusercontent.com (públicas mientras el
+    repo lo siga siendo). Si algo falla devuelve None.
+    """
+    deal_id = str(deal.get("id") or "x")
+    dest_key = (deal.get("destination") or deal.get("city_to") or "").strip()
+    if not dest_key:
+        log("WARN: deal sin destination — no se puede generar carrusel")
+        return None
+
+    # Build slug for path: dealId-shortened (dealIds pueden tener / ó .)
+    safe_id = re.sub(r"[^a-zA-Z0-9_-]+", "-", deal_id)[:48]
+    out_dir = Path(f"/tmp/canva_{safe_id}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Resolve coord (deal.lat/lon → DD°MM' format) — opcional
+    coord = _fmt_coord(deal.get("lat"), deal.get("lon"))
+
+    # Args para el generator
+    args = [
+        sys.executable,
+        str(Path(__file__).parent / "canva_carousel_generator.py"),
+        "--out-dir", str(out_dir),
+        "--dest-key", _slugify(dest_key),
+        "--route-from", str(deal.get("city_from") or deal.get("origin") or "Madrid"),
+        "--route-to", str(deal.get("city_to") or dest_key or "Destino"),
+        "--price", str(int(round(deal.get("price_eur") or 0))),
+        "--old-price", str(int(round((deal.get("price_eur") or 0) + (deal.get("savings_eur") or 0)))),
+        "--savings-pct", str(int(round(deal.get("savings_pct") or 0))),
+        "--date-out", _fmt_short_date(deal.get("date_out") or ""),
+        "--date-ret", _fmt_short_date(deal.get("date_ret") or ""),
+        "--nights", str(int(deal.get("nights") or 0)),
+        "--airline", str(deal.get("airline_name") or deal.get("airline") or ""),
+        "--duration-str", _fmt_duration(deal.get("duration_min")),
+        "--stops", str(int(deal.get("stops") or 0)),
+        "--coord", coord,
+    ]
+
+    # Logo path relativo al cwd del runner (root del repo)
+    logo_path = Path("tripcazador-web/public/logo-a1-primary.svg")
+    if logo_path.exists():
+        args.extend(["--logo-svg", str(logo_path)])
+
+    log(f"Generating carousel via {args[1]} ...")
+    try:
+        result = subprocess.run(args, capture_output=True, text=True, timeout=180)
+    except subprocess.TimeoutExpired:
+        log("ERROR: generator timeout > 180s")
+        return None
+    if result.returncode != 0:
+        log(f"ERROR generator exit {result.returncode}")
+        log(f"  stdout: {result.stdout[-500:]}")
+        log(f"  stderr: {result.stderr[-500:]}")
+        return None
+    log(result.stdout[-500:])
+
+    # Verificar 5 PNGs
+    pngs = [out_dir / f"{i}.png" for i in range(1, 6)]
+    for p in pngs:
+        if not p.exists() or p.stat().st_size < 10000:
+            log(f"ERROR: {p} missing or too small")
+            return None
+
+    # Mover a ig-assets/{date}-{slug}/{N}.png + commit + push
+    date_str = datetime.utcnow().strftime("%Y%m%d-%H%M")
+    asset_slug = f"{date_str}-{safe_id}"
+    asset_dir = Path(f"ig-assets/{asset_slug}")
+    asset_dir.mkdir(parents=True, exist_ok=True)
+    for i, p in enumerate(pngs, start=1):
+        target = asset_dir / f"{i}.png"
+        target.write_bytes(p.read_bytes())
+        log(f"  → {target} ({target.stat().st_size:,} bytes)")
+
+    # Git commit + push
+    try:
+        subprocess.run(["git", "config", "user.email", "ig-publisher@tripcazador.com"], check=True)
+        subprocess.run(["git", "config", "user.name", "TripCazador IG Bot"], check=True)
+        subprocess.run(["git", "add", str(asset_dir)], check=True)
+        # Skip if no diff (re-run idempotency)
+        diff_result = subprocess.run(
+            ["git", "diff", "--staged", "--quiet"], capture_output=True
+        )
+        if diff_result.returncode == 0:
+            log("INFO: no hay cambios staged (idempotente?)")
+        else:
+            subprocess.run(
+                ["git", "commit", "-m", f"chore(ig): carousel {asset_slug} [skip ci]"],
+                check=True,
+            )
+            for attempt in range(3):
+                pull = subprocess.run(["git", "pull", "--rebase", "origin", GITHUB_REF])
+                push = subprocess.run(["git", "push", "origin", f"HEAD:{GITHUB_REF}"])
+                if push.returncode == 0:
+                    log(f"✅ pushed {asset_slug} (attempt {attempt+1})")
+                    break
+                log(f"⚠️ push failed attempt {attempt+1}, retrying...")
+                time.sleep(3)
+            else:
+                log("ERROR: push failed 3 attempts")
+                return None
+    except subprocess.CalledProcessError as e:
+        log(f"ERROR git: {e}")
+        return None
+
+    # Build raw URLs
+    base = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_REF}/ig-assets/{asset_slug}"
+    urls = [f"{base}/{i}.png" for i in range(1, 6)]
+    log(f"✅ 5 raw URLs ready under {base}")
+    return urls
+
+
 def echo_telegram(deal: Dict[str, Any], post_id: str) -> None:
     """Notifica en Telegram channel que se publicÃ³ nuevo post Instagram"""
     if not TG_BOT_TOKEN or not TG_CHAT_ID:
@@ -424,22 +586,30 @@ def main() -> int:
     caption = caption_for(deal)
     log(f"Caption preview: {caption[:140]}...")
 
-    # SSS74 (May 2026): carrusel Barcelona magazine 5 plates.
-    #   Plate I:   /api/og/social/post (hero serif + price panel)
-    #   Plate II:  carousel?slide=places (lugar nº 1 — torn paper)
-    #   Plate III: carousel?slide=food   (qué comer)
-    #   Plate IV:  carousel?slide=tips   (tip local de ahorro)
-    #   Plate V:   carousel?slide=cta    (cierre)
+    # SSS75 (May 2026): carrusel Barcelona magazine generado por Python
+    # con PIL+cairosvg (canva_carousel_generator.py + canva_landmarks.py).
+    # Output: 5 PNGs commiteados a ig-assets/{deal_id}/{1..5}.png en repo,
+    # servidos via raw.githubusercontent.com (público mientras el repo lo sea).
     if os.environ.get("IG_CAROUSEL_MODE") == "1":
-        deal_qid = urllib.parse.quote(deal.get("id", ""))
-        slide1 = f"{SITE_URL}/api/og/social/post?dealId={deal_qid}"
-        slide2 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=places"
-        slide3 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=food"
-        slide4 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=tips"
-        slide5 = f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=cta"
-        slides = [slide1, slide2, slide3, slide4, slide5]
-        log(f"CAROUSEL MODE: {len(slides)} slides")
-        post_id = publish_carousel_to_instagram(slides, caption)
+        try:
+            slides = generate_and_upload_carousel(deal)
+            if slides and len(slides) == 5:
+                log(f"CAROUSEL MODE: {len(slides)} slides Canva-rendered")
+                post_id = publish_carousel_to_instagram(slides, caption)
+            else:
+                log(f"WARN: generator returned {len(slides) if slides else 0} slides — fallback Vercel endpoint")
+                deal_qid = urllib.parse.quote(deal.get("id", ""))
+                slides = [
+                    f"{SITE_URL}/api/og/social/post?dealId={deal_qid}",
+                    f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=places",
+                    f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=food",
+                    f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=tips",
+                    f"{SITE_URL}/api/og/social/carousel?dealId={deal_qid}&slide=cta",
+                ]
+                post_id = publish_carousel_to_instagram(slides, caption)
+        except Exception as e:
+            log(f"ERROR generating carousel via Python: {e}")
+            return 1
     else:
         post_id = publish_to_instagram(image_url, caption)
     if post_id:
