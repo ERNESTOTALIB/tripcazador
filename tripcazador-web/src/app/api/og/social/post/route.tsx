@@ -8,21 +8,19 @@ export const runtime = "edge";
 /**
  * /api/og/social/post?dealId=X — fase SSS73 (May 2026)
  *
- * Diseño v3 oficial (radar A1 + foto destino real + price hero + Taganga inspired).
- * Sustituye al diseño SSS40 (gradient sunset + emoji genérico) que se publicó
- * por error en el primer post de IG.
+ * Diseño v3.1 — versión simplificada para Edge runtime / Satori.
+ *
+ * v3.0 inicial fallaba con body vacío (Satori no soporta SVG con
+ * paths/transforms ni `inset: 0` ni `<img>` con position absolute).
  *
  * Estructura 1080×1080:
- *   - Top 55% (594px): foto destino real full-bleed (dest_images Unsplash)
- *     + overlay gradient navy bottom + logo radar A1 esquina TL
- *     + eyebrow "PLATE I · CHOLLO" TL + coord TR
- *     + city name overlay BL (gigante)
+ *   - Top 55% (594px): foto destino full-bleed via background-image
+ *     + overlay gradient navy bottom + chip eyebrow + city name BL
  *   - Bottom 45% (486px): panel navy editorial
  *     + "DESDE" eyebrow ámbar + precio 220px ámbar bold
- *     + ruta "Basilea → Palma de Mallorca" serif bold
- *     + meta line: aerolínea · IDA + VUELTA · noches · duración
- *     + hook frase ámbar italic
- *   - Bottom strip 80px: tripcazador.com ámbar bold center
+ *     + ruta "Origen → Destino" + meta line (IDA+VUELTA fix vs SSS40)
+ *     + hook ámbar italic
+ *   - Bottom strip 76px: tripcazador.com ámbar bold center
  *
  * Bug fix vs SSS40: si deal tiene date_ret, mostrar "IDA + VUELTA" no "VUELO IDA".
  *
@@ -104,7 +102,7 @@ export async function GET(req: NextRequest) {
   else if (durationStr) metaParts.push(`${stops} ${stops === 1 ? "escala" : "escalas"} · ${durationStr}`);
   const metaLine = metaParts.join(" · ");
 
-  // Hook frase: si ida+vuelta y duración corta = "¿Listo para que en X estés en Y?"
+  // Hook frase
   let hook = "";
   if (durationStr && stops === 0) {
     hook = `¿Listo para que en ${durationStr} estés en ${route.to}?`;
@@ -127,147 +125,117 @@ export async function GET(req: NextRequest) {
           display: "flex",
           flexDirection: "column",
           background: NAVY,
-          fontFamily: "Inter, system-ui, sans-serif",
+          fontFamily: "system-ui, sans-serif",
         }}
       >
-        {/* ─── TOP 55% — FOTO DESTINO + OVERLAYS ─── */}
+        {/* ─── TOP 55% — FOTO DESTINO ─── */}
         <div
           style={{
             width: "1080px",
             height: "594px",
-            position: "relative",
             display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            backgroundImage: `linear-gradient(180deg, rgba(10,21,48,0.15) 0%, rgba(10,21,48,0.0) 30%, rgba(10,21,48,0.55) 80%, rgba(10,21,48,0.95) 100%), url(${photoUrl})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            padding: "32px 44px 36px 44px",
           }}
         >
-          {/* Foto destino full-bleed */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={photoUrl}
-            alt={dest.alt}
-            width={1080}
-            height={594}
-            style={{
-              width: "1080px",
-              height: "594px",
-              objectFit: "cover",
-              position: "absolute",
-              inset: 0,
-            }}
-          />
-
-          {/* Gradient overlay navy bottom para asegurar contraste con city name */}
+          {/* Top row: brand badge + savings chip */}
           <div
             style={{
-              position: "absolute",
-              inset: 0,
-              background: "linear-gradient(180deg, rgba(10,21,48,0.15) 0%, rgba(10,21,48,0.0) 30%, rgba(10,21,48,0.0) 55%, rgba(10,21,48,0.85) 100%)",
               display: "flex",
-            }}
-          />
-
-          {/* Logo radar A1 inline (esquina TL) */}
-          <div
-            style={{
-              position: "absolute",
-              top: "32px",
-              left: "32px",
-              width: "120px",
-              height: "120px",
-              borderRadius: "20px",
-              background: NAVY,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              width: "100%",
             }}
           >
-            {/* SVG radar simplificado — 3 anillos + sweep + plane */}
-            <svg
-              width="100"
-              height="100"
-              viewBox="0 0 100 100"
-              xmlns="http://www.w3.org/2000/svg"
+            {/* Brand badge — text only (no SVG, Edge-safe) */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                padding: "14px 22px",
+                background: "rgba(10,21,48,0.85)",
+                borderRadius: "16px",
+                borderLeft: `4px solid ${AMBER}`,
+              }}
             >
-              {/* Anillos punteados */}
-              <circle cx="50" cy="44" r="36" fill="none" stroke={AMBER} strokeWidth="1.5" strokeDasharray="2 4" opacity="0.55" />
-              <circle cx="50" cy="44" r="24" fill="none" stroke={AMBER} strokeWidth="1.2" strokeDasharray="1 4" opacity="0.5" />
-              <circle cx="50" cy="44" r="12" fill="none" stroke={AMBER} strokeWidth="1" opacity="0.4" />
-              {/* Sweep line */}
-              <line x1="50" y1="44" x2="76" y2="22" stroke={AMBER} strokeWidth="2" strokeLinecap="round" />
-              {/* Avión silueta simple ámbar rotado */}
-              <g transform="translate(50,44) rotate(-30)">
-                <path d="M -16,-2 L 18,-2 L 14,-5 L 0,-5 L -10,-12 L -14,-5 L -16,-2 Z" fill={AMBER} />
-                <circle cx="-1" cy="-1" r="1.5" fill={NAVY} />
-              </g>
-              {/* Tag TRIP/CAZADOR mini */}
-              <text x="50" y="92" textAnchor="middle" fontSize="9" fontWeight="800" fill={WHITE_DIM} letterSpacing="0.5">TRIP</text>
-              <text x="50" y="100" textAnchor="middle" fontSize="6" fontWeight="700" fill={AMBER} letterSpacing="1">CAZADOR</text>
-            </svg>
+              <div
+                style={{
+                  fontSize: "22px",
+                  fontWeight: 900,
+                  color: "#fff",
+                  letterSpacing: "1px",
+                  display: "flex",
+                  lineHeight: 1,
+                }}
+              >
+                TRIPCAZADOR
+              </div>
+              <div
+                style={{
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  color: AMBER,
+                  letterSpacing: "3px",
+                  marginTop: "4px",
+                  display: "flex",
+                  lineHeight: 1,
+                }}
+              >
+                · RADAR DE CHOLLOS ·
+              </div>
+            </div>
+
+            {/* Savings chip */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                padding: "12px 22px",
+                background: AMBER,
+                borderRadius: "999px",
+                fontSize: "20px",
+                fontWeight: 900,
+                color: NAVY,
+                letterSpacing: "1px",
+              }}
+            >
+              −{savingsPct}% CHOLLO
+            </div>
           </div>
 
-          {/* Eyebrow top — chip pill */}
+          {/* Bottom row: city name big */}
           <div
             style={{
-              position: "absolute",
-              top: "52px",
-              left: "176px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              padding: "10px 18px",
-              background: "rgba(10,21,48,0.78)",
-              borderRadius: "999px",
-              fontSize: "16px",
-              fontWeight: 700,
-              color: AMBER,
-              letterSpacing: "2.5px",
-            }}
-          >
-            CHOLLO DETECTADO · −{savingsPct}%
-          </div>
-
-          {/* Coord top-right */}
-          <div
-            style={{
-              position: "absolute",
-              top: "52px",
-              right: "32px",
-              display: "flex",
-              alignItems: "center",
-              padding: "10px 18px",
-              background: "rgba(10,21,48,0.78)",
-              borderRadius: "999px",
-              fontSize: "14px",
-              fontWeight: 600,
-              color: WHITE_DIM,
-              letterSpacing: "1.5px",
-              fontFamily: "ui-monospace, monospace",
-            }}
-          >
-            {route.to.toUpperCase()}
-          </div>
-
-          {/* City name overlay big BL */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "44px",
-              left: "44px",
-              right: "44px",
               display: "flex",
               flexDirection: "column",
-              gap: "8px",
+              gap: "6px",
+              width: "100%",
             }}
           >
             <div
               style={{
-                fontSize: "84px",
+                fontSize: "20px",
+                fontWeight: 700,
+                color: AMBER,
+                letterSpacing: "5px",
+                display: "flex",
+              }}
+            >
+              CHOLLO DETECTADO
+            </div>
+            <div
+              style={{
+                fontSize: "92px",
                 fontWeight: 900,
                 color: "#fff",
                 lineHeight: 1,
-                letterSpacing: "-2px",
+                letterSpacing: "-3px",
                 display: "flex",
-                textShadow: "0 2px 12px rgba(0,0,0,0.4)",
               }}
             >
               {route.to}
@@ -279,9 +247,10 @@ export async function GET(req: NextRequest) {
                 color: WHITE_DIM,
                 fontStyle: "italic",
                 display: "flex",
+                marginTop: "4px",
               }}
             >
-              Cazado por nuestro radar · cinco días en el mediterráneo
+              cazado por nuestro radar — desde {route.from}
             </div>
           </div>
         </div>
@@ -295,9 +264,7 @@ export async function GET(req: NextRequest) {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            paddingTop: "32px",
-            paddingBottom: "0px",
-            position: "relative",
+            paddingTop: "30px",
             borderTop: `4px solid ${AMBER}`,
           }}
         >
@@ -309,7 +276,6 @@ export async function GET(req: NextRequest) {
               color: AMBER,
               letterSpacing: "5px",
               display: "flex",
-              marginBottom: "4px",
             }}
           >
             DESDE
@@ -318,13 +284,13 @@ export async function GET(req: NextRequest) {
           {/* Precio MEGA */}
           <div
             style={{
-              fontSize: "220px",
+              fontSize: "210px",
               fontWeight: 900,
               color: AMBER,
               lineHeight: 0.95,
               letterSpacing: "-6px",
               display: "flex",
-              fontFamily: "Inter, system-ui, sans-serif",
+              marginTop: "4px",
             }}
           >
             {price}€
@@ -338,8 +304,8 @@ export async function GET(req: NextRequest) {
                 color: "#9ca3af",
                 textDecoration: "line-through",
                 display: "flex",
-                marginTop: "-8px",
-                marginBottom: "10px",
+                marginTop: "4px",
+                marginBottom: "4px",
               }}
             >
               antes {oldPrice}€  ·  ahorras {oldPrice - price}€
@@ -349,17 +315,16 @@ export async function GET(req: NextRequest) {
           {/* Ruta */}
           <div
             style={{
-              fontSize: "44px",
+              fontSize: "40px",
               fontWeight: 700,
               color: "#fff",
               display: "flex",
               alignItems: "center",
-              gap: "16px",
-              marginTop: oldPrice > price ? "0" : "12px",
+              marginTop: "10px",
             }}
           >
             <span style={{ display: "flex" }}>{route.from}</span>
-            <span style={{ display: "flex", color: AMBER, fontSize: "36px" }}>→</span>
+            <span style={{ display: "flex", color: AMBER, fontSize: "34px", margin: "0 16px" }}>→</span>
             <span style={{ display: "flex" }}>{route.to}</span>
           </div>
 
@@ -369,9 +334,9 @@ export async function GET(req: NextRequest) {
               fontSize: "20px",
               fontWeight: 500,
               color: WHITE_DIM,
-              letterSpacing: "0.8px",
+              letterSpacing: "0.5px",
               display: "flex",
-              marginTop: "14px",
+              marginTop: "12px",
               maxWidth: "960px",
               textAlign: "center",
             }}
@@ -387,7 +352,7 @@ export async function GET(req: NextRequest) {
               fontStyle: "italic",
               color: AMBER,
               display: "flex",
-              marginTop: "20px",
+              marginTop: "16px",
               maxWidth: "960px",
               textAlign: "center",
             }}
@@ -395,13 +360,11 @@ export async function GET(req: NextRequest) {
             {hook}
           </div>
 
-          {/* Bottom strip URL */}
+          {/* Bottom URL strip — flex spacer pushes to bottom */}
+          <div style={{ flex: 1, display: "flex" }} />
           <div
             style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
+              width: "1080px",
               height: "76px",
               background: "rgba(0,0,0,0.35)",
               display: "flex",
@@ -451,7 +414,7 @@ export async function GET(req: NextRequest) {
       width: 1080,
       height: 1080,
       headers: {
-        "Cache-Control": "public, max-age=3600, immutable",
+        "Cache-Control": "public, max-age=300",
       },
     },
   );
