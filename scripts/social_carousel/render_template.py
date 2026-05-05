@@ -1,30 +1,38 @@
 #!/usr/bin/env python3
 """
-SSS64 — Canva carousel v2 — Taganga-style torn-paper plates.
+SSS66 — Canva carousel v3 — incluye logo radar A1 oficial.
 
-Plate 1: editorial cartographic hero with PROMINENT 79€ price panel
-         (like first proposal — price is the star)
-Plates 2-5: Taganga template style — full-bleed photo + center torn-paper
-         card with cursive title + descriptive paragraph below
+Cambios vs v2:
+- Pre-renderiza logo-a1-primary.svg → 200px PNG en /tmp
+- Plate 1: logo radar grande arriba a la izquierda + wordmark en el footer strip
+- Plates 2-5: logo radar pequeño en el bottom strip junto al wordmark
+- Mantenemos toda la lógica de Taganga + price hero
 """
 from io import BytesIO
 from pathlib import Path
 import random
 import requests
+import cairosvg
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 OUT = Path("/sessions/laughing-modest-bohr/mnt/Viajes/canva_propuesta_barcelona")
 OUT.mkdir(parents=True, exist_ok=True)
+
+LOGO_SVG = Path(
+    "/sessions/laughing-modest-bohr/mnt/Viajes/tripcazador-web/public/"
+    "logo-a1-primary.svg"
+)
+LOGO_PNG_SMALL = Path("/tmp/tripcazador_logo_120.png")
+LOGO_PNG_MED = Path("/tmp/tripcazador_logo_240.png")
 
 # Brand palette
 NAVY = (10, 21, 48)
 AMBER = (251, 191, 36)
 WHITE = (255, 255, 255)
 WHITE_DIM = (235, 235, 235)
-TERRACOTTA = (200, 60, 50)              # red script color (matches Taganga)
-PAPER = (250, 248, 243)                 # warm off-white paper
+TERRACOTTA = (200, 60, 50)
+PAPER = (250, 248, 243)
 
-# Fonts available locally
 F_SERIF = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
 F_SERIF_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
 F_SERIF_ITAL = "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Italic.ttf"
@@ -35,12 +43,9 @@ F_SANS_MONO = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 
 W = H = 1080
 
-# Verified Wikimedia Commons URLs — files actually depict the location.
-# (Searched via Commons API + filename inspection.)
 PHOTOS = {
     "sagrada": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Exterior_of_the_Sagrada_Fam%C3%ADlia.jpg/1280px-Exterior_of_the_Sagrada_Fam%C3%ADlia.jpg",
     "guell":   "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Barcelona_Parc_G%C3%BCell_el_drac.jpg/1280px-Barcelona_Parc_G%C3%BCell_el_drac.jpg",
-    "guell_alt": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Barcelona_parc_G%C3%BCell_la_placa_benches.jpg/1280px-Barcelona_parc_G%C3%BCell_la_placa_benches.jpg",
     "batllo":  "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Casa_Batll%C3%B3_01.jpg/1280px-Casa_Batll%C3%B3_01.jpg",
     "born":    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Tapas_in_Barcelona_02.jpg/1280px-Tapas_in_Barcelona_02.jpg",
     "barceloneta": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Promenade_and_beach%2C_Platja_de_la_Barceloneta%2C_Barcelona%2C_2015.jpg/1280px-Promenade_and_beach%2C_Platja_de_la_Barceloneta%2C_Barcelona%2C_2015.jpg",
@@ -49,13 +54,41 @@ PHOTOS = {
 UA_HEADERS = {"User-Agent": "TripCazador/1.0 (contacto@tripcazador.com)"}
 
 
+def ensure_logo_pngs() -> None:
+    """Pre-render the radar SVG to two PNG sizes (cached in /tmp)."""
+    svg_bytes = LOGO_SVG.read_bytes()
+    if not LOGO_PNG_SMALL.exists():
+        cairosvg.svg2png(
+            bytestring=svg_bytes,
+            write_to=str(LOGO_PNG_SMALL),
+            output_width=120,
+            output_height=120,
+        )
+    if not LOGO_PNG_MED.exists():
+        cairosvg.svg2png(
+            bytestring=svg_bytes,
+            write_to=str(LOGO_PNG_MED),
+            output_width=240,
+            output_height=240,
+        )
+
+
+def paste_logo(img: Image.Image, x: int, y: int, size: int) -> Image.Image:
+    """Paste the radar logo (with rounded square navy bg) at (x, y) size×size."""
+    src = LOGO_PNG_MED if size > 140 else LOGO_PNG_SMALL
+    logo = Image.open(src).convert("RGBA")
+    if logo.size[0] != size:
+        logo = logo.resize((size, size), Image.LANCZOS)
+    img_rgba = img.convert("RGBA")
+    img_rgba.paste(logo, (x, y), logo)
+    return img_rgba.convert("RGB")
+
+
 def fetch(key_or_url, w=W, h=H):
-    """Fetch from URL (Wikimedia direct) and resize to w×h centered."""
     url = key_or_url if key_or_url.startswith("http") else PHOTOS[key_or_url]
     r = requests.get(url, headers=UA_HEADERS, timeout=30)
     r.raise_for_status()
     img = Image.open(BytesIO(r.content)).convert("RGB")
-    # Center-crop + resize to target dims
     src_w, src_h = img.size
     target_ratio = w / h
     src_ratio = src_w / src_h
@@ -81,10 +114,8 @@ def text_h(draw, text, font):
 
 
 def wrap_text(text, font, max_width, draw):
-    """Word-wrap into lines fitting max_width pixels."""
     words = text.split()
-    lines = []
-    cur = []
+    lines, cur = [], []
     for w_ in words:
         trial = " ".join(cur + [w_])
         if text_w(draw, trial, font) <= max_width:
@@ -99,10 +130,8 @@ def wrap_text(text, font, max_width, draw):
 
 
 def torn_paper_polygon(card_x, card_y, card_w, card_h, jitter=14, n=26, seed=7):
-    """Generate jagged top + bottom polygon points for torn-paper effect."""
     random.seed(seed)
-    top_pts = []
-    bot_pts = []
+    top_pts, bot_pts = [], []
     for i in range(n + 1):
         t = i / n
         x = card_x + int(t * card_w)
@@ -114,7 +143,6 @@ def torn_paper_polygon(card_x, card_y, card_w, card_h, jitter=14, n=26, seed=7):
 
 
 def add_drop_shadow(img, card_x, card_y, card_w, card_h, blur=18, alpha=80):
-    """Add soft drop shadow under the card area."""
     shadow = Image.new("RGBA", (card_w + 80, card_h + 80), (0, 0, 0, 0))
     sdraw = ImageDraw.Draw(shadow)
     sdraw.rectangle((40, 40, card_w + 40, card_h + 40), fill=(0, 0, 0, alpha))
@@ -125,12 +153,10 @@ def add_drop_shadow(img, card_x, card_y, card_w, card_h, blur=18, alpha=80):
 
 
 def torn_paper_card(img, card_x, card_y, card_w, card_h, seed=7):
-    """Render torn-paper card with drop shadow on top of img. Returns img."""
     img = add_drop_shadow(img, card_x, card_y, card_w, card_h, blur=20, alpha=85)
     draw = ImageDraw.Draw(img, "RGBA")
     polygon = torn_paper_polygon(card_x, card_y, card_w, card_h, jitter=12, n=24, seed=seed)
     draw.polygon(polygon, fill=PAPER)
-    # Subtle paper-grain edge
     draw.polygon(polygon, outline=(220, 215, 205), width=1)
     return img
 
@@ -148,31 +174,24 @@ def draw_corner_marks(draw, color=AMBER, size=35, margin=42):
             draw.line([(cx, cy - size), (cx, cy)], fill=color, width=3)
 
 
-# ─── PLATE 1 — EDITORIAL HERO WITH PROMINENT PRICE ────────────────
+# ─── PLATE 1 — EDITORIAL HERO WITH LOGO + PROMINENT PRICE ───────────
 
 
 def plate_1_hero():
-    """5 vertical strips of Barcelona landmarks + amber massive price panel."""
-    # Build background from 5 strips (one per landmark) — covers what the
-    # carousel will showcase, and gives the Canva-template variety effect.
     strip_keys = ["sagrada", "guell", "batllo", "born", "barceloneta"]
     n = len(strip_keys)
     strip_w = W // n
     bg = Image.new("RGB", (W, H), NAVY)
     for i, key in enumerate(strip_keys):
-        # Fetch each landmark wider than strip so we can crop center
         photo = fetch(key, w=strip_w + 100, h=H)
-        # Center-crop to strip_w
         offset = ((strip_w + 100) - strip_w) // 2
         photo = photo.crop((offset, 0, offset + strip_w, H))
         bg.paste(photo, (i * strip_w, 0))
-    # Subtle 1px white separators between strips
     sdraw = ImageDraw.Draw(bg)
     for i in range(1, n):
         x = i * strip_w
         sdraw.line([(x, 0), (x, H)], fill=(255, 255, 255), width=1)
     bg = bg.filter(ImageFilter.GaussianBlur(radius=0.5))
-    # Stronger bottom darkening so price panel pops
     base = bg.convert("RGBA")
     grad = Image.new("RGBA", base.size, (0, 0, 0, 0))
     gdraw = ImageDraw.Draw(grad)
@@ -182,82 +201,63 @@ def plate_1_hero():
         gdraw.line([(0, y), (W, y)], fill=(10, 21, 48, a))
     base.alpha_composite(grad)
     img = base.convert("RGB")
-    draw = ImageDraw.Draw(img, "RGBA")
 
+    # ── LOGO RADAR — ARRIBA IZQUIERDA, MEDIANO ──
+    img = paste_logo(img, x=50, y=50, size=140)
+
+    draw = ImageDraw.Draw(img, "RGBA")
     draw_corner_marks(draw, AMBER, 35, 42)
 
-    # Header label
+    # Plate label — desplazado a la derecha del logo
     fnt_label = ImageFont.truetype(F_SANS_MONO, 18)
-    draw.text((75, 70), "PLATE  I  ·  CHOLLO  DETECTADO", font=fnt_label, fill=AMBER)
-    coord = "41°24′ N · 02°10′ E"
-    fnt_coord = ImageFont.truetype(F_SANS_MONO, 18)
-    cw = text_w(draw, coord, fnt_coord)
-    draw.text((W - 75 - cw, 70), coord, font=fnt_coord, fill=WHITE_DIM)
+    draw.text((210, 78), "PLATE  I  ·  CHOLLO  DETECTADO", font=fnt_label, fill=AMBER)
+    draw.text((210, 110), "BARCELONA  ·  41°24′ N · 02°10′ E", font=fnt_label, fill=WHITE_DIM)
 
-    # City name
+    # City name (aligned center, started slightly lower since logo took top space)
     fnt_city = ImageFont.truetype(F_SERIF_BOLD, 110)
     city = "BARCELONA"
     tw = text_w(draw, city, fnt_city)
-    draw.text(((W - tw) // 2, 200), city, font=fnt_city, fill=WHITE)
+    draw.text(((W - tw) // 2, 230), city, font=fnt_city, fill=WHITE)
 
     fnt_sub = ImageFont.truetype(F_SERIF_ITAL, 28)
     sub = "Cinco lugares imprescindibles · y un precio cazado que lo paga todo"
     sw = text_w(draw, sub, fnt_sub)
-    # If too wide for canvas margins, drop a notch
     while sw > W - 80:
         size = fnt_sub.size - 2
         if size < 22:
             break
         fnt_sub = ImageFont.truetype(F_SERIF_ITAL, size)
         sw = text_w(draw, sub, fnt_sub)
-    draw.text(((W - sw) // 2, 335), sub, font=fnt_sub, fill=WHITE_DIM)
+    draw.text(((W - sw) // 2, 365), sub, font=fnt_sub, fill=WHITE_DIM)
 
-    # ── BIG PRICE PANEL — amber with navy interior, prominent ──
-    panel_x, panel_y, panel_w, panel_h = 80, 430, W - 160, 430
-    # Solid navy panel
+    # ── BIG PRICE PANEL ──
+    panel_x, panel_y, panel_w, panel_h = 80, 450, W - 160, 430
     panel = Image.new("RGBA", (panel_w, panel_h), (10, 21, 48, 245))
     img_rgba = img.convert("RGBA")
     img_rgba.paste(panel, (panel_x, panel_y), panel)
     img = img_rgba.convert("RGB")
     draw = ImageDraw.Draw(img, "RGBA")
-    # Thick amber border
     draw.rectangle(
         [(panel_x, panel_y), (panel_x + panel_w, panel_y + panel_h)],
         outline=AMBER, width=6,
     )
 
-    # "DESDE" small label
     fnt_label2 = ImageFont.truetype(F_SANS_BOLD, 22)
     draw.text(
         (panel_x + (panel_w - text_w(draw, "DESDE", fnt_label2)) // 2, panel_y + 28),
-        "DESDE",
-        font=fnt_label2,
-        fill=AMBER,
+        "DESDE", font=fnt_label2, fill=AMBER,
     )
 
-    # MASSIVE 79€ — the star
     fnt_price = ImageFont.truetype(F_SERIF_BOLD, 230)
     price = "79€"
     pw = text_w(draw, price, fnt_price)
-    draw.text(
-        ((W - pw) // 2, panel_y + 60),
-        price,
-        font=fnt_price,
-        fill=AMBER,
-    )
+    draw.text(((W - pw) // 2, panel_y + 60), price, font=fnt_price, fill=AMBER)
 
-    # Route below price
     fnt_route = ImageFont.truetype(F_SERIF_BOLD, 38)
     route = "Múnich  →  Barcelona"
     rw = text_w(draw, route, fnt_route)
-    draw.text(
-        ((W - rw) // 2, panel_y + 295),
-        route,
-        font=fnt_route,
-        fill=WHITE,
-    )
+    draw.text(((W - rw) // 2, panel_y + 295), route, font=fnt_route, fill=WHITE)
 
-    # Meta line — IDA + VUELTA + duración
     fnt_meta = ImageFont.truetype(F_SANS, 19)
     meta = "VUELING  ·  IDA 08 jun  →  VUELTA 12 jun  ·  4 noches  ·  directo  2 h 15 m"
     mw = text_w(draw, meta, fnt_meta)
@@ -266,14 +266,8 @@ def plate_1_hero():
         if size < 14: break
         fnt_meta = ImageFont.truetype(F_SANS, size)
         mw = text_w(draw, meta, fnt_meta)
-    draw.text(
-        ((W - mw) // 2, panel_y + 348),
-        meta,
-        font=fnt_meta,
-        fill=WHITE_DIM,
-    )
+    draw.text(((W - mw) // 2, panel_y + 348), meta, font=fnt_meta, fill=WHITE_DIM)
 
-    # Hook phrase — italic amber, debajo de la meta line
     fnt_hook = ImageFont.truetype(F_SERIF_ITAL, 22)
     hook = "¿Listo para que en 2 h 15 m estés conociendo 5 lugares increíbles?"
     hw = text_w(draw, hook, fnt_hook)
@@ -282,82 +276,59 @@ def plate_1_hero():
         if size < 16: break
         fnt_hook = ImageFont.truetype(F_SERIF_ITAL, size)
         hw = text_w(draw, hook, fnt_hook)
-    draw.text(
-        ((W - hw) // 2, panel_y + 388),
-        hook,
-        font=fnt_hook,
-        fill=AMBER,
-    )
+    draw.text(((W - hw) // 2, panel_y + 388), hook, font=fnt_hook, fill=AMBER)
 
-    # Bottom footer with brand
-    # Bottom strip navy con URL prominente — más visibilidad
-    strip_h = 100
+    # ── BOTTOM STRIP — logo small + URL central ──
+    strip_h = 110
     strip_y = H - strip_h
     draw.rectangle([(0, strip_y), (W, H)], fill=(10, 21, 48, 240))
     draw.rectangle([(0, strip_y - 4), (W, strip_y)], fill=AMBER)
 
-    # Brand left
-    fnt_brand = ImageFont.truetype(F_SANS_BOLD, 30)
-    draw.text((60, strip_y + 18), "Trip", font=fnt_brand, fill=AMBER)
-    tw_trip = text_w(draw, "Trip", fnt_brand)
-    draw.text((60 + tw_trip, strip_y + 18), "Cazador", font=fnt_brand, fill=WHITE)
+    # logo small en strip izquierda
+    img = paste_logo(img, x=40, y=strip_y + 12, size=86)
+    draw = ImageDraw.Draw(img, "RGBA")
 
-    # URL center — protagonista
-    fnt_url = ImageFont.truetype(F_SANS_BOLD, 32)
+    # URL centered protagonista
+    fnt_url = ImageFont.truetype(F_SANS_BOLD, 36)
     url = "tripcazador.com"
     uw = text_w(draw, url, fnt_url)
-    draw.text(((W - uw) // 2, strip_y + 16), url, font=fnt_url, fill=AMBER)
+    draw.text(((W - uw) // 2, strip_y + 30), url, font=fnt_url, fill=AMBER)
 
-    # Sub URL: handle + desliza right
+    # @handle + desliza right
     fnt_handle = ImageFont.truetype(F_SANS, 17)
     handle = "@tripcazador  ·  desliza  →"
-    hw = text_w(draw, handle, fnt_handle)
-    draw.text((W - 60 - hw, strip_y + 65), handle, font=fnt_handle, fill=WHITE_DIM)
+    hh_w = text_w(draw, handle, fnt_handle)
+    draw.text((W - 50 - hh_w, strip_y + 75), handle, font=fnt_handle, fill=WHITE_DIM)
 
-    # Tagline left below brand
+    # Tagline left below logo
     fnt_tagline = ImageFont.truetype(F_SANS, 13)
-    draw.text((60, strip_y + 65), "EL CAZADOR DE CHOLLOS", font=fnt_tagline, fill=WHITE_DIM)
+    draw.text((140, strip_y + 75), "EL CAZADOR DE CHOLLOS", font=fnt_tagline, fill=WHITE_DIM)
 
     img.save(OUT / "1_hero_sagrada.png", "PNG", quality=95)
-    print("✓ Plate 1 (editorial price hero) saved")
+    print("✓ Plate 1 (hero + radar logo) saved")
 
 
-# ─── PLATES 2-5 — TAGANGA STYLE: full-bleed + torn paper card ──────
+# ─── PLATES 2-5 — TAGANGA STYLE + LOGO EN STRIP ─────────────────
 
 
-def taganga_plate(
-    plate_num: int,
-    photo_key: str,
-    title: str,
-    description: str,
-    label_top: str,
-    coord: str,
-    filename: str,
-    seed: int = 7,
-):
-    """Full-bleed photo + center torn-paper card with cursive title + paragraph."""
+def taganga_plate(plate_num, photo_key, title, description, label_top, coord, filename, seed=7):
     bg = fetch(PHOTOS[photo_key])
     img = bg.convert("RGB")
 
-    # Subtle vignette / saturation lift to make photo pop
     enhancer_img = img.convert("RGBA")
-    # Light overall tint to balance contrast
     tint = Image.new("RGBA", img.size, (10, 21, 48, 30))
     enhancer_img.alpha_composite(tint)
     img = enhancer_img.convert("RGB")
 
     draw = ImageDraw.Draw(img, "RGBA")
 
-    # Top-left tiny label + top-right coord (small, unobtrusive)
     fnt_label = ImageFont.truetype(F_SANS_MONO, 14)
-    # Label background semi-transparent navy pill
     label_pill_pad = 12
     lw = text_w(draw, label_top, fnt_label)
     pill_x, pill_y = 50, 50
     draw.rounded_rectangle(
         [(pill_x, pill_y), (pill_x + lw + label_pill_pad * 2, pill_y + 32)],
-        radius=16,
-        fill=(10, 21, 48, 200),
+        radius=16, fill=(10, 21, 48, 200),
     )
     draw.text((pill_x + label_pill_pad, pill_y + 8), label_top, font=fnt_label, fill=AMBER)
 
@@ -365,44 +336,33 @@ def taganga_plate(
     pill_rx = W - 50 - cw - label_pill_pad * 2
     draw.rounded_rectangle(
         [(pill_rx, pill_y), (W - 50, pill_y + 32)],
-        radius=16,
-        fill=(10, 21, 48, 200),
+        radius=16, fill=(10, 21, 48, 200),
     )
     draw.text((pill_rx + label_pill_pad, pill_y + 8), coord, font=fnt_label, fill=WHITE_DIM)
 
-    # ── TORN PAPER CARD CENTERED ──
+    # ── TORN PAPER CARD ──
     card_w = 820
     card_h = 320
     card_x = (W - card_w) // 2
-    card_y = (H - card_h) // 2 - 30  # slightly above center
+    card_y = (H - card_h) // 2 - 30
 
     img = torn_paper_card(img, card_x, card_y, card_w, card_h, seed=seed)
     draw = ImageDraw.Draw(img, "RGBA")
 
-    # Title — bold italic serif (mimicking script feel)
     fnt_title = ImageFont.truetype(F_SERIF_BOLD_ITAL, 64)
-    # If too wide, scale down
     while text_w(draw, title, fnt_title) > card_w - 80:
         size = fnt_title.size - 4
-        if size < 38:
-            break
+        if size < 38: break
         fnt_title = ImageFont.truetype(F_SERIF_BOLD_ITAL, size)
     tw = text_w(draw, title, fnt_title)
-    draw.text(
-        ((W - tw) // 2, card_y + 40),
-        title,
-        font=fnt_title,
-        fill=TERRACOTTA,
-    )
+    draw.text(((W - tw) // 2, card_y + 40), title, font=fnt_title, fill=TERRACOTTA)
 
-    # Decorative thin underline beneath title (reminiscent of cursive flourish)
     th = text_h(draw, title, fnt_title)
     line_y = card_y + 40 + th + 16
     line_x1 = (W - tw) // 2 + 30
     line_x2 = line_x1 + tw - 60
     draw.line([(line_x1, line_y), (line_x2, line_y)], fill=TERRACOTTA, width=1)
 
-    # Description paragraph — clean serif, justified-ish center
     fnt_desc = ImageFont.truetype(F_SERIF, 22)
     max_text_w = card_w - 100
     lines = wrap_text(description, fnt_desc, max_text_w, draw)
@@ -412,43 +372,41 @@ def taganga_plate(
         lw = text_w(draw, ln, fnt_desc)
         draw.text(((W - lw) // 2, desc_y + i * line_height), ln, font=fnt_desc, fill=NAVY)
 
-    # ── Bottom — handle + plate number ──
-    fnt_brand = ImageFont.truetype(F_SANS_BOLD, 26)
-    # Brand pill bottom centered
-    brand_text_a = "Trip"
-    brand_text_b = "Cazador"
-    aw = text_w(draw, brand_text_a, fnt_brand)
-    bw = text_w(draw, brand_text_b, fnt_brand)
-    total_brand_w = aw + bw
-    fnt_handle = ImageFont.truetype(F_SANS, 16)
-    handle = "@tripcazador  ·  tripcazador.com"
-    hw = text_w(draw, handle, fnt_handle)
-
-    # Bottom navy strip
-    strip_h = 90
+    # ── BOTTOM STRIP CON LOGO ──
+    strip_h = 110
     strip_y = H - strip_h
-    draw.rectangle([(0, strip_y), (W, H)], fill=(10, 21, 48, 235))
+    draw.rectangle([(0, strip_y), (W, H)], fill=(10, 21, 48, 240))
     draw.rectangle([(0, strip_y - 3), (W, strip_y)], fill=AMBER)
 
-    # Brand centered in strip
-    brand_x = (W - total_brand_w) // 2
-    draw.text((brand_x, strip_y + 18), brand_text_a, font=fnt_brand, fill=AMBER)
-    draw.text((brand_x + aw, strip_y + 18), brand_text_b, font=fnt_brand, fill=WHITE)
+    # Logo small left
+    img = paste_logo(img, x=40, y=strip_y + 12, size=86)
+    draw = ImageDraw.Draw(img, "RGBA")
+
+    # URL centered
+    fnt_url = ImageFont.truetype(F_SANS_BOLD, 28)
+    url = "tripcazador.com"
+    uw = text_w(draw, url, fnt_url)
+    draw.text(((W - uw) // 2, strip_y + 32), url, font=fnt_url, fill=AMBER)
 
     # Handle below
-    draw.text(((W - hw) // 2, strip_y + 55), handle, font=fnt_handle, fill=WHITE_DIM)
+    fnt_handle = ImageFont.truetype(F_SANS, 16)
+    handle = "@tripcazador  ·  EL CAZADOR DE CHOLLOS"
+    hh_w = text_w(draw, handle, fnt_handle)
+    draw.text(((W - hh_w) // 2, strip_y + 70), handle, font=fnt_handle, fill=WHITE_DIM)
 
     # Plate number top-right of strip
     fnt_num = ImageFont.truetype(F_SANS_MONO, 16)
     num_text = f"{plate_num:02d} / 05"
     nw = text_w(draw, num_text, fnt_num)
-    draw.text((W - 60 - nw, strip_y + 32), num_text, font=fnt_num, fill=AMBER)
+    draw.text((W - 50 - nw, strip_y + 50), num_text, font=fnt_num, fill=AMBER)
 
     img.save(OUT / filename, "PNG", quality=95)
-    print(f"✓ Plate {plate_num} (taganga style) saved → {filename}")
+    print(f"✓ Plate {plate_num} (taganga + radar logo) saved → {filename}")
 
 
 def main():
+    ensure_logo_pngs()
+
     plate_1_hero()
 
     taganga_plate(
