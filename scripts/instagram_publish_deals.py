@@ -498,8 +498,8 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
     import time as _t
     test_url = urls[0]
     poll_start = _t.time()
-    max_wait = 360  # 6 minutos
-    delay = 15
+    max_wait = 720  # 12 minutos (Vercel a veces queue >5min cuando concurrente)
+    delay = 20
     while _t.time() - poll_start < max_wait:
         try:
             req = urllib.request.Request(test_url, method="HEAD")

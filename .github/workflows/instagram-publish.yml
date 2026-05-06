@@ -22,7 +22,7 @@ jobs:
   publish:
     name: Publish top deal to Instagram (Canva carousel)
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 18
 
     steps:
       - uses: actions/checkout@v4
