@@ -191,6 +191,22 @@
       "destination": "MLA",
       "price_eur": 30.55,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "062a26a23b13",
+      "ts": "2026-05-06T21:06:00.180292+00:00",
+      "origin": "STN",
+      "destination": "RZE",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "97877225a1c0",
+      "ts": "2026-05-06T21:06:00.180292+00:00",
+      "origin": "STN",
+      "destination": "BZG",
+      "price_eur": 18.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
