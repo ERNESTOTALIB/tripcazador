@@ -180,8 +180,29 @@ jobs:
             echo "Sin cambios en deals.json — skip commit"
           else
             git commit -m "chore(hunter): refresh deals.json (run ${{ github.run_id }}) [skip ci]"
-            git push origin HEAD:main || echo "::warning::Push falló (probablemente conflicto, retry siguiente run)"
-            echo "✅ deals.json committeado a public/"
+            # SSS79: retry loop con rebase. Antes el push fallaba sin recuperación
+            # cuando otro commit llegaba a main entre el clone y el push, dejando
+            # /api/deals con deals seed (12) en lugar de los 1248 reales del hunter.
+            # Ahora reintenta hasta 5 veces con pull --rebase entre cada intento.
+            PUSHED=0
+            for i in 1 2 3 4 5; do
+              if git push origin HEAD:main; then
+                PUSHED=1
+                echo "✅ deals.json committeado y pusheado a public/ (intento $i)"
+                break
+              else
+                echo "⚠️ Push falló intento $i — git pull --rebase y retry"
+                git pull --rebase origin main || {
+                  echo "::warning::pull --rebase falló intento $i"
+                  git rebase --abort 2>/dev/null || true
+                }
+              fi
+            done
+            if [ "$PUSHED" -eq 0 ]; then
+              echo "::error::Push falló 5 veces consecutivas — deals.json del runner se descarta"
+              # No bloqueamos el workflow porque el artifact upload sigue activo
+              # (deals-{run_id}.zip recoverable manualmente desde Actions UI).
+            fi
           fi
 
       - name: Trigger price-alert matcher
