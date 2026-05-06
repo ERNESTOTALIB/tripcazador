@@ -68,6 +68,9 @@ jobs:
           IG_CAROUSEL_MODE: "1"
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_REF_NAME: ${{ github.ref_name }}
+          # SSS76c: necesario para que el script triggee vercel-deploy.yml
+          # vía API tras pushear los PNGs (workflow_dispatch endpoint).
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/instagram_publish_deals.py
 
       - name: Save post history cache
