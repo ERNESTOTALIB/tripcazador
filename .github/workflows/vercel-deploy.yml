@@ -68,24 +68,19 @@ jobs:
       - name: Wait for build + promote to production
         id: promote
         run: |
-          # SSS76e: aunque el CLI haya fallado, el build sigue corriendo en
-          # Vercel cloud. Polleamos la URL hasta 200 OK (max 10min), luego
-          # `vercel promote` la pone como producción (alias tripcazador.com).
+          # SSS76f: usar `vercel inspect --wait` que bloquea hasta que el
+          # deployment está READY (vs polling HEAD que devuelve 200 stale
+          # del alias anterior). Después de READY, promote/alias funciona.
           URL="${{ steps.deploy.outputs.url }}"
           if [ -z "$URL" ]; then echo "❌ No deploy URL captured" && exit 1; fi
-          echo "Polling $URL until ready..."
-          for i in $(seq 1 60); do
-            STATUS=$(curl -sI -o /dev/null -w "%{http_code}" --max-time 10 "$URL/" || echo "000")
-            echo "  attempt $i: HTTP $STATUS"
-            if [ "$STATUS" = "200" ]; then
-              echo "✅ Build ready"
-              break
-            fi
-            sleep 10
-          done
+          echo "Inspecting $URL (waits until READY, max ~10min)..."
+          # vercel inspect --wait blocks until deployment state = READY/ERROR
+          timeout 600 vercel inspect "$URL" --wait --token=${{ secrets.VERCEL_TOKEN }} || \
+            echo "WARN: inspect timed out, proceeding anyway"
           echo "Promoting $URL to production..."
-          vercel promote "$URL" --token=${{ secrets.VERCEL_TOKEN }} --yes || \
-            vercel alias set "$URL" tripcazador.com --token=${{ secrets.VERCEL_TOKEN }} || true
+          vercel promote "$URL" --token=${{ secrets.VERCEL_TOKEN }} --yes 2>&1 || \
+            vercel alias set "$URL" tripcazador.com --token=${{ secrets.VERCEL_TOKEN }} 2>&1 || \
+            echo "WARN: promote+alias failed, deploy is created but not aliased"
 
       - name: Smoke test new deploy
         run: |
