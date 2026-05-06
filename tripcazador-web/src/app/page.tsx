@@ -11,6 +11,7 @@ import { TrendingNowWidget } from "@/components/TrendingNowWidget";
 import { RecentSearchesStrip } from "@/components/RecentSearchesStrip";
 import { MyFeedStrip } from "@/components/MyFeedStrip";
 import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
+import { StreakBadge } from "@/components/StreakBadge";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -297,6 +298,11 @@ export default async function HomePage() {
 
       {/* III4 — Recent searches strip (silent if no consent / no history) */}
       <RecentSearchesStrip />
+
+      {/* F7 — Streak badge gamification (sólo si user >2 días seguidos) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 text-center">
+        <StreakBadge />
+      </div>
 
       {/* Stats + chips quick-filters en sección body light, después del hero.
           full-bleed escapando del max-w-7xl del <main> */}

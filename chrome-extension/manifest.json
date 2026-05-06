@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "TripCazador Compare",
+  "short_name": "TripCazador",
+  "version": "0.1.0",
+  "description": "Detecta cuando estás en Skyscanner, Google Flights o Kayak y te avisa si TripCazador tiene mejor precio para esa ruta.",
+  "author": "TripCazador",
+  "homepage_url": "https://tripcazador.com",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "TripCazador Compare",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": [
+    "https://www.skyscanner.es/*",
+    "https://www.skyscanner.net/*",
+    "https://www.skyscanner.com/*",
+    "https://www.google.com/travel/*",
+    "https://www.kayak.es/*",
+    "https://www.kayak.com/*",
+    "https://tripcazador.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.skyscanner.es/transport/*",
+        "https://www.skyscanner.net/transport/*",
+        "https://www.skyscanner.com/transport/*",
+        "https://www.google.com/travel/flights*",
+        "https://www.kayak.es/flights/*",
+        "https://www.kayak.com/flights/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+#tc-compare-badge {
+  position: fixed !important;
+  top: 80px !important;
+  right: 20px !important;
+  z-index: 2147483647 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+  animation: tc-slide-in 0.4s ease-out !important;
+}
+
+#tc-compare-badge * {
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
+
+@keyframes tc-slide-in {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+#tc-compare-badge .tc-badge-inner {
+  background: rgb(15, 23, 42) !important;
+  color: rgb(241, 245, 249) !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  width: 240px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+  display: flex !important;
+  gap: 10px !important;
+  align-items: flex-start !important;
+  position: relative !important;
+}
+
+#tc-compare-badge .tc-badge-inner.tc-cheaper {
+  border-color: rgb(16, 185, 129) !important;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25) !important;
+}
+
+#tc-compare-badge .tc-logo {
+  font-size: 24px !important;
+  flex-shrink: 0 !important;
+}
+
+#tc-compare-badge .tc-content {
+  flex: 1 !important;
+}
+
+#tc-compare-badge .tc-title {
+  font-weight: 700 !important;
+  color: rgb(251, 191, 36) !important;
+  font-size: 12px !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 4px !important;
+}
+
+#tc-compare-badge .tc-price {
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  color: rgb(255, 255, 255) !important;
+}
+
+#tc-compare-badge .tc-savings {
+  color: rgb(52, 211, 153) !important;
+  font-size: 14px !important;
+}
+
+#tc-compare-badge .tc-route {
+  font-size: 12px !important;
+  color: rgb(148, 163, 184) !important;
+  margin-top: 2px !important;
+}
+
+#tc-compare-badge .tc-cta {
+  display: inline-block !important;
+  margin-top: 6px !important;
+  padding: 5px 10px !important;
+  background: rgb(251, 191, 36) !important;
+  color: rgb(15, 23, 42) !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  text-decoration: none !important;
+}
+
+#tc-compare-badge .tc-cta:hover {
+  background: rgb(252, 211, 77) !important;
+}
+
+#tc-compare-badge .tc-close {
+  background: transparent !important;
+  border: none !important;
+  color: rgb(148, 163, 184) !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#tc-compare-badge .tc-close:hover {
+  color: rgb(255, 255, 255) !important;
+}

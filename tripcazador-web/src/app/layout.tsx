@@ -15,6 +15,7 @@ import { MobileStickyCta } from "@/components/MobileStickyCta";
 import { MobileNavBar } from "@/components/MobileNavBar";
 import { FavoritePushNudge } from "@/components/FavoritePushNudge";
 import { ReferralNudge } from "@/components/ReferralNudge";
+import { SocialProofToast } from "@/components/SocialProofToast";
 import "./globals.css";
 
 // Inter — subset latin solo (no cyrillic/greek/vietnamese), display=swap para
@@ -388,12 +389,12 @@ export default function RootLayout({
               <div>
                 <h3 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Herramientas</h3>
                 <ul className="space-y-2 text-gray-400">
-                  <li><a href="/como-viajar" className="hover:text-amber-400 font-semibold">Cómo viajar 🧰</a></li>
+                  <li><a href="/planificador" className="hover:text-amber-400 font-semibold">Planificador IA ✨</a></li>
+                  <li><a href="/como-viajar" className="hover:text-amber-400">Cómo viajar 🧰</a></li>
                   <li><a href="/favoritos" className="hover:text-amber-400">Tus favoritos</a></li>
                   <li><a href="/calculadora" className="hover:text-amber-400">Calculadora valor</a></li>
-                  <li><a href="/calculadora-millas" className="hover:text-amber-400">Calc. millas</a></li>
                   <li><a href="/mapa-precios" className="hover:text-amber-400">Mapa de precios</a></li>
-                  <li><a href="/buscar-vuelos" className="hover:text-amber-400">Búsqueda en vivo</a></li>
+                  <li><a href="/tendencias" className="hover:text-amber-400">Tendencias</a></li>
                 </ul>
               </div>
 
@@ -403,8 +404,9 @@ export default function RootLayout({
                 <ul className="space-y-2 text-gray-400">
                   <li><a href="/blog" className="hover:text-amber-400">Blog</a></li>
                   <li><a href="/comparar" className="hover:text-amber-400">Comparativas</a></li>
-                  <li><a href="/glosario" className="hover:text-amber-400">Glosario</a></li>
-                  <li><a href="/faq" className="hover:text-amber-400">FAQ</a></li>
+                  <li><a href="/hoteles-vs-airbnb" className="hover:text-amber-400">Hotel vs Airbnb</a></li>
+                  <li><a href="/regalo" className="hover:text-amber-400">Regalar 🎁</a></li>
+                  <li><a href="/creators" className="hover:text-amber-400">Creators (8% comm)</a></li>
                   <li><a href="/aerolineas" className="hover:text-amber-400">Aerolíneas</a></li>
                 </ul>
               </div>
@@ -457,6 +459,8 @@ export default function RootLayout({
         <FavoritePushNudge />
         {/* MMM5 — Referidos nudge cuando user llega a 3 favoritos */}
         <ReferralNudge />
+        {/* F3 — Social proof toast con eventos anonimizados (consent-aware) */}
+        <SocialProofToast />
       </body>
     </html>
   );
