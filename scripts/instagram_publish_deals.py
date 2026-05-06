@@ -459,6 +459,29 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
             else:
                 log("ERROR: push failed 3 attempts")
                 return None
+            # SSS76c: trigger vercel-deploy.yml explícitamente vía API porque
+            # nuestro commit lleva [skip ci] (necesario para no re-triggear
+            # este mismo workflow IG en bucle infinito), lo cual también
+            # bloquea vercel-deploy.yml. Sin este dispatch los PNGs nunca
+            # se sirven en tripcazador.com.
+            gh_token = os.environ.get("GITHUB_TOKEN") or ""
+            if gh_token and GITHUB_REPO:
+                try:
+                    req = urllib.request.Request(
+                        f"https://api.github.com/repos/{GITHUB_REPO}/actions/workflows/vercel-deploy.yml/dispatches",
+                        method="POST",
+                        headers={
+                            "Authorization": f"Bearer {gh_token}",
+                            "Accept": "application/vnd.github+json",
+                            "X-GitHub-Api-Version": "2022-11-28",
+                        },
+                        data=json.dumps({"ref": GITHUB_REF}).encode("utf-8"),
+                    )
+                    with urllib.request.urlopen(req, timeout=15) as r:
+                        if r.status in (204, 200):
+                            log("✅ vercel-deploy.yml triggered via API")
+                except Exception as e:
+                    log(f"WARN dispatch vercel-deploy: {e}")
     except subprocess.CalledProcessError as e:
         log(f"ERROR git: {e}")
         return None

@@ -4,6 +4,7 @@ name: Instagram auto-publish deals
 # Output: 5 PNGs commiteados a ig-assets/{date-slug}/ y servidos via raw GH.
 permissions:
   contents: write     # Para commitear ig-assets/{slug}/{N}.png
+  actions: write      # SSS76c: trigger vercel-deploy.yml via API después del push
 
 on:
   # SSS76 (May 2026): cron reactivado con PAGE token NEVER-EXPIRE
