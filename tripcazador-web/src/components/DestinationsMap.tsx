@@ -1,14 +1,13 @@
-"use client";
-
 /**
- * DestinationsMap — SSS78 (May 2026)
+ * DestinationsMap — SSS80 (May 2026)
  *
- * Reescritura sin react-simple-maps (que daba problemas intermitentes en
- * prod incluso con TopoJSON pre-cargado). Ahora usa un SVG world map
- * inline + markers con proyección Mercator local → 100% determinista,
- * 0 librerías, 0 fetches externos.
+ * Server-side rendered SVG map. SIN "use client" — esto significa que el
+ * SVG completo viene en el HTML inicial, no depende de hidratación ni JS.
+ * Si el usuario tiene JS off o el chunk client falla, el mapa SE VE igual.
+ *
+ * Hover/active gestionados con CSS pure (`:hover` + `<a>`s nativos),
+ * no necesita useState ni useEffect.
  */
-import { useState } from "react";
 import Link from "next/link";
 
 export interface DestinationPin {
@@ -38,7 +37,7 @@ function project(lat: number, lon: number): [number, number] {
   return [x, y];
 }
 
-// Continent silhouettes (simplified, hand-tuned)
+// Continent paths (simplified Mercator-projected ~30 polygons, hand-tuned)
 const CONTINENT_PATHS = [
   // Europe
   "M460,150 L490,135 L530,130 L580,135 L610,150 L625,170 L615,195 L590,210 L555,220 L520,215 L490,205 L470,185 L460,165 Z",
@@ -71,8 +70,6 @@ const CONTINENT_PATHS = [
 ];
 
 export function DestinationsMap({ destinations }: Props) {
-  const [active, setActive] = useState<string | null>(null);
-
   return (
     <div className="rounded-2xl border border-gray-800 p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm">
       <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
@@ -91,83 +88,79 @@ export function DestinationsMap({ destinations }: Props) {
           className="w-full h-auto block"
           role="img"
           aria-label="Mapa mundial con destinos disponibles"
+          style={{ display: "block" }}
         >
           <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <pattern id="tcgrid" width="40" height="40" patternUnits="userSpaceOnUse">
               <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" strokeWidth="0.5" opacity="0.4" />
             </pattern>
           </defs>
 
+          {/* Ocean */}
           <rect width={MAP_W} height={MAP_H} fill="#0f172a" />
-          <rect width={MAP_W} height={MAP_H} fill="url(#grid)" />
+          <rect width={MAP_W} height={MAP_H} fill="url(#tcgrid)" />
 
-          <g fill="#334155" stroke="#475569" strokeWidth="0.5" opacity="0.85">
+          {/* Continents */}
+          <g fill="#475569" stroke="#64748b" strokeWidth="0.7" opacity="0.95">
             {CONTINENT_PATHS.map((d, i) => (
               <path key={i} d={d} />
             ))}
           </g>
 
+          {/* Pins — server-rendered <a> with native hover (CSS) */}
           {destinations.map((d) => {
             const [x, y] = project(d.lat, d.lon);
-            const isActive = active === d.slug;
             return (
-              <g key={d.slug} transform={`translate(${x}, ${y})`}>
-                <circle r={10} fill="#fbbf24" opacity={isActive ? 0.35 : 0.15}>
-                  <animate
-                    attributeName="r"
-                    values="6;14;6"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="0.4;0;0.4"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
+              <a
+                key={d.slug}
+                href={`/destinos/${d.slug}`}
+                aria-label={`${d.name} — ver guía`}
+                className="tc-map-pin"
+              >
+                {/* Pulse outer */}
+                <circle cx={x} cy={y} r={10} fill="#fbbf24" opacity={0.18}>
+                  <animate attributeName="r" values="6;14;6" dur="2.4s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.4;0;0.4" dur="2.4s" repeatCount="indefinite" />
                 </circle>
+                {/* Solid dot */}
                 <circle
-                  r={isActive ? 7 : 5}
+                  cx={x}
+                  cy={y}
+                  r={5.5}
                   fill="#fbbf24"
                   stroke="#0f172a"
-                  strokeWidth="1.5"
-                  className="cursor-pointer transition-all"
-                  onMouseEnter={() => setActive(d.slug)}
-                  onMouseLeave={() => setActive(null)}
-                  onFocus={() => setActive(d.slug)}
-                  onBlur={() => setActive(null)}
+                  strokeWidth="1.8"
+                  className="tc-map-dot"
                 />
-                {isActive && (
-                  <g pointerEvents="none">
-                    <rect
-                      x={-50}
-                      y={-32}
-                      width={100}
-                      height={22}
-                      rx={4}
-                      fill="#0f172a"
-                      stroke="#fbbf24"
-                      strokeWidth="1"
-                    />
-                    <text x={0} y={-17} textAnchor="middle" fill="#fbbf24" fontSize="11" fontWeight="bold">
-                      {d.emoji} {d.name}
-                    </text>
-                  </g>
-                )}
-              </g>
+                {/* Hover label (CSS-only display) */}
+                <g className="tc-map-tooltip" pointerEvents="none">
+                  <rect x={x - 50} y={y - 32} width={100} height={22} rx={4} fill="#0f172a" stroke="#fbbf24" strokeWidth="1" />
+                  <text x={x} y={y - 17} textAnchor="middle" fill="#fbbf24" fontSize="11" fontWeight="bold">
+                    {d.emoji} {d.name}
+                  </text>
+                </g>
+              </a>
             );
           })}
         </svg>
       </div>
 
+      {/* CSS-only hover/focus — no JS needed */}
+      <style>{`
+        .tc-map-pin .tc-map-dot { transition: r 0.15s ease, fill 0.15s ease; cursor: pointer; }
+        .tc-map-pin:hover .tc-map-dot, .tc-map-pin:focus .tc-map-dot { r: 7.5; fill: #fcd34d; }
+        .tc-map-pin .tc-map-tooltip { opacity: 0; transition: opacity 0.15s ease; }
+        .tc-map-pin:hover .tc-map-tooltip, .tc-map-pin:focus .tc-map-tooltip { opacity: 1; }
+        .tc-map-pin:focus { outline: none; }
+      `}</style>
+
+      {/* Lista debajo del mapa */}
       <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
         {destinations.map((d) => (
           <Link
             key={d.slug}
             href={`/destinos/${d.slug}`}
             className="text-sm text-gray-300 hover:text-amber-400 hover:bg-slate-800/50 rounded px-2 py-1 transition flex items-center gap-2"
-            onMouseEnter={() => setActive(d.slug)}
-            onMouseLeave={() => setActive(null)}
           >
             <span aria-hidden="true">{d.emoji}</span>
             <span>{d.name}</span>
