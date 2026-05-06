@@ -107,9 +107,8 @@ def paste_logo(img: Image.Image, x: int, y: int, size: int) -> Image.Image:
     return rgba.convert("RGB")
 
 
-def fetch_photo(url: str, w: int = W, h: int = H, retries: int = 3) -> Image.Image:
-    """Download + center-crop + resize to w×h. Retries on transient errors."""
-    last_err = None
+def _fetch_and_crop(url: str, w: int, h: int, retries: int):
+    """Helper: descarga + crop + resize. Retorna None si falla todos retries."""
     for attempt in range(retries):
         try:
             r = requests.get(url, headers=UA_HEADERS, timeout=30)
@@ -128,12 +127,29 @@ def fetch_photo(url: str, w: int = W, h: int = H, retries: int = 3) -> Image.Ima
                 img = img.crop((0, off, sw, off + nh))
             return img.resize((w, h), Image.LANCZOS)
         except Exception as e:
-            last_err = e
             print(f"WARN: fetch attempt {attempt+1}/{retries} failed for {url[:80]}: {e}")
-    # Si todos los retries fallan, devolver placeholder navy
+    return None
+
+
+# SSS76k: fallback global settable por main args (--fallback-photo)
+_GLOBAL_FALLBACK_PHOTO: str = ""
+
+
+def fetch_photo(url: str, w: int = W, h: int = H, retries: int = 3) -> Image.Image:
+    """Download + center-crop + resize to w×h. Retries on transient errors.
+    Si falla y hay fallback global setteado, intenta esa URL antes del placeholder navy.
+    """
+    img = _fetch_and_crop(url, w, h, retries)
+    if img is not None:
+        return img
+    # SSS76k: chain de fallback antes de placeholder navy
+    if _GLOBAL_FALLBACK_PHOTO and _GLOBAL_FALLBACK_PHOTO != url:
+        print(f"INFO: trying global fallback {_GLOBAL_FALLBACK_PHOTO[:80]}")
+        img = _fetch_and_crop(_GLOBAL_FALLBACK_PHOTO, w, h, retries=2)
+        if img is not None:
+            return img
     print(f"ERROR: all fetch retries failed, using navy placeholder")
-    placeholder = Image.new("RGB", (w, h), NAVY)
-    return placeholder
+    return Image.new("RGB", (w, h), NAVY)
 
 
 def text_w(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.ImageFont) -> int:
@@ -530,6 +546,12 @@ def main() -> int:
     args = p.parse_args()
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
+
+    # SSS76k: settear fallback global para fetch_photo (antes que cualquier fetch)
+    global _GLOBAL_FALLBACK_PHOTO
+    _GLOBAL_FALLBACK_PHOTO = args.fallback_photo or ""
+    if _GLOBAL_FALLBACK_PHOTO:
+        print(f"INFO: global fallback photo = {_GLOBAL_FALLBACK_PHOTO[:80]}")
 
     # Pre-render logo
     ensure_logo_pngs(args.logo_svg)
