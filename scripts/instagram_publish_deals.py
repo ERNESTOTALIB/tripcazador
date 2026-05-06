@@ -387,13 +387,35 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
     # Resolve coord (deal.lat/lon → DD°MM' format) — opcional
     coord = _fmt_coord(deal.get("lat"), deal.get("lon"))
 
-    # Fallback photo URL — usar deal.image_url o landmark genérico
-    # SSS76j: la antigua URL Wikimedia (Aerial_view_of_Barcelona_from_helicopter)
-    # devuelve 404 → reemplazo por og-default que vive en nuestro propio repo
-    # bajo tripcazador-web/public/og-default.png (siempre disponible).
+    # Fallback photo URL — Unsplash photo IDs estables por ciudad
+    # SSS76m: las URLs Wikimedia del catalog se rompen ocasionalmente. Cuando
+    # eso pasa, usamos foto Unsplash específica de la ciudad como fallback
+    # (todas las URLs Unsplash con ?w=1280 son estables y se sirven OK).
+    # Mapping basado en lib/dest_images.ts. Si city no está aquí, og-default.
+    _UNSPLASH_BY_CITY = {
+        "barcelona": "1583422409516-2895a77efded",
+        "lisboa": "1555881400-74d7acaacd8b",
+        "palma": "1473496169904-658ba7c44d8a",
+        "roma": "1552832230-c0197dd311b5",
+        "paris": "1502602898657-3e91760cbb34",
+        "milan": "1520440229-6469a149ac59",
+        "praga": "1541849546-216549ae216d",
+        "amsterdam": "1534351590666-13e3e96c5017",
+        "berlin": "1560969184-10fe8719e047",
+        "londres": "1513635269975-59663e0ac1ad",
+        "estambul": "1524231757912-21f4fe3a7200",
+        "marrakech": "1539037116277-4db20889f2d4",
+        "malaga": "1518002171953-a080ee817e1f",
+        "valencia": "1564507592333-c60657eea523",
+        "sevilla": "1562979314-bee7453e911c",
+        "cairo": "1572252009286-268acec5ca0a",
+    }
+    _city_slug = _slugify(_norm) if _norm else _slugify(raw_dest)
+    _unsplash_id = _UNSPLASH_BY_CITY.get(_city_slug.replace("-", ""), None) \
+        or _UNSPLASH_BY_CITY.get(_DEST_ALIASES.get(_norm, "").replace("-", ""), None)
     fallback_photo = (
         deal.get("image_url")
-        or "https://tripcazador.com/og-default.png"
+        or (f"https://images.unsplash.com/photo-{_unsplash_id}?w=1280" if _unsplash_id else "https://tripcazador.com/og-default.png")
     )
 
     # Args para el generator
