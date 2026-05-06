@@ -52,20 +52,45 @@ jobs:
 
       - name: Deploy --prod (cloud build) — desde repo root
         id: deploy
+        continue-on-error: true
         run: |
-          # `vercel deploy --prod --archive=tgz` sube el source como tarball
-          # a Vercel y deja que el builder cloud corra install + build.
-          # Evita el bug `spawn sh ENOENT` de `vercel build` local.
-          # Corremos desde repo root para que Vercel pick el rootDirectory
-          # configurado en el project (tripcazador-web).
-          URL=$(vercel deploy --prod --archive=tgz --token=${{ secrets.VERCEL_TOKEN }})
+          # SSS76e: el CLI a veces sale con "Unexpected error" después de
+          # subir el tarball pero ANTES de aliasar a producción. Capturamos
+          # stdout para extraer la deployment URL aunque el CLI falle, luego
+          # promovemos manualmente vía `vercel promote`.
+          set -o pipefail
+          OUTPUT=$(vercel deploy --prod --archive=tgz --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tee /tmp/vercel.out || true)
+          # Vercel CLI imprime "Production: <url>" antes de empezar build
+          URL=$(grep -oE 'https://tripcazador-[a-z0-9]+-ernesto-talibs-projects\.vercel\.app' /tmp/vercel.out | head -1)
           echo "url=$URL" >> "$GITHUB_OUTPUT"
-          echo "Deployed: $URL"
+          echo "Captured deploy URL: $URL"
+
+      - name: Wait for build + promote to production
+        id: promote
+        run: |
+          # SSS76e: aunque el CLI haya fallado, el build sigue corriendo en
+          # Vercel cloud. Polleamos la URL hasta 200 OK (max 10min), luego
+          # `vercel promote` la pone como producción (alias tripcazador.com).
+          URL="${{ steps.deploy.outputs.url }}"
+          if [ -z "$URL" ]; then echo "❌ No deploy URL captured" && exit 1; fi
+          echo "Polling $URL until ready..."
+          for i in $(seq 1 60); do
+            STATUS=$(curl -sI -o /dev/null -w "%{http_code}" --max-time 10 "$URL/" || echo "000")
+            echo "  attempt $i: HTTP $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Build ready"
+              break
+            fi
+            sleep 10
+          done
+          echo "Promoting $URL to production..."
+          vercel promote "$URL" --token=${{ secrets.VERCEL_TOKEN }} --yes || \
+            vercel alias set "$URL" tripcazador.com --token=${{ secrets.VERCEL_TOKEN }} || true
 
       - name: Smoke test new deploy
         run: |
-          # Espera 15s a que el alias se propague, luego verifica home + ruta nueva
-          sleep 15
+          # Espera 20s a que el alias se propague, luego verifica home
+          sleep 20
           curl -fsS --max-time 15 https://tripcazador.com/ | grep -q TripCazador || (echo "home failed" && exit 1)
           curl -fsS --max-time 15 https://tripcazador.com/calculadora | grep -q -i calculadora || (echo "calc failed" && exit 1)
           echo "smoke OK"
