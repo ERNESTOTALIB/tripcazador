@@ -353,7 +353,11 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
     Devuelve lista de 5 URLs públicas. Si algo falla devuelve None.
     """
     deal_id = str(deal.get("id") or "x")
-    dest_key = (deal.get("destination") or deal.get("city_to") or "").strip()
+    # SSS76j: usar city_to PRIMERO (nombre ciudad como "Barcelona") en vez
+    # de destination (código IATA "BCN"). El catalog LANDMARKS está
+    # indexado por slug de ciudad. Antes tomaba IATA, slugify daba "bcn"
+    # que NO existe en catalog → caía en fallback_landmarks() con URL rota.
+    dest_key = (deal.get("city_to") or deal.get("destination") or "").strip()
     if not dest_key:
         log("WARN: deal sin destination — no se puede generar carrusel")
         return None
@@ -367,11 +371,12 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
     coord = _fmt_coord(deal.get("lat"), deal.get("lon"))
 
     # Fallback photo URL — usar deal.image_url o landmark genérico
+    # SSS76j: la antigua URL Wikimedia (Aerial_view_of_Barcelona_from_helicopter)
+    # devuelve 404 → reemplazo por og-default que vive en nuestro propio repo
+    # bajo tripcazador-web/public/og-default.png (siempre disponible).
     fallback_photo = (
         deal.get("image_url")
-        or "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/"
-        "Aerial_view_of_Barcelona_from_helicopter%2C_2014.jpg/1280px-"
-        "Aerial_view_of_Barcelona_from_helicopter%2C_2014.jpg"
+        or "https://tripcazador.com/og-default.png"
     )
 
     # Args para el generator
