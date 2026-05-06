@@ -344,10 +344,12 @@ def _fmt_coord(lat: Optional[float], lon: Optional[float]) -> str:
 
 
 def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
-    """SSS75: Genera 5 PNGs Canva-style + commit a ig-assets/{slug}/ + raw URLs.
+    """SSS75/76: Genera 5 PNGs Canva-style + commit a tripcazador-web/public/ig-assets/.
 
-    Devuelve lista de 5 URLs raw.githubusercontent.com (públicas mientras el
-    repo lo siga siendo). Si algo falla devuelve None.
+    SSS76: PNGs van bajo tripcazador-web/public/ig-assets/{slug}/ para que
+    Vercel los sirva públicamente en https://tripcazador.com/ig-assets/{slug}/N.png
+    (el repo es privado y raw.githubusercontent.com devuelve 404 a IG).
+    Devuelve lista de 5 URLs públicas. Si algo falla devuelve None.
     """
     deal_id = str(deal.get("id") or "x")
     dest_key = (deal.get("destination") or deal.get("city_to") or "").strip()
@@ -417,10 +419,12 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
             log(f"ERROR: {p} missing or too small")
             return None
 
-    # Mover a ig-assets/{date}-{slug}/{N}.png + commit + push
+    # SSS76: PNGs van bajo tripcazador-web/public/ig-assets/ para que Vercel
+    # los sirva en https://tripcazador.com/ig-assets/... (repo es PRIVADO,
+    # raw.githubusercontent.com devuelve 404 sin auth, IG no puede leer).
     date_str = datetime.utcnow().strftime("%Y%m%d-%H%M")
     asset_slug = f"{date_str}-{safe_id}"
-    asset_dir = Path(f"ig-assets/{asset_slug}")
+    asset_dir = Path(f"tripcazador-web/public/ig-assets/{asset_slug}")
     asset_dir.mkdir(parents=True, exist_ok=True)
     for i, p in enumerate(pngs, start=1):
         target = asset_dir / f"{i}.png"
@@ -458,10 +462,11 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
         log(f"ERROR git: {e}")
         return None
 
-    # Build raw URLs
-    base = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_REF}/ig-assets/{asset_slug}"
+    # SSS76: serve via Vercel public folder (repo es privado, raw GH = 404)
+    # tripcazador-web/public/ig-assets/ → https://tripcazador.com/ig-assets/
+    base = f"https://tripcazador.com/ig-assets/{asset_slug}"
     urls = [f"{base}/{i}.png" for i in range(1, 6)]
-    log(f"✅ 5 raw URLs ready under {base}")
+    log(f"✅ 5 public URLs ready under {base}")
     return urls
 
 
@@ -597,8 +602,8 @@ def main() -> int:
 
     # SSS75 (May 2026): carrusel Barcelona magazine generado por Python
     # con PIL+cairosvg (canva_carousel_generator.py + canva_landmarks.py).
-    # Output: 5 PNGs commiteados a ig-assets/{deal_id}/{1..5}.png en repo,
-    # servidos via raw.githubusercontent.com (público mientras el repo lo sea).
+    # SSS76: 5 PNGs commiteados a tripcazador-web/public/ig-assets/{slug}/{1..5}.png
+    # y servidos públicamente vía https://tripcazador.com/ig-assets/... (Vercel).
     if os.environ.get("IG_CAROUSEL_MODE") == "1":
         try:
             slides = generate_and_upload_carousel(deal)
