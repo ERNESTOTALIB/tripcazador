@@ -143,6 +143,22 @@
       "destination": "IAS",
       "price_eur": 25.76,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "49f0d32445dc",
+      "ts": "2026-05-06T15:25:32.622115+00:00",
+      "origin": "STN",
+      "destination": "GDN",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "830740112157",
+      "ts": "2026-05-06T15:25:32.622115+00:00",
+      "origin": "STN",
+      "destination": "OLB",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
