@@ -68,21 +68,29 @@ jobs:
       - name: Wait for build + promote to production
         id: promote
         run: |
-          # SSS76f: usar `vercel inspect --wait` que bloquea hasta que el
-          # deployment está READY (vs polling HEAD que devuelve 200 stale
-          # del alias anterior). Después de READY, promote/alias funciona.
+          # SSS76h: vercel inspect --wait NO bloquea de verdad (sale en 10s).
+          # En su lugar: poll vercel inspect cada 15s buscando state=READY,
+          # max 10min. Después promote con --scope.
           URL="${{ steps.deploy.outputs.url }}"
           if [ -z "$URL" ]; then echo "❌ No deploy URL captured" && exit 1; fi
-          echo "Inspecting $URL (waits until READY, max ~10min)..."
-          # vercel inspect --wait blocks until deployment state = READY/ERROR
-          timeout 600 vercel inspect "$URL" --wait --token=${{ secrets.VERCEL_TOKEN }} || \
-            echo "WARN: inspect timed out, proceeding anyway"
+          echo "Polling $URL state until READY (max 10min)..."
+          for i in $(seq 1 40); do
+            STATE=$(vercel inspect "$URL" --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }} 2>&1 | grep -oE 'status\s+(READY|ERROR|CANCELED|BUILDING|QUEUED|INITIALIZING)' | awk '{print $2}' | head -1 || echo "UNKNOWN")
+            echo "  attempt $i: state=$STATE"
+            if [ "$STATE" = "READY" ]; then
+              echo "✅ Deployment READY"
+              break
+            fi
+            if [ "$STATE" = "ERROR" ] || [ "$STATE" = "CANCELED" ]; then
+              echo "❌ Deployment $STATE — aborting promote"
+              exit 1
+            fi
+            sleep 15
+          done
           echo "Promoting $URL to production with --scope..."
-          # SSS76g: añadir --scope=ORG_ID al promote+alias para evitar
-          # "Deployment belongs to a different team" del CLI.
           vercel promote "$URL" --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }} --yes 2>&1 || \
             vercel alias set "$URL" tripcazador.com --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }} 2>&1 || \
-            echo "WARN: promote+alias failed, deploy is created but not aliased"
+            echo "WARN: promote+alias failed"
 
       - name: Smoke test new deploy
         run: |
