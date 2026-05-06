@@ -357,7 +357,24 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
     # de destination (código IATA "BCN"). El catalog LANDMARKS está
     # indexado por slug de ciudad. Antes tomaba IATA, slugify daba "bcn"
     # que NO existe en catalog → caía en fallback_landmarks() con URL rota.
-    dest_key = (deal.get("city_to") or deal.get("destination") or "").strip()
+    raw_dest = (deal.get("city_to") or deal.get("destination") or "").strip()
+    # SSS76l: aliases para que variaciones del nombre coincidan con catalog.
+    # "Palma de Mallorca" → slugify="palma-de-mallorca" pero catalog tiene "palma".
+    # Mapeamos las variaciones más comunes a su slug catalog.
+    _DEST_ALIASES = {
+        "palma de mallorca": "palma",
+        "palma-de-mallorca": "palma",
+        "mallorca": "palma",
+        "majorca": "palma",
+        "palma mallorca": "palma",
+        "lisbon": "lisboa",
+        "lisboa portugal": "lisboa",
+        "lisbon portugal": "lisboa",
+        "barcelona spain": "barcelona",
+        "barcelona españa": "barcelona",
+    }
+    _norm = _slugify(raw_dest).replace("-", " ")
+    dest_key = _DEST_ALIASES.get(_norm, raw_dest)
     if not dest_key:
         log("WARN: deal sin destination — no se puede generar carrusel")
         return None
