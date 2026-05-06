@@ -77,9 +77,11 @@ jobs:
           # vercel inspect --wait blocks until deployment state = READY/ERROR
           timeout 600 vercel inspect "$URL" --wait --token=${{ secrets.VERCEL_TOKEN }} || \
             echo "WARN: inspect timed out, proceeding anyway"
-          echo "Promoting $URL to production..."
-          vercel promote "$URL" --token=${{ secrets.VERCEL_TOKEN }} --yes 2>&1 || \
-            vercel alias set "$URL" tripcazador.com --token=${{ secrets.VERCEL_TOKEN }} 2>&1 || \
+          echo "Promoting $URL to production with --scope..."
+          # SSS76g: añadir --scope=ORG_ID al promote+alias para evitar
+          # "Deployment belongs to a different team" del CLI.
+          vercel promote "$URL" --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }} --yes 2>&1 || \
+            vercel alias set "$URL" tripcazador.com --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }} 2>&1 || \
             echo "WARN: promote+alias failed, deploy is created but not aliased"
 
       - name: Smoke test new deploy
