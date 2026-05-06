@@ -313,16 +313,20 @@ def render_plate_1(
     coord_line = f"{route_to.upper()}  ·  {coord}" if coord else route_to.upper()
     draw.text((210, 110), coord_line, font=fnt_label, fill=WHITE_DIM)
 
-    # City name SERIF gigante
-    fnt_city = ImageFont.truetype(F_SERIF_BOLD, 110)
+    # City name SERIF — tamaño base reducido a 92 para que el nombre se vea
+    # bien al completo en el thumbnail del feed (sin entrar al post).
+    # Ciudades cortas (Roma, Bali) usan 92, ciudades largas (Palma de Mallorca)
+    # se reducen automáticamente con el while-loop de fitting.
+    fnt_city = ImageFont.truetype(F_SERIF_BOLD, 92)
     city = route_to.upper()
     while text_w(draw, city, fnt_city) > W - 100:
         size = fnt_city.size - 4
-        if size < 60:
+        if size < 56:
             break
         fnt_city = ImageFont.truetype(F_SERIF_BOLD, size)
     tw = text_w(draw, city, fnt_city)
-    draw.text(((W - tw) // 2, 230), city, font=fnt_city, fill=WHITE)
+    # bajar un poco el y porque el font es más pequeño
+    draw.text(((W - tw) // 2, 250), city, font=fnt_city, fill=WHITE)
 
     # Subtitle italic
     fnt_sub = ImageFont.truetype(F_SERIF_ITAL, 28)
@@ -356,9 +360,16 @@ def render_plate_1(
     fnt_price = ImageFont.truetype(F_SERIF_BOLD, 230)
     price_str = f"{price}€"
     pw = text_w(draw, price_str, fnt_price)
-    draw.text(((W - pw) // 2, panel_y + 60), price_str, font=fnt_price, fill=AMBER)
+    price_y = panel_y + 60
+    draw.text(((W - pw) // 2, price_y), price_str, font=fnt_price, fill=AMBER)
+    # Medir la altura real del precio para posicionar el "antes" SIN solapar
+    price_bbox = draw.textbbox((0, 0), price_str, font=fnt_price)
+    price_real_h = price_bbox[3] - price_bbox[1]
 
-    # Old price line — solo si tenemos old_price > price
+    # Old price line — solo si tenemos old_price > price.
+    # Posicionado debajo del precio gigante (medido por bbox real, no offset
+    # mágico) con 14px de padding para evitar el solapamiento que se veía
+    # en el feed.
     if old_price and old_price > price:
         fnt_old = ImageFont.truetype(F_SANS, 18)
         old_text = f"antes {old_price}€"
@@ -370,7 +381,7 @@ def render_plate_1(
         sav_w = text_w(draw, savings_text, fnt_old)
         total_w = old_w + sav_w
         old_x = (W - total_w) // 2
-        old_y = panel_y + 60 + 220 - 20
+        old_y = price_y + price_real_h + 14  # ← padding REAL bajo el precio
         # Tachado SOLO en "antes XXX€"
         draw.text((old_x, old_y), old_text, font=fnt_old, fill=(150, 150, 150))
         draw.line(
@@ -379,11 +390,11 @@ def render_plate_1(
         )
         draw.text((old_x + old_w, old_y), savings_text, font=fnt_old, fill=AMBER)
 
-    # Ruta
+    # Ruta — empuja también un poco más abajo (era 305, ahora 320)
     fnt_route = ImageFont.truetype(F_SERIF_BOLD, 38)
     route = f"{route_from}  →  {route_to}"
     rw = text_w(draw, route, fnt_route)
-    draw.text(((W - rw) // 2, panel_y + 305), route, font=fnt_route, fill=WHITE)
+    draw.text(((W - rw) // 2, panel_y + 320), route, font=fnt_route, fill=WHITE)
 
     # Meta line
     parts = []
@@ -408,7 +419,7 @@ def render_plate_1(
             break
         fnt_meta = ImageFont.truetype(F_SANS, size)
     mw = text_w(draw, meta, fnt_meta)
-    draw.text(((W - mw) // 2, panel_y + 358), meta, font=fnt_meta, fill=WHITE_DIM)
+    draw.text(((W - mw) // 2, panel_y + 372), meta, font=fnt_meta, fill=WHITE_DIM)
 
     # Hook
     if duration_str and stops == 0:
@@ -424,7 +435,7 @@ def render_plate_1(
             break
         fnt_hook = ImageFont.truetype(F_SERIF_ITAL, size)
     hw = text_w(draw, hook, fnt_hook)
-    draw.text(((W - hw) // 2, panel_y + 395), hook, font=fnt_hook, fill=AMBER)
+    draw.text(((W - hw) // 2, panel_y + 408), hook, font=fnt_hook, fill=AMBER)
 
     # Bottom strip
     img = bottom_strip(img, plate_num=1)
