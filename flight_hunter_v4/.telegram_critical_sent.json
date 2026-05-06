@@ -159,6 +159,22 @@
       "destination": "OLB",
       "price_eur": 16.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "b845c9c4be39",
+      "ts": "2026-05-06T17:26:08.896538+00:00",
+      "origin": "STN",
+      "destination": "RZE",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fe36acc280ce",
+      "ts": "2026-05-06T17:26:08.896538+00:00",
+      "origin": "BUD",
+      "destination": "ZAD",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
