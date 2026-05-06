@@ -229,55 +229,131 @@ export function buildHeuristicItinerary(input: TripPlannerInput): GeneratedItine
   };
 }
 
+/**
+ * Llama AI con cascade de proveedores GRATIS-PRIMERO:
+ *   1. GROQ_API_KEY (Llama 3.3 70B, free tier 14k tokens/min)
+ *   2. GEMINI_API_KEY (Gemini 2.0 Flash, free 1500 req/día)
+ *   3. ANTHROPIC_API_KEY (Claude Haiku, paid ~$0.008/req)
+ *   4. fallback heurístico (sin coste, plantillas)
+ *
+ * El primero disponible se usa. Sin variables → heurístico.
+ */
 export async function generateItineraryWithAI(
   input: TripPlannerInput,
 ): Promise<GeneratedItinerary> {
-  // Si no hay key, fallback heurístico (no falla nunca)
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return buildHeuristicItinerary(input);
-  }
+  const days = Math.max(2, Math.min(21, input.days));
+  const heur = buildHeuristicItinerary(input);
 
-  try {
-    const days = Math.max(2, Math.min(21, input.days));
-    const prompt = `Eres un planificador de viajes para TripCazador.com. Genera un itinerario JSON estricto sin markdown, en ${input.language === "en" ? "inglés" : "español"}, de ${days} días en ${input.destination}${input.origin ? ` desde ${input.origin}` : ""} para ${input.travelers} viajero(s), presupuesto ${input.budget}€, estilo ${input.style}${input.notes ? `. Notas usuario: ${input.notes}` : ""}.
+  const userPrompt = `Eres un planificador de viajes para TripCazador.com. Genera un itinerario JSON estricto sin markdown, en ${input.language === "en" ? "inglés" : "español"}, de ${days} días en ${input.destination}${input.origin ? ` desde ${input.origin}` : ""} para ${input.travelers} viajero(s), presupuesto ${input.budget}€, estilo ${input.style}${input.notes ? `. Notas usuario: ${input.notes}` : ""}.
 
-Devuelve SOLO JSON con esta forma exacta:
-{"summary":"<2 frases resumen>","daily":[{"day":1,"title":"<titulo>","morning":"<actividad>","afternoon":"<actividad>","evening":"<actividad>","food_pick":"<plato>","cost_est":"<XX€/p>"}, ...${days} días]}`;
+Devuelve SOLO un objeto JSON con esta forma exacta:
+{"summary":"<2 frases resumen>","daily":[{"day":1,"title":"<titulo>","morning":"<actividad>","afternoon":"<actividad>","evening":"<actividad>","food_pick":"<plato>","cost_est":"<XX€/p>"}, ...${days} días]}
 
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 2400,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-    if (!r.ok) {
-      console.error("[trip_planner] AI API error", r.status);
-      return buildHeuristicItinerary(input);
+NO añadas texto antes ni después. Empieza con { y termina con }.`;
+
+  // Provider 1: Groq (free, fastest)
+  const groqKey = process.env.GROQ_API_KEY;
+  if (groqKey) {
+    try {
+      const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${groqKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: "Devuelves siempre JSON válido sin markdown ni explicaciones." },
+            { role: "user", content: userPrompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 2400,
+          response_format: { type: "json_object" },
+        }),
+      });
+      if (r.ok) {
+        const data = await r.json();
+        const text = data?.choices?.[0]?.message?.content || "";
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed.daily) && parsed.daily.length === days) {
+          return { ...heur, summary: parsed.summary || heur.summary, daily: parsed.daily, used_ai: true };
+        }
+      } else {
+        console.error("[trip_planner] groq error", r.status);
+      }
+    } catch (e) {
+      console.error("[trip_planner] groq failed", e);
     }
-    const data = await r.json();
-    const text = data?.content?.[0]?.text || "";
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return buildHeuristicItinerary(input);
-    const parsed = JSON.parse(jsonMatch[0]);
-
-    // Build same shape, override summary+daily
-    const heur = buildHeuristicItinerary(input);
-    return {
-      ...heur,
-      summary: typeof parsed.summary === "string" ? parsed.summary : heur.summary,
-      daily: Array.isArray(parsed.daily) && parsed.daily.length === days ? parsed.daily : heur.daily,
-      used_ai: true,
-    };
-  } catch (e) {
-    console.error("[trip_planner] AI generation failed", e);
-    return buildHeuristicItinerary(input);
   }
+
+  // Provider 2: Gemini (free 1500/día)
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (geminiKey) {
+    try {
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: userPrompt }] }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 2400,
+              responseMimeType: "application/json",
+            },
+          }),
+        },
+      );
+      if (r.ok) {
+        const data = await r.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed.daily) && parsed.daily.length === days) {
+          return { ...heur, summary: parsed.summary || heur.summary, daily: parsed.daily, used_ai: true };
+        }
+      } else {
+        console.error("[trip_planner] gemini error", r.status);
+      }
+    } catch (e) {
+      console.error("[trip_planner] gemini failed", e);
+    }
+  }
+
+  // Provider 3: Anthropic (paid)
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  if (anthropicKey) {
+    try {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": anthropicKey,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 2400,
+          messages: [{ role: "user", content: userPrompt }],
+        }),
+      });
+      if (r.ok) {
+        const data = await r.json();
+        const text = data?.content?.[0]?.text || "";
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (Array.isArray(parsed.daily) && parsed.daily.length === days) {
+            return { ...heur, summary: parsed.summary || heur.summary, daily: parsed.daily, used_ai: true };
+          }
+        }
+      }
+    } catch (e) {
+      console.error("[trip_planner] anthropic failed", e);
+    }
+  }
+
+  // Fallback heurístico
+  return heur;
 }

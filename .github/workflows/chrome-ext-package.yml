@@ -1,0 +1,62 @@
+name: Package Chrome extension
+
+# Empaqueta chrome-extension/ en un .zip listo para subir al Chrome Web Store
+# o instalar como CRX. Se publica como artifact en cada push a main que toque
+# chrome-extension/. También se puede disparar manualmente.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "chrome-extension/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read manifest version
+        id: version
+        run: |
+          VER=$(python3 -c "import json; print(json.load(open('chrome-extension/manifest.json'))['version'])")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+
+      - name: Validate manifest
+        run: |
+          python3 -c "
+          import json, sys
+          m = json.load(open('chrome-extension/manifest.json'))
+          required = ['manifest_version', 'name', 'version', 'description', 'icons', 'permissions']
+          missing = [k for k in required if k not in m]
+          if missing:
+              sys.exit(f'Missing manifest keys: {missing}')
+          if m['manifest_version'] != 3:
+              sys.exit(f'Manifest version must be 3, got {m[\"manifest_version\"]}')
+          for size in ['16','32','48','128']:
+              path = f'chrome-extension/{m[\"icons\"].get(size, \"\")}'
+              import os
+              if not os.path.isfile(path):
+                  sys.exit(f'Icon {size}px not found: {path}')
+          print('OK manifest valid')
+          "
+
+      - name: Package zip
+        run: |
+          cd chrome-extension
+          zip -r ../tripcazador-compare-${{ steps.version.outputs.version }}.zip . \
+            -x "README.md" "*.md" "icons-source/*" ".DS_Store"
+          cd ..
+          ls -la tripcazador-compare-*.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tripcazador-compare-${{ steps.version.outputs.version }}
+          path: tripcazador-compare-*.zip
+          retention-days: 90
