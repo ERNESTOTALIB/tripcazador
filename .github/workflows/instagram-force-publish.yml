@@ -1,0 +1,108 @@
+name: Instagram FORCE publish (existing PNGs)
+
+# Workflow ad-hoc para publicar a IG usando PNGs ya desplegadas en producción.
+# Ejecuta IG carousel post sin generar nuevas imágenes ni esperar Vercel.
+# Usa: workflow_dispatch con input `slug` = nombre de carpeta en
+# tripcazador-web/public/ig-assets/{slug}/{1..5}.png
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "Slug folder under tripcazador-web/public/ig-assets/"
+        required: true
+        default: "20260506-0946-seed-b53d915d32"
+      caption:
+        description: "Caption for the IG post"
+        required: false
+        default: "✨ OFERTA DEL DÍA\n\n📍 Múnich → Barcelona\n💰 79€ (economy · 4 noches)\n📉 -58% del precio normal (ahorras 109€)\n✈️ Vueling\n\n→ Desliza para ver QUÉ VER, DÓNDE COMER y los TRUCOS DE VIAJE\n\n🔗 tripcazador.com\n\n#tripcazador #vuelosbaratos #barcelona #ofertasdevuelos #viajesbaratos"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Publish carousel to Instagram
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          SLUG: ${{ inputs.slug }}
+          CAPTION: ${{ inputs.caption }}
+        run: |
+          python3 <<'PYEOF'
+          import os, json, urllib.request, urllib.parse, time, sys
+
+          IG_USER_ID = os.environ['IG_USER_ID']
+          TOKEN = os.environ['IG_ACCESS_TOKEN']
+          SLUG = os.environ['SLUG']
+          CAPTION = os.environ['CAPTION']
+          GRAPH = "https://graph.facebook.com/v18.0"
+
+          urls = [f"https://tripcazador.com/ig-assets/{SLUG}/{i}.png" for i in range(1, 6)]
+          print(f"📷 Carousel URLs:")
+          for u in urls:
+              print(f"  {u}")
+
+          # Step 1: create child media containers (5 images)
+          children = []
+          for i, url in enumerate(urls, 1):
+              print(f"\n→ Creating child {i}/{5}...")
+              data = urllib.parse.urlencode({
+                  "image_url": url,
+                  "is_carousel_item": "true",
+                  "access_token": TOKEN,
+              }).encode()
+              req = urllib.request.Request(
+                  f"{GRAPH}/{IG_USER_ID}/media",
+                  data=data,
+                  method="POST",
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      resp = json.loads(r.read().decode())
+                      cid = resp.get("id")
+                      print(f"   child {i} container: {cid}")
+                      children.append(cid)
+              except urllib.error.HTTPError as e:
+                  body = e.read().decode()
+                  print(f"❌ ERROR child {i}: HTTP {e.code} {body}")
+                  sys.exit(1)
+
+          # Step 2: create carousel container
+          print(f"\n→ Creating carousel parent container...")
+          data = urllib.parse.urlencode({
+              "media_type": "CAROUSEL",
+              "children": ",".join(children),
+              "caption": CAPTION,
+              "access_token": TOKEN,
+          }).encode()
+          req = urllib.request.Request(
+              f"{GRAPH}/{IG_USER_ID}/media",
+              data=data,
+              method="POST",
+          )
+          with urllib.request.urlopen(req, timeout=30) as r:
+              parent_id = json.loads(r.read().decode()).get("id")
+              print(f"   parent container: {parent_id}")
+
+          # Step 3: publish
+          print(f"\n→ Publishing parent {parent_id}...")
+          time.sleep(5)
+          data = urllib.parse.urlencode({
+              "creation_id": parent_id,
+              "access_token": TOKEN,
+          }).encode()
+          req = urllib.request.Request(
+              f"{GRAPH}/{IG_USER_ID}/media_publish",
+              data=data,
+              method="POST",
+          )
+          with urllib.request.urlopen(req, timeout=30) as r:
+              post = json.loads(r.read().decode())
+              post_id = post.get("id")
+              print(f"\n✅ PUBLISHED! Post ID: {post_id}")
+              print(f"   View: https://www.instagram.com/p/{post_id}/")
+          PYEOF
