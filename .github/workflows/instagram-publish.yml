@@ -6,11 +6,11 @@ permissions:
   contents: write     # Para commitear ig-assets/{slug}/{N}.png
 
 on:
-  # SSS75 (May 2026): cron pausado — IG_ACCESS_TOKEN expirado (subcode 463
-  # "Session has expired"). Reactivar tras regenerar token PAGE en Graph
-  # Explorer (mismo flujo SSS72). Generator + lookup IATA arreglados.
-  # schedule:
-  #   - cron: "0 */4 * * *"
+  # SSS76 (May 2026): cron reactivado con PAGE token NEVER-EXPIRE
+  # generado vía ig_token_never_expire.py (USER long-lived → /me/accounts).
+  # Verificado /debug_token expires_at=0 = permanente.
+  schedule:
+    - cron: "0 */4 * * *"
   workflow_dispatch:
 
 concurrency:
