@@ -627,36 +627,64 @@ def main() -> int:
         return -score  # ascending = best first
     deals.sort(key=score_key)
 
-    # SSS65: dedup origen+destino vs últimos N posts publicados.
-    # Si el cron anterior publicó MUC→NRT, el siguiente no puede tener
-    # MUC ni NRT como origen ni destino. Tras N=2 posts puede repetirse.
-    DEDUP_WINDOW = int(os.environ.get("IG_DEDUP_WINDOW", "2"))
-    HISTORY_FILE = ".instagram_post_history.json"
+    # SSS80: dedup robusto. Antes: window=2 + history en cache GH Actions
+    # (frágil, se perdía entre runs). Resultado: cada run elegía el top deal
+    # del ranking (siempre Múnich→Barcelona) porque history venía vacío.
+    #
+    # Ahora: window=8 (no repetir aeropuerto en 32h con cron 4h) + history
+    # commiteado en repo (data/instagram_post_history.json) para persistencia
+    # garantizada entre runs.
+    DEDUP_WINDOW = int(os.environ.get("IG_DEDUP_WINDOW", "8"))
+    HISTORY_FILE = "data/instagram_post_history.json"
+    # Backwards-compat: si el viejo .instagram_post_history.json existe pero
+    # el nuevo no, migrar.
+    LEGACY = ".instagram_post_history.json"
     recent_airports = set()
+    recent_destinations = set()
     history: List[Dict[str, Any]] = []
     try:
-        if os.path.exists(HISTORY_FILE):
-            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+        path_to_use = HISTORY_FILE if os.path.exists(HISTORY_FILE) else (LEGACY if os.path.exists(LEGACY) else None)
+        if path_to_use:
+            with open(path_to_use, "r", encoding="utf-8") as f:
                 history = json.load(f) or []
             for entry in history[-DEDUP_WINDOW:]:
                 o = (entry.get("origin") or "").upper()
                 d_ = (entry.get("destination") or "").upper()
+                cf = (entry.get("city_from") or "").lower()
+                ct = (entry.get("city_to") or "").lower()
                 if o: recent_airports.add(o)
                 if d_: recent_airports.add(d_)
+                if cf: recent_destinations.add(cf)
+                if ct: recent_destinations.add(ct)
     except Exception as e:
-        log(f"WARN reading {HISTORY_FILE}: {e}")
+        log(f"WARN reading history: {e}")
 
-    if recent_airports:
-        log(f"Antirepeticion: bloqueados {sorted(recent_airports)} (ventana {DEDUP_WINDOW})")
+    if recent_airports or recent_destinations:
+        log(f"Antirepeticion: aeropuertos {sorted(recent_airports)} | ciudades {sorted(recent_destinations)} (ventana {DEDUP_WINDOW})")
+        # Doble filtro: por código IATA Y por nombre de ciudad (case insensitive).
+        # Esto previene el caso "MUC→Barcelona se repite porque se llama BCN
+        # vs barcelona en distintas fuentes".
         filtered = [
             d for d in deals
             if (d.get("origin") or "").upper() not in recent_airports
             and (d.get("destination") or "").upper() not in recent_airports
+            and (d.get("city_from") or "").lower() not in recent_destinations
+            and (d.get("city_to") or "").lower() not in recent_destinations
         ]
         if filtered:
+            log(f"Filtrados {len(deals)} → {len(filtered)} deals tras dedup")
             deals = filtered
         else:
-            log("WARN: nada tras dedup; uso lista completa")
+            log("WARN: nada tras dedup estricto; relajando a sólo IATA")
+            relaxed = [
+                d for d in deals
+                if (d.get("origin") or "").upper() not in recent_airports
+                and (d.get("destination") or "").upper() not in recent_airports
+            ]
+            if relaxed:
+                deals = relaxed
+            else:
+                log("WARN: aún nada — uso lista completa (rotación llena)")
 
     deal = deals[0]
     log(f"Selected deal: {deal.get('id')} â {deal.get('headline')}")

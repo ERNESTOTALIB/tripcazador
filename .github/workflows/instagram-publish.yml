@@ -73,9 +73,37 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/instagram_publish_deals.py
 
-      - name: Save post history cache
+      - name: Save post history cache (legacy)
         if: always()
         uses: actions/cache/save@v4
         with:
           path: .instagram_post_history.json
           key: ig-post-history-v1-${{ github.run_id }}-${{ github.run_attempt }}
+
+      # SSS80: persistir history en repo (data/instagram_post_history.json)
+      # para que el dedup de destinos funcione DE VERDAD entre runs.
+      # Antes el history sólo vivía en GH Actions cache (frágil) y cada run
+      # veía history vacío → siempre publicaba el TOP deal (Múnich-Barcelona).
+      - name: Commit IG post history to repo
+        if: always()
+        run: |
+          if [ ! -f data/instagram_post_history.json ]; then
+            echo "Sin history que commitear (script no se ejecutó o error)"
+            exit 0
+          fi
+          git config user.email "ig-bot@tripcazador.com"
+          git config user.name "TripCazador IG Bot"
+          git add data/instagram_post_history.json
+          if git diff --staged --quiet; then
+            echo "Sin cambios en history — skip"
+          else
+            git commit -m "chore(ig): update post history (run ${{ github.run_id }}) [skip ci]"
+            for i in 1 2 3 4 5; do
+              if git push origin HEAD:main; then
+                echo "✅ history pusheado (intento $i)"
+                break
+              fi
+              echo "⚠️ push falló intento $i — pull --rebase"
+              git pull --rebase origin main || git rebase --abort 2>/dev/null || true
+            done
+          fi

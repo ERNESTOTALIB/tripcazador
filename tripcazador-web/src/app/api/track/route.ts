@@ -34,6 +34,52 @@ const VALID_TYPES: string[] = [
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "";
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
 
+// SSS80: persistencia garantizada en GitHub repo (data/events-recent.jsonl).
+// Buffer global de la lambda (compartido entre requests del mismo container)
+// que se flusha cada 5 eventos al GH API. Antes el VPS estaba caído y los
+// eventos se perdían, dejándonos viendo 59 visitas vs los 476 reales de CF.
+const ghBuffer: Array<{ ts: string; type: string; visitor: string; meta: Record<string, string | number | boolean> }> = [];
+const GH_FLUSH_THRESHOLD = 5;
+
+async function flushBufferToGitHub() {
+  const ghToken = process.env.GH_TRACK_TOKEN || process.env.GITHUB_TOKEN || "";
+  if (!ghToken || ghBuffer.length === 0) return;
+  const events = ghBuffer.splice(0, ghBuffer.length);
+  const repo = "ERNESTOTALIB/tripcazador";
+  const path = "data/events-recent.jsonl";
+  try {
+    let sha: string | undefined;
+    let current = "";
+    const getR = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      headers: { Authorization: `token ${ghToken}`, Accept: "application/vnd.github+json" },
+    });
+    if (getR.ok) {
+      const data = await getR.json();
+      sha = data.sha;
+      current = Buffer.from(data.content, "base64").toString("utf-8");
+    }
+    const newLines = events.map((e) => JSON.stringify(e)).join("\n");
+    const all = (current ? current.trimEnd() + "\n" : "") + newLines + "\n";
+    // Mantén last 1000 lines para que el archivo no crezca infinitamente
+    const trimmed = all.split("\n").filter((l) => l.trim()).slice(-1000).join("\n") + "\n";
+    await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${ghToken}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `chore(track): +${events.length} events [skip ci]`,
+        content: Buffer.from(trimmed, "utf-8").toString("base64"),
+        sha,
+      }),
+    });
+  } catch {
+    // failure = perdemos esos eventos. mejor que bloquear el response.
+  }
+}
+
 /**
  * Persist evento en backend FastAPI (best-effort). Si falla no crashea.
  * Backend escribe a JSONL append-only en /var/lib/tripcazador/events.jsonl.
@@ -127,6 +173,19 @@ export async function POST(req: NextRequest) {
   // 2) Persist en backend (best-effort, sobrevive cold start)
   // No await: fire-and-forget para no añadir latencia al response.
   persistRemote(event).catch(() => { /* no-op */ });
+
+  // 3) SSS80: persistencia GitHub. VPS está down, event_store es por-lambda
+  // (perdemos 80% de visibility). GH API es lento pero PERSISTE → veremos
+  // todos los eventos reales en data/events-recent.jsonl.
+  ghBuffer.push({
+    ts: new Date(now).toISOString(),
+    type,
+    visitor: event.visitor_id,
+    meta: sanitized,
+  });
+  if (ghBuffer.length >= GH_FLUSH_THRESHOLD) {
+    flushBufferToGitHub().catch(() => { /* no-op */ });
+  }
 
   return NextResponse.json({ ok: true }, { status: 202 });
 }
