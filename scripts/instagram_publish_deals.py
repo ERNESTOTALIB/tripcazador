@@ -29,6 +29,7 @@ import re
 import subprocess
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -466,7 +467,31 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
     # tripcazador-web/public/ig-assets/ → https://tripcazador.com/ig-assets/
     base = f"https://tripcazador.com/ig-assets/{asset_slug}"
     urls = [f"{base}/{i}.png" for i in range(1, 6)]
-    log(f"✅ 5 public URLs ready under {base}")
+    log(f"✅ 5 URLs ready under {base} (waiting Vercel deploy...)")
+
+    # SSS76b: Vercel auto-deploys on push to tripcazador-web/** but takes
+    # ~2-4 min. Poll URL #1 hasta 200 OK con max-wait 6min antes de devolver
+    # para que IG pueda fetcharlo. Sin esto IG falla con HTTP 400 (race).
+    import time as _t
+    test_url = urls[0]
+    poll_start = _t.time()
+    max_wait = 360  # 6 minutos
+    delay = 15
+    while _t.time() - poll_start < max_wait:
+        try:
+            req = urllib.request.Request(test_url, method="HEAD")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status == 200:
+                    elapsed = int(_t.time() - poll_start)
+                    log(f"✅ Vercel deploy ready ({elapsed}s) — URLs públicas OK")
+                    return urls
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                log(f"WARN poll {test_url}: HTTP {e.code}")
+        except Exception as e:
+            log(f"WARN poll {test_url}: {e}")
+        _t.sleep(delay)
+    log(f"WARN: Vercel deploy timeout ({max_wait}s) — intentando IG publish anyway")
     return urls
 
 
