@@ -16,5 +16,14 @@
     "city_from": "M\u00fanich",
     "city_to": "Barcelona",
     "price_eur": 79.0
+  },
+  {
+    "timestamp": 1778149801.1253867,
+    "deal_id": "seed-b53d915d32",
+    "origin": "FRA",
+    "destination": "LIS",
+    "city_from": "Fr\u00e1ncfort",
+    "city_to": "Lisboa",
+    "price_eur": 94.0
   }
 ]
