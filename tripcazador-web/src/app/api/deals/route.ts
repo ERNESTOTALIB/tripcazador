@@ -32,6 +32,8 @@ interface Deal {
   country_to?: string;
   region?: string;
   price_eur?: number;
+  price?: number; // SSS84: cuando devuelve currency != EUR
+  currency?: string;
   classification?: string;
   cabin?: string;
   sources?: string[];
@@ -39,6 +41,32 @@ interface Deal {
   date_out?: string;
   found_at?: string;
   [key: string]: unknown;
+}
+
+// SSS84 (May 2026): tasas FX hardcoded para conversión rápida en el route.
+// No queremos depender de un FX provider externo (latencia + rate limits).
+// Estas tasas se actualizan manualmente cada ~3 meses, suficiente para mostrar
+// precios aproximados a usuarios en otra moneda. Para el booking final el
+// partner siempre cobra en la moneda original.
+const FX_FROM_EUR: Record<string, number> = {
+  EUR: 1, USD: 1.08, GBP: 0.85, CHF: 0.96, CAD: 1.49, MXN: 21.5,
+  ARS: 1180, CLP: 1050, COP: 4500, PEN: 4.05, BRL: 6.2,
+  JPY: 168, CNY: 7.85, AUD: 1.66, NOK: 11.7, SEK: 11.3, DKK: 7.46,
+  PLN: 4.32, HUF: 410, CZK: 25.2, RON: 4.97,
+};
+
+function applyCurrency(deals: Deal[], currency: string): Deal[] {
+  const code = currency.toUpperCase();
+  if (code === "EUR" || !FX_FROM_EUR[code]) return deals;
+  const rate = FX_FROM_EUR[code];
+  return deals.map((d) => {
+    const eur = d.price_eur ?? 0;
+    return {
+      ...d,
+      price: Math.round(eur * rate * 100) / 100,
+      currency: code,
+    };
+  });
 }
 
 function isSeed(deals: Deal[]): boolean {
@@ -149,8 +177,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
   }
 
+  // SSS84: aplicar conversión de moneda si ?currency=USD/GBP/...
+  const currency = (params.get("currency") || params.get("c") || "EUR").toUpperCase();
+  const converted = applyCurrency(deals, currency);
+
   // Aplicar limit final
-  const limited = deals.slice(0, limit);
+  const limited = converted.slice(0, limit);
 
   return new NextResponse(JSON.stringify(limited), {
     status: 200,
