@@ -12,12 +12,17 @@ genérico usando la foto principal del destino para los 5 slides.
 from typing import TypedDict, Dict, List, Optional
 
 
-class PlateContent(TypedDict):
-    name: str        # Title (serif italic terracotta)
-    desc: str        # Description (serif justified)
-    label: str       # Top-left pill (mono uppercase)
-    coord: str       # Top-right pill (mono coord)
-    photo: str       # Background photo URL (Wikimedia or Unsplash)
+class PlateContent(TypedDict, total=False):
+    name: str        # Title (serif italic terracotta) — REQUIRED
+    desc: str        # Description (serif justified) — REQUIRED
+    label: str       # Top-left pill (mono uppercase) — REQUIRED
+    coord: str       # Top-right pill (mono coord) — REQUIRED
+    photo: str       # Background photo URL (Wikimedia or Unsplash) — REQUIRED
+    # SSS88: query Wikipedia explícita para resolución dinámica.
+    # Si está, place_photo_resolver buscará usando este string. Si no,
+    # usará `name` como fallback. Útil para casos donde `name` da hits
+    # ambiguos (ej. "Coliseo, Roma" → "Coliseo Amauta"; mejor "Coliseum").
+    wiki_query: str
 
 
 class DestinationLandmarks(TypedDict):
@@ -42,6 +47,7 @@ LANDMARKS: Dict[str, DestinationLandmarks] = {
         "hero_subtitle": "Cinco lugares imprescindibles  ·  y un precio cazado que lo paga todo",
         "places": {
             "name": "Park Güell, Barcelona",
+            "wiki_query": "Park Güell",
             "desc": "El jardín que Gaudí pintó con cerámica rota. Reserva online — la cola in situ supera 2h en alta temporada. Entrada 13€, abre 08:30.",
             "label": "LUGAR  Nº 1  ·  ALTA",
             "coord": "41°24′ N · 02°09′ E",
@@ -49,6 +55,7 @@ LANDMARKS: Dict[str, DestinationLandmarks] = {
         },
         "food": {
             "name": "El Born, Gòtico",
+            "wiki_query": "Tapa (gastronomía)",
             "desc": "El barrio donde se come y se bebe la ciudad. Menú del día 13-17€, vermut a 3,50€. Evita Las Ramblas: los locales del Born sirven mejor a mitad de precio.",
             "label": "GASTRO  ·  TÍPICO",
             "coord": "41°23′ N · 02°10′ E",
@@ -56,6 +63,7 @@ LANDMARKS: Dict[str, DestinationLandmarks] = {
         },
         "tips": {
             "name": "Casa Batlló, Eixample",
+            "wiki_query": "Casa Batlló",
             "desc": "Modernismo en la espina del Eixample. Combo con Sagrada Familia y Park Güell desde 65€ — ahorras 22€ frente a entradas sueltas.",
             "label": "TIP  ·  AHORRO",
             "coord": "41°23′ N · 02°09′ E",
@@ -63,6 +71,7 @@ LANDMARKS: Dict[str, DestinationLandmarks] = {
         },
         "cta": {
             "name": "Barceloneta, Mediterráneo",
+            "wiki_query": "La Barceloneta",
             "desc": "Playa caminable desde el centro: metro L4 te deja en 15 min desde plaza Catalunya. Paella en chiringuito al atardecer y el próximo chollo ya está saliendo en tripcazador.com.",
             "label": "CIERRE  ·  TU TURNO",
             "coord": "41°22′ N · 02°11′ E",
@@ -156,6 +165,7 @@ LANDMARKS: Dict[str, DestinationLandmarks] = {
         "hero_subtitle": "Cinco lugares imprescindibles  ·  y un precio cazado entre ruinas eternas",
         "places": {
             "name": "Coliseo, Roma",
+            "wiki_query": "Colosseum",
             "desc": "Anfiteatro del año 80 d.C. Entrada combinada con Foro Romano + Palatino 16€. Reserva online — la cola física puede llegar a 2h en temporada alta.",
             "label": "LUGAR  Nº 1  ·  UNESCO",
             "coord": "41°53′ N · 12°29′ E",
@@ -163,6 +173,7 @@ LANDMARKS: Dict[str, DestinationLandmarks] = {
         },
         "food": {
             "name": "Carbonara en Trastevere",
+            "wiki_query": "Carbonara",
             "desc": "Pasta con guanciale, huevo y pecorino — la auténtica romana sin nata. Menú trattoria 12-18€. Evita las turísticas del Vaticano: Trastevere y Testaccio sirven mejor.",
             "label": "GASTRO  ·  TÍPICO",
             "coord": "41°53′ N · 12°28′ E",
@@ -170,6 +181,7 @@ LANDMARKS: Dict[str, DestinationLandmarks] = {
         },
         "tips": {
             "name": "Vaticano + Capilla Sixtina",
+            "wiki_query": "Capilla Sixtina",
             "desc": "Reserva el primer turno (08:00) saltándote la cola por 5€ extra. Capilla Sixtina + Museos Vaticanos 27€. Domingo último del mes entrada gratis (cola gigante).",
             "label": "TIP  ·  AHORRO",
             "coord": "41°54′ N · 12°27′ E",
@@ -177,6 +189,7 @@ LANDMARKS: Dict[str, DestinationLandmarks] = {
         },
         "cta": {
             "name": "Trastevere de noche",
+            "wiki_query": "Trastevere",
             "desc": "Barrio de callejones empedrados, bares de vino y pizza al trancio. Aperitivo 8-12€ con stuzzichini incluidos. Próximo chollo saliendo en tripcazador.com.",
             "label": "CIERRE  ·  TU TURNO",
             "coord": "41°53′ N · 12°28′ E",

@@ -557,6 +557,14 @@ def main() -> int:
         default="tripcazador-web/public/logo-a1-primary.svg",
         type=Path,
     )
+    # SSS88: skip pre-flight photo resolver (para tests/offline). Por defecto
+    # OFF — el resolver corre y busca fotos en Wikipedia si la curada falla.
+    p.add_argument(
+        "--skip-photo-resolver",
+        action="store_true",
+        default=False,
+        help="Skip Wikipedia photo resolver pre-flight (tests offline)",
+    )
     args = p.parse_args()
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
@@ -578,6 +586,22 @@ def main() -> int:
             return 2
         print(f"INFO: dest-key '{args.dest_key}' not in catalog, using generic fallback")
         landmarks = fallback_landmarks(args.dest_key, args.fallback_photo)
+
+    # SSS88: Pre-flight photo resolver — para CADA slide, valida que la URL
+    # cargue; si no, busca la imagen del lugar en Wikipedia API + cachea.
+    # Esto garantiza que NUNCA publiquemos un carrusel con fotos genéricas
+    # cuando el lugar concreto (Sagrada Familia, Coliseo, etc.) tiene foto
+    # disponible en Wikipedia.
+    if args.skip_photo_resolver:
+        print("INFO: --skip-photo-resolver activo (modo offline/test)")
+    else:
+        try:
+            from place_photo_resolver import resolve_landmarks_inplace
+            resolve_landmarks_inplace(landmarks, default_fallback=args.fallback_photo or "")
+        except ImportError as e:
+            print(f"WARN: place_photo_resolver no disponible ({e}) — siguiendo sin pre-flight")
+        except Exception as e:
+            print(f"WARN: place_photo_resolver crash ({e}) — siguiendo con landmarks raw")
 
     # Plate 1
     render_plate_1(
