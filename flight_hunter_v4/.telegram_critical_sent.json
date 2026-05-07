@@ -319,6 +319,22 @@
       "destination": "CAG",
       "price_eur": 38.9,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "71047baba5eb",
+      "ts": "2026-05-07T22:56:12.187629+00:00",
+      "origin": "STN",
+      "destination": "PFO",
+      "price_eur": 40.67,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "0ee084661935",
+      "ts": "2026-05-07T22:56:12.187629+00:00",
+      "origin": "WAW",
+      "destination": "GOA",
+      "price_eur": 43.24,
+      "classification": "CRÍTICO"
     }
   ]
 }
