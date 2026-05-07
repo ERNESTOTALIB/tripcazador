@@ -159,25 +159,36 @@ jobs:
         # Path principal: el frontend lee tripcazador-web/public/deals-latest.json
         # como fallback cuando VPS está stale o caído.
         run: |
+          set -e
           mkdir -p tripcazador-web/public
-          cp deals.json tripcazador-web/public/deals-latest.json
+          cp -v deals.json tripcazador-web/public/deals-latest.json
+          ls -la deals.json tripcazador-web/public/deals-latest.json
+          # SSS81: forzar que generated_at del archivo cambie cada run (incluso si
+          # los engines no devuelven nada nuevo). Antes el `cp` copiaba archivo
+          # idéntico → git diff vacío → skip silencioso → frontend con stale data.
           python -c "
-          import json, datetime
-          d = json.load(open('deals.json'))
+          import json, datetime, hashlib, os
+          d = json.load(open('tripcazador-web/public/deals-latest.json'))
+          if isinstance(d, dict):
+              d['committed_at'] = datetime.datetime.utcnow().isoformat() + 'Z'
+              d['run_id'] = '${{ github.run_id }}'
+              json.dump(d, open('tripcazador-web/public/deals-latest.json', 'w'))
           deals = d.get('deals', d) if isinstance(d, dict) else d
           summary = {
             'total_deals': d.get('total_deals', len(deals) if isinstance(deals, list) else 0),
             'generated_at': datetime.datetime.utcnow().isoformat() + 'Z',
             'run_id': '${{ github.run_id }}',
+            'sha256': hashlib.sha256(open('tripcazador-web/public/deals-latest.json','rb').read()).hexdigest()[:16],
           }
           json.dump(summary, open('tripcazador-web/public/deals-summary.json', 'w'), indent=2)
-          print(summary)
+          print('Summary:', summary)
           "
           git config user.email "hunter-bot@tripcazador.com"
           git config user.name "TripCazador Hunter Bot"
           git add tripcazador-web/public/deals-latest.json tripcazador-web/public/deals-summary.json
           if git diff --staged --quiet; then
-            echo "Sin cambios en deals.json — skip commit"
+            echo "::warning::Sin cambios en deals.json — esto NO debería pasar tras committed_at fix. Investigar"
+            git diff HEAD~3..HEAD -- tripcazador-web/public/deals-latest.json | head -20 || true
           else
             git commit -m "chore(hunter): refresh deals.json (run ${{ github.run_id }}) [skip ci]"
             # SSS79: retry loop con rebase. Antes el push fallaba sin recuperación

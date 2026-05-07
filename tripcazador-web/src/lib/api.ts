@@ -91,6 +91,33 @@ export async function getDeals(params?: {
 
   const json = await res.json();
 
+  // SSS81 (May 2026): detectar seed VPS y caer al worker JSONL.
+  // El backend FastAPI a veces devuelve seed deals (id="seed-…",
+  // sources=["seed"], tags=["seed"]) cuando el upload del worker
+  // no llega o el deals.json del VPS está stale. En ese caso el repo
+  // tiene 1259+ deals reales en /deals-latest.json — usamos ESE.
+  const arr = Array.isArray(json) ? json : (json && Array.isArray(json.deals) ? json.deals : null);
+  if (arr && arr.length > 0) {
+    const sample = arr.slice(0, 5);
+    const allSeed = sample.every((d: Deal) =>
+      (typeof d.id === "string" && d.id.startsWith("seed-")) ||
+      (Array.isArray(d.sources) && d.sources.includes("seed")) ||
+      (Array.isArray(d.tags) && d.tags.includes("seed"))
+    );
+    if (allSeed) {
+      const fresh = await getDealsFromStatic();
+      if (fresh.deals.length > arr.length) {
+        // Re-aplica los filtros del usuario sobre el catálogo real
+        const filtered = diversifyDeals(fresh.deals, params);
+        return {
+          ...fresh,
+          deals: filtered.map((d) => enhanceDealBookingUrl(d)),
+          total_deals: filtered.length,
+        };
+      }
+    }
+  }
+
   // FastAPI puede devolver un array plano (`Deal[]`) o el envoltorio
   // `DealsResponse`. Cuando devuelve array (variante actual del backend),
   // lo envolvemos para mantener el contrato del cliente.
