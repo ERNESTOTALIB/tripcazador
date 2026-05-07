@@ -1,0 +1,56 @@
+name: Telegram inverse search bot (cron 5min)
+
+# SSS83 May 2026: bot de búsqueda inversa. Usuarios mandan "/buscar Tokio septiembre"
+# y reciben los chollos del repo que matchean.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: telegram-inverse-bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run bot poll
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          SITE_URL: https://tripcazador.com
+        run: python scripts/telegram_inverse_search_bot.py
+
+      - name: Commit subscription state
+        if: always()
+        run: |
+          if [ ! -f data/inverse_search_subscriptions.json ] && [ ! -f data/.telegram_inverse_offset ]; then
+            echo "Sin estado nuevo"
+            exit 0
+          fi
+          git config user.email "tg-bot@tripcazador.com"
+          git config user.name "TripCazador TG Bot"
+          git add -f data/inverse_search_subscriptions.json data/.telegram_inverse_offset 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "Sin cambios"
+          else
+            git commit -m "chore(tg-bot): inverse search state [skip ci]"
+            for i in 1 2 3 4 5; do
+              if git push origin HEAD:main; then break; fi
+              git pull --rebase origin main || git rebase --abort 2>/dev/null || true
+            done
+          fi

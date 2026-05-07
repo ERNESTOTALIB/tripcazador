@@ -14,7 +14,9 @@
     "test:e2e:prod": "BASE_URL=https://tripcazador.com E2E_ENV=prod playwright test e2e/tests/multi_env_smoke.spec.ts e2e/tests/api_full.spec.ts --grep-invert Mutaciones",
     "test:e2e:smoke": "playwright test e2e/tests/multi_env_smoke.spec.ts",
     "test:e2e:api": "playwright test e2e/tests/api_full.spec.ts",
-    "test:e2e:flows": "playwright test e2e/tests/search_flow_complete.spec.ts e2e/tests/premium_referral_push.spec.ts"
+    "test:e2e:flows": "playwright test e2e/tests/search_flow_complete.spec.ts e2e/tests/premium_referral_push.spec.ts",
+    "test": "vitest run --reporter=default --no-coverage --passWithNoTests",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "next": "14.2.3",
@@ -45,6 +47,11 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "@playwright/test": "^1.45.0",
-    "@axe-core/playwright": "^4.9.0"
+    "@axe-core/playwright": "^4.9.0",
+    "vitest": "^2.1.9",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "jsdom": "^25.0.1"
   }
 }
