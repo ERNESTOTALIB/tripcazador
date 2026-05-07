@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "timestamp": 1778125092.2925863,
+    "deal_id": "seed-d689e4d235",
+    "origin": "BSL",
+    "destination": "PMI",
+    "city_from": "Basilea",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 69.0
+  }
+]
