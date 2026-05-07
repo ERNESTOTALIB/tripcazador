@@ -79,6 +79,33 @@ def http_post(url: str, params: Dict[str, str], timeout: int = 30) -> Any:
 
 
 def fetch_top_deals(limit: int = 30) -> List[Dict[str, Any]]:
+    """SSS81 (May 2026): preferimos el archivo del repo (1271+ deals reales del
+    hunter) sobre /api/deals (que a veces devuelve 3 seed fakes cuando el VPS
+    está stale). Si el archivo del repo existe en el filesystem (corremos en
+    GH Actions con el repo checkout), lo usamos directamente; si no, fallback
+    al endpoint público."""
+    # 1) Repo path (lo que el worker commitea cada 4h con 1000+ deals reales)
+    repo_path = Path(__file__).resolve().parent.parent / "tripcazador-web" / "public" / "deals-latest.json"
+    if repo_path.exists():
+        try:
+            with open(repo_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            deals = data.get("deals", []) if isinstance(data, dict) else data
+            if isinstance(deals, list) and len(deals) > 10:
+                # Filtrar fuera deals seed que pudieran haberse colado
+                deals = [d for d in deals if isinstance(d, dict) and not (
+                    str(d.get("id", "")).startswith("seed-")
+                    or "seed" in (d.get("sources") or [])
+                    or "seed" in (d.get("tags") or [])
+                )]
+                log(f"fetch_top_deals: repo file ({len(deals)} deals reales)")
+                # Sort por score desc (igual que /api/deals/top)
+                deals.sort(key=lambda d: d.get("score", 0) or 0, reverse=True)
+                return deals[:limit]
+        except Exception as e:
+            log(f"WARN repo file read failed: {e}")
+
+    # 2) Fallback: endpoint HTTP
     url = f"{SITE_URL}/api/deals?limit={limit}"
     try:
         data = http_get(url)

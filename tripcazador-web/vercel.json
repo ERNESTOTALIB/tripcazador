@@ -10,8 +10,44 @@
 
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://api.tripcazador.com/api/:path*"
+      "source": "/api/airports/:path*",
+      "destination": "https://api.tripcazador.com/api/airports/:path*"
+    },
+    {
+      "source": "/api/airports",
+      "destination": "https://api.tripcazador.com/api/airports"
+    },
+    {
+      "source": "/api/search/:path*",
+      "destination": "https://api.tripcazador.com/api/search/:path*"
+    },
+    {
+      "source": "/api/search",
+      "destination": "https://api.tripcazador.com/api/search"
+    },
+    {
+      "source": "/api/hotels/:path*",
+      "destination": "https://api.tripcazador.com/api/hotels/:path*"
+    },
+    {
+      "source": "/api/price_history",
+      "destination": "https://api.tripcazador.com/api/price_history"
+    },
+    {
+      "source": "/api/health",
+      "destination": "https://api.tripcazador.com/api/health"
+    },
+    {
+      "source": "/api/status",
+      "destination": "https://api.tripcazador.com/api/status"
+    },
+    {
+      "source": "/api/metrics",
+      "destination": "https://api.tripcazador.com/api/metrics"
+    },
+    {
+      "source": "/api/metrics/:path*",
+      "destination": "https://api.tripcazador.com/api/metrics/:path*"
     }
   ],
 
