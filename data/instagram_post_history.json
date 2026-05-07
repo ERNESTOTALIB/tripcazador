@@ -34,5 +34,14 @@
     "city_from": "Basilea",
     "city_to": "Palma de Mallorca",
     "price_eur": 69.0
+  },
+  {
+    "timestamp": 1778176357.9350832,
+    "deal_id": "seed-2f0cfb366a",
+    "origin": "MUC",
+    "destination": "BCN",
+    "city_from": "M\u00fanich",
+    "city_to": "Barcelona",
+    "price_eur": 79.0
   }
 ]
