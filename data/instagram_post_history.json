@@ -61,5 +61,14 @@
     "city_from": "Madrid",
     "city_to": "Lisbon",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1778189076.4390552,
+    "deal_id": "ryanair_ath_mla_20260625_economy",
+    "origin": "ATH",
+    "destination": "MLA",
+    "city_from": "Atenas",
+    "city_to": "Malta",
+    "price_eur": 14.99
   }
 ]
