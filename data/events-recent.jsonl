@@ -18,3 +18,8 @@
 {"ts":"2026-05-06T22:23:47.192Z","type":"landing_arrived","visitor":"17b3af84d658ef82","meta":{"path":"/"}}
 {"ts":"2026-05-06T22:23:49.952Z","type":"landing_arrived","visitor":"17b3af84d658ef82","meta":{"path":"/"}}
 {"ts":"2026-05-06T22:23:50.917Z","type":"page_view","visitor":"17b3af84d658ef82","meta":{"path":"/"}}
+{"ts":"2026-05-07T06:21:31.145Z","type":"landing_arrived","visitor":"61e0cc0558a149fa","meta":{"path":"/"}}
+{"ts":"2026-05-07T06:21:31.185Z","type":"page_view","visitor":"61e0cc0558a149fa","meta":{"path":"/"}}
+{"ts":"2026-05-07T06:30:38.297Z","type":"page_view","visitor":"449579bc7f05e9de","meta":{"path":"/diag-after-deploy-1","referrer":"claude_post_deploy"}}
+{"ts":"2026-05-07T06:30:38.434Z","type":"page_view","visitor":"449579bc7f05e9de","meta":{"path":"/diag-after-deploy-2","referrer":"claude_post_deploy"}}
+{"ts":"2026-05-07T06:30:38.569Z","type":"page_view","visitor":"449579bc7f05e9de","meta":{"path":"/diag-after-deploy-3","referrer":"claude_post_deploy"}}
