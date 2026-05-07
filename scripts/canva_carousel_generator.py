@@ -340,7 +340,9 @@ def render_plate_1(
     draw.text(((W - sw) // 2, 365), sub, font=fnt_sub, fill=WHITE_DIM)
 
     # ── BIG PRICE PANEL ──
-    panel_x, panel_y, panel_w, panel_h = 80, 450, W - 160, 430
+    # SSS84: panel_h 430→470 para que el hook ("Ruta directa hacia X")
+    # respire 40px del border amber abajo en vez de tocarlo.
+    panel_x, panel_y, panel_w, panel_h = 80, 450, W - 160, 470
     panel = Image.new("RGBA", (panel_w, panel_h), NAVY_RGBA)
     rgba = img.convert("RGBA")
     rgba.paste(panel, (panel_x, panel_y), panel)
@@ -357,21 +359,12 @@ def render_plate_1(
         "DESDE", font=fnt_l2, fill=AMBER,
     )
 
-    fnt_price = ImageFont.truetype(F_SERIF_BOLD, 230)
-    price_str = f"{price}€"
-    pw = text_w(draw, price_str, fnt_price)
-    price_y = panel_y + 60
-    draw.text(((W - pw) // 2, price_y), price_str, font=fnt_price, fill=AMBER)
-    # Medir la altura real del precio para posicionar el "antes" SIN solapar
-    price_bbox = draw.textbbox((0, 0), price_str, font=fnt_price)
-    price_real_h = price_bbox[3] - price_bbox[1]
-
-    # Old price line — solo si tenemos old_price > price.
-    # Posicionado debajo del precio gigante (medido por bbox real, no offset
-    # mágico) con 14px de padding para evitar el solapamiento que se veía
-    # en el feed.
+    # SSS84 (May 2026): "antes XXX€ · ahorras YY€ · -ZZ%" se posiciona ARRIBA
+    # del precio gigante (entre DESDE y el precio), no debajo. Antes intentábamos
+    # ponerlo debajo midiendo el bbox del precio, pero el descender del €
+    # solapaba con la línea de tachado. Ahora va arriba y nunca solapa.
     if old_price and old_price > price:
-        fnt_old = ImageFont.truetype(F_SANS, 18)
+        fnt_old = ImageFont.truetype(F_SANS, 17)
         old_text = f"antes {old_price}€"
         savings_text = (
             f"  ↓ ahorras {old_price - price}€  ·  −{savings_pct}%"
@@ -381,20 +374,28 @@ def render_plate_1(
         sav_w = text_w(draw, savings_text, fnt_old)
         total_w = old_w + sav_w
         old_x = (W - total_w) // 2
-        old_y = price_y + price_real_h + 14  # ← padding REAL bajo el precio
+        old_y = panel_y + 58  # justo bajo "DESDE", arriba del precio
         # Tachado SOLO en "antes XXX€"
-        draw.text((old_x, old_y), old_text, font=fnt_old, fill=(150, 150, 150))
+        draw.text((old_x, old_y), old_text, font=fnt_old, fill=(180, 180, 180))
         draw.line(
-            [(old_x, old_y + 12), (old_x + old_w, old_y + 12)],
-            fill=(150, 150, 150), width=2,
+            [(old_x, old_y + 11), (old_x + old_w, old_y + 11)],
+            fill=(180, 180, 180), width=2,
         )
         draw.text((old_x + old_w, old_y), savings_text, font=fnt_old, fill=AMBER)
+        price_y = panel_y + 95  # bajo "antes/ahorras"
+    else:
+        price_y = panel_y + 70  # sin old_price: precio justo bajo DESDE
 
-    # Ruta — empuja también un poco más abajo (era 305, ahora 320)
+    fnt_price = ImageFont.truetype(F_SERIF_BOLD, 220)
+    price_str = f"{price}€"
+    pw = text_w(draw, price_str, fnt_price)
+    draw.text(((W - pw) // 2, price_y), price_str, font=fnt_price, fill=AMBER)
+
+    # Ruta — empujada a 340 para que el panel_h=470 quede balanceado
     fnt_route = ImageFont.truetype(F_SERIF_BOLD, 38)
     route = f"{route_from}  →  {route_to}"
     rw = text_w(draw, route, fnt_route)
-    draw.text(((W - rw) // 2, panel_y + 320), route, font=fnt_route, fill=WHITE)
+    draw.text(((W - rw) // 2, panel_y + 340), route, font=fnt_route, fill=WHITE)
 
     # Meta line
     parts = []
@@ -419,7 +420,7 @@ def render_plate_1(
             break
         fnt_meta = ImageFont.truetype(F_SANS, size)
     mw = text_w(draw, meta, fnt_meta)
-    draw.text(((W - mw) // 2, panel_y + 372), meta, font=fnt_meta, fill=WHITE_DIM)
+    draw.text(((W - mw) // 2, panel_y + 392), meta, font=fnt_meta, fill=WHITE_DIM)
 
     # Hook
     if duration_str and stops == 0:
@@ -435,7 +436,9 @@ def render_plate_1(
             break
         fnt_hook = ImageFont.truetype(F_SERIF_ITAL, size)
     hw = text_w(draw, hook, fnt_hook)
-    draw.text(((W - hw) // 2, panel_y + 408), hook, font=fnt_hook, fill=AMBER)
+    # SSS84: hook a 428 para dejar 22px de aire al border amber del panel
+    # (panel_h=470, hook_font=22, ends at 428+22=450 → bottom margin = 20)
+    draw.text(((W - hw) // 2, panel_y + 428), hook, font=fnt_hook, fill=AMBER)
 
     # Bottom strip
     img = bottom_strip(img, plate_num=1)
