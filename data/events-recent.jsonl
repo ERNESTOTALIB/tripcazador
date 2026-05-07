@@ -93,3 +93,8 @@
 {"ts":"2026-05-07T12:07:06.702Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"seed-00e0cf188c","destination":"FCO","origin":"BCN","price":29,"classification":"OFERTA"}}
 {"ts":"2026-05-07T12:07:07.055Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"seed-0012f2bae8","destination":"JFK","origin":"DUB","price":199,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-07T12:07:07.519Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"seed-0046aa1a84","destination":"IST","origin":"MAD","price":890,"classification":"ERROR"}}
+{"ts":"2026-05-07T14:45:00.311Z","type":"result_viewed","visitor":"b3569effb59d5531","meta":{"deal_id":"seed-00cfd2138a","destination":"IST","origin":"MAD","price":1195,"classification":"CRÍTICO"}}
+{"ts":"2026-05-07T14:45:06.550Z","type":"result_viewed","visitor":"b3569effb59d5531","meta":{"deal_id":"seed-00bef3e637","destination":"SYD","origin":"MAD","price":2495,"classification":"CRÍTICO"}}
+{"ts":"2026-05-07T14:45:08.448Z","type":"result_viewed","visitor":"b3569effb59d5531","meta":{"deal_id":"seed-00e0cf188c","destination":"FCO","origin":"BCN","price":29,"classification":"OFERTA"}}
+{"ts":"2026-05-07T14:45:13.214Z","type":"result_viewed","visitor":"b3569effb59d5531","meta":{"deal_id":"seed-0012f2bae8","destination":"JFK","origin":"DUB","price":199,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-07T14:45:20.787Z","type":"result_viewed","visitor":"b3569effb59d5531","meta":{"deal_id":"seed-0046aa1a84","destination":"IST","origin":"MAD","price":890,"classification":"ERROR"}}
