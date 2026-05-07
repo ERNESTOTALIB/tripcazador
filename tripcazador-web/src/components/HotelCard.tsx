@@ -14,6 +14,7 @@
  */
 import Link from "next/link";
 import { safeExternalUrl, type Deal } from "@/lib/api";
+import { HotelImage } from "@/components/HotelImage";
 
 interface HotelCardProps {
   hotel: Deal & {
@@ -66,13 +67,13 @@ export function HotelCard({ hotel, eager = false }: HotelCardProps) {
           aria-label={`Ver detalles de ${hotel.airline_name}`}
           className="relative block aspect-[16/10] overflow-hidden bg-gray-800"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <HotelImage
             src={hotel.image_url}
             alt={`${hotel.airline_name} en ${hotel.city_to}`}
             loading={eager ? "eager" : "lazy"}
+            fallbackSeed={hotel.hotel_slug || hotel.airline_name || hotel.id}
+            fallbackEmoji={hotel.emoji}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           {hotel.emoji && (

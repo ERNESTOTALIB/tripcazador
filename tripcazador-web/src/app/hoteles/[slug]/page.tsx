@@ -188,7 +188,7 @@ export default async function HotelDetailPage({
       </header>
 
       {/* Galería de fotos */}
-      <HotelGallery imageIds={gallery} hotelName={hotel.name} city={hotel.city} />
+      <HotelGallery imageIds={gallery} hotelName={hotel.name} city={hotel.city} hotelSlug={hotel.slug} hotelEmoji={hotel.emoji} />
 
       {/* Resumen + CTA sticky */}
       <section className="grid md:grid-cols-3 gap-6">

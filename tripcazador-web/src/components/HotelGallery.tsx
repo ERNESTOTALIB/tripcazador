@@ -12,11 +12,16 @@
  * Unsplash) que cachea + sirve en formato óptimo para evitar layout shift.
  */
 import { useState, useEffect, useCallback } from "react";
+import { HotelImage } from "@/components/HotelImage";
 
 interface HotelGalleryProps {
   imageIds: string[];
   hotelName: string;
   city: string;
+  /** Slug del hotel para gradient determinístico fallback. */
+  hotelSlug?: string;
+  /** Emoji a mostrar si el hotel no carga imagen. */
+  hotelEmoji?: string;
 }
 
 function imageUrl(id: string, w: number = 1280): string {
@@ -24,7 +29,7 @@ function imageUrl(id: string, w: number = 1280): string {
   return `/api/img?u=${encodeURIComponent(upstream)}&w=${w}&q=85`;
 }
 
-export function HotelGallery({ imageIds, hotelName, city }: HotelGalleryProps) {
+export function HotelGallery({ imageIds, hotelName, city, hotelSlug, hotelEmoji }: HotelGalleryProps) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
@@ -61,10 +66,11 @@ export function HotelGallery({ imageIds, hotelName, city }: HotelGalleryProps) {
           aria-label={`Abrir galería de fotos de ${hotelName}`}
           data-testid="hotel-gallery-hero"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <HotelImage
             src={imageUrl(imageIds[activeIdx], 1280)}
             alt={`${hotelName} en ${city} — foto ${activeIdx + 1}`}
+            fallbackSeed={`${hotelSlug || hotelName}-${activeIdx}`}
+            fallbackEmoji={hotelEmoji}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="eager"
           />
@@ -83,10 +89,11 @@ export function HotelGallery({ imageIds, hotelName, city }: HotelGalleryProps) {
               aria-label={`Ver foto ${i + 2} de ${hotelName}`}
               data-testid={`hotel-gallery-thumb-${i + 1}`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <HotelImage
                 src={imageUrl(id, 480)}
                 alt={`${hotelName} — vista ${i + 2}`}
+                fallbackSeed={`${hotelSlug || hotelName}-thumb-${i}`}
+                fallbackEmoji={hotelEmoji}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 loading="lazy"
               />
@@ -133,11 +140,13 @@ export function HotelGallery({ imageIds, hotelName, city }: HotelGalleryProps) {
             →
           </button>
           <div className="max-w-[90vw] max-h-[85vh] relative" onClick={(e) => e.stopPropagation()}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <HotelImage
               src={imageUrl(imageIds[activeIdx], 1600)}
               alt={`${hotelName} — foto ${activeIdx + 1} de ${imageIds.length}`}
+              fallbackSeed={`${hotelSlug || hotelName}-lightbox-${activeIdx}`}
+              fallbackEmoji={hotelEmoji}
               className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              loading="eager"
             />
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-1.5 rounded-full text-sm">
               {activeIdx + 1} / {imageIds.length}
