@@ -83,3 +83,8 @@
 {"ts":"2026-05-07T11:46:12.256Z","type":"page_view","visitor":"6fd8fce33908d78a","meta":{"path":"/deals"}}
 {"ts":"2026-05-07T11:46:14.381Z","type":"scroll_75","visitor":"6fd8fce33908d78a","meta":{"path":"/deals"}}
 {"ts":"2026-05-07T11:46:22.345Z","type":"page_view","visitor":"6fd8fce33908d78a","meta":{"path":"/deals"}}
+{"ts":"2026-05-07T12:06:12.826Z","type":"page_view","visitor":"265996b2f77a2cc6","meta":{"path":"/"}}
+{"ts":"2026-05-07T12:06:22.660Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"ryanair_stn_gdn_20260825_economy","destination":"GDN","origin":"STN","price":16.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-07T12:06:24.384Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"ryanair_stn_cag_20260623_economy","destination":"CAG","origin":"STN","price":19.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-07T12:06:25.649Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"ryanair_mad_vil_20260622_economy","destination":"VIL","origin":"MAD","price":14.99,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-07T12:07:03.841Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"seed-00bb871c54","destination":"SYD","origin":"MAD","price":2295,"classification":"CRÍTICO"}}
