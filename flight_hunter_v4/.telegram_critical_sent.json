@@ -287,6 +287,22 @@
       "destination": "CAG",
       "price_eur": 27.97,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d3a5d5cff075",
+      "ts": "2026-05-07T19:29:49.242564+00:00",
+      "origin": "MXP",
+      "destination": "MLA",
+      "price_eur": 34.04,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "63423af72fc7",
+      "ts": "2026-05-07T19:29:49.242564+00:00",
+      "origin": "BUD",
+      "destination": "TGD",
+      "price_eur": 35.88,
+      "classification": "CRÍTICO"
     }
   ]
 }
