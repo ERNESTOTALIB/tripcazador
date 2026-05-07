@@ -239,6 +239,22 @@
       "destination": "BZG",
       "price_eur": 17.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2cc6e2f4927f",
+      "ts": "2026-05-07T12:26:36.137524+00:00",
+      "origin": "STN",
+      "destination": "CAG",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d81ef57b5a86",
+      "ts": "2026-05-07T12:26:36.137524+00:00",
+      "origin": "BUD",
+      "destination": "ZAD",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
