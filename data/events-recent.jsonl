@@ -343,3 +343,8 @@
 {"ts":"2026-05-08T11:56:46.008Z","type":"page_view","visitor":"7dc0b5288a76e221","meta":{"path":"/"}}
 {"ts":"2026-05-08T11:56:46.372Z","type":"landing_arrived","visitor":"7dc0b5288a76e221","meta":{"path":"/"}}
 {"ts":"2026-05-08T11:58:04.770Z","type":"page_view","visitor":"7dc0b5288a76e221","meta":{"path":"/deals"}}
+{"ts":"2026-05-08T13:15:41.263Z","type":"page_view","visitor":"02b99b8ccf48a997","meta":{"path":"/"}}
+{"ts":"2026-05-08T13:15:43.796Z","type":"landing_arrived","visitor":"35f052b57f21c133","meta":{"path":"/"}}
+{"ts":"2026-05-08T13:15:44.247Z","type":"landing_arrived","visitor":"35f052b57f21c133","meta":{"path":"/"}}
+{"ts":"2026-05-08T13:15:48.104Z","type":"landing_arrived","visitor":"35f052b57f21c133","meta":{"path":"/"}}
+{"ts":"2026-05-08T13:15:48.777Z","type":"landing_arrived","visitor":"35f052b57f21c133","meta":{"path":"/"}}
