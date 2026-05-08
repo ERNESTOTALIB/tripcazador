@@ -438,3 +438,8 @@
 {"ts":"2026-05-08T21:46:31.903Z","type":"page_view","visitor":"733f4a069024dd79","meta":{"path":"/deals"}}
 {"ts":"2026-05-08T21:47:16.512Z","type":"result_viewed","visitor":"733f4a069024dd79","meta":{"deal_id":"ryanair_stn_bzg_20260829_economy","destination":"BZG","origin":"STN","price":18.99,"classification":"CRÍTICO"}}
 {"ts":"2026-05-08T21:47:16.529Z","type":"result_viewed","visitor":"733f4a069024dd79","meta":{"deal_id":"ryanair_stn_mla_20260826_economy","destination":"MLA","origin":"STN","price":29.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-08T21:49:19.013Z","type":"page_view","visitor":"733f4a069024dd79","meta":{"path":"/deals"}}
+{"ts":"2026-05-08T21:49:20.057Z","type":"page_view","visitor":"733f4a069024dd79","meta":{"path":"/deals"}}
+{"ts":"2026-05-08T21:49:33.398Z","type":"page_view","visitor":"733f4a069024dd79","meta":{"path":"/deals"}}
+{"ts":"2026-05-08T21:49:34.217Z","type":"page_view","visitor":"733f4a069024dd79","meta":{"path":"/deals"}}
+{"ts":"2026-05-08T21:49:39.903Z","type":"page_view","visitor":"733f4a069024dd79","meta":{"path":"/deals"}}
