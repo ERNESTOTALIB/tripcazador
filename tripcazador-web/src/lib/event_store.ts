@@ -207,19 +207,36 @@ export function aggregate24h() {
   // deal_click/booking_url_opened independientemente del rename a *_24h.
   const byType: Record<string, number> = {};
 
+  // SSS95: top_routes ahora pondera AMBOS deal_click (peso 5x) +
+  // result_viewed (peso 1x) + booking_redirect (peso 10x). Antes solo
+  // contaba deal_click → con tráfico bajo (1 click en 7d) top_routes
+  // siempre tenía <3 entries y trending widget caía a fallback estático.
+  // Con impressions las rutas más vistas suben aunque nadie haya clicado.
+  const ROUTE_WEIGHT: Record<string, number> = {
+    deal_click: 5,
+    booking_redirect: 10,
+    result_viewed: 1,
+  };
+
   for (const e of events) {
     visitors.add(e.visitor_id);
     byType[e.type] = (byType[e.type] || 0) + 1;
     if (e.type === "page_view") totals.page_views_24h++;
     else if (e.type === "deal_click") {
       totals.deal_clicks_24h++;
-      const route = `${e.meta.origin || "?"}→${e.meta.destination || "?"}`;
-      routesMap.set(route, (routesMap.get(route) || 0) + 1);
-      const airline = String(e.meta.airline_name || "?");
-      airlinesMap.set(airline, (airlinesMap.get(airline) || 0) + 1);
-    }
-    else if (e.type === "search_submitted") totals.searches_24h++;
+    } else if (e.type === "search_submitted") totals.searches_24h++;
     else if (e.type === "booking_redirect") totals.booking_redirects_24h++;
+
+    // Aggregate routes/airlines de cualquier evento con origin+destination
+    const weight = ROUTE_WEIGHT[e.type];
+    if (weight && e.meta.origin && e.meta.destination) {
+      const route = `${e.meta.origin}→${e.meta.destination}`;
+      routesMap.set(route, (routesMap.get(route) || 0) + weight);
+      const airline = String(e.meta.airline_name || "?");
+      if (airline !== "?") {
+        airlinesMap.set(airline, (airlinesMap.get(airline) || 0) + weight);
+      }
+    }
   }
   totals.unique_visitors_24h = visitors.size;
 

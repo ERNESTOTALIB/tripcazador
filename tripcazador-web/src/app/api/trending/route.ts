@@ -89,14 +89,25 @@ export async function GET() {
       .slice(0, 5);
     source = "remote";
   } else {
-    // Memory fallback: usar agregado in-memory del propio runtime
+    // Memory fallback: usar agregado in-memory del propio runtime.
+    // SSS95: memory routes ahora se basan en weighted score (deal_click 5x +
+    // booking_redirect 10x + result_viewed 1x). Threshold rebajado de 3→1
+    // porque con poco tráfico era imposible llenar 3 rutas distintas.
     try {
       const memAgg = aggregate24h();
-      // event_store devuelve {route, clicks}; remoto devuelve {route, count}.
-      // Aquí (memoria) la prop es `clicks` directamente.
       const memRoutes = (memAgg.top_routes || []).slice(0, 5);
-      if (memRoutes.length > 0) {
+      if (memRoutes.length >= 1) {
         topRoutes = memRoutes.map((r) => ({ route: r.route, clicks: r.clicks }));
+        // Derivar destinations únicos del routes
+        const destMap = new Map<string, number>();
+        for (const r of memRoutes) {
+          const dest = r.route.split("→")[1] || r.route.split("-")[1];
+          if (dest) destMap.set(dest, (destMap.get(dest) || 0) + r.clicks);
+        }
+        topDestinations = Array.from(destMap.entries())
+          .map(([destination, clicks]) => ({ destination, clicks }))
+          .sort((a, b) => b.clicks - a.clicks)
+          .slice(0, 5);
         source = "memory";
       }
     } catch {
