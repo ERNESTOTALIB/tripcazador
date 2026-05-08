@@ -70,5 +70,14 @@
     "city_from": "Atenas",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1778211172.3163044,
+    "deal_id": "ryanair_dub_gro_20260728_economy",
+    "origin": "DUB",
+    "destination": "GRO",
+    "city_from": "Dubl\u00edn",
+    "city_to": "Barcelona Girona",
+    "price_eur": 24.99
   }
 ]
