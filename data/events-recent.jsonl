@@ -448,3 +448,8 @@
 {"ts":"2026-05-08T21:49:53.275Z","type":"page_view","visitor":"733f4a069024dd79","meta":{"path":"/deals"}}
 {"ts":"2026-05-08T21:49:56.872Z","type":"page_view","visitor":"733f4a069024dd79","meta":{"path":"/deals"}}
 {"ts":"2026-05-08T21:49:57.786Z","type":"page_view","visitor":"733f4a069024dd79","meta":{"path":"/deals"}}
+{"ts":"2026-05-08T22:08:02.840Z","type":"landing_arrived","visitor":"82c2d1329a064abc","meta":{"path":"/"}}
+{"ts":"2026-05-08T22:08:02.886Z","type":"page_view","visitor":"82c2d1329a064abc","meta":{"path":"/"}}
+{"ts":"2026-05-08T22:08:02.914Z","type":"page_view","visitor":"82c2d1329a064abc","meta":{"path":"/"}}
+{"ts":"2026-05-08T22:08:06.240Z","type":"landing_arrived","visitor":"82c2d1329a064abc","meta":{"path":"/"}}
+{"ts":"2026-05-08T22:08:07.756Z","type":"page_view","visitor":"82c2d1329a064abc","meta":{"path":"/"}}
