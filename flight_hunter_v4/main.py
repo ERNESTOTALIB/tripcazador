@@ -131,6 +131,13 @@ def parse_destinations(args) -> List[str]:
         "balcanes":     getattr(config, "DEST_BALCANES", []),
         "europa-norte": getattr(config, "DEST_EUROPA_NORTE", []),
         "latam":        getattr(config, "LATAM_HUBS", []),
+        # abr-2026p — long-haul cluster
+        "asia-luxury":     getattr(config, "DEST_ASIA_LUXURY", []),
+        "africa-adventure": getattr(config, "DEST_AFRICA_ADVENTURE", []),
+        # SSS98 — verticales temáticos nuevos (ski/foodie/festivales)
+        "ski-alps":     getattr(config, "DEST_SKI_ALPS", []),
+        "gastro":       getattr(config, "DEST_GASTRO", []),
+        "festival":     getattr(config, "DEST_FESTIVAL", []),
         "anywhere":     None,  # Señal especial para fly_to=anywhere
     }
     if hasattr(args, "dest") and args.dest:

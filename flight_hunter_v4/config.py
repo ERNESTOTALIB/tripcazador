@@ -887,6 +887,65 @@ DEST_AFRICA_ADVENTURE = [
     "DKR",  # Dakar (Senegal)
 ]
 
+# SSS98 (may 2026) — 3 presets temáticos nuevos para diversificar cobertura.
+# Audit detectó 0 deals en estos verticales pese a búsquedas reales en Search Console.
+
+# Ski Alps — invierno (dic-mar). Aeropuertos cerca de pistas o con tren al chalet.
+DEST_SKI_ALPS = [
+    "GVA",  # Ginebra — pivot Chamonix/Val d'Isère/Verbier
+    "INN",  # Innsbruck — Tirol austríaco
+    "SZG",  # Salzburgo — Hochkönig
+    "MUC",  # Múnich — Garmisch
+    "ZRH",  # Zúrich — St. Moritz/Davos
+    "BGY",  # Milán Bergamo — Dolomitas
+    "TRN",  # Turín — Sestrière
+    "GRZ",  # Graz — Schladming
+    "FMM",  # Memmingen — Allgäu
+    "LJU",  # Liubliana — Kranjska Gora
+    "GNB",  # Grenoble — Alpe d'Huez/Les Deux Alpes
+    "CMF",  # Chambéry — Val Thorens/Méribel
+]
+
+# Gastronomy — destinos foodie con calendario flexible (no estacional).
+DEST_GASTRO = [
+    "FCO",  # Roma — pasta + cucina romana
+    "NAP",  # Nápoles — pizza + Costa Amalfitana
+    "FLR",  # Florencia — Toscana + bistecca
+    "BLQ",  # Bolonia — la grassa
+    "LIS",  # Lisboa — pastéis + marisco
+    "OPO",  # Porto — francesinha + vinho do porto
+    "BIO",  # Bilbao — pintxos + Asador Etxebarri
+    "SDR",  # Santander — anchoas + cocina vasca
+    "BCN",  # Barcelona — Disfrutar + boquerones
+    "VLC",  # Valencia — paella en l'Albufera
+    "BOG",  # Bogotá — bandeja paisa + Andrés
+    "MEX",  # Ciudad de México — Pujol + Quintonil
+    "OAX",  # Oaxaca — mole + mezcal
+    "BKK",  # Bangkok — street food + Sühring
+    "HKG",  # Hong Kong — dim sum + cha chaan teng
+    "TYO",  # Tokio (HND/NRT alias) — sushiya + ramen + izakaya
+]
+
+# Festivales musicales — fechas concretas atraen búsquedas estacionales.
+DEST_FESTIVAL = [
+    "BCN",  # Sónar (jun) + Primavera Sound (jun)
+    "AMS",  # ADE (oct) + Lowlands (ago) + Mysteryland (ago)
+    "BUD",  # Sziget (ago)
+    "ATH",  # Release Athens (jun)
+    "CPH",  # Roskilde (jul) + Distortion (jun)
+    "GLA",  # Glasgow — TRNSMT (jul)
+    "EDI",  # Edimburgo Fringe (ago)
+    "BER",  # Berlín — Lollapalooza Berlin (sep) + clubs todo año
+    "PRG",  # Praga — United Islands (jun)
+    "LIS",  # NOS Alive (jul) + Super Bock Super Rock (jul)
+    "MAD",  # Mad Cool (jul)
+    "WAW",  # Open'er Gdynia (jul) — vuelos a GDN cerca
+    "RKV",  # Reikiavik — Iceland Airwaves (nov)
+    "AUS",  # Austin TX — SXSW (mar) + ACL (oct)
+    "MEX",  # Corona Capital (nov)
+    "BUE",  # Buenos Aires — Lollapalooza Argentina (mar)
+]
+
 # ==============================================================================
 # SCORING MULTI-FACTOR
 # ==============================================================================

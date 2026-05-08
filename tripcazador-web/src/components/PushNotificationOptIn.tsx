@@ -119,10 +119,12 @@ export function PushNotificationOptIn() {
       <div className="flex items-start gap-4">
         <div className="text-3xl">🔔</div>
         <div className="flex-1">
-          <h3 className="font-bold text-white">Activa avisos push instantáneos</h3>
+          <h3 className="font-bold text-white">Avisos al instante de chollos &lt;50€</h3>
           <p className="text-sm text-gray-300 mt-1">
-            Cuando un error fare cumple tus criterios, te llega push en menos de
-            60 segundos. Sin spam — solo lo que pides.
+            Te avisamos en menos de 60 segundos cuando detectamos un{" "}
+            <strong className="text-amber-300">error fare</strong> bajo tus
+            criterios (ej. Madrid → Lisboa 14€). Sólo CRÍTICOS — nunca más de
+            1-2 push por día. Cancelas con 1 click.
           </p>
           {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
         </div>

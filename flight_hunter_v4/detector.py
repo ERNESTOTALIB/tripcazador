@@ -710,6 +710,25 @@ def analyze_all(
         # Score final 0-100
         final_score = min(100, raw_score)
 
+        # SSS98: long-haul bypass — los vuelos largos/ultra-largos suelen
+        # quedar bajo el min_score por la distribución global de precios
+        # (Madrid-Tokio €450 parece "caro" vs media short-haul de €80).
+        # Si el precio es <60% de p10 de la ruta o el ratio precio/km es
+        # excepcional, dales boost. Esto recupera las anomalías largas
+        # que el detector global descartaba.
+        dist_cat = f.get("distance_category") or ""
+        if dist_cat in ("largo", "ultra_largo") and final_score < min_score:
+            price = f.get("price_eur") or 0
+            p10 = f.get("p10_route") or 0
+            if price and p10 and price < p10 * 0.6:
+                # Boost: añade 15-25 puntos según ratio
+                ratio = price / p10
+                boost = int(15 + (1 - ratio) * 20)
+                final_score = min(100, raw_score + boost)
+                f["t_longhaul_reason"] = (
+                    f"Long-haul anomaly: €{price:.0f} es {int(ratio*100)}% del p10 (€{p10:.0f})"
+                )
+
         if final_score < min_score:
             continue
 
