@@ -383,6 +383,22 @@
       "destination": "CAG",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "4bee5b152338",
+      "ts": "2026-05-08T15:16:47.575360+00:00",
+      "origin": "STN",
+      "destination": "MLA",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5b6898f5cf87",
+      "ts": "2026-05-08T15:16:47.575360+00:00",
+      "origin": "BUD",
+      "destination": "CAG",
+      "price_eur": 40.69,
+      "classification": "CRÍTICO"
     }
   ]
 }
