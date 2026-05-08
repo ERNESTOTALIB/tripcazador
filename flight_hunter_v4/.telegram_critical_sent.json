@@ -431,6 +431,22 @@
       "destination": "GOA",
       "price_eur": 36.8,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a28344c5f415",
+      "ts": "2026-05-08T21:54:45.972382+00:00",
+      "origin": "STN",
+      "destination": "PFO",
+      "price_eur": 41.73,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ab9211e02c34",
+      "ts": "2026-05-08T21:54:45.972382+00:00",
+      "origin": "BUD",
+      "destination": "PFO",
+      "price_eur": 46.98,
+      "classification": "CRÍTICO"
     }
   ]
 }
