@@ -34,7 +34,20 @@ function getBlogSlugs(): string[] {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+  // SSS97: usar fecha del último deploy (env.VERCEL_GIT_COMMIT_SHA timestamp)
+  // o build time, NO `new Date()` en cada request. Antes todas las páginas
+  // estáticas reportaban lastModified=NOW en cada SSR/build → patrón
+  // "spam-like" detectado por Google que ignora el lastmod del sitemap.
+  // Ahora lastmod cambia solo cuando hay deploy real.
+  const buildTimestamp = process.env.VERCEL_GIT_COMMIT_DATE
+    ? new Date(process.env.VERCEL_GIT_COMMIT_DATE)
+    : new Date(); // fallback dev
+  const now = buildTimestamp;
+  // Páginas que sí cambian en cada deploy (deals, home con featured)
+  const hot = buildTimestamp;
+  // Páginas evergreen — bump sólo cuando se editen manualmente. Por ahora
+  // damos una fecha fija anterior para no inflar en deploys de feature/fix.
+  const evergreen = new Date("2026-04-01T00:00:00Z");
 
   // `alternates.languages` genera <xhtml:link rel="alternate" hreflang="..."/>
   // dentro del sitemap — Google lo usa como señal reforzada además del
@@ -62,20 +75,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: `${BASE_URL}/`,
-      lastModified: now,
-      changeFrequency: "hourly",
+      lastModified: hot,
+      changeFrequency: "daily",
       priority: 1.0,
       alternates: { languages: LANG_ALT_HOME },
     },
     {
       url: `${BASE_URL}/en`,
-      lastModified: now,
-      changeFrequency: "hourly",
+      lastModified: hot,
+      changeFrequency: "daily",
       priority: 0.9,
       alternates: { languages: LANG_ALT_HOME },
     },
-    { url: `${BASE_URL}/deals`, lastModified: now, changeFrequency: "hourly", priority: 0.9 },
-    { url: `${BASE_URL}/hoteles`, lastModified: now, changeFrequency: "hourly", priority: 0.8 },
+    { url: `${BASE_URL}/deals`, lastModified: hot, changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE_URL}/hoteles`, lastModified: hot, changeFrequency: "daily", priority: 0.8 },
     {
       url: `${BASE_URL}/destinos`,
       lastModified: now,

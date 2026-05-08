@@ -90,6 +90,29 @@ jobs:
             echo "⏭️  Hotels skipped this run (hour=$HOUR, save SerpAPI free quota 250/mes)"
           fi
 
+      - name: "SSS97: Rotate origins preset por hora UTC"
+        id: origins_rotation
+        run: |
+          HOUR=$(date -u +%H)
+          # Manual dispatch usa el input directo; cron rota presets para
+          # cubrir más universo en 24h. Antes todo era tier1 → 5% MAD, 0% Latam,
+          # 0% spain regional. Audit hunter SSS97 detectó concentración severa.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ORIGINS="${{ github.event.inputs.origins || 'tier1' }}"
+          else
+            case "$HOUR" in
+              "00") ORIGINS="tier1" ;;
+              "04") ORIGINS="spain" ;;
+              "08") ORIGINS="tier2" ;;
+              "12") ORIGINS="latam" ;;
+              "16") ORIGINS="mega" ;;
+              "20") ORIGINS="tier1" ;;
+              *)    ORIGINS="tier1" ;;
+            esac
+          fi
+          echo "preset=$ORIGINS" >> $GITHUB_OUTPUT
+          echo "✈️  Origins preset (hour=$HOUR): $ORIGINS"
+
       - name: Run Flight Hunter
         env:
           # API keys (añadir todas como secrets en GitHub · Settings → Secrets)
@@ -111,7 +134,7 @@ jobs:
           cd flight_hunter_v4
           python main.py \
             --mode "${{ github.event.inputs.mode || 'all' }}" \
-            --origins "${{ github.event.inputs.origins || 'tier1' }}" \
+            --origins "${{ steps.origins_rotation.outputs.preset }}" \
             --date-from "${{ steps.dates.outputs.from }}" \
             --date-to "${{ steps.dates.outputs.to }}" \
             --quiet || echo "::warning::Hunter terminó con código != 0"

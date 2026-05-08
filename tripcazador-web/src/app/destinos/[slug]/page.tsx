@@ -447,12 +447,41 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const dest = DESTINATIONS[params.slug];
   if (!dest) return { title: "Destino no encontrado | TripCazador" };
+  // SSS97 SEO: canonical + hreflang + OG completo. Antes faltaban los 3 →
+  // 24 destinos pierden CTR (sin OG image específico) y duplicate content
+  // risk para variantes ?utm_source. Description capada a 155 chars.
+  const description = (
+    `Encuentra los mejores chollos de vuelo a ${dest.name}. ${dest.description}`
+  ).slice(0, 155);
+  const SITE = "https://tripcazador.com";
+  const url = `${SITE}/destinos/${params.slug}`;
+  const ogImage = `${SITE}/destinos/${params.slug}/opengraph-image`;
   return {
     title: `Vuelos baratos a ${dest.name} — TripCazador`,
-    description: `Encuentra los mejores chollos de vuelo a ${dest.name}. ${dest.description}`,
+    description,
+    alternates: {
+      canonical: `/destinos/${params.slug}`,
+      languages: {
+        "es-ES": `/destinos/${params.slug}`,
+        "es-MX": `/destinos/${params.slug}`,
+        "es-AR": `/destinos/${params.slug}`,
+        "x-default": `/destinos/${params.slug}`,
+      },
+    },
     openGraph: {
       title: `${dest.emoji} Vuelos baratos a ${dest.name} | TripCazador`,
-      description: dest.description,
+      description,
+      url,
+      siteName: "TripCazador",
+      type: "website",
+      locale: "es_ES",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `Vuelos a ${dest.name}` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${dest.emoji} Vuelos baratos a ${dest.name}`,
+      description,
+      images: [ogImage],
     },
   };
 }

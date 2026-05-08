@@ -263,16 +263,16 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} bg-gray-950 text-gray-100 min-h-screen`}>
-        {/* KKK1 + PPP fix — AdSense script en HTML inicial (beforeInteractive)
-            para que el rastreador de AdSense detecte el <script> en el <head>
-            durante la verificación del sitio. El consent gating real (RGPD)
-            lo hace AdSenseSlot via cv_consent_v1.marketing flag — el script
-            del publisher se carga siempre, las unidades de anuncio respetan
-            consent. */}
+        {/* SSS97: AdSense moved beforeInteractive → afterInteractive.
+            El crawler de AdSense detecta el publisher tag igual via meta+robots
+            y la verificación del site no requiere ejecución pre-interactive.
+            beforeInteractive bloqueaba ~50-100ms FCP en mobile.
+            El consent gating real (RGPD) lo hace AdSenseSlot via
+            cv_consent_v1.marketing flag — el script publisher se carga siempre. */}
         {ADSENSE_CLIENT && (
           <Script
             id="adsense-pub"
-            strategy="beforeInteractive"
+            strategy="afterInteractive"
             nonce={nonce}
             crossOrigin="anonymous"
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
