@@ -691,14 +691,20 @@ def main() -> int:
         return -score  # ascending = best first
     deals.sort(key=score_key)
 
-    # SSS80: dedup robusto. Antes: window=2 + history en cache GH Actions
-    # (frágil, se perdía entre runs). Resultado: cada run elegía el top deal
-    # del ranking (siempre Múnich→Barcelona) porque history venía vacío.
+    # SSS89: ventana de dedup ampliada a 50 destinos.
+    # Usuario reporta que se siguen repitiendo posts. Con cron 4h × 50 posts
+    # = ~8.3 días de cobertura única antes de poder repetir. El catálogo de
+    # deals tiene >100 destinos distintos así que esto es factible.
     #
-    # Ahora: window=8 (no repetir aeropuerto en 32h con cron 4h) + history
-    # commiteado en repo (data/instagram_post_history.json) para persistencia
-    # garantizada entre runs.
-    DEDUP_WINDOW = int(os.environ.get("IG_DEDUP_WINDOW", "8"))
+    # Histórico (data/instagram_post_history.json) commiteado al repo para
+    # persistencia entre runs de GH Actions. Truncamos a 200 entradas en
+    # disk para soportar window grande.
+    #
+    # Histórico:
+    #   SSS80: window=2 (cache GH Actions, perdía estado)
+    #   SSS80b: window=8 + commit en repo
+    #   SSS89: window=50 + truncate=200 (esta ronda)
+    DEDUP_WINDOW = int(os.environ.get("IG_DEDUP_WINDOW", "50"))
     HISTORY_FILE = "data/instagram_post_history.json"
     # Backwards-compat: si el viejo .instagram_post_history.json existe pero
     # el nuevo no, migrar.
@@ -753,7 +759,9 @@ def main() -> int:
     deal = deals[0]
     log(f"Selected deal: {deal.get('id')} â {deal.get('headline')}")
 
-    # SSS65: registrar post en historial para futuros dedups
+    # SSS65/SSS89: registrar post en historial para futuros dedups.
+    # Truncate a 200 (no 20!) para que DEDUP_WINDOW=50 tenga datos
+    # suficientes — antes truncábamos a 20, lo que invalidaba ventanas >20.
     try:
         history.append({
             "timestamp": time.time(),
@@ -764,10 +772,15 @@ def main() -> int:
             "city_to": deal.get("city_to", ""),
             "price_eur": deal.get("price_eur"),
         })
-        history = history[-20:]
+        # Mantén siempre al menos 4× window para que el dedup tenga margen
+        # incluso si window cambia en runtime via env var.
+        keep_n = max(200, DEDUP_WINDOW * 4)
+        history = history[-keep_n:]
+        # Asegura que el directorio data/ existe antes de escribir
+        os.makedirs(os.path.dirname(HISTORY_FILE) or ".", exist_ok=True)
         with open(HISTORY_FILE, "w", encoding="utf-8") as f:
             json.dump(history, f, indent=2, default=str)
-        log(f"Historial: {len(history)} entradas en {HISTORY_FILE}")
+        log(f"Historial: {len(history)} entradas en {HISTORY_FILE} (dedup window={DEDUP_WINDOW})")
     except Exception as e:
         log(f"WARN history write: {e}")
 

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getTopDeals, getDeals, getAttractiveDeals } from "@/lib/api";
+import { getDeals, getAttractiveDeals } from "@/lib/api";
 import { DealCard } from "@/components/DealCard";
 // fase vv VV13: SearchBar legacy retirado del home (SkyHero ya cubre todo)
 import { DestinationCard } from "@/components/DestinationCard";
@@ -67,15 +67,20 @@ async function HeroStats() {
 }
 
 async function TopDeals() {
-  // SSS: featured ahora prioriza atractivos baratos, no top score (que sacaba
-  // business 2495€). El resto siguen ordenados por score normal.
-  const [featured, restPool] = await Promise.all([
-    getAttractiveDeals(3),
-    getTopDeals(12),
-  ]);
-  // Quitar del rest los IDs ya en featured para evitar duplicados
-  const featuredIds = new Set(featured.map((d) => d.id));
-  const deals = [...featured, ...restPool.filter((d) => !featuredIds.has(d.id))].slice(0, 12);
+  // SSS89: home page = SOLO chollos reales economy.
+  // Antes mezclábamos featured(getAttractiveDeals) + rest(getTopDeals), pero
+  // getTopDeals incluía business (€2000+) en el grid "Últimos chollos cazados".
+  // Usuario quejándose: "QUITA LOS VUELOS BUSINESS DE LA PRIMERA PAGINA".
+  // Fix: TODO el pool de la home pasa por getAttractiveDeals (hard-reject
+  // business + filter precio ≤ MAX_ATTRACTIVE_PRICE). Business sigue
+  // apareciendo en /deals?cabin=business para usuarios premium.
+  const featured = await getAttractiveDeals(12);
+  const featuredHero = featured.slice(0, 3);
+  const featuredIds = new Set(featuredHero.map((d) => d.id));
+  const deals = [
+    ...featuredHero,
+    ...featured.filter((d) => !featuredIds.has(d.id)),
+  ].slice(0, 12);
   if (!deals || deals.length === 0) {
     return (
       <div className="panel text-center py-16 px-6">
@@ -105,10 +110,10 @@ async function TopDeals() {
     );
   }
 
-  // SSS: `featured` ya viene de getAttractiveDeals (línea 71). Aquí
-  // solo separamos el resto (los que NO son featured) para el grid
-  // "Últimos chollos cazados".
-  const rest = deals.slice(featured.length);
+  // SSS89: `featured` arriba ya devuelve hasta 12 chollos. featuredHero
+  // son los 3 destacados; rest son los siguientes 9 ya garantizados
+  // economy + precio ≤ MAX_ATTRACTIVE_PRICE.
+  const rest = deals.slice(featuredHero.length);
 
   return (
     <div className="space-y-10">
@@ -124,7 +129,7 @@ async function TopDeals() {
           </a>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {featured.map((deal) => (
+          {featuredHero.map((deal) => (
             <DealCard key={deal.id} deal={deal} featured />
           ))}
         </div>
