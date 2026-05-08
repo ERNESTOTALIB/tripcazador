@@ -148,6 +148,22 @@ export async function GET(req: NextRequest) {
       "paris-roma", "londres-amsterdam", "amsterdam-berlin", "viena-praga",
       "lisboa-paris", "roma-atenas", "berlin-paris", "milan-londres",
       "zurich-londres", "amsterdam-roma",
+      // UUU01 — 45 nuevas rutas pareadas long-haul + sun-coast + EU emerging
+      "barcelona-estambul", "madrid-doha",
+      "madrid-singapur", "madrid-hong-kong", "madrid-seul", "madrid-shanghai",
+      "madrid-melbourne", "madrid-sidney",
+      "madrid-bogota", "madrid-santiago-chile", "madrid-sao-paulo",
+      "madrid-mexico", "madrid-rio-de-janeiro",
+      "madrid-johannesburgo", "madrid-ciudad-del-cabo", "madrid-nairobi",
+      "madrid-casablanca", "madrid-malta", "madrid-chipre", "barcelona-malta",
+      "madrid-tenerife", "madrid-gran-canaria", "barcelona-tenerife",
+      "madrid-helsinki", "madrid-estocolmo", "madrid-oslo",
+      "barcelona-helsinki", "madrid-varsovia", "madrid-cracovia",
+      "madrid-bucarest", "madrid-belgrado", "madrid-tirana",
+      "barcelona-cracovia", "barcelona-belgrado", "barcelona-bucarest",
+      "valencia-paris", "valencia-amsterdam", "sevilla-paris", "sevilla-amsterdam",
+      "bilbao-amsterdam", "bilbao-roma", "malaga-roma",
+      "milan-barcelona", "praga-paris", "amsterdam-paris",
     ].map((s) => `https://${HOST}/vuelos/${s}`),
   ];
 

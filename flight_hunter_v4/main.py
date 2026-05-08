@@ -138,6 +138,11 @@ def parse_destinations(args) -> List[str]:
         "ski-alps":     getattr(config, "DEST_SKI_ALPS", []),
         "gastro":       getattr(config, "DEST_GASTRO", []),
         "festival":     getattr(config, "DEST_FESTIVAL", []),
+        # UUU04 — verticales temáticos UUU
+        "sports":         getattr(config, "DEST_SPORTS", []),
+        "wellness":       getattr(config, "DEST_WELLNESS", []),
+        "study-abroad":   getattr(config, "DEST_STUDY_ABROAD", []),
+        "northern-lights":getattr(config, "DEST_NORTHERN_LIGHTS", []),
         "anywhere":     None,  # Señal especial para fly_to=anywhere
     }
     if hasattr(args, "dest") and args.dest:

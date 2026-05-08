@@ -946,6 +946,77 @@ DEST_FESTIVAL = [
     "BUE",  # Buenos Aires — Lollapalooza Argentina (mar)
 ]
 
+# UUU04 — 4 nuevos presets temáticos para diversificar la cobertura del hunter.
+
+# Sports — eventos deportivos crean spikes de búsqueda predecibles.
+DEST_SPORTS = [
+    "MAD",  # Real Madrid (Champions, Liga, Mundial Clubes)
+    "BCN",  # FC Barcelona + GP F1 Catalunya (jun)
+    "SIL",  # Silverstone GP (jul) — STN/LTN
+    "MIL",  # Inter/Milan + Italian GP Monza (sep)
+    "MUC",  # Bayern + Octoberfest (sep)
+    "DUB",  # Six Nations rugby (feb-mar)
+    "MIA",  # Miami GP F1 (may) + NFL Dolphins
+    "AUS",  # COTA F1 (oct) + Texas Longhorns
+    "TYO",  # Tokyo Marathon (mar) + Olímpicos legacy
+    "RIO",  # Maracanã + Carnaval (feb)
+    "DEN",  # Denver — Broncos + Avalanche
+    "MEL",  # Australian Open tennis (ene) + AFL
+    "MIA",  # Miami Heat NBA + Marathon
+    "VLC",  # Maratón Valencia (dic)
+    "BOS",  # Boston Marathon (abr)
+    "NYC",  # NYC Marathon (nov) + Knicks/Yankees
+]
+
+# Wellness/Spa — mercado creciente long-stay 60+ y bienestar.
+DEST_WELLNESS = [
+    "BUD",  # Budapest baños termales (Széchenyi, Gellért)
+    "BAK",  # Baku — termas naturales
+    "REK",  # Reykjavik — Blue Lagoon + Sky Lagoon
+    "RHO",  # Rodas — talasoterapia
+    "DUB",  # Dubai — wellness resorts top
+    "BKK",  # Bangkok — Thai massage + spas Asia
+    "MLE",  # Maldivas — overwater spas
+    "DPS",  # Bali — Ubud yoga retreats
+    "FNC",  # Madeira — wellness retreats
+    "MAH",  # Menorca — calma + thalasso
+    "BOG",  # Boquete (vía PTY) — wellness Panamá
+    "ZRH",  # Zurich/Suiza — Bad Ragaz balneario
+]
+
+# Estudio idiomas — high-intent keywords "vuelos baratos para estudiar X".
+DEST_STUDY_ABROAD = [
+    "LON",  # Londres — inglés + universidades top
+    "OXF",  # Oxford área — vía LHR/STN
+    "DUB",  # Dublín — inglés + Trinity College
+    "BER",  # Berlín — alemán + DAAD
+    "MUN",  # Múnich — alemán + LMU
+    "PAR",  # París — francés + Sorbonne
+    "ROM",  # Roma — italiano + Bocconi
+    "BCN",  # Barcelona — español + EAE/IESE
+    "MAD",  # Madrid — español + IE Business School
+    "TOK",  # Tokio — japonés + Waseda
+    "SEL",  # Seúl — coreano + Yonsei
+    "PEK",  # Pekín — mandarín + BLCU
+    "BUE",  # Buenos Aires — español + UBA
+    "MEX",  # Ciudad México — español Latam + UNAM
+    "MEL",  # Melbourne — inglés + Univ Melbourne
+]
+
+# Auroras boreales — keyword estacional alto sept-mar.
+DEST_NORTHERN_LIGHTS = [
+    "KEF",  # Reikiavik
+    "TOS",  # Tromsø — Norway aurora capital
+    "OSL",  # Oslo + viaje a Lyngen / Lofoten
+    "RVN",  # Rovaniemi — Laponia finlandesa (Santa)
+    "KIR",  # Kiruna — Suecia + Abisko Sky Station
+    "MQX",  # Mekele — Etiopía? no. → Murmansk RUS skip por sanciones
+    "BOO",  # Bodø — Noruega Lofoten gateway
+    "FAI",  # Fairbanks Alaska — auroras + Denali
+    "YZF",  # Yellowknife Canada — Aurora Village
+    "ANC",  # Anchorage Alaska
+]
+
 # ==============================================================================
 # SCORING MULTI-FACTOR
 # ==============================================================================
@@ -1437,6 +1508,99 @@ def compute_bridging_synthetic(
         "source": "bridging_synthetic",
         "reason": (
             f"Bridging via {best_hub}: €{best_legs[0]:.0f} + €{best_legs[1]:.0f} "
+            f"= €{best_total:.0f}"
+            + (f" (vs directo €{direct_price:.0f})" if direct_price else "")
+        ),
+    }
+
+
+def compute_dual_bridging_synthetic(
+    origin: str,
+    destination: str,
+    deals_index: Dict[Tuple[str, str], float],
+    direct_price: Optional[float] = None,
+    hubs: Optional[List[str]] = None,
+    max_total_legs_pct: float = 0.70,
+) -> Optional[Dict[str, object]]:
+    """
+    UUU05 — Dual-hub bridging detector. Síntesis de 2-stop con 2 hubs.
+
+    Para rutas long-haul exóticas (ej. MAD→DPS), prueba combinaciones
+    {origin → hub1 → hub2 → destination} buscando totales aún menores
+    que el bridging single-hub. Captura casos como:
+      MAD → AMS (€60) → BKK (€350) → DPS (€90) = €500
+      vs directo MAD-DPS €850 (>40% savings).
+
+    Args:
+        origin: IATA origen
+        destination: IATA destino
+        deals_index: dict {(orig, dest): min_price_eur}
+        direct_price: precio directo Travelpayouts (None si no)
+        hubs: lista de hubs intermedios (default 9 mega-hubs)
+        max_total_legs_pct: total ≤ 70% del directo para emitir (más
+                           estricto que single-hub porque la ruta es peor UX)
+
+    Returns:
+        Dict con campos del deal sintético dual-bridging, o None.
+
+    O(hubs²) = 81 combinaciones para el default (9 hubs). Skipea si
+    hub1 == hub2, hub1 == origin/destination, hub2 == origin/destination.
+    """
+    if not hubs:
+        # 9 mega-hubs estratégicos (incluye Asia para combos exóticos).
+        hubs = ["LHR", "AMS", "CDG", "FRA", "IST", "DOH", "MUC", "DXB", "BKK"]
+
+    best_total: Optional[float] = None
+    best_path: Optional[Tuple[str, str]] = None
+    best_legs: Optional[Tuple[float, float, float]] = None
+
+    for hub1 in hubs:
+        if hub1 == origin or hub1 == destination:
+            continue
+        leg1 = deals_index.get((origin, hub1))
+        if leg1 is None:
+            continue
+        for hub2 in hubs:
+            if hub2 in (hub1, origin, destination):
+                continue
+            leg2 = deals_index.get((hub1, hub2))
+            leg3 = deals_index.get((hub2, destination))
+            if leg2 is None or leg3 is None:
+                continue
+            total = leg1 + leg2 + leg3
+            if best_total is None or total < best_total:
+                best_total = total
+                best_path = (hub1, hub2)
+                best_legs = (leg1, leg2, leg3)
+
+    if best_total is None or best_path is None or best_legs is None:
+        return None
+
+    if direct_price is not None:
+        if best_total >= direct_price * max_total_legs_pct:
+            return None
+        savings_pct = 1 - (best_total / direct_price)
+        score = min(90, 50 + savings_pct * 80)  # ceiling 90 (peor que single-hub 95)
+    else:
+        score = 50
+
+    return {
+        "origin": origin,
+        "destination": destination,
+        "price_eur": round(best_total, 2),
+        "score": int(score),
+        "bridging": True,
+        "bridging_dual": True,
+        "hub1_via": best_path[0],
+        "hub2_via": best_path[1],
+        "leg1_price": best_legs[0],
+        "leg2_price": best_legs[1],
+        "leg3_price": best_legs[2],
+        "stops": 2,
+        "source": "bridging_dual_synthetic",
+        "reason": (
+            f"Dual-bridging via {best_path[0]}+{best_path[1]}: "
+            f"€{best_legs[0]:.0f}+€{best_legs[1]:.0f}+€{best_legs[2]:.0f} "
             f"= €{best_total:.0f}"
             + (f" (vs directo €{direct_price:.0f})" if direct_price else "")
         ),
