@@ -12,7 +12,7 @@
  * funciona en client components. HotelCard sigue siendo server component
  * para SEO; sólo este wrapper es client.
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getHotelGradient } from "@/lib/hotel_image_fallback";
 
 interface HotelImageProps {
@@ -37,6 +37,13 @@ export function HotelImage({
   decoding = "async",
 }: HotelImageProps) {
   const [errored, setErrored] = useState(false);
+
+  // SSS91 bug fix: reset errored cuando cambia src (navegación lightbox,
+  // thumbnails, etc.). Sin este reset, una imagen rota dejaba el componente
+  // en fallback permanente incluso cuando el siguiente src podría cargar OK.
+  useEffect(() => {
+    setErrored(false);
+  }, [src]);
 
   if (errored) {
     const grad = getHotelGradient(fallbackSeed);

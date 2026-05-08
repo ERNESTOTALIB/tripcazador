@@ -38,6 +38,10 @@ CACHE_PATH = Path(os.environ.get("PLACE_PHOTO_CACHE", "/tmp/tripcazador_place_ph
 CACHE_TTL_S = 7 * 24 * 3600  # 7 días — refresca por si el upstream cambia
 HEAD_TIMEOUT_S = 6
 WIKI_API_TIMEOUT_S = 8
+# SSS91: presupuesto global por place_name. Worst-case _wiki_search_image
+# encadena hasta 16 llamadas (2 langs × (1 summary + 1 opensearch + 3×(summary+pageimage)))
+# × 8s = 128s, lo cual bloquea el carrusel en runs grandes. Limitamos a 30s total.
+WIKI_TOTAL_BUDGET_S = 30
 
 # User-Agent realista — Wikipedia recomienda identificarse, y CDN de Unsplash
 # rate-limita user agents simples. Este es el UA "polite" que usamos.
@@ -178,14 +182,20 @@ def _wiki_search_image(query: str) -> Optional[str]:
         return None
 
     query_words = {w.lower() for w in cleaned.split() if len(w) > 3}
+    deadline = time.time() + WIKI_TOTAL_BUDGET_S
 
     for lang in ("es", "en"):
+        if time.time() >= deadline:
+            return None
         # ── Strategy A: direct REST summary on the cleaned query ──
         # E.g. "Coliseo Roma" → /summary/Coliseo_Roma. Si no existe Wikipedia
         # devuelve 404 o disambiguation, sino la imagen está incluida.
         img = _wiki_summary_image(lang, cleaned)
         if img:
             return img
+
+        if time.time() >= deadline:
+            return None
 
         # ── Strategy B: opensearch + scored candidates ──
         try:
@@ -217,9 +227,13 @@ def _wiki_search_image(query: str) -> Optional[str]:
             scored.sort(reverse=True)
 
             for _score, title in scored[:3]:
+                if time.time() >= deadline:
+                    return None
                 img = _wiki_summary_image(lang, title)
                 if img:
                     return img
+                if time.time() >= deadline:
+                    return None
                 # Fallback secundario: pageimage (algunas pages no tienen
                 # summary pero sí pageimage)
                 img = _wiki_pageimage(lang, title)

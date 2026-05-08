@@ -428,7 +428,17 @@ function slugOffset(slug: string): number {
 export function getHotelGallery(h: HotelEntry): string[] {
   const pool = GALLERY_POOL_BY_CAT[h.category] ?? GALLERY_POOL_BY_CAT.city;
   // Excluir el imageId base para no duplicar el hero.
-  const candidates = pool.filter((id) => id !== h.imageId);
+  let candidates = pool.filter((id) => id !== h.imageId);
+  // SSS91 defensive: si el filter dejó pool vacío (sólo pasaría si el imageId
+  // base coincide con TODAS las entradas del pool — improbable pero no
+  // imposible si alguien reusa el mismo ID), fallback al pool city sin
+  // filtrar para que la galería siempre tenga ≥4 fotos secundarias.
+  if (candidates.length < 4) {
+    const fallback = GALLERY_POOL_BY_CAT.city.filter((id) => id !== h.imageId);
+    candidates = candidates.length > 0
+      ? [...candidates, ...fallback.filter((id) => !candidates.includes(id))]
+      : fallback;
+  }
   // Offset determinístico por slug — cada hotel arranca en un punto distinto
   // del pool, lo que da 4 fotos diferentes entre hoteles vecinos.
   const offset = slugOffset(h.slug);

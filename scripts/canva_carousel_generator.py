@@ -40,7 +40,18 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 # Add scripts/ to path para import sibling
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from canva_landmarks import get_landmarks, fallback_landmarks, DestinationLandmarks  # noqa: E402
+try:
+    from canva_landmarks import get_landmarks, fallback_landmarks, DestinationLandmarks  # noqa: E402
+except ImportError as exc:
+    # SSS91: defensive — si canva_landmarks falta o tiene un syntax error
+    # damos un mensaje útil en lugar de un traceback denso de Python.
+    print(f"ERROR: no se pudo importar canva_landmarks ({exc}).", file=sys.stderr)
+    print(
+        "Asegúrate de que scripts/canva_landmarks.py está presente en el repo "
+        "y de que el script se ejecute desde la raíz del proyecto.",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
 
 # ─── PALETTE ──────────────────────────────────────────────────────
 NAVY = (10, 21, 48)

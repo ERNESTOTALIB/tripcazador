@@ -132,9 +132,11 @@ def admin_events(hours: int = 168) -> Optional[Dict[str, Any]]:
         return None
     try:
         # Llamar VPS DIRECTAMENTE — el proxy Vercel requiere cookie sesión.
+        # SSS91: safe="" para escapar TODO carácter especial del token (incluído "/" que
+        # urllib.parse.quote por defecto NO escapa con safe="/").
         url = (
             f"{API_BASE}/api/admin/events/aggregate?"
-            f"hours={hours}&token={urllib.parse.quote(ADMIN_TOKEN)}"
+            f"hours={hours}&token={urllib.parse.quote(ADMIN_TOKEN, safe='')}"
         )
         return http_get(url, timeout=20)
     except urllib.error.HTTPError as e:
@@ -148,7 +150,7 @@ def admin_subscribers() -> Optional[Dict[str, Any]]:
         return None
     try:
         # VPS endpoint directo
-        url = f"{API_BASE}/api/admin/subscribers?token={urllib.parse.quote(ADMIN_TOKEN)}"
+        url = f"{API_BASE}/api/admin/subscribers?token={urllib.parse.quote(ADMIN_TOKEN, safe='')}"
         return http_get(url, timeout=15)
     except urllib.error.HTTPError as e:
         return {"error": f"HTTP {e.code}"}
