@@ -399,6 +399,22 @@
       "destination": "CAG",
       "price_eur": 40.69,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "55e8234f2a55",
+      "ts": "2026-05-08T19:09:16.747541+00:00",
+      "origin": "STN",
+      "destination": "BRE",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "206a83642543",
+      "ts": "2026-05-08T19:09:16.747541+00:00",
+      "origin": "WRO",
+      "destination": "PSR",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
