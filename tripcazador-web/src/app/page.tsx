@@ -138,6 +138,10 @@ async function TopDeals() {
       {/* fff F3 — Live trending widget: prueba social en tiempo real */}
       <TrendingNowWidget />
 
+      {/* SSS95 — Newsletter prominent above-fold: 0 subs detectados en
+          monitoring, hay que aumentar visibilidad. Lead magnet PDF concreto. */}
+      <NewsletterSignup variant="expanded" context="home-fold" />
+
       {/* ggg G2 — Push opt-in: permite avisos push instantáneos */}
       <PushNotificationOptIn />
 

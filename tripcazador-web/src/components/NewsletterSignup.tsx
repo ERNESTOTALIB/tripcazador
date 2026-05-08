@@ -111,13 +111,14 @@ export function NewsletterSignup({ variant = "compact", context = "site" }: Prop
         }
       >
         {expanded
-          ? "Recibe los mejores chollos cada semana"
+          ? "PDF gratis: 50 hubs error-fare + chollos cada lunes"
           : "Newsletter semanal de error fares"}
       </h3>
       {expanded && (
         <p className="text-sm text-gray-300 max-w-xl">
-          Un email cada lunes con los 10 mejores deals detectados por el motor.
-          Sin spam, cancelas cuando quieras.
+          Te enviamos al instante el PDF <strong>&ldquo;50 hubs error-fare&rdquo;</strong> +
+          un email cada lunes con los 10 chollos más bajos de la semana
+          (vuelos &lt;€50 que detecta el motor). Sin spam, baja cuando quieras.
         </p>
       )}
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 items-stretch">
