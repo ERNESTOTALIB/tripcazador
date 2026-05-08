@@ -265,6 +265,84 @@ const nextConfig = {
           { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
         ],
       },
+      // SSS92: cierre de gap CDN — rutas evergreen/semi-estáticas que aún
+      // no tenían cache header explícito. Cloudflare tenía 0% cached en
+      // last 24h porque estas rutas (alta frecuencia) golpeaban Vercel directo.
+      {
+        // /hoteles + /hoteles/[slug]: catálogo hotelero, refresca diario.
+        source: "/hoteles",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+          },
+        ],
+      },
+      {
+        source: "/hoteles/:slug",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+          },
+        ],
+      },
+      {
+        // Páginas aerolínea — perfiles evergreen.
+        source: "/aerolineas/:slug",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        // Glosario, FAQ, opiniones, partners, prensa — todo casi estático.
+        source: "/glosario",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/faq",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/opiniones",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/partners",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/prensa",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
     ];
   },
   async rewrites() {

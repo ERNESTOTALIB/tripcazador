@@ -47,11 +47,112 @@ const RING_SIZE = 5000;        // último 5k eventos
 const TTL_MS = 24 * 3600 * 1000; // 24h
 
 // Store global (mismo proceso comparte ring)
-const store: { ring: TrackedEvent[]; idx: number } = (
-  globalThis as unknown as { __tc_event_store?: { ring: TrackedEvent[]; idx: number } }
-).__tc_event_store ?? { ring: [], idx: 0 };
+const store: {
+  ring: TrackedEvent[];
+  idx: number;
+  hydrated: boolean;
+  hydratedAt: number;
+} = (
+  globalThis as unknown as {
+    __tc_event_store?: { ring: TrackedEvent[]; idx: number; hydrated: boolean; hydratedAt: number };
+  }
+).__tc_event_store ?? { ring: [], idx: 0, hydrated: false, hydratedAt: 0 };
 
 (globalThis as unknown as { __tc_event_store: typeof store }).__tc_event_store = store;
+
+/**
+ * SSS92: hydrate ring desde data/events-recent.jsonl al primer access.
+ *
+ * Por qué: cada Vercel lambda arranca con el ring vacío. /api/track persiste
+ * a GitHub (data/events-recent.jsonl, 1000 últimas líneas) pero
+ * `aggregate24h()` solo leía in-memory → el panel/trending mostraba 0 eventos
+ * o fallback estático aunque hubiera tráfico real.
+ *
+ * Hidratamos lazy (primer call) + cache 5 min para no martillar fs en cada
+ * request. Filtra a últimas 24h y dedup por ts+visitor+type.
+ */
+function hydrateFromJsonl() {
+  const now = Date.now();
+  // Cache: re-hidrata como mucho cada 5 min
+  if (store.hydrated && now - store.hydratedAt < 5 * 60_000) return;
+
+  try {
+    // require dinámico — evita que webpack/edge intente bundlear fs
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require("fs") as typeof import("fs");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require("path") as typeof import("path");
+
+    // El JSONL está en data/events-recent.jsonl en repo root.
+    // process.cwd() en Vercel = tripcazador-web/, así que vamos al padre.
+    const candidatePaths = [
+      path.join(process.cwd(), "..", "data", "events-recent.jsonl"),
+      path.join(process.cwd(), "data", "events-recent.jsonl"),
+    ];
+    let content = "";
+    for (const p of candidatePaths) {
+      if (fs.existsSync(p)) {
+        content = fs.readFileSync(p, "utf-8");
+        break;
+      }
+    }
+    if (!content) {
+      store.hydrated = true;
+      store.hydratedAt = now;
+      return;
+    }
+
+    const seen = new Set<string>();
+    for (const e of store.ring) {
+      if (!e) continue;
+      seen.add(`${e.ts}|${e.visitor_id}|${e.type}`);
+    }
+
+    let added = 0;
+    for (const line of content.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      try {
+        const obj = JSON.parse(trimmed) as {
+          ts: string | number;
+          type: string;
+          visitor: string;
+          meta?: Record<string, string | number | boolean | undefined>;
+        };
+        const tsMs = typeof obj.ts === "string" ? Date.parse(obj.ts) : obj.ts;
+        if (!Number.isFinite(tsMs)) continue;
+        if (now - tsMs > TTL_MS) continue; // descarta >24h
+        const key = `${tsMs}|${obj.visitor}|${obj.type}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const evt: TrackedEvent = {
+          ts: tsMs,
+          type: obj.type as EventType,
+          visitor_id: obj.visitor,
+          meta: obj.meta || {},
+        };
+        if (store.ring.length < RING_SIZE) {
+          store.ring.push(evt);
+        } else {
+          store.ring[store.idx] = evt;
+          store.idx = (store.idx + 1) % RING_SIZE;
+        }
+        added++;
+      } catch {
+        /* línea inválida — skip */
+      }
+    }
+    if (added > 0) {
+      // Log discreto para debug en server logs
+      // eslint-disable-next-line no-console
+      console.log(`[event_store] hydrated ${added} events from JSONL`);
+    }
+  } catch {
+    /* fs no disponible (edge runtime) — skip silently */
+  }
+  store.hydrated = true;
+  store.hydratedAt = now;
+}
 
 export function trackEvent(e: TrackedEvent) {
   if (store.ring.length < RING_SIZE) {
@@ -63,6 +164,8 @@ export function trackEvent(e: TrackedEvent) {
 }
 
 export function getRecentEvents(): TrackedEvent[] {
+  // SSS92: hidratamos lazy desde JSONL la primera vez (cold start) o cada 5min
+  hydrateFromJsonl();
   const now = Date.now();
   return store.ring
     .filter((e) => e && now - e.ts < TTL_MS)

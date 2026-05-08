@@ -515,8 +515,22 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
       d.price_eur <= MAX_ATTRACTIVE_PRICE
   );
 
-  // 4. Sort: ahorros desc → precio asc → score desc
+  // 4. Sort SSS92: priorizar CRÍTICO/ERROR (wow reales <€50) ANTES de
+  // savings/price/score. Antes home mostraba ANOMALÍA/OFERTA genéricos a
+  // ~€100 promedio con los 189 deals CRÍTICO+ERROR ocultos en /deals.
+  // Para el aterrizaje queremos pegar el headline más impactante.
+  const TIER: Record<string, number> = {
+    "CRÍTICO": 0,    // <€50 = top urgencia
+    "CRITICO": 0,    // sin acento por si el clasificador varía
+    "ERROR": 1,      // error fares confirmados
+    "ANOMALÍA": 2,
+    "ANOMALIA": 2,
+    "OFERTA": 3,
+  };
   cheapEconomy.sort((a, b) => {
+    const tierA = TIER[a.classification || "OFERTA"] ?? 4;
+    const tierB = TIER[b.classification || "OFERTA"] ?? 4;
+    if (tierA !== tierB) return tierA - tierB;
     const savingsDiff = (b.savings_pct || 0) - (a.savings_pct || 0);
     if (Math.abs(savingsDiff) > 5) return savingsDiff;
     const priceDiff = (a.price_eur || 999) - (b.price_eur || 999);
