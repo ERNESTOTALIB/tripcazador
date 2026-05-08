@@ -351,6 +351,22 @@
       "destination": "AHO",
       "price_eur": 45.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "cf0c6a86fa54",
+      "ts": "2026-05-08T11:07:08.527593+00:00",
+      "origin": "MAD",
+      "destination": "AHO",
+      "price_eur": 47.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "21d56e67d50e",
+      "ts": "2026-05-08T11:07:08.527593+00:00",
+      "origin": "DUB",
+      "destination": "GDN",
+      "price_eur": 47.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
