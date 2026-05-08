@@ -11,7 +11,7 @@ Mejoras sobre V2:
 """
 
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 # Cargar variables desde .env si está disponible (silencioso si no).
 # Busca .env en la carpeta padre (/Viajes) y en la raíz del módulo.
@@ -1363,6 +1363,84 @@ def get_holiday_multiplier(iso_date: str, region: str) -> float:
                 if mult > best:
                     best = mult
     return best
+
+
+def compute_bridging_synthetic(
+    origin: str,
+    destination: str,
+    deals_index: Dict[Tuple[str, str], float],
+    direct_price: Optional[float] = None,
+    hubs: Optional[List[str]] = None,
+) -> Optional[Dict[str, object]]:
+    """
+    TTT01 — Hub-bridging detector (sintético).
+
+    Para una ruta (origen ES → destino long-haul) sin deal directo o con
+    directo caro, calcula min(origen→XXX) + min(XXX→destino) usando hubs
+    estratégicos. Si total < 80% del directo Travelpayouts → emite deal
+    sintético con bridging:true.
+
+    Args:
+        origin: IATA origen (ej. "MAD")
+        destination: IATA destino long-haul (ej. "NRT")
+        deals_index: dict {(orig, dest): min_price_eur} del último scan
+        direct_price: precio Travelpayouts directo si existe (None si no)
+        hubs: lista de hubs intermedios. Default: 7 hubs principales.
+
+    Returns:
+        Dict con campos del deal sintético, o None si no hay bridging válido.
+    """
+    if not hubs:
+        hubs = ["LHR", "AMS", "CDG", "FRA", "IST", "DOH", "MUC"]
+
+    best_total = None
+    best_hub = None
+    best_legs = None
+
+    for hub in hubs:
+        if hub == origin or hub == destination:
+            continue
+        leg1 = deals_index.get((origin, hub))
+        leg2 = deals_index.get((hub, destination))
+        if leg1 is None or leg2 is None:
+            continue
+        total = leg1 + leg2
+        if best_total is None or total < best_total:
+            best_total = total
+            best_hub = hub
+            best_legs = (leg1, leg2)
+
+    if best_total is None:
+        return None
+
+    # Solo emitir si total < 80% del directo (si hay directo conocido).
+    # Si no hay directo: emitir con score más bajo (60).
+    if direct_price is not None:
+        if best_total >= direct_price * 0.80:
+            return None
+        # Score basado en savings: 80→60pts, 50→90pts
+        savings_pct = 1 - (best_total / direct_price)
+        score = min(95, 60 + savings_pct * 80)
+    else:
+        score = 60
+
+    return {
+        "origin": origin,
+        "destination": destination,
+        "price_eur": round(best_total, 2),
+        "score": int(score),
+        "bridging": True,
+        "hub_via": best_hub,
+        "leg1_price": best_legs[0],
+        "leg2_price": best_legs[1],
+        "stops": 1,
+        "source": "bridging_synthetic",
+        "reason": (
+            f"Bridging via {best_hub}: €{best_legs[0]:.0f} + €{best_legs[1]:.0f} "
+            f"= €{best_total:.0f}"
+            + (f" (vs directo €{direct_price:.0f})" if direct_price else "")
+        ),
+    }
 
 
 def is_multi_stop_anomaly(

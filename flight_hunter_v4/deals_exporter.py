@@ -296,9 +296,26 @@ def filter_quality(deals: List[Dict], min_score: float = MIN_EXPORT_SCORE) -> Li
         if expires and expires < now_iso:
             stale_count += 1
             continue
+        # TTT01: anti-stale 12h endurecido para Travelpayouts. Su cache
+        # interna es 4-12h, así que un deal con found_at >12h ya está
+        # obsoleto incluso si expires_at no ha pasado. Otros engines
+        # (Ryanair/Vueling/Duffel) hacen scraping/API en tiempo real,
+        # mantienen su lógica original.
+        engine = (d.get("source") or "").lower()
+        if engine in ("travelpayouts", "tp"):
+            found_at = d.get("found_at", "")
+            if found_at:
+                try:
+                    found_dt = datetime.fromisoformat(found_at.replace("Z", "+00:00"))
+                    age_hours = (datetime.now(found_dt.tzinfo) - found_dt).total_seconds() / 3600
+                    if age_hours > 12:
+                        stale_count += 1
+                        continue
+                except (ValueError, TypeError):
+                    pass  # found_at malformado — no descartar
         filtered.append(d)
     if stale_count:
-        print(f"   🗑  filter_quality_deals: {stale_count} deals expirados descartados")
+        print(f"   🗑  filter_quality_deals: {stale_count} deals expirados/stale-12h descartados")
     return filtered
 
 
