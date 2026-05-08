@@ -61,97 +61,114 @@ const store: {
 (globalThis as unknown as { __tc_event_store: typeof store }).__tc_event_store = store;
 
 /**
- * SSS92: hydrate ring desde data/events-recent.jsonl al primer access.
+ * SSS92→SSS94: hydrate ring desde data/events-recent.jsonl al primer access.
  *
  * Por qué: cada Vercel lambda arranca con el ring vacío. /api/track persiste
  * a GitHub (data/events-recent.jsonl, 1000 últimas líneas) pero
  * `aggregate24h()` solo leía in-memory → el panel/trending mostraba 0 eventos
  * o fallback estático aunque hubiera tráfico real.
  *
- * Hidratamos lazy (primer call) + cache 5 min para no martillar fs en cada
- * request. Filtra a últimas 24h y dedup por ts+visitor+type.
+ * SSS94 fix: en Vercel `data/` está fuera del bundle (sólo se publica
+ * `tripcazador-web/`). Hacemos fetch del raw URL de GitHub en lugar de fs
+ * + cache 5 min. Para tests/SSR-local seguimos intentando fs como fallback.
  */
-function hydrateFromJsonl() {
+const GH_RAW_URL =
+  "https://raw.githubusercontent.com/ERNESTOTALIB/tripcazador/main/data/events-recent.jsonl";
+
+async function hydrateFromJsonlAsync() {
   const now = Date.now();
   // Cache: re-hidrata como mucho cada 5 min
   if (store.hydrated && now - store.hydratedAt < 5 * 60_000) return;
-
-  try {
-    // require dinámico — evita que webpack/edge intente bundlear fs
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const fs = require("fs") as typeof import("fs");
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const path = require("path") as typeof import("path");
-
-    // El JSONL está en data/events-recent.jsonl en repo root.
-    // process.cwd() en Vercel = tripcazador-web/, así que vamos al padre.
-    const candidatePaths = [
-      path.join(process.cwd(), "..", "data", "events-recent.jsonl"),
-      path.join(process.cwd(), "data", "events-recent.jsonl"),
-    ];
-    let content = "";
-    for (const p of candidatePaths) {
-      if (fs.existsSync(p)) {
-        content = fs.readFileSync(p, "utf-8");
-        break;
-      }
-    }
-    if (!content) {
-      store.hydrated = true;
-      store.hydratedAt = now;
-      return;
-    }
-
-    const seen = new Set<string>();
-    for (const e of store.ring) {
-      if (!e) continue;
-      seen.add(`${e.ts}|${e.visitor_id}|${e.type}`);
-    }
-
-    let added = 0;
-    for (const line of content.split("\n")) {
-      const trimmed = line.trim();
-      if (!trimmed) continue;
-      try {
-        const obj = JSON.parse(trimmed) as {
-          ts: string | number;
-          type: string;
-          visitor: string;
-          meta?: Record<string, string | number | boolean | undefined>;
-        };
-        const tsMs = typeof obj.ts === "string" ? Date.parse(obj.ts) : obj.ts;
-        if (!Number.isFinite(tsMs)) continue;
-        if (now - tsMs > TTL_MS) continue; // descarta >24h
-        const key = `${tsMs}|${obj.visitor}|${obj.type}`;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        const evt: TrackedEvent = {
-          ts: tsMs,
-          type: obj.type as EventType,
-          visitor_id: obj.visitor,
-          meta: obj.meta || {},
-        };
-        if (store.ring.length < RING_SIZE) {
-          store.ring.push(evt);
-        } else {
-          store.ring[store.idx] = evt;
-          store.idx = (store.idx + 1) % RING_SIZE;
-        }
-        added++;
-      } catch {
-        /* línea inválida — skip */
-      }
-    }
-    if (added > 0) {
-      // Log discreto para debug en server logs
-      // eslint-disable-next-line no-console
-      console.log(`[event_store] hydrated ${added} events from JSONL`);
-    }
-  } catch {
-    /* fs no disponible (edge runtime) — skip silently */
-  }
+  // Marcar como hidratado en el primer intento para no encolar fetches paralelos
   store.hydrated = true;
   store.hydratedAt = now;
+
+  let content = "";
+  // 1) Vercel/edge: fetch raw GitHub (siempre disponible, repo público)
+  try {
+    const res = await fetch(GH_RAW_URL, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(3500),
+    });
+    if (res.ok) content = await res.text();
+  } catch {
+    /* fetch falló — try fs */
+  }
+
+  // 2) Fallback fs (tests locales o GH Actions checkout)
+  if (!content) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const fs = require("fs") as typeof import("fs");
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const path = require("path") as typeof import("path");
+      const candidatePaths = [
+        path.join(process.cwd(), "..", "data", "events-recent.jsonl"),
+        path.join(process.cwd(), "data", "events-recent.jsonl"),
+      ];
+      for (const p of candidatePaths) {
+        if (fs.existsSync(p)) {
+          content = fs.readFileSync(p, "utf-8");
+          break;
+        }
+      }
+    } catch {
+      /* fs no disponible — skip */
+    }
+  }
+
+  if (!content) return;
+
+  const seen = new Set<string>();
+  for (const e of store.ring) {
+    if (!e) continue;
+    seen.add(`${e.ts}|${e.visitor_id}|${e.type}`);
+  }
+
+  let added = 0;
+  for (const line of content.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    try {
+      const obj = JSON.parse(trimmed) as {
+        ts: string | number;
+        type: string;
+        visitor: string;
+        meta?: Record<string, string | number | boolean | undefined>;
+      };
+      const tsMs = typeof obj.ts === "string" ? Date.parse(obj.ts) : obj.ts;
+      if (!Number.isFinite(tsMs)) continue;
+      if (now - tsMs > TTL_MS) continue; // descarta >24h
+      const key = `${tsMs}|${obj.visitor}|${obj.type}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const evt: TrackedEvent = {
+        ts: tsMs,
+        type: obj.type as EventType,
+        visitor_id: obj.visitor,
+        meta: obj.meta || {},
+      };
+      if (store.ring.length < RING_SIZE) {
+        store.ring.push(evt);
+      } else {
+        store.ring[store.idx] = evt;
+        store.idx = (store.idx + 1) % RING_SIZE;
+      }
+      added++;
+    } catch {
+      /* línea inválida — skip */
+    }
+  }
+  if (added > 0) {
+    // eslint-disable-next-line no-console
+    console.log(`[event_store] hydrated ${added} events from JSONL`);
+  }
+}
+
+// Wrapper sync que dispara el async fire-and-forget. La primera lambda call
+// retorna ring vacío; la siguiente (post-fetch) ya tiene los eventos.
+function hydrateFromJsonl() {
+  void hydrateFromJsonlAsync();
 }
 
 export function trackEvent(e: TrackedEvent) {
