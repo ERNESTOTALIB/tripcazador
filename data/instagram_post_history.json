@@ -106,5 +106,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Dublin",
     "price_eur": 34.99
+  },
+  {
+    "timestamp": 1778261089.3057003,
+    "deal_id": "ryanair_mad_lis_20260902_economy",
+    "origin": "MAD",
+    "destination": "LIS",
+    "city_from": "Madrid",
+    "city_to": "Lisbon",
+    "price_eur": 14.99
   }
 ]
