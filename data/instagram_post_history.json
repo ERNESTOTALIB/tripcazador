@@ -79,5 +79,14 @@
     "city_from": "Dubl\u00edn",
     "city_to": "Barcelona Girona",
     "price_eur": 24.99
+  },
+  {
+    "timestamp": 1778220124.5876162,
+    "deal_id": "ryanair_mad_lis_20260902_economy",
+    "origin": "MAD",
+    "destination": "LIS",
+    "city_from": "Madrid",
+    "city_to": "Lisbon",
+    "price_eur": 14.99
   }
 ]
