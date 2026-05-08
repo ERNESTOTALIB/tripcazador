@@ -458,6 +458,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }));
 
+  // WWW04 — i18n DACH/IT destinos[slug] (6 destinos × 3 idiomas = 18 URLs).
+  // Mantener sincronizado con DESTINATIONS_I18N en lib/destinations_i18n.ts.
+  const I18N_DEST_SLUGS = [
+    "japan", "thailand", "bali", "new-york", "iceland", "bangkok",
+  ];
+  const I18N_DACH_LOCALES = ["it", "de", "fr"];
+  const i18nDachDestPages: MetadataRoute.Sitemap = I18N_DACH_LOCALES.flatMap(
+    (locale) => I18N_DEST_SLUGS.map((slug) => ({
+      url: `${BASE_URL}/${locale}/destinos/${slug}`,
+      lastModified: hot,
+      changeFrequency: "weekly" as const,
+      priority: 0.65,
+    })),
+  );
+
   return [
     ...staticPages,
     ...destinoPages,
@@ -475,6 +490,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...monthlyPriceRoutes,
     ...hotelPages,
     ...pairedRoutePages,
+    ...i18nDachDestPages,
     ...feedPages,
     ...dealPages,
   ];

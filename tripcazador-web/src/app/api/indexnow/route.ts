@@ -165,6 +165,12 @@ export async function GET(req: NextRequest) {
       "bilbao-amsterdam", "bilbao-roma", "malaga-roma",
       "milan-barcelona", "praga-paris", "amsterdam-paris",
     ].map((s) => `https://${HOST}/vuelos/${s}`),
+    // WWW04/05 — i18n DACH/IT destinos[slug] (6 destinos × 3 locales = 18).
+    ...["japan", "thailand", "bali", "new-york", "iceland", "bangkok"].flatMap(
+      (slug) => ["it", "de", "fr"].map(
+        (locale) => `https://${HOST}/${locale}/destinos/${slug}`,
+      ),
+    ),
   ];
 
   const body = {
