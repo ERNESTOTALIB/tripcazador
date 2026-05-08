@@ -41,6 +41,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 SITE_URL = os.environ.get("SITE_URL", "https://tripcazador.com").rstrip("/")
+# Backend VPS — los endpoints /api/admin/events/* usan ?token=... auth.
+# (Los endpoints Vercel /api/admin/analytics requieren cookie de sesión
+# de /panel login, que un script headless no tiene.)
+API_BASE = os.environ.get("API_BASE", "https://api.tripcazador.com").rstrip("/")
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "").strip()
 CF_API_TOKEN = os.environ.get("CF_API_TOKEN", "").strip()
 CF_ZONE_ID = os.environ.get("CF_ZONE_ID", "").strip()
@@ -123,11 +127,15 @@ def cf_visitors(hours: int) -> Optional[Dict[str, int]]:
 
 
 def admin_events(hours: int = 168) -> Optional[Dict[str, Any]]:
-    """Eventos agregados de los últimos `hours` desde backend tracker."""
+    """Eventos agregados desde backend VPS — endpoint usa ?token=auth."""
     if not ADMIN_TOKEN:
         return None
     try:
-        url = f"{SITE_URL}/api/admin/analytics?hours={hours}&token={urllib.parse.quote(ADMIN_TOKEN)}"
+        # Llamar VPS DIRECTAMENTE — el proxy Vercel requiere cookie sesión.
+        url = (
+            f"{API_BASE}/api/admin/events/aggregate?"
+            f"hours={hours}&token={urllib.parse.quote(ADMIN_TOKEN)}"
+        )
         return http_get(url, timeout=20)
     except urllib.error.HTTPError as e:
         return {"error": f"HTTP {e.code} {e.reason}"}
@@ -139,7 +147,8 @@ def admin_subscribers() -> Optional[Dict[str, Any]]:
     if not ADMIN_TOKEN:
         return None
     try:
-        url = f"{SITE_URL}/api/admin/subscribers?token={urllib.parse.quote(ADMIN_TOKEN)}"
+        # VPS endpoint directo
+        url = f"{API_BASE}/api/admin/subscribers?token={urllib.parse.quote(ADMIN_TOKEN)}"
         return http_get(url, timeout=15)
     except urllib.error.HTTPError as e:
         return {"error": f"HTTP {e.code}"}
@@ -283,31 +292,45 @@ def main() -> int:
                 )
 
     # 2. Clicks
-    sections.append("\n## 👆 Clicks (tracker /api/track)")
+    sections.append("\n## 👆 Clicks + Eventos (backend VPS)")
     if not ADMIN_TOKEN:
         sections.append("_Sin ADMIN_TOKEN — skip_\n")
     else:
         ev = admin_events(hours=168)
         if ev and "error" not in ev:
-            by_type = ev.get("by_type") or ev.get("events_by_type") or {}
-            total = ev.get("total") or sum(by_type.values()) if isinstance(by_type, dict) else 0
-            sections.append(f"- **Total eventos 7d**: {total:,}\n")
-            if isinstance(by_type, dict) and by_type:
-                sections.append("- **Por tipo**:")
-                for t, c in sorted(by_type.items(), key=lambda kv: -kv[1])[:10]:
-                    sections.append(f"  - `{t}`: {c:,}")
-                sections.append("")
+            # Backend VPS shape: totals.{page_views,deal_clicks,searches,booking_redirects}
+            totals = ev.get("totals", {})
+            uniq = ev.get("unique_visitors", 0)
+            sections.append(f"- **Visitantes únicos 7d**: {uniq:,}")
+            if totals:
+                sections.append(f"- **Page views**: {totals.get('page_views', 0):,}")
+                sections.append(f"- **Deal clicks**: {totals.get('deal_clicks', 0):,}")
+                sections.append(f"- **Búsquedas**: {totals.get('searches', 0):,}")
+                sections.append(f"- **Booking redirects (→ partners)**: {totals.get('booking_redirects', 0):,}")
+            sections.append("")
             top_routes = ev.get("top_routes", [])[:10]
             if top_routes:
                 sections.append("- **Top 10 rutas más clicadas**:")
                 for r in top_routes:
-                    sections.append(f"  - {r.get('route', '?')}: {r.get('clicks', 0)} clicks")
+                    sections.append(f"  - `{r.get('route', '?')}`: {r.get('count', r.get('clicks', 0)):,} clicks")
                 sections.append("")
-            top_dests = ev.get("top_destinations", [])[:10]
-            if top_dests:
-                sections.append("- **Top 10 destinos más clicados**:")
-                for d in top_dests:
-                    sections.append(f"  - {d.get('destination', '?')}: {d.get('clicks', 0)} clicks")
+            top_airlines = ev.get("top_airlines", [])[:5]
+            if top_airlines:
+                sections.append("- **Top 5 aerolíneas**:")
+                for a in top_airlines:
+                    sections.append(f"  - {a.get('airline', '?')}: {a.get('count', 0):,}")
+                sections.append("")
+            top_paths = ev.get("top_paths", [])[:10]
+            if top_paths:
+                sections.append("- **Top 10 páginas visitadas**:")
+                for p in top_paths:
+                    sections.append(f"  - `{p.get('path', '?')}`: {p.get('count', 0):,} views")
+                sections.append("")
+            top_calcs = ev.get("top_calcs", [])[:5]
+            if top_calcs:
+                sections.append("- **Top 5 calculadoras usadas**:")
+                for c in top_calcs:
+                    sections.append(f"  - {c.get('calc', '?')}: {c.get('count', 0):,}")
                 sections.append("")
         else:
             sections.append(f"- ⚠️ {(ev or {}).get('error', 'sin respuesta')}\n")
