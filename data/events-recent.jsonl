@@ -473,3 +473,8 @@
 {"ts":"2026-05-08T22:08:30.599Z","type":"page_view","visitor":"6f42d31c1cdf6a57","meta":{"path":"/"}}
 {"ts":"2026-05-08T22:08:31.850Z","type":"landing_arrived","visitor":"6f42d31c1cdf6a57","meta":{"path":"/"}}
 {"ts":"2026-05-08T22:08:34.067Z","type":"landing_arrived","visitor":"6f42d31c1cdf6a57","meta":{"path":"/"}}
+{"ts":"2026-05-08T22:20:44.928Z","type":"landing_arrived","visitor":"738e66fc46273a5b","meta":{"path":"/","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-08T22:20:44.957Z","type":"page_view","visitor":"738e66fc46273a5b","meta":{"path":"/"}}
+{"ts":"2026-05-08T22:21:10.890Z","type":"page_view","visitor":"738e66fc46273a5b","meta":{"path":"/regiones/caribe"}}
+{"ts":"2026-05-08T22:21:22.068Z","type":"scroll_75","visitor":"738e66fc46273a5b","meta":{"path":"/regiones/caribe"}}
+{"ts":"2026-05-08T22:23:55.242Z","type":"page_view","visitor":"ad99b70fc920415b","meta":{"path":"/destinos/bali"}}
