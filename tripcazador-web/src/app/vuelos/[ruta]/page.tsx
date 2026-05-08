@@ -193,6 +193,247 @@ const TOP_ROUTES: Record<string, RouteEntry> = {
     bestMonths: ["febrero", "marzo", "octubre", "noviembre"],
     emoji: "🇲🇦",
   },
+  // TTT02 — 30 rutas nuevas: ES regional + EU emerging + cross-EU popular
+  "sevilla-roma": {
+    origin: "SVQ", destination: "ROM",
+    originCity: "Sevilla", destCity: "Roma",
+    originLabel: "Sevilla", destLabel: "Roma",
+    intro: "Vueling y Ryanair. Mejor en febrero y noviembre desde 35€.",
+    bestMonths: ["febrero", "marzo", "noviembre"],
+    emoji: "🇮🇹",
+  },
+  "valencia-londres": {
+    origin: "VLC", destination: "LON",
+    originCity: "Valencia", destCity: "Londres",
+    originLabel: "Valencia", destLabel: "Londres",
+    intro: "Ryanair, easyJet, Vueling. Errores fares <30€ en mid-week enero-febrero.",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇬🇧",
+  },
+  "bilbao-paris": {
+    origin: "BIO", destination: "PAR",
+    originCity: "Bilbao", destCity: "París",
+    originLabel: "Bilbao", destLabel: "París",
+    intro: "Air France y Vueling vuelan directo. 50% más barato fuera de verano.",
+    bestMonths: ["enero", "febrero", "octubre"],
+    emoji: "🇫🇷",
+  },
+  "malaga-amsterdam": {
+    origin: "AGP", destination: "AMS",
+    originCity: "Málaga", destCity: "Amsterdam",
+    originLabel: "Málaga", destLabel: "Amsterdam",
+    intro: "Transavia, Vueling, KLM. Bajadas a 50€ en mid-week noviembre-marzo.",
+    bestMonths: ["enero", "febrero", "marzo", "noviembre"],
+    emoji: "🇳🇱",
+  },
+  "palma-londres": {
+    origin: "PMI", destination: "LON",
+    originCity: "Palma", destCity: "Londres",
+    originLabel: "Palma de Mallorca", destLabel: "Londres",
+    intro: "Ryanair, easyJet, Jet2. Vuelos directos desde 25€ en temporada baja.",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇬🇧",
+  },
+  "alicante-paris": {
+    origin: "ALC", destination: "PAR",
+    originCity: "Alicante", destCity: "París",
+    originLabel: "Alicante", destLabel: "París",
+    intro: "Ryanair, easyJet, Vueling. Errores frecuentes <40€ enero-febrero.",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇫🇷",
+  },
+  "granada-londres": {
+    origin: "GRX", destination: "LON",
+    originCity: "Granada", destCity: "Londres",
+    originLabel: "Granada", destLabel: "Londres",
+    intro: "easyJet temporada. Mejor reservar 4-6 semanas antes para precios <50€.",
+    bestMonths: ["febrero", "marzo", "octubre"],
+    emoji: "🇬🇧",
+  },
+  "tenerife-londres": {
+    origin: "TFS", destination: "LON",
+    originCity: "Tenerife", destCity: "Londres",
+    originLabel: "Tenerife Sur", destLabel: "Londres",
+    intro: "Ryanair, easyJet, TUI Fly. Vuelos directos desde 30€ en mayo y septiembre.",
+    bestMonths: ["mayo", "septiembre", "octubre"],
+    emoji: "🇬🇧",
+  },
+  "ibiza-paris": {
+    origin: "IBZ", destination: "PAR",
+    originCity: "Ibiza", destCity: "París",
+    originLabel: "Ibiza", destLabel: "París",
+    intro: "Vueling, easyJet, Air France. Off-season abril-mayo precios mínimos.",
+    bestMonths: ["abril", "mayo", "octubre"],
+    emoji: "🇫🇷",
+  },
+  "santiago-roma": {
+    origin: "SCQ", destination: "ROM",
+    originCity: "Santiago", destCity: "Roma",
+    originLabel: "Santiago de Compostela", destLabel: "Roma",
+    intro: "Ryanair, Vueling. Vuelos directos limitados, mejor reservar antes.",
+    bestMonths: ["febrero", "marzo", "noviembre"],
+    emoji: "🇮🇹",
+  },
+  "madrid-praga": {
+    origin: "MAD", destination: "PRG",
+    originCity: "Madrid", destCity: "Praga",
+    originLabel: "Madrid", destLabel: "Praga",
+    intro: "Ryanair, Vueling, Iberia, Czech Airlines. Errores fares <50€ en febrero-marzo.",
+    bestMonths: ["febrero", "marzo", "noviembre"],
+    emoji: "🇨🇿",
+  },
+  "madrid-budapest": {
+    origin: "MAD", destination: "BUD",
+    originCity: "Madrid", destCity: "Budapest",
+    originLabel: "Madrid", destLabel: "Budapest",
+    intro: "Ryanair, Wizz Air, Iberia. Bajadas a 40€ mid-week en temporada baja.",
+    bestMonths: ["enero", "febrero", "marzo", "noviembre"],
+    emoji: "🇭🇺",
+  },
+  "madrid-viena": {
+    origin: "MAD", destination: "VIE",
+    originCity: "Madrid", destCity: "Viena",
+    originLabel: "Madrid", destLabel: "Viena",
+    intro: "Austrian Airlines, Iberia, Vueling. Mid-week noviembre-marzo precios mínimos.",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇦🇹",
+  },
+  "madrid-estambul": {
+    origin: "MAD", destination: "IST",
+    originCity: "Madrid", destCity: "Estambul",
+    originLabel: "Madrid", destLabel: "Estambul",
+    intro: "Turkish Airlines, Pegasus, Iberia. Hub asiático con tarifas ida y vuelta desde 130€.",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇹🇷",
+  },
+  "madrid-dubai": {
+    origin: "MAD", destination: "DXB",
+    originCity: "Madrid", destCity: "Dubái",
+    originLabel: "Madrid", destLabel: "Dubái",
+    intro: "Emirates, Etihad, Iberia, Turkish. Stopover programs incluidos en algunas tarifas.",
+    bestMonths: ["mayo", "septiembre", "noviembre"],
+    emoji: "🇦🇪",
+  },
+  "barcelona-praga": {
+    origin: "BCN", destination: "PRG",
+    originCity: "Barcelona", destCity: "Praga",
+    originLabel: "Barcelona", destLabel: "Praga",
+    intro: "Ryanair, Vueling, Smart Wings. Mid-week febrero-marzo precios <40€.",
+    bestMonths: ["febrero", "marzo", "noviembre"],
+    emoji: "🇨🇿",
+  },
+  "barcelona-budapest": {
+    origin: "BCN", destination: "BUD",
+    originCity: "Barcelona", destCity: "Budapest",
+    originLabel: "Barcelona", destLabel: "Budapest",
+    intro: "Ryanair, Wizz Air, Vueling. Errores fares regulares enero-febrero.",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇭🇺",
+  },
+  "madrid-reikiavik": {
+    origin: "MAD", destination: "KEF",
+    originCity: "Madrid", destCity: "Reikiavik",
+    originLabel: "Madrid", destLabel: "Reikiavik",
+    intro: "Icelandair, Play, Vueling. Stopover programs gratis hasta 7 días.",
+    bestMonths: ["febrero", "marzo", "octubre", "noviembre"],
+    emoji: "🇮🇸",
+  },
+  "barcelona-singapur": {
+    origin: "BCN", destination: "SIN",
+    originCity: "Barcelona", destCity: "Singapur",
+    originLabel: "Barcelona", destLabel: "Singapur",
+    intro: "Singapore Airlines, Qatar, Lufthansa. Mejor mid-week octubre-noviembre.",
+    bestMonths: ["octubre", "noviembre", "mayo"],
+    emoji: "🇸🇬",
+  },
+  "madrid-lima": {
+    origin: "MAD", destination: "LIM",
+    originCity: "Madrid", destCity: "Lima",
+    originLabel: "Madrid", destLabel: "Lima",
+    intro: "Iberia, Air Europa, LATAM. Mejor en mayo-junio y septiembre fuera de temporada alta.",
+    bestMonths: ["mayo", "junio", "septiembre"],
+    emoji: "🇵🇪",
+  },
+  "amsterdam-roma": {
+    origin: "AMS", destination: "ROM",
+    originCity: "Amsterdam", destCity: "Roma",
+    originLabel: "Amsterdam", destLabel: "Roma",
+    intro: "KLM, Transavia, Ryanair. Mid-week noviembre-marzo precios <40€.",
+    bestMonths: ["febrero", "noviembre"],
+    emoji: "🇮🇹",
+  },
+  "londres-roma": {
+    origin: "LON", destination: "ROM",
+    originCity: "Londres", destCity: "Roma",
+    originLabel: "Londres", destLabel: "Roma",
+    intro: "Ryanair, easyJet, BA, Vueling. Vuelos directos desde 25£ en temporada baja.",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇮🇹",
+  },
+  "paris-roma": {
+    origin: "PAR", destination: "ROM",
+    originCity: "París", destCity: "Roma",
+    originLabel: "París", destLabel: "Roma",
+    intro: "Air France, Vueling, ITA Airways. Errores fares <40€ regulares.",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇮🇹",
+  },
+  "berlin-roma": {
+    origin: "BER", destination: "ROM",
+    originCity: "Berlín", destCity: "Roma",
+    originLabel: "Berlín", destLabel: "Roma",
+    intro: "Ryanair, ITA, easyJet. Mid-week febrero-marzo bajada a 35€.",
+    bestMonths: ["febrero", "marzo", "noviembre"],
+    emoji: "🇮🇹",
+  },
+  "milan-paris": {
+    origin: "MIL", destination: "PAR",
+    originCity: "Milán", destCity: "París",
+    originLabel: "Milán", destLabel: "París",
+    intro: "Air France, Vueling, easyJet, ITA. Vuelos directos desde 30€ en mid-week.",
+    bestMonths: ["enero", "febrero", "octubre"],
+    emoji: "🇫🇷",
+  },
+  "milan-londres": {
+    origin: "MIL", destination: "LON",
+    originCity: "Milán", destCity: "Londres",
+    originLabel: "Milán", destLabel: "Londres",
+    intro: "Ryanair, easyJet, BA, ITA. Errores fares <30€ regulares.",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇬🇧",
+  },
+  "dublin-londres": {
+    origin: "DUB", destination: "LON",
+    originCity: "Dublín", destCity: "Londres",
+    originLabel: "Dublín", destLabel: "Londres",
+    intro: "Aer Lingus, Ryanair. Tarifa más alta del año en sept-oct (turismo).",
+    bestMonths: ["enero", "febrero", "noviembre"],
+    emoji: "🇬🇧",
+  },
+  "lisboa-paris": {
+    origin: "LIS", destination: "PAR",
+    originCity: "Lisboa", destCity: "París",
+    originLabel: "Lisboa", destLabel: "París",
+    intro: "TAP, Air France, easyJet. Vuelos directos desde 35€ mid-week.",
+    bestMonths: ["enero", "febrero", "octubre"],
+    emoji: "🇫🇷",
+  },
+  "lisboa-roma": {
+    origin: "LIS", destination: "ROM",
+    originCity: "Lisboa", destCity: "Roma",
+    originLabel: "Lisboa", destLabel: "Roma",
+    intro: "TAP, Ryanair, ITA. Errores fares <40€ frecuentes en febrero.",
+    bestMonths: ["febrero", "marzo", "noviembre"],
+    emoji: "🇮🇹",
+  },
+  "atenas-roma": {
+    origin: "ATH", destination: "ROM",
+    originCity: "Atenas", destCity: "Roma",
+    originLabel: "Atenas", destLabel: "Roma",
+    intro: "Aegean, ITA, Ryanair. Mid-week octubre-marzo precios <50€.",
+    bestMonths: ["febrero", "marzo", "noviembre"],
+    emoji: "🇮🇹",
+  },
 };
 
 const SITE = "https://tripcazador.com";
@@ -263,7 +504,10 @@ export default async function VuelosRutaPage({
           (route.destination === "ROM" && ["FCO", "CIA"].includes(d.destination)) ||
           (route.destination === "NYC" && ["JFK", "EWR", "LGA"].includes(d.destination)) ||
           (route.destination === "TYO" && ["NRT", "HND"].includes(d.destination)) ||
-          (route.destination === "BUE" && ["EZE", "AEP"].includes(d.destination))),
+          (route.destination === "BUE" && ["EZE", "AEP"].includes(d.destination)) ||
+          // TTT02: nuevos macros multi-airport
+          (route.destination === "MIL" && ["MXP", "LIN", "BGY"].includes(d.destination)) ||
+          (route.destination === "BER" && ["BER", "TXL", "SXF"].includes(d.destination))),
     )
     .sort((a, b) => (a.price_eur || 999) - (b.price_eur || 999))
     .slice(0, 6);
@@ -297,14 +541,36 @@ export default async function VuelosRutaPage({
         priceCurrency: "EUR",
         lowPrice: minPrice,
         offerCount: matchingDeals.length,
+        availability: "https://schema.org/InStock",
       },
     }),
+  };
+
+  // TTT02 — Trip schema enriched (separate from TouristTrip):
+  // estructura BoardingPass-style con itinerary + provider Organization.
+  const tripDetailJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Trip",
+    name: `${route.originLabel} → ${route.destLabel}`,
+    description: route.intro,
+    itinerary: [
+      { "@type": "Place", name: route.originCity },
+      { "@type": "Place", name: route.destCity },
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "TripCazador",
+      url: SITE,
+      logo: `${SITE}/logo.svg`,
+    },
+    partOfTrip: { "@type": "Trip", name: "Vuelos baratos Europa", url: `${SITE}/vuelos` },
   };
 
   return (
     <main className="container mx-auto px-4 py-8 max-w-5xl">
       <JsonLd data={breadcrumbJsonLd} />
       <JsonLd data={tripJsonLd} />
+      <JsonLd data={tripDetailJsonLd} />
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="text-xs text-gray-500 mb-4">

@@ -410,15 +410,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.65,
   }));
 
-  // SSS99: top-20 rutas pareadas SEO long-tail (origen-destino keywords reales)
+  // SSS99 + TTT02: 50 rutas pareadas SEO long-tail (origen-destino keywords)
   // /vuelos/madrid-lisboa, /vuelos/barcelona-londres, etc.
   const TOP_ROUTE_SLUGS = [
+    // Originales SSS99 (20)
     "madrid-lisboa", "madrid-londres", "barcelona-roma", "madrid-paris",
     "barcelona-londres", "madrid-roma", "barcelona-paris", "madrid-amsterdam",
     "madrid-berlin", "barcelona-amsterdam", "madrid-nueva-york", "madrid-tokio",
     "madrid-bangkok", "madrid-buenos-aires", "barcelona-nueva-york",
     "madrid-cancun", "madrid-bali", "madrid-cuba", "barcelona-tokio",
     "madrid-marrakech",
+    // TTT02 — ES regional (10)
+    "sevilla-roma", "valencia-londres", "bilbao-paris", "malaga-amsterdam",
+    "palma-londres", "alicante-paris", "granada-londres", "tenerife-londres",
+    "ibiza-paris", "santiago-roma",
+    // TTT02 — EU emerging (10)
+    "madrid-praga", "madrid-budapest", "madrid-viena", "madrid-estambul",
+    "madrid-dubai", "barcelona-praga", "barcelona-budapest", "madrid-reikiavik",
+    "barcelona-singapur", "madrid-lima",
+    // TTT02 — cross-EU popular (10)
+    "amsterdam-roma", "londres-roma", "paris-roma", "berlin-roma",
+    "milan-paris", "milan-londres", "dublin-londres", "lisboa-paris",
+    "lisboa-roma", "atenas-roma",
   ];
   const pairedRoutePages: MetadataRoute.Sitemap = TOP_ROUTE_SLUGS.map((slug) => ({
     url: `${BASE_URL}/vuelos/${slug}`,
