@@ -1630,14 +1630,25 @@ def is_multi_stop_anomaly(
         return False
     if cabin not in ERROR_FARE_ABSOLUTE_THRESHOLDS:
         return False
-    threshold = ERROR_FARE_ABSOLUTE_THRESHOLDS[cabin].get("largo")
+    # VVV03 — usar la distance category real del destino en lugar de
+    # hardcodear "largo". DPS/NRT/SYD son ultra_largo (€200 economy threshold)
+    # mientras que JFK/EWR son largo (€150). Antes se hardcodeaba "largo"
+    # → multi-stops a Asia con €220 no disparaban.
+    dist_cat = get_distance_category(destination) if destination else "largo"
+    threshold = ERROR_FARE_ABSOLUTE_THRESHOLDS[cabin].get(dist_cat)
+    if threshold is None:
+        # Fallback: si no hay threshold para esa distance, usar largo.
+        threshold = ERROR_FARE_ABSOLUTE_THRESHOLDS[cabin].get("largo")
     if threshold is None:
         return False
     # 50% del threshold long-haul + ajuste por cada stop adicional (-10% por
     # stop, máximo -30%) — más stops normalmente = más fricción = aún más
     # barato es necesario para considerarlo anomalía real.
+    # VVV03 — base configurable via env MULTI_STOP_ANOMALY_PCT (default 0.50).
+    import os as _os
+    base_pct = float(_os.environ.get("MULTI_STOP_ANOMALY_PCT", "0.50"))
     extra_stop_discount = min(0.30, 0.10 * (stops - 1))
-    multi_stop_threshold = threshold * (0.50 - extra_stop_discount)
+    multi_stop_threshold = threshold * (base_pct - extra_stop_discount)
     return price < multi_stop_threshold
 
 

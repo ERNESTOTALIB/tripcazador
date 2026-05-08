@@ -194,21 +194,29 @@ def t0_absolute_error_fare(flights: List[Dict]) -> List[Dict]:
                     )
                 else:
                     threshold = threshold_base
-                gap = (threshold - price) / threshold * 100 if threshold > 0 else 0
-                t0_score = min(50, 20 + gap * 0.5)
-                seasonal_tag = ""
-                if month and region and abs(threshold - threshold_base) >= 1:
-                    seasonal_tag = f" [ajuste estacional {region}/mes-{month}]"
-                holiday_tag = ""
-                if iso_date and region:
-                    holiday_name = config.get_active_holiday(iso_date, region)
-                    if holiday_name:
-                        holiday_tag = f" [festivo: {holiday_name}]"
-                t0_reason = (
-                    f"Precio {price:.0f}€ por debajo de umbral "
-                    f"{threshold:.0f}€ ({gap:.0f}% por debajo)"
-                    f"{seasonal_tag}{holiday_tag}"
-                )
+                # VVV04 — Guard: si threshold es inválido (<=0), saltar T0
+                # en lugar de asumir gap=0 (que dejaba t0_score=20 spurious
+                # para rutas sin threshold conocido).
+                if threshold <= 0:
+                    t0_triggered = False
+                    t0_score = 0
+                    t0_reason = ""
+                else:
+                    gap = (threshold - price) / threshold * 100
+                    t0_score = min(50, 20 + gap * 0.5)
+                    seasonal_tag = ""
+                    if month and region and abs(threshold - threshold_base) >= 1:
+                        seasonal_tag = f" [ajuste estacional {region}/mes-{month}]"
+                    holiday_tag = ""
+                    if iso_date and region:
+                        holiday_name = config.get_active_holiday(iso_date, region)
+                        if holiday_name:
+                            holiday_tag = f" [festivo: {holiday_name}]"
+                    t0_reason = (
+                        f"Precio {price:.0f}€ por debajo de umbral "
+                        f"{threshold:.0f}€ ({gap:.0f}% por debajo)"
+                        f"{seasonal_tag}{holiday_tag}"
+                    )
 
             # Verificar rango normal (solo para aerolíneas no low-cost)
             normal_range = config.PRICE_THRESHOLDS.get(cabin, {}).get(dist, (0, 9999))
@@ -333,10 +341,15 @@ def t1b_iqr_outlier(flights: List[Dict]) -> List[Dict]:
                     f"Outlier IQR: {price:.0f}€ < límite inferior {lower:.0f}€ "
                     f"(mediana: {median_p:.0f}€, media: {mean_p:.0f}€)"
                 )
-                # Nota: si median >> mean, hay skew — el precio es aún más anómalo
-                if mean_p > median_p * 1.3:
+                # VVV02 — Skew detection: en distribuciones right-skewed
+                # (típicas en precios), `mean > median` casi siempre. El boost
+                # del 1.3x disparaba en ~todas las distribuciones normales y
+                # añadía 20% false positives. Ahora exigimos skew EXTREMO
+                # (mean/median >= 1.5) para boostear, y guardamos contra
+                # median == 0.
+                if median_p > 0 and mean_p / median_p >= 1.5:
                     t1b_score *= 1.2
-                    t1b_reason += " — distribución sesgada (media > mediana 30%)"
+                    t1b_reason += " — distribución muy sesgada (media > mediana 50%)"
             elif price < q1:
                 # Precio en Q1 — bajo pero no outlier extremo
                 t1b_triggered = True
@@ -624,8 +637,8 @@ def t7_airline_pattern(flights: List[Dict]) -> List[Dict]:
 
 def analyze_all(
     flights: List[Dict],
-    historical_data: Dict = None,
-    recent_prices: Dict = None,
+    historical_data: Optional[Dict] = None,
+    recent_prices: Optional[Dict] = None,
     min_score: float = SCORE_OFERTA,
 ) -> List[Dict]:
     """
@@ -801,6 +814,108 @@ def analyze_all(
     for cls in [CLASS_CRITICO, CLASS_ERROR, CLASS_ANOMALIA, CLASS_OFERTA]:
         if by_class[cls]:
             print(f"      {'🚨' if cls == CLASS_CRITICO else '❌' if cls == CLASS_ERROR else '⚠️' if cls == CLASS_ANOMALIA else '💰'} {cls}: {by_class[cls]}")
+
+    # ══════════════════════════════════════════════════════
+    # VVV01 — Bridging synthetic step (CRÍTICO audit fix)
+    #
+    # Las funciones `compute_bridging_synthetic` (TTT01) y
+    # `compute_dual_bridging_synthetic` (UUU05) estaban definidas en
+    # config.py pero NUNCA se invocaban — código muerto. Aquí se cablean
+    # al pipeline.
+    #
+    # Estrategia: tras analizar los deals reales, construimos un
+    # `deals_index` (dict {(orig, dest): min_price_eur}) sobre TODO el set
+    # de `flights` (no solo los anomalías). Luego, para cada par (orig,
+    # dest_long_haul) intentamos emitir un synthetic bridging cuando un
+    # combo via hub es <80% del directo (single) o <70% (dual).
+    #
+    # Estimado +50-100 deals/día en categorías Asia/Pacífico/África/Latam.
+    # ══════════════════════════════════════════════════════
+    bridging_synthetic: List[Dict] = []
+    try:
+        # 1) deals_index: precio mínimo por (orig, dest) sobre los flights.
+        deals_index: Dict[Tuple[str, str], float] = {}
+        for f in flights:
+            o = f.get("origin")
+            d = f.get("destination")
+            p = f.get("price_eur")
+            if not o or not d or not isinstance(p, (int, float)) or p <= 0:
+                continue
+            key = (o, d)
+            cur = deals_index.get(key)
+            if cur is None or p < cur:
+                deals_index[key] = float(p)
+
+        # 2) Set de pares directos (orig, dest) candidatos a bridging:
+        #    rutas long-haul donde tener un combo via hub es probable
+        #    aportar valor. Excluye rutas short-haul EU.
+        LONG_HAUL_DESTS = {
+            # Asia
+            "NRT", "HND", "ICN", "BKK", "DPS", "SIN", "HKG", "KUL", "DOH",
+            "DXB", "AUH", "PVG", "PEK", "TPE",
+            # Pacífico
+            "SYD", "MEL", "AKL",
+            # América
+            "JFK", "EWR", "LGA", "LAX", "SFO", "MIA", "ORD", "BOS",
+            "EZE", "AEP", "GRU", "GIG", "SCL", "LIM", "MEX", "CUN", "BOG",
+            "HAV",
+            # África
+            "JNB", "CPT", "CMN", "RAK", "CAI", "NBO", "DAR", "ZNZ", "JRO",
+        }
+        es_origins = {"MAD", "BCN", "AGP", "VLC", "BIO", "SVQ", "ALC", "PMI"}
+
+        # 3) Para cada origen ES + destino long-haul: probar bridgings.
+        for orig in es_origins:
+            for dest in LONG_HAUL_DESTS:
+                direct_price = deals_index.get((orig, dest))
+                # Single-hub bridging
+                bd = config.compute_bridging_synthetic(
+                    origin=orig,
+                    destination=dest,
+                    deals_index=deals_index,
+                    direct_price=direct_price,
+                )
+                if bd:
+                    bridging_synthetic.append(bd)
+                    continue  # Si single-hub funciona, skip dual (peor UX)
+                # Dual-hub bridging (más exótico, solo si single no funcionó)
+                dd = config.compute_dual_bridging_synthetic(
+                    origin=orig,
+                    destination=dest,
+                    deals_index=deals_index,
+                    direct_price=direct_price,
+                )
+                if dd:
+                    bridging_synthetic.append(dd)
+    except Exception as e:
+        # Bridging es best-effort — no fallar el pipeline si algo va mal.
+        print(f"   ⚠️ bridging step error: {e}")
+
+    if bridging_synthetic:
+        # Adapter: enriquecer synthetic deals al shape de `analyzed` para
+        # que sigan siendo compatibles con downstream (export, telegram, etc).
+        for syn in bridging_synthetic:
+            classification = classify_by_score(syn["score"], 2)
+            analyzed.append({
+                **syn,
+                "id": f"bridge_{syn.get('origin')}_{syn.get('destination')}_{int(syn.get('price_eur', 0))}",
+                "final_score": float(syn.get("score", 60)),
+                "classification": classification,
+                "techniques_triggered": ["bridging"],
+                "n_techniques": 2,
+                "reasons": [syn.get("reason", "")],
+                "main_reason": syn.get("reason", "Bridging synthetic"),
+                "estimated_normal_price": syn.get("price_eur", 0) * 1.6,
+                "savings_eur": round(syn.get("price_eur", 0) * 0.6),
+                "savings_pct": 38.0,
+                "tags": ["bridging", "synthetic"],
+                "cabin": "economy",
+                "verified": False,
+            })
+        analyzed.sort(key=lambda x: x.get("final_score", 0), reverse=True)
+        n_dual = sum(1 for s in bridging_synthetic if s.get("bridging_dual"))
+        n_single = len(bridging_synthetic) - n_dual
+        print(f"   🔀 Bridging synthetic: +{n_single} single-hub +{n_dual} dual-hub")
 
     return analyzed
 

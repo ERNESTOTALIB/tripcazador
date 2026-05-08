@@ -308,7 +308,11 @@ def filter_quality(deals: List[Dict], min_score: float = MIN_EXPORT_SCORE) -> Li
                 try:
                     found_dt = datetime.fromisoformat(found_at.replace("Z", "+00:00"))
                     age_hours = (datetime.now(found_dt.tzinfo) - found_dt).total_seconds() / 3600
-                    if age_hours > 12:
+                    # VVV03 — configurable via env DEALS_STALE_HOURS
+                    # (default 12h). Útil para ajustar sensibilidad sin
+                    # redeploy de código.
+                    stale_threshold = float(os.environ.get("DEALS_STALE_HOURS", "12"))
+                    if age_hours > stale_threshold:
                         stale_count += 1
                         continue
                 except (ValueError, TypeError):
