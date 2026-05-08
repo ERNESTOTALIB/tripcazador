@@ -415,6 +415,22 @@
       "destination": "PSR",
       "price_eur": 16.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "1c73551f5eb2",
+      "ts": "2026-05-08T20:53:21.418605+00:00",
+      "origin": "STN",
+      "destination": "BZG",
+      "price_eur": 18.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "113a42b72f6d",
+      "ts": "2026-05-08T20:53:21.418605+00:00",
+      "origin": "WAW",
+      "destination": "GOA",
+      "price_eur": 36.8,
+      "classification": "CRÍTICO"
     }
   ]
 }
