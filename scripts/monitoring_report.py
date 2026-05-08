@@ -126,23 +126,129 @@ def cf_visitors(hours: int) -> Optional[Dict[str, int]]:
 # ─────────── Tracker / clicks ───────────
 
 
-def admin_events(hours: int = 168) -> Optional[Dict[str, Any]]:
-    """Eventos agregados desde backend VPS — endpoint usa ?token=auth."""
-    if not ADMIN_TOKEN:
+def aggregate_from_jsonl(hours: int = 168) -> Optional[Dict[str, Any]]:
+    """
+    SSS93: agrega eventos desde data/events-recent.jsonl (committed por
+    /api/track flushBufferToGitHub). Source primario porque persiste 100%
+    de eventos vs VPS que estuvo down días enteros (gap 95%).
+
+    El archivo está en repo root (../data desde scripts/). Devuelve
+    estructura compatible con admin_events() para que el pipeline downstream
+    no necesite cambios.
+    """
+    repo_root = Path(__file__).resolve().parent.parent
+    jsonl_path = repo_root / "data" / "events-recent.jsonl"
+    if not jsonl_path.exists():
         return None
+
+    cutoff_ms = (time.time() - hours * 3600) * 1000
+    visitors: set[str] = set()
+    by_type: Dict[str, int] = {}
+    paths_count: Dict[str, int] = {}
+    routes_count: Dict[str, int] = {}
+    airlines_count: Dict[str, int] = {}
+    calcs_count: Dict[str, int] = {}
+    recent: List[Dict[str, Any]] = []
+
     try:
-        # Llamar VPS DIRECTAMENTE — el proxy Vercel requiere cookie sesión.
-        # SSS91: safe="" para escapar TODO carácter especial del token (incluído "/" que
-        # urllib.parse.quote por defecto NO escapa con safe="/").
+        with jsonl_path.open("r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    e = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                ts = e.get("ts")
+                if isinstance(ts, str):
+                    # ISO format → ms
+                    try:
+                        ts_ms = datetime.fromisoformat(ts.replace("Z", "+00:00")).timestamp() * 1000
+                    except ValueError:
+                        continue
+                else:
+                    ts_ms = float(ts) if ts else 0
+                if ts_ms < cutoff_ms:
+                    continue
+                etype = e.get("type", "")
+                visitor = e.get("visitor", "")
+                meta = e.get("meta", {}) or {}
+                if visitor:
+                    visitors.add(visitor)
+                by_type[etype] = by_type.get(etype, 0) + 1
+                # Top paths (page_view)
+                if etype == "page_view":
+                    p = str(meta.get("path", ""))
+                    if p:
+                        paths_count[p] = paths_count.get(p, 0) + 1
+                # Top routes (deal_click + booking_redirect)
+                if etype in ("deal_click", "booking_redirect"):
+                    o = str(meta.get("origin", ""))
+                    d = str(meta.get("destination", ""))
+                    if o and d:
+                        route = f"{o}-{d}"
+                        routes_count[route] = routes_count.get(route, 0) + 1
+                    a = str(meta.get("airline_name", "") or meta.get("airline", ""))
+                    if a:
+                        airlines_count[a] = airlines_count.get(a, 0) + 1
+                # Top calcs (calc_used)
+                if etype == "calc_used":
+                    c = str(meta.get("calc", ""))
+                    if c:
+                        calcs_count[c] = calcs_count.get(c, 0) + 1
+                # Recent (últimos 50)
+                recent.append({"ts": ts_ms, "type": etype, "visitor_id": visitor, "meta": meta})
+    except OSError as e:
+        return {"error": f"jsonl read failed: {e}"}
+
+    # Sort recent desc por ts y top-N
+    recent.sort(key=lambda x: -x["ts"])
+    top_paths = sorted(paths_count.items(), key=lambda x: -x[1])[:10]
+    top_routes = sorted(routes_count.items(), key=lambda x: -x[1])[:10]
+    top_airlines = sorted(airlines_count.items(), key=lambda x: -x[1])[:10]
+    top_calcs = sorted(calcs_count.items(), key=lambda x: -x[1])[:10]
+
+    # Format compatible con remote VPS (admin/events/aggregate)
+    return {
+        "totals": {
+            "page_views": by_type.get("page_view", 0),
+            "deal_clicks": by_type.get("deal_click", 0),
+            "searches": by_type.get("search_submitted", 0),
+            "booking_redirects": by_type.get("booking_redirect", 0),
+        },
+        "unique_visitors": len(visitors),
+        "by_type": by_type,
+        "top_paths": [{"path": p, "count": c} for p, c in top_paths],
+        "top_routes": [{"route": r, "count": c} for r, c in top_routes],
+        "top_airlines": [{"airline": a, "count": c} for a, c in top_airlines],
+        "top_calcs": [{"calc": c, "count": n} for c, n in top_calcs],
+        "recent": recent[:50],
+        "_source": "github_jsonl",
+    }
+
+
+def admin_events(hours: int = 168) -> Optional[Dict[str, Any]]:
+    """SSS93: source primario = data/events-recent.jsonl del repo (100%
+    persistente, vs VPS que perdió 95% por downtime). Fallback a VPS solo
+    si el JSONL no existe o está vacío."""
+    primary = aggregate_from_jsonl(hours)
+    if primary is not None and primary.get("totals", {}).get("page_views", 0) > 0:
+        return primary
+
+    if not ADMIN_TOKEN:
+        return primary  # JSONL aunque sea 0, mejor que None
+    try:
+        # Fallback VPS
         url = (
             f"{API_BASE}/api/admin/events/aggregate?"
             f"hours={hours}&token={urllib.parse.quote(ADMIN_TOKEN, safe='')}"
         )
         return http_get(url, timeout=20)
     except urllib.error.HTTPError as e:
-        return {"error": f"HTTP {e.code} {e.reason}"}
+        return primary or {"error": f"HTTP {e.code} {e.reason}"}
     except Exception as e:
-        return {"error": str(e)[:120]}
+        return primary or {"error": str(e)[:120]}
 
 
 def admin_subscribers() -> Optional[Dict[str, Any]]:

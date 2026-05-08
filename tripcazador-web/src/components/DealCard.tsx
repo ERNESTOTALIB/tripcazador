@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 import { ShareDealInline } from "@/components/ShareDealInline";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import { tcTrackOnce } from "@/lib/track_client";
+import { tcTrack, tcTrackOnce } from "@/lib/track_client";
 
 interface DealCardProps {
   deal: Deal;
@@ -393,31 +393,23 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
                       direct_airline: !isMetasearch,
                     });
                   }
-                  // Server-side track (alimenta /panel — fase ss-SS4)
-                  if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
-                    const body = new Blob(
-                      [
-                        JSON.stringify({
-                          type: "booking_redirect",
-                          meta: {
-                            deal_id: String(deal.id || ""),
-                            destination: String(destination || ""),
-                            origin: String(origin || ""),
-                            airline: String(airline_name || ""),
-                            price: Number(price_eur || 0),
-                            cabin: String(deal.cabin || ""),
-                            direct_airline: !isMetasearch,
-                          },
-                        }),
-                      ],
-                      { type: "application/json" },
-                    );
-                    try {
-                      navigator.sendBeacon("/api/track", body);
-                    } catch {
-                      /* no-op */
-                    }
-                  }
+                  // SSS93: emitir AMBOS deal_click + booking_redirect.
+                  // - deal_click = "user mostró interés y clicó CTA" (top funnel)
+                  // - booking_redirect = "redirigido al partner externo"
+                  // El monitoring-report cuenta deal_click separadamente; antes
+                  // siempre era 0 porque solo se emitía booking_redirect.
+                  const trackMeta = {
+                    deal_id: String(deal.id || ""),
+                    destination: String(destination || ""),
+                    origin: String(origin || ""),
+                    airline_name: String(airline_name || ""),
+                    price: Number(price_eur || 0),
+                    cabin: String(deal.cabin || ""),
+                    classification: String(classification || ""),
+                    direct_airline: !isMetasearch,
+                  };
+                  tcTrack("deal_click", trackMeta);
+                  tcTrack("booking_redirect", trackMeta);
                 }}
               >
                 {ctaLabel}
