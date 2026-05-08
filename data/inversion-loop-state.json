@@ -1,0 +1,245 @@
+{
+  "version": 3,
+  "comment": "State file v3: 10 ciclos × 30min, cada ciclo agrupa 2-4 items relacionados que se hacen juntos en 1 commit. Total 30+ items deployados en 5h.",
+  "started_at": "2026-05-08T16:00:00+02:00",
+  "max_runs": 10,
+  "runs_completed": 0,
+  "last_run_at": null,
+  "last_commit": null,
+  "completed_cycles": [],
+  "skipped_cycles": [],
+  "cycles": [
+    {
+      "n": 1,
+      "id": "cycle-hunter-detection",
+      "title": "Hunter detection power-up: hub-bridging + anti-stale + +3 presets enriched",
+      "scheduled_at": "17:00",
+      "items": [
+        {
+          "id": "hub-bridging-detector",
+          "title": "Hub-bridging detector — sintetiza Madrid-XXX-Tokio cuando no hay directo",
+          "files": ["flight_hunter_v4/detector.py", "flight_hunter_v4/config.py"],
+          "details": "Crear funcion compute_bridging_synthetic(origin, dest_long_haul, deals_db). Para origen ES + destino long-haul sin deal directo: itera XXX in ['LHR','AMS','CDG','FRA','IST','DOH','MUC'], obtiene min(MAD-XXX) y min(XXX-NRT), suma. Si total < 80% del precio Travelpayouts directo → emit deal sintético con bridging:true, score 60-80, hub_via:XXX, total_stops:1. Llamar desde detector main loop tras T0b."
+        },
+        {
+          "id": "anti-stale-12h-travelpayouts",
+          "title": "Anti-stale 12h endurecido para Travelpayouts engine",
+          "files": ["flight_hunter_v4/deals_exporter.py"],
+          "details": "En la funcion export, filtra: si engine=='travelpayouts' y now - found_at_ms > 12h, descartar. Mantener filtro existente date_out<hoy. Log warning con count descartados."
+        },
+        {
+          "id": "enrich-presets-with-iata-aliases",
+          "title": "Enriquecer 3 presets SSS98 (SKI/GASTRO/FESTIVAL) con aliases IATA + season_multiplier",
+          "files": ["flight_hunter_v4/config.py"],
+          "details": "Para DEST_SKI_ALPS añadir multiplier: ski season dec-mar precios -20%. Para DEST_GASTRO añadir aliases TYO->{HND,NRT}, NYC->{JFK,EWR,LGA}. Para DEST_FESTIVAL añadir festival_dates dict {SZIGET:'2026-08-07', ROSKILDE:'2026-06-29'} para boost search en ventana ±14 días."
+        }
+      ],
+      "estimated_impact": "+250 deals/día long-haul + calidad +10%"
+    },
+    {
+      "n": 2,
+      "id": "cycle-seo-paired-pages",
+      "title": "SEO paired pages mega-expansion: 20→50 rutas + sitemap + JSON-LD enriched",
+      "scheduled_at": "17:30",
+      "items": [
+        {
+          "id": "30-more-paired-routes",
+          "title": "30 nuevas páginas pareadas /vuelos/{slug} (regional ES + long-haul + emerging)",
+          "files": ["tripcazador-web/src/app/vuelos/[ruta]/page.tsx", "tripcazador-web/src/app/sitemap.ts"],
+          "details": "Extender TOP_ROUTES de 20→50 con 30 nuevas rutas: ES regional (sevilla-roma, valencia-londres, bilbao-paris, malaga-amsterdam, palma-londres, alicante-paris, granada-londres, tenerife-londres, ibiza-paris, santiago-roma) + EU emerging (madrid-praga, madrid-budapest, madrid-viena, madrid-estambul, madrid-dubai, barcelona-praga, barcelona-budapest, madrid-reikiavik, barcelona-singapur, madrid-lima) + cross-EU popular (amsterdam-roma, londres-roma, paris-roma, berlin-roma, milan-paris, milan-londres, dublin-londres, lisboa-paris, lisboa-roma, atenas-roma)."
+        },
+        {
+          "id": "schema-trip-flightreservation",
+          "title": "JSON-LD Trip + AggregateOffer enriched + breadcrumbs canonical",
+          "files": ["tripcazador-web/src/app/vuelos/[ruta]/page.tsx"],
+          "details": "Añadir Trip schema con itinerary BoardingPass-style, provider Organization tripcazador.com, partOfTrip URL canónica. AggregateOffer ya existe — enriquecer con priceValidUntil (date_out + 7d) y availability. Mantener TouristTrip+BreadcrumbList existentes."
+        }
+      ],
+      "estimated_impact": "+3000-5000 visitors/mes orgánicos en 3-6 meses"
+    },
+    {
+      "n": 3,
+      "id": "cycle-tracking-observability",
+      "title": "Tracking & observability: impressions + CF GraphQL + funnel widget admin",
+      "scheduled_at": "18:00",
+      "items": [
+        {
+          "id": "deal-card-impressions",
+          "title": "DealCard IntersectionObserver result_viewed dedup por id",
+          "files": ["tripcazador-web/src/components/DealCard.tsx"],
+          "details": "useEffect: IntersectionObserver threshold=0.5 dispara tcTrack('result_viewed', {origin,destination,airline_name,price,deal_id}) sólo 1× por deal_id por sesión via sessionStorage Set 'tc_viewed'. Cleanup observer en unmount."
+        },
+        {
+          "id": "monitoring-cf-graphql",
+          "title": "monitoring_report.py — Cloudflare GraphQL Analytics si CF_API_TOKEN existe",
+          "files": ["scripts/monitoring_report.py"],
+          "details": "Verificar cloudflare_visitors() — si no existe, crear con query GraphQL httpRequestsAdaptiveGroups con filter clientCountryName!='T1', extrae uniques+requests+bytes+percentCached. Render en sección 'Tráfico web (Cloudflare)' del reporte markdown."
+        },
+        {
+          "id": "admin-funnel-widget-counters",
+          "title": "/panel funnel widget — counters tiempo real desde event_store",
+          "files": ["tripcazador-web/src/app/panel/page.tsx"],
+          "details": "Si /panel no tiene aún sección Funnel, añadir <section> que llama /api/admin/funnel y renderiza: page_views_24h, deal_clicks_24h, booking_redirects_24h, conversion_rate. Refresh cada 60s. Sólo si role=admin."
+        }
+      ],
+      "estimated_impact": "Cierra gap visibility 95% + conversion measurable"
+    },
+    {
+      "n": 4,
+      "id": "cycle-content-blog-toc",
+      "title": "Blog UX: TOC autogenerada + RelatedPosts mejorado + breadcrumb canonical",
+      "scheduled_at": "18:30",
+      "items": [
+        {
+          "id": "blog-toc-autogenerated",
+          "title": "TOC autogenerada clientside en blog posts >1500w + scroll spy",
+          "files": ["tripcazador-web/src/components/BlogTOC.tsx", "tripcazador-web/src/app/blog/[slug]/page.tsx"],
+          "details": "Componente client BlogTOC: useEffect extrae h2/h3 del article DOM, render aside sticky lg:block hidden con anchors. Scroll-spy via IntersectionObserver para active section. Solo si article.querySelectorAll('h2').length >= 4. Render con h3 indentadas 1 nivel."
+        },
+        {
+          "id": "related-posts-improved",
+          "title": "RelatedPosts: filtra por tag overlap + 3 más en /vuelos linked",
+          "files": ["tripcazador-web/src/components/RelatedPosts.tsx"],
+          "details": "Extender RelatedPosts existente para añadir 1-2 enlaces a /vuelos/{slug} relacionados con tags del post. Ej. blog post Tokio → 'Vuelos Madrid-Tokio' card. Estilo card-grid mini."
+        }
+      ],
+      "estimated_impact": "Dwell time +20%, snippet TOC SERP, internal linking"
+    },
+    {
+      "n": 5,
+      "id": "cycle-i18n-en-pages",
+      "title": "i18n EN expansion: /en/destinos/[slug] + /en/comparar/[slug] + sitemap",
+      "scheduled_at": "19:00",
+      "items": [
+        {
+          "id": "en-destinos-slug-12-destinations",
+          "title": "/en/destinos/[slug] template + 12 destinos primero",
+          "files": ["tripcazador-web/src/app/en/destinos/[slug]/page.tsx", "tripcazador-web/src/app/sitemap.ts"],
+          "details": "Mirror de /destinos/[slug] con i18n EN. 12 destinos: tokyo, bangkok, bali, paris, london, rome, amsterdam, lisbon, new-york, marrakech, istanbul, dubai. generateStaticParams. Hreflang recíproco con es-ES (alternates.languages incluye ambas direcciones). Add a sitemap."
+        },
+        {
+          "id": "en-comparar-slug-mirror",
+          "title": "/en/comparar/[slug] mirror de 5 comparativas top",
+          "files": ["tripcazador-web/src/app/en/comparar/[slug]/page.tsx", "tripcazador-web/src/app/sitemap.ts"],
+          "details": "Mirror de /comparar/[slug] con 5 comparativas top traducidas EN: business-class-comparison, budget-airlines, error-fares-explained, ana-vs-jal-cabin, hub-vs-p2p. Hreflang recíproco. Add sitemap."
+        }
+      ],
+      "estimated_impact": "Audiencia US/UK + tráfico EN +30%"
+    },
+    {
+      "n": 6,
+      "id": "cycle-perf-bundle-cls",
+      "title": "Perf optimization: bundle audit + CLS prevention + LCP boost",
+      "scheduled_at": "19:30",
+      "items": [
+        {
+          "id": "bundle-lazy-pricealerts-modal",
+          "title": "Lazy load PriceAlertModal + ShareDealButton (no críticos hero)",
+          "files": ["tripcazador-web/src/components/DealCard.tsx", "tripcazador-web/src/components/DealRow.tsx"],
+          "details": "Convertir PriceAlertModal y ShareDealInline a next/dynamic con ssr:false. Solo renderizan tras user interaction (click). Reduce initial bundle ~30KB."
+        },
+        {
+          "id": "image-aspect-ratio-cls",
+          "title": "Aspect-ratio CSS en HotelImage + DealCard image para prevenir CLS",
+          "files": ["tripcazador-web/src/components/HotelImage.tsx", "tripcazador-web/src/components/DealCard.tsx"],
+          "details": "Add `aspect-ratio: 3/2` (DealCard) y `aspect-ratio: 4/3` (HotelImage) en parent div del <img>. Previene layout shift durante load. CLS score esperado <0.05."
+        }
+      ],
+      "estimated_impact": "LCP -200ms, CLS <0.05 (Core Web Vitals green)"
+    },
+    {
+      "n": 7,
+      "id": "cycle-internal-linking-widget",
+      "title": "Internal linking sistemático: RelatedRoutesWidget en destinos+blog",
+      "scheduled_at": "20:00",
+      "items": [
+        {
+          "id": "related-routes-widget",
+          "title": "RelatedRoutesWidget — 3-5 rutas /vuelos/{slug} relacionadas con destino",
+          "files": ["tripcazador-web/src/components/RelatedRoutesWidget.tsx"],
+          "details": "Componente que recibe destino IATA y devuelve 3-5 rutas /vuelos/{slug} relacionadas. Mapping interno: si destino=LIS → ['madrid-lisboa','barcelona-lisboa','paris-lisboa']. Estilo card-grid con flag emoji + precio mínimo."
+        },
+        {
+          "id": "embed-related-routes-destinos-blog",
+          "title": "Embed RelatedRoutesWidget en /destinos/[slug] y /blog/[slug]",
+          "files": ["tripcazador-web/src/app/destinos/[slug]/page.tsx", "tripcazador-web/src/app/blog/[slug]/page.tsx"],
+          "details": "Importar y renderizar widget al final del contenido. /destinos/madrid → routes desde MAD. Blog post Tokio → routes hacia TYO. Boost page authority + dwell time."
+        }
+      ],
+      "estimated_impact": "Page authority distribution + +15% dwell time"
+    },
+    {
+      "n": 8,
+      "id": "cycle-hunter-incremental-refresh",
+      "title": "Worker incremental: refresh top 50 cada hora + IndexNow paired routes",
+      "scheduled_at": "20:30",
+      "items": [
+        {
+          "id": "worker-refresh-yml",
+          "title": "Worker incremental cron */60 min — refresh top 50 score>70",
+          "files": [".github/workflows/worker-refresh.yml", "flight_hunter_v4/main.py"],
+          "details": "Nuevo workflow cron 0 * * * * que corre main.py --mode=refresh. main.py: lee deals-latest.json, top 50 score>70, valida cada uno via Travelpayouts latest_prices. Si precio +15% → marca stale=true y baja score 30 puntos. Commit deals-latest.json."
+        },
+        {
+          "id": "indexnow-paired-routes",
+          "title": "IndexNow ping a 50 paired routes en deploy hook",
+          "files": [".github/workflows/indexnow.yml"],
+          "details": "Update existing IndexNow workflow para incluir 50 URLs /vuelos/{slug} en POST batch. Activar también ping a /destinos/{slug} y /comparar/{slug}. Total ~100 URLs por deploy."
+        }
+      ],
+      "estimated_impact": "Freshness deals <1h + indexación rápida 100 URLs"
+    },
+    {
+      "n": 9,
+      "id": "cycle-conversion-monetization",
+      "title": "Conversión monetización: TravelInsurance CTA + GYG embedded + esIM banner",
+      "scheduled_at": "21:00",
+      "items": [
+        {
+          "id": "travel-insurance-vuelos",
+          "title": "TravelInsuranceCTA en /vuelos/[ruta] tras DealCards (Heymondo affiliate)",
+          "files": ["tripcazador-web/src/app/vuelos/[ruta]/page.tsx"],
+          "details": "Importar componente existente TravelInsuranceCTA y renderizar tras grid de deals. Solo si destino is long-haul (NYC, TYO, BKK, etc.). Heymondo affiliate $25-60/venta."
+        },
+        {
+          "id": "gyg-widget-vuelos-longhaul",
+          "title": "GetYourGuide widget en /vuelos/[ruta] long-haul (8% commission tours)",
+          "files": ["tripcazador-web/src/app/vuelos/[ruta]/page.tsx"],
+          "details": "Importar GetYourGuideWidget existente y renderizar tras deals si destino is long-haul. Recommended tours del destino, comisión 8% en bookings."
+        }
+      ],
+      "estimated_impact": "Affiliate revenue stream long-haul +€10-30/mes/página"
+    },
+    {
+      "n": 10,
+      "id": "cycle-final-audit-report",
+      "title": "Final audit + report: trigger monitoring report + state.completed_at + memoria",
+      "scheduled_at": "21:30",
+      "items": [
+        {
+          "id": "trigger-monitoring-final",
+          "title": "Trigger monitoring-report.yml workflow vía gh CLI",
+          "files": [".github/workflows/inversion-final.yml"],
+          "details": "Crear workflow_dispatch helper que en su run dispara monitoring-report.yml para tener snapshot post-loop. Alternativamente: insertar directamente curl a GitHub API si gh CLI disponible. Si no, sólo añadir nota en state."
+        },
+        {
+          "id": "loop-state-completed",
+          "title": "Mark loop completed en state file + summary final",
+          "files": ["data/inversion-loop-state.json"],
+          "details": "Añadir completed_at ISO timestamp. Calcular total_commits, total_items_completed, summary md con cycles+items completados. Push como chore final."
+        },
+        {
+          "id": "memoria-sss100-summary",
+          "title": "Crear memoria SSS100 con resumen del loop",
+          "files": [".auto-memory/project_tripcazador_phase_may26sss100.md", ".auto-memory/MEMORY.md"],
+          "details": "EXCEPCIÓN regla memoria: en este último cycle SÍ crear archivo memoria SSS100 con resumen del loop autónomo (10 cycles, ~25 items, commits sha list). Update MEMORY.md index con 1 línea."
+        }
+      ],
+      "estimated_impact": "Cierre + observabilidad post-loop + memoria persistente"
+    }
+  ],
+  "deploy_policy": {
+    "max_per_cycle": 1,
+    "rule": "1 commit feat: TTT{NN} por cycle agrupando 2-4 items. State file commit aparte como chore(loop)."
+  }
+}
