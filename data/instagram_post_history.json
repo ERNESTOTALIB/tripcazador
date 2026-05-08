@@ -97,5 +97,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1778248934.8551488,
+    "deal_id": "ryanair_ams_dub_20260627_economy",
+    "origin": "AMS",
+    "destination": "DUB",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Dublin",
+    "price_eur": 34.99
   }
 ]
