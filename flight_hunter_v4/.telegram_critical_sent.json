@@ -367,6 +367,22 @@
       "destination": "GDN",
       "price_eur": 47.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "850e857ac29e",
+      "ts": "2026-05-08T13:18:58.329647+00:00",
+      "origin": "STN",
+      "destination": "BTS",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ad3f499369a0",
+      "ts": "2026-05-08T13:18:58.329647+00:00",
+      "origin": "STN",
+      "destination": "CAG",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
