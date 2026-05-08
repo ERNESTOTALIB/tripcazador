@@ -410,6 +410,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.65,
   }));
 
+  // SSS99: top-20 rutas pareadas SEO long-tail (origen-destino keywords reales)
+  // /vuelos/madrid-lisboa, /vuelos/barcelona-londres, etc.
+  const TOP_ROUTE_SLUGS = [
+    "madrid-lisboa", "madrid-londres", "barcelona-roma", "madrid-paris",
+    "barcelona-londres", "madrid-roma", "barcelona-paris", "madrid-amsterdam",
+    "madrid-berlin", "barcelona-amsterdam", "madrid-nueva-york", "madrid-tokio",
+    "madrid-bangkok", "madrid-buenos-aires", "barcelona-nueva-york",
+    "madrid-cancun", "madrid-bali", "madrid-cuba", "barcelona-tokio",
+    "madrid-marrakech",
+  ];
+  const pairedRoutePages: MetadataRoute.Sitemap = TOP_ROUTE_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/vuelos/${slug}`,
+    lastModified: hot,
+    changeFrequency: "daily" as const,
+    priority: 0.75,
+  }));
+
   return [
     ...staticPages,
     ...destinoPages,
@@ -426,6 +443,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     monthlyPriceIndex,
     ...monthlyPriceRoutes,
     ...hotelPages,
+    ...pairedRoutePages,
     ...feedPages,
     ...dealPages,
   ];

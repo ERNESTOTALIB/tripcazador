@@ -687,9 +687,37 @@ def analyze_all(
             f.get("t7_score",  0) * 0.5    # Boost de aerolínea es complementario
         )
 
+        # SSS99: T0b — multi-stop anomaly detector. Existía en
+        # config.is_multi_stop_anomaly desde abr-2026n (#216) pero NUNCA se
+        # invocaba desde el pipeline. Ahora T0b se activa para vuelos con
+        # 2+ escalas a precio absurdo (ej. ZRH→DOH→KUL→DPS Qatar 220€ vs
+        # directo 950€). Estimado +50-100 deals/día CRÍTICO/ERROR
+        # adicionales en categorías Asia/Pacífico/Sudamérica.
+        f["t0b_triggered"] = False
+        f["t0b_reason"] = ""
+        try:
+            stops = int(f.get("stops") or 0)
+        except (TypeError, ValueError):
+            stops = 0
+        if stops >= 2 and config.is_multi_stop_anomaly(
+            price=f.get("price_eur") or 0,
+            cabin=f.get("cabin_int") or config.CABIN_ECONOMY,
+            destination=dest or "",
+            stops=stops,
+        ):
+            f["t0b_triggered"] = True
+            f["t0b_score"] = 25  # Score raw — el bonus por múltiples técnicas
+            # se aplica abajo si T0b combina con T1/T1b/T4
+            f["t0b_reason"] = (
+                f"Multi-stop anomaly: {stops} escalas a {f.get('price_eur', 0):.0f}€ "
+                f"(<50% del threshold long-haul)"
+            )
+            raw_score += 25 * 1.0  # Mismo peso que t0
+
         # Contar técnicas disparadas
         techniques = [
             "t0"  if f.get("t0_triggered")  else None,
+            "t0b" if f.get("t0b_triggered") else None,
             "t1"  if f.get("t1_triggered")  else None,
             "t1b" if f.get("t1b_triggered") else None,
             "t1c" if f.get("t1c_triggered") else None,
@@ -742,10 +770,11 @@ def analyze_all(
         # Razones combinadas
         reasons = [
             r for r in [
-                f.get("t0_reason"),  f.get("t1_reason"),
-                f.get("t1b_reason"), f.get("t1c_reason"),
-                f.get("t4_reason"),  f.get("t5_reason"),
-                f.get("t6_reason"),  f.get("t7_reason"),
+                f.get("t0_reason"),  f.get("t0b_reason"),
+                f.get("t1_reason"),  f.get("t1b_reason"),
+                f.get("t1c_reason"), f.get("t4_reason"),
+                f.get("t5_reason"),  f.get("t6_reason"),
+                f.get("t7_reason"),  f.get("t_longhaul_reason"),
             ] if r
         ]
 
