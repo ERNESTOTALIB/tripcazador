@@ -10,6 +10,7 @@ import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 import { JsonLd } from "@/components/JsonLd";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { RelatedPosts } from "@/components/RelatedPosts";
+import { TableOfContents } from "@/components/TableOfContents";
 import { TravelInsuranceCTA } from "@/components/TravelInsuranceCTA";
 
 type Params = { slug: string };
@@ -181,6 +182,12 @@ export default function BlogPostPage({ params }: { params: Params }) {
           />
         </div>
       )}
+
+      {/* TTT04 — Table of Contents auto-generated from H2/H3 markdown.
+          Solo aparece si el post tiene ≥3 headings (skip on short posts).
+          Render server-side; los IDs hash matchean los que rehype-slug
+          inyecta abajo en runtime → click de TOC → scroll a sección. */}
+      <TableOfContents content={post.content} lang="es" />
 
       <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-a:text-amber-400 hover:prose-a:text-amber-300 prose-strong:text-white prose-code:text-amber-300 prose-blockquote:border-amber-500 prose-blockquote:text-gray-300">
         <ReactMarkdown

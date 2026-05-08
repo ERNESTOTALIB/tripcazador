@@ -128,6 +128,27 @@ export async function GET(req: NextRequest) {
     `https://${HOST}/api/og/social/carousel?topic=chollos&slide=1`,
     // SSS36 alertas page (creada en este ciclo)
     `https://${HOST}/alertas`,
+    // TTT08 — 50 páginas pareadas /vuelos/{origen-destino} long-tail SEO.
+    // Fast-track indexación para que IndexNow las publique ya en lugar de
+    // esperar al rastreo orgánico. Estimado +3000-5000 visitors/mes
+    // post-indexación.
+    ...[
+      "madrid-lisboa", "madrid-londres", "barcelona-roma", "madrid-paris",
+      "barcelona-londres", "madrid-roma", "barcelona-paris", "madrid-amsterdam",
+      "madrid-berlin", "barcelona-amsterdam",
+      "madrid-nueva-york", "madrid-tokio", "madrid-bangkok", "madrid-buenos-aires",
+      "barcelona-nueva-york", "madrid-cancun", "madrid-bali", "madrid-cuba",
+      "barcelona-tokio", "madrid-marrakech",
+      "sevilla-roma", "sevilla-londres", "valencia-londres", "valencia-roma",
+      "bilbao-paris", "bilbao-londres", "malaga-londres", "malaga-paris",
+      "alicante-londres", "palma-zurich",
+      "madrid-praga", "madrid-budapest", "madrid-viena", "madrid-dublin",
+      "madrid-copenhague", "barcelona-praga", "barcelona-berlin", "barcelona-viena",
+      "barcelona-dublin", "barcelona-atenas",
+      "paris-roma", "londres-amsterdam", "amsterdam-berlin", "viena-praga",
+      "lisboa-paris", "roma-atenas", "berlin-paris", "milan-londres",
+      "zurich-londres", "amsterdam-roma",
+    ].map((s) => `https://${HOST}/vuelos/${s}`),
   ];
 
   const body = {

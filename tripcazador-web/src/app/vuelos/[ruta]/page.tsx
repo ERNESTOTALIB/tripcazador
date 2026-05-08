@@ -17,6 +17,8 @@ import Link from "next/link";
 import { getDeals } from "@/lib/api";
 import { DealCard } from "@/components/DealCard";
 import { JsonLd } from "@/components/JsonLd";
+import { RelatedRoutesWidget } from "@/components/RelatedRoutesWidget";
+import { TravelInsuranceCTA } from "@/components/TravelInsuranceCTA";
 
 interface RouteEntry {
   origin: string; // IATA
@@ -662,9 +664,42 @@ export default async function VuelosRutaPage({
         </Link>
       </section>
 
-      {/* Internal linking — otras rutas populares */}
+      {/* TTT07 — RelatedRoutesWidget: scoring por origin/dest match.
+          Reemplaza el slice(0,9) plano con sugerencias semánticamente
+          relacionadas. Más PageRank interno + dwell time. */}
+      <RelatedRoutesWidget
+        origin={route.origin}
+        destination={route.destination}
+        excludeSlug={params.ruta}
+        limit={9}
+      />
+
+      {/* TTT09 — Travel insurance CTA SOLO en rutas long-haul (>4h vuelo).
+          Lector ya está en intent de viaje internacional → alta conversion
+          (€25-60/venta vía Heymondo affiliate). Short-haul EU no necesita
+          seguro robusto, no aporta valor + ruido. */}
+      {(() => {
+        const LONG_HAUL_DESTS = new Set([
+          "JFK", "EWR", "LGA", "LAX", "SFO", "MIA", "ORD",
+          "NRT", "HND", "ICN", "BKK", "DPS", "SIN", "HKG", "KUL",
+          "DXB", "DOH", "AUH",
+          "EZE", "AEP", "GRU", "GIG", "SCL", "LIM", "MEX", "CUN", "BOG", "HAV",
+          "JNB", "CPT", "CMN", "RAK", "CAI", "NBO",
+          "SYD", "MEL", "AKL",
+        ]);
+        if (!LONG_HAUL_DESTS.has(route.destination)) return null;
+        return (
+          <section className="mb-10">
+            <TravelInsuranceCTA variant="expanded" destination={route.destCity} />
+          </section>
+        );
+      })()}
+
+      {/* Internal linking legacy — otras rutas dentro del catálogo TOP_ROUTES.
+          Coexiste con RelatedRoutesWidget (que usa todas las 50 rutas
+          paginadas) — esta lista da emoji visual + curated labels. */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-300 mb-3">Otras rutas populares</h2>
+        <h2 className="text-lg font-semibold text-gray-300 mb-3">Más rutas populares con emoji</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
           {Object.entries(TOP_ROUTES)
             .filter(([slug]) => slug !== params.ruta)
