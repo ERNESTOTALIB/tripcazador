@@ -335,6 +335,22 @@
       "destination": "GOA",
       "price_eur": 43.24,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e5b45ff5ba86",
+      "ts": "2026-05-08T09:10:39.781224+00:00",
+      "origin": "DUB",
+      "destination": "BOJ",
+      "price_eur": 43.72,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a11102372d28",
+      "ts": "2026-05-08T09:10:39.781224+00:00",
+      "origin": "DUB",
+      "destination": "AHO",
+      "price_eur": 45.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
