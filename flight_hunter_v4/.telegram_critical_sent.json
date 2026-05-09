@@ -447,6 +447,22 @@
       "destination": "PFO",
       "price_eur": 46.98,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "13996e781db2",
+      "ts": "2026-05-09T10:52:11.743893+00:00",
+      "origin": "STN",
+      "destination": "BRE",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "1a6d43690281",
+      "ts": "2026-05-09T10:52:11.743893+00:00",
+      "origin": "STN",
+      "destination": "BZG",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
