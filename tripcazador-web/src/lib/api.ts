@@ -5,6 +5,7 @@
 
 import { enhanceDealBookingUrl } from "./airline_links";
 import { diversifyDeals } from "./seed_diversifier";
+import { enrichDealLocations, hasEuOrigin } from "./iata_city";
 
 export interface Deal {
   id: string;
@@ -111,7 +112,7 @@ export async function getDeals(params?: {
         const filtered = diversifyDeals(fresh.deals, params);
         return {
           ...fresh,
-          deals: filtered.map((d) => enhanceDealBookingUrl(d)),
+          deals: filtered.map((d) => enrichDealLocations(enhanceDealBookingUrl(d))),
           total_deals: filtered.length,
         };
       }
@@ -137,7 +138,7 @@ export async function getDeals(params?: {
     // fallback. Sin esto /deals?classification=CRÍTICO devolvía el catálogo
     // entero ignorando el filtro del usuario.
     const diversified = diversifyDeals(rawDeals, params);
-    const deals = diversified.map((d) => enhanceDealBookingUrl(d));
+    const deals = diversified.map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
     const totalCount = deals.length;
     const flights = deals.filter((d) => d.type === "flight").length;
     const hotels = deals.filter((d) => d.type === "hotel").length;
@@ -177,7 +178,7 @@ export async function getDeals(params?: {
   // Backend devolvió forma DealsResponse: enhancear cada deal igualmente
   const wrapped = json as DealsResponse;
   if (wrapped?.deals && Array.isArray(wrapped.deals)) {
-    wrapped.deals = wrapped.deals.map((d) => enhanceDealBookingUrl(d));
+    wrapped.deals = wrapped.deals.map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
   }
   return wrapped;
 }
@@ -371,16 +372,16 @@ export async function getTopDeals(limit = 10): Promise<Deal[]> {
     });
     if (!res.ok) {
       const data = await getDealsFromStatic();
-      return data.deals.slice(0, limit).map((d) => enhanceDealBookingUrl(d));
+      return data.deals.slice(0, limit).map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
     }
     const arr: Deal[] = await res.json();
     // B1: reescribir google.com/travel → ryanair/easyjet/wizz/kayak directos
     // C1: diversificar si el seed devuelve un solo mes
     if (!Array.isArray(arr)) return arr;
-    return diversifyDeals(arr, { limit }).map((d) => enhanceDealBookingUrl(d));
+    return diversifyDeals(arr, { limit }).map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
   } catch {
     const data = await getDealsFromStatic();
-    return data.deals.slice(0, limit).map((d) => enhanceDealBookingUrl(d));
+    return data.deals.slice(0, limit).map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
   }
 }
 
@@ -506,14 +507,27 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
     }
   }
 
+  // AAAA01: enriquecer city_from/city_to si vienen como código IATA o vacío
+  // (rutas LATAM internas que no estaban en el catálogo principal).
+  pool = pool.map((d) => enrichDealLocations(d));
+
   // 2. HARD reject business/first SIEMPRE (nunca en featured)
   // 3. Solo economy/premium_economy ≤ MAX_ATTRACTIVE_PRICE
+  // AAAA01: además filtramos por origen EU. La web es ES y los usuarios
+  // esperan ver rutas desde Europa, no LATAM-LATAM internas. Si el pool
+  // queda vacío tras el filtro, hacemos relax (mejor mostrar algo que nada).
   const cheapEconomy = pool.filter(
     (d) =>
       (d.cabin === "economy" || d.cabin === "premium_economy") &&
       d.price_eur > 0 &&
       d.price_eur <= MAX_ATTRACTIVE_PRICE
   );
+  const euOnly = cheapEconomy.filter(hasEuOrigin);
+  // Si tras filtrar EU quedan al menos `limit`, los usamos. Si no, mantenemos
+  // el pool original pero priorizando EU primero.
+  const finalPool = euOnly.length >= limit
+    ? euOnly
+    : [...euOnly, ...cheapEconomy.filter((d) => !hasEuOrigin(d))];
 
   // 4. Sort SSS92: priorizar CRÍTICO/ERROR (wow reales <€50) ANTES de
   // savings/price/score. Antes home mostraba ANOMALÍA/OFERTA genéricos a
@@ -527,7 +541,7 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
     "ANOMALIA": 2,
     "OFERTA": 3,
   };
-  cheapEconomy.sort((a, b) => {
+  finalPool.sort((a, b) => {
     const tierA = TIER[a.classification || "OFERTA"] ?? 4;
     const tierB = TIER[b.classification || "OFERTA"] ?? 4;
     if (tierA !== tierB) return tierA - tierB;
@@ -541,7 +555,7 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
   // 5. Diversidad: max 1 por destino
   const seenDest = new Set<string>();
   const diverse: Deal[] = [];
-  for (const d of cheapEconomy) {
+  for (const d of finalPool) {
     if (seenDest.has(d.destination)) continue;
     seenDest.add(d.destination);
     diverse.push(d);
@@ -570,7 +584,7 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
     return [];
   }
 
-  return diverse.map((d) => enhanceDealBookingUrl(d));
+  return diverse.map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
 }
 
 // Fallback: carga deals-latest.json (worker commit) o deals.json (legacy) desde /public.
@@ -602,7 +616,7 @@ async function getDealsFromStatic(): Promise<DealsResponse> {
 
       // Si es array plano (formato hunter): wrap a DealsResponse + diversificar
       if (Array.isArray(json)) {
-        const deals = (json as Deal[]).map((d) => enhanceDealBookingUrl(d));
+        const deals = (json as Deal[]).map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
         return {
           schema_version: "4.1",
           generated_at: new Date().toISOString(),
@@ -612,9 +626,9 @@ async function getDealsFromStatic(): Promise<DealsResponse> {
         };
       }
 
-      // Si es objeto con .deals: usar tal cual + enhance
+      // Si es objeto con .deals: usar tal cual + enhance + enrich location names
       if (json && typeof json === "object" && Array.isArray(json.deals)) {
-        json.deals = json.deals.map((d: Deal) => enhanceDealBookingUrl(d));
+        json.deals = json.deals.map((d: Deal) => enrichDealLocations(enhanceDealBookingUrl(d)));
         json.total_deals = json.total_deals || json.deals.length;
         return json as DealsResponse;
       }
