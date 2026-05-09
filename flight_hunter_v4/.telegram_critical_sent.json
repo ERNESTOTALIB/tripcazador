@@ -479,6 +479,22 @@
       "destination": "RAK",
       "price_eur": 25.17,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "840e4def28b9",
+      "ts": "2026-05-09T13:03:29.440207+00:00",
+      "origin": "LIM",
+      "destination": "TPP",
+      "price_eur": 59.8,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fd02a139b24b",
+      "ts": "2026-05-09T13:03:29.440207+00:00",
+      "origin": "GRU",
+      "destination": "POA",
+      "price_eur": 60.72,
+      "classification": "CRÍTICO"
     }
   ]
 }
