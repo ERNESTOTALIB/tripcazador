@@ -575,6 +575,22 @@
       "destination": "BDS",
       "price_eur": 32.64,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e76536b6bb39",
+      "ts": "2026-05-09T21:37:54.814599+00:00",
+      "origin": "BCN",
+      "destination": "OPO",
+      "price_eur": 24.69,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "aa8b2a8a2d45",
+      "ts": "2026-05-09T21:37:54.814599+00:00",
+      "origin": "MAD",
+      "destination": "VCE",
+      "price_eur": 24.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
