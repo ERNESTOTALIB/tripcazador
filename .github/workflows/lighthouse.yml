@@ -57,6 +57,16 @@ jobs:
             ${{ steps.wait_preview.outputs.url }}/deals
             ${{ steps.wait_preview.outputs.url }}/blog
             ${{ steps.wait_preview.outputs.url }}/destinos/japon
+            ${{ steps.wait_preview.outputs.url }}/destinos/lisboa
+            ${{ steps.wait_preview.outputs.url }}/destinos/paris
+            ${{ steps.wait_preview.outputs.url }}/it/destinos/japan
+            ${{ steps.wait_preview.outputs.url }}/de/destinos/paris
+            ${{ steps.wait_preview.outputs.url }}/vuelos/madrid-lisboa
+            ${{ steps.wait_preview.outputs.url }}/vuelos/barcelona-paris
+            ${{ steps.wait_preview.outputs.url }}/aerolineas/iberia
+            ${{ steps.wait_preview.outputs.url }}/aerolineas/qr
+            ${{ steps.wait_preview.outputs.url }}/comparar-aerolineas/iberia-vs-vueling
+            ${{ steps.wait_preview.outputs.url }}/comparar-aerolineas/qatar-vs-emirates
           configPath: ".github/workflows/lighthouserc.json"
           uploadArtifacts: true
           temporaryPublicStorage: true
