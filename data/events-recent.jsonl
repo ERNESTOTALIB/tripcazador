@@ -633,3 +633,8 @@
 {"ts":"2026-05-09T20:36:42.501Z","type":"page_view","visitor":"a7c17aa6ca85f01b","meta":{"path":"/"}}
 {"ts":"2026-05-09T20:36:43.691Z","type":"page_view","visitor":"a7c17aa6ca85f01b","meta":{"path":"/"}}
 {"ts":"2026-05-09T20:36:44.734Z","type":"page_view","visitor":"13a7a0ceb47049bc","meta":{"path":"/destinos/tailandia"}}
+{"ts":"2026-05-09T20:36:46.277Z","type":"landing_arrived","visitor":"c2094debb96550e7","meta":{"path":"/"}}
+{"ts":"2026-05-09T20:36:48.163Z","type":"page_view","visitor":"c2094debb96550e7","meta":{"path":"/"}}
+{"ts":"2026-05-09T20:36:48.270Z","type":"landing_arrived","visitor":"c2094debb96550e7","meta":{"path":"/"}}
+{"ts":"2026-05-09T20:36:48.402Z","type":"landing_arrived","visitor":"c2094debb96550e7","meta":{"path":"/"}}
+{"ts":"2026-05-09T20:36:50.551Z","type":"page_view","visitor":"c2094debb96550e7","meta":{"path":"/"}}
