@@ -151,5 +151,14 @@
     "city_from": "Madrid",
     "city_to": "Lisbon",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1778333243.3275378,
+    "deal_id": "travelpayouts_gig_sao_20260710_economy",
+    "origin": "GIG",
+    "destination": "SAO",
+    "city_from": "R\u00edo de Janeiro",
+    "city_to": "SAO",
+    "price_eur": 48.76
   }
 ]
