@@ -169,5 +169,14 @@
     "city_from": "S\u00e3o Paulo",
     "city_to": "POA",
     "price_eur": 60.72
+  },
+  {
+    "timestamp": 1778359924.2557585,
+    "deal_id": "ryanair_vlc_nap_20260721_economy",
+    "origin": "VLC",
+    "destination": "NAP",
+    "city_from": "Valencia",
+    "city_to": "Naples",
+    "price_eur": 27.99
   }
 ]
