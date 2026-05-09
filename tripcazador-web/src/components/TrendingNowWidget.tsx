@@ -17,6 +17,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAirportByIata } from "@/lib/airports_catalog";
+import { IATA_CITY_FALLBACK, EU_ORIGINS } from "@/lib/iata_city";
 
 interface TrendingResponse {
   top_routes: Array<{ route: string; clicks: number }>;
@@ -52,6 +53,17 @@ export function TrendingNowWidget() {
 
   if (error || !data || data.top_routes.length === 0) return null;
 
+  // BBBB03: filtrar rutas LATAM-internas que contaminen el feed visual.
+  // Web es ES → no tiene sentido mostrar GIG-SAO, BSB-SAO como "trending".
+  // Mantenemos route si origen está en EU_ORIGINS o destino tiene un mapping
+  // EU/España conocido.
+  const filteredRoutes = data.top_routes.filter((r) => {
+    const [o] = r.route.split("-");
+    if (!o) return false;
+    return EU_ORIGINS.has(o.toUpperCase());
+  });
+  if (filteredRoutes.length === 0) return null;
+
   return (
     <section
       className="rounded-2xl border border-amber-500/20 bg-gradient-to-br from-gray-900 to-gray-950 p-5 sm:p-6"
@@ -77,9 +89,18 @@ export function TrendingNowWidget() {
       </header>
 
       <ol className="space-y-2" data-testid="trending-list">
-        {data.top_routes.map((r, i) => {
+        {filteredRoutes.map((r, i) => {
           const [originIata, destIata] = r.route.split("-");
-          const dest = destIata ? getAirportByIata(destIata) : undefined;
+          // BBBB03: enriquecer con city name. getAirportByIata cubre el catálogo
+          // OpenFlights principal; IATA_CITY_FALLBACK rellena códigos LATAM
+          // que no estaban en el catálogo (SAO/RIO/IGU metropolitan codes).
+          const dest = destIata
+            ? getAirportByIata(destIata) || (
+                IATA_CITY_FALLBACK[destIata.toUpperCase()]
+                  ? { city: IATA_CITY_FALLBACK[destIata.toUpperCase()].city, emoji: "" }
+                  : undefined
+              )
+            : undefined;
           return (
             <li
               key={r.route}
