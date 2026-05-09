@@ -527,6 +527,22 @@
       "destination": "SAO",
       "price_eur": 54.28,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8dd4a03211fd",
+      "ts": "2026-05-09T16:45:29.935268+00:00",
+      "origin": "BSB",
+      "destination": "SAO",
+      "price_eur": 55.2,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "056364a2fcac",
+      "ts": "2026-05-09T16:45:29.935268+00:00",
+      "origin": "GIG",
+      "destination": "SAO",
+      "price_eur": 63.48,
+      "classification": "CRÍTICO"
     }
   ]
 }
