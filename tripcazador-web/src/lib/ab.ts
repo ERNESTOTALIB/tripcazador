@@ -55,6 +55,16 @@ export const EXPERIMENTS: Record<string, Experiment> = {
     bWeight: 50,
     defaultVariant: "A",
   },
+  // YYY01 — booking link routing: directo aerolínea (A) vs Aviasales/TP marker (B).
+  // A = Ryanair/EasyJet/Wizz directo (UX mejor, €0 comisión).
+  // B = aviasales.es?marker=714734 (1 click extra, €1-3 commission cuando hay booking).
+  // Hipótesis: B genera ≥€50/100 clicks vs €0 actual; coste = -10-20% CTR.
+  booking_router_v1: {
+    id: "booking_router_v1",
+    name: "Booking URL routing — directo aerolínea vs TP marker",
+    bWeight: 50,
+    defaultVariant: "A",
+  },
 };
 
 const VISITOR_KEY = "cv_visitor_id";

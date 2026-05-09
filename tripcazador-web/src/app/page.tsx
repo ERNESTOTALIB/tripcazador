@@ -10,6 +10,7 @@ import { SkyHero, type FloatingDeal } from "@/components/SkyHero";
 import { TrendingNowWidget } from "@/components/TrendingNowWidget";
 import { RecentSearchesStrip } from "@/components/RecentSearchesStrip";
 import { MyFeedStrip } from "@/components/MyFeedStrip";
+import { HotelDealsStrip } from "@/components/HotelDealsStrip";
 import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import { StreakBadge } from "@/components/StreakBadge";
 import type { Metadata } from "next";
@@ -388,6 +389,9 @@ export default async function HomePage() {
           <TopDeals />
         </Suspense>
       </section>
+
+      {/* YYY06 — Hotel deals strip (Booking AID afiliado, mayor margen) */}
+      <HotelDealsStrip />
 
       {/* Destinos populares con tarjetas visuales */}
       <section className="space-y-6">

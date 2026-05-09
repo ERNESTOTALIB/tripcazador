@@ -8,6 +8,7 @@ import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 import { ShareDealInline } from "@/components/ShareDealInline";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { tcTrack, tcTrackOnce } from "@/lib/track_client";
+import { routeBookingUrl } from "@/lib/booking_url_router";
 
 interface DealCardProps {
   deal: Deal;
@@ -382,7 +383,21 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
                     ? "bg-amber-500 hover:bg-amber-400 text-black"
                     : "bg-gray-700 hover:bg-gray-600 text-white"}
                 `}
-                onClick={() => {
+                onClick={(e) => {
+                  // YYY01 — A/B booking router. Reescribe URL last-second si
+                  // variant=B y aerolínea TP-profitable. SSR-safe: el href
+                  // estático queda como fallback si JS no corre.
+                  const routed = routeBookingUrl({
+                    originalUrl: booking_url || "",
+                    airlineCode: deal.airline,
+                    origin,
+                    destination,
+                    dateOut: deal.date_out,
+                    dateRet: deal.date_ret,
+                  });
+                  if (routed.rerouted && routed.url && e.currentTarget) {
+                    e.currentTarget.href = routed.url;
+                  }
                   // GA4 (consent-gated en el sitio)
                   if (typeof window !== "undefined" && (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag) {
                     (window as unknown as { gtag: (...a: unknown[]) => void }).gtag("event", "deal_click", {
@@ -391,6 +406,8 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
                       price: price_eur,
                       classification: classification,
                       direct_airline: !isMetasearch,
+                      ab_variant: routed.variant,
+                      rerouted: routed.rerouted,
                     });
                   }
                   // SSS93: emitir AMBOS deal_click + booking_redirect.
@@ -407,6 +424,8 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
                     cabin: String(deal.cabin || ""),
                     classification: String(classification || ""),
                     direct_airline: !isMetasearch,
+                    ab_variant: routed.variant,
+                    rerouted: routed.rerouted,
                   };
                   tcTrack("deal_click", trackMeta);
                   tcTrack("booking_redirect", trackMeta);
@@ -525,6 +544,20 @@ export function DealRow({ deal }: { deal: Deal }) {
         target="_blank"
         rel="noopener noreferrer nofollow"
         className="flex items-center gap-1 px-4 py-2.5 min-h-[44px] bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm rounded-lg transition-all shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+        onClick={(e) => {
+          // YYY01 — A/B booking router (mismo router que DealCard CTA principal).
+          const routed = routeBookingUrl({
+            originalUrl: booking_url || "",
+            airlineCode: deal.airline,
+            origin,
+            destination,
+            dateOut: deal.date_out,
+            dateRet: deal.date_ret,
+          });
+          if (routed.rerouted && routed.url && e.currentTarget) {
+            e.currentTarget.href = routed.url;
+          }
+        }}
       >
         Ver
         <ExternalLink size={12} />

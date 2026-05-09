@@ -18,6 +18,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 import { ShareButtons } from "@/components/ShareButtons";
 import { PriceHistoryChart } from "@/components/PriceHistoryChart";
+import { HotelCrossSell } from "@/components/HotelCrossSell";
 
 // ISR: revalidar cada 5 min
 export const revalidate = 300;
@@ -402,6 +403,16 @@ export default async function DealDetailPage({
           </div>
         </section>
       )}
+
+      {/* ─────────── YYY02 Hotel cross-sell ─────────── */}
+      <HotelCrossSell
+        city={deal.city_to || deal.destination}
+        iata={deal.destination}
+        dateOut={deal.date_out || undefined}
+        nights={2}
+        variant="card"
+        locale="es"
+      />
 
       {/* ─────────── Deals similares ─────────── */}
       {fallbackSimilar.length > 0 && (
