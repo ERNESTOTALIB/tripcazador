@@ -559,6 +559,22 @@
       "destination": "CUN",
       "price_eur": 74.52,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "1adf3b2aaa36",
+      "ts": "2026-05-09T20:38:14.549108+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 25.64,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "b7b3792908f4",
+      "ts": "2026-05-09T20:38:14.549108+00:00",
+      "origin": "MAD",
+      "destination": "BDS",
+      "price_eur": 32.64,
+      "classification": "CRÍTICO"
     }
   ]
 }
