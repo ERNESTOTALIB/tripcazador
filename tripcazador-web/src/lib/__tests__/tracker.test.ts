@@ -49,6 +49,13 @@ describe("tracker.trackClick", () => {
   beforeEach(() => {
     beaconSpy = vi.fn(() => true);
     fetchSpy = vi.fn(() => Promise.resolve(new Response(null, { status: 202 })));
+    // VVV-fix: vitest env=node — el guard `isBrowser()` en tracker.ts exige
+    // que `window` y `navigator` estén definidos. Mock ambos.
+    Object.defineProperty(globalThis, "window", {
+      value: { location: { pathname: "/" } },
+      configurable: true,
+      writable: true,
+    });
     Object.defineProperty(globalThis, "navigator", {
       value: { sendBeacon: beaconSpy },
       configurable: true,

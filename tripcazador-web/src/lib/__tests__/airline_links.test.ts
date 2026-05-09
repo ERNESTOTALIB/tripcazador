@@ -105,7 +105,9 @@ describe("airline_links — direct booking URLs", () => {
       });
       expect(u).toContain("wizzair.com");
     });
-    it("Iberia (IB) sin builder → Kayak fallback", () => {
+    it("Iberia (IB) → iberia.com directo (no kayak fallback)", () => {
+      // VVV-fix: SSS35 cambió fallback de kayak.es a deeplink directo iberia.com
+      // (más conversión + menos clicks). Test refleja behavior actual.
       const u = getBookingUrl({
         airlineCode: "IB",
         airlineName: "Iberia",
@@ -113,7 +115,7 @@ describe("airline_links — direct booking URLs", () => {
         destination: "EZE",
         dateOut: "2026-06-01",
       });
-      expect(u).toContain("kayak.es");
+      expect(u).toContain("iberia.com");
       expect(u).not.toContain("google.com");
     });
     it("solo nombre (sin code) — match Ryanair por substring", () => {
@@ -129,7 +131,9 @@ describe("airline_links — direct booking URLs", () => {
   });
 
   describe("enhanceDealBookingUrl", () => {
-    it("reescribe Google Flights → Kayak (Iberia)", () => {
+    it("reescribe Google Flights → iberia.com (Iberia)", () => {
+      // VVV-fix: SSS35 cambió fallback de kayak.es a iberia.com directo
+      // (deeplink real de la aerolínea). Test refleja behavior actual.
       const deal = {
         booking_url: "https://www.google.com/travel/flights?q=ZRH+to+MAD",
         airline_code: "IB",
@@ -140,7 +144,7 @@ describe("airline_links — direct booking URLs", () => {
       };
       const out = enhanceDealBookingUrl(deal);
       expect(out.booking_url).not.toContain("google.com");
-      expect(out.booking_url).toContain("kayak.es");
+      expect(out.booking_url).toContain("iberia.com");
     });
     it("reescribe Google Flights → ryanair.com (Ryanair)", () => {
       const deal = {
