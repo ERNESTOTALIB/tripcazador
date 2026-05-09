@@ -603,3 +603,8 @@
 {"ts":"2026-05-09T19:49:10.503Z","type":"landing_arrived","visitor":"e97de5034a5e6f08","meta":{"path":"/"}}
 {"ts":"2026-05-09T19:49:13.774Z","type":"landing_arrived","visitor":"f8efa5f08e0785b1","meta":{"path":"/"}}
 {"ts":"2026-05-09T19:49:13.911Z","type":"landing_arrived","visitor":"f8efa5f08e0785b1","meta":{"path":"/"}}
+{"ts":"2026-05-09T20:35:06.781Z","type":"page_view","visitor":"13a7a0ceb47049bc","meta":{"path":"/deals"}}
+{"ts":"2026-05-09T20:35:37.254Z","type":"landing_arrived","visitor":"f931e847b3143155","meta":{"path":"/"}}
+{"ts":"2026-05-09T20:35:37.271Z","type":"page_view","visitor":"f931e847b3143155","meta":{"path":"/"}}
+{"ts":"2026-05-09T20:35:37.298Z","type":"landing_arrived","visitor":"f931e847b3143155","meta":{"path":"/"}}
+{"ts":"2026-05-09T20:35:38.989Z","type":"page_view","visitor":"f931e847b3143155","meta":{"path":"/"}}
