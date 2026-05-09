@@ -142,5 +142,14 @@
     "city_from": "Barcelona",
     "city_to": "Berlin Brandenburg",
     "price_eur": 38.79
+  },
+  {
+    "timestamp": 1778318672.6941874,
+    "deal_id": "ryanair_mad_lis_20260902_economy",
+    "origin": "MAD",
+    "destination": "LIS",
+    "city_from": "Madrid",
+    "city_to": "Lisbon",
+    "price_eur": 14.99
   }
 ]
