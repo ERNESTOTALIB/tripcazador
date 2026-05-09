@@ -463,6 +463,22 @@
       "destination": "BZG",
       "price_eur": 17.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "96bf77aa2b18",
+      "ts": "2026-05-09T11:44:15.756184+00:00",
+      "origin": "STN",
+      "destination": "KSC",
+      "price_eur": 18.37,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "cddfec0ffbc7",
+      "ts": "2026-05-09T11:44:15.756184+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 25.17,
+      "classification": "CRÍTICO"
     }
   ]
 }
