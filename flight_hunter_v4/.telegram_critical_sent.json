@@ -495,6 +495,22 @@
       "destination": "POA",
       "price_eur": 60.72,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "458b2e00d41b",
+      "ts": "2026-05-09T14:44:23.452786+00:00",
+      "origin": "AEP",
+      "destination": "BRC",
+      "price_eur": 70.84,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5d606c85eab5",
+      "ts": "2026-05-09T14:44:23.452786+00:00",
+      "origin": "MVD",
+      "destination": "RIO",
+      "price_eur": 126.96,
+      "classification": "CRÍTICO"
     }
   ]
 }
