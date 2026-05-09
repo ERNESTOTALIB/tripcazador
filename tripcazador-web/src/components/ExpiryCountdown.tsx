@@ -77,6 +77,39 @@ export function ExpiryCountdown({ expiresAt, foundAt, critical }: Props) {
   const remainingMs = new Date(expiresAt).getTime() - now;
   const remainingH = remainingMs / (1000 * 60 * 60);
 
+  // BBBB01 (May 2026): el backend pone expires_at = found_at + 12h
+  // mecánicamente para detectar deals stale, NO refleja expiry real del
+  // vuelo. Resultado: usuario ve "🔥 Expira en 9h 41m" para un vuelo
+  // dentro de 3 meses → falso urgency, mata credibilidad.
+  //
+  // Heurística: si la diferencia foundAt→expiresAt es <= 24h, ese
+  // expires_at es un stale-after artificial. Caemos a chip "Visto hace X"
+  // sin countdown urgency.
+  if (foundAt) {
+    const fAt = new Date(foundAt).getTime();
+    const eAt = new Date(expiresAt).getTime();
+    const ttlH = (eAt - fAt) / (1000 * 60 * 60);
+    if (ttlH > 0 && ttlH <= 24) {
+      // expires_at es stale-after, no expiry real del deal
+      const diffMin = Math.max(0, (now - fAt) / 60_000);
+      const fLabel =
+        diffMin < 60
+          ? `Hace ${Math.round(diffMin)} min`
+          : diffMin < 60 * 24
+            ? `Hace ${Math.round(diffMin / 60)}h`
+            : `Hace ${Math.round(diffMin / (60 * 24))}d`;
+      return (
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-800 text-gray-300 text-xs"
+          title={`Último escaneo: ${new Date(foundAt).toLocaleString("es-ES")}`}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+          Visto {fLabel}
+        </span>
+      );
+    }
+  }
+
   // Caso 2 — ya expirado
   if (remainingMs <= 0) {
     return (

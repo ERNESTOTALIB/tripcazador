@@ -9,10 +9,28 @@
  * Server component (no JS extra al bundle).
  */
 
-import Image from "next/image";
 import Link from "next/link";
 import { Bed } from "lucide-react";
 import { HOTEL_SEED } from "@/lib/hotel_seed";
+
+// BBBB01 — categoría → emoji fallback grande cuando la imagen Unsplash falla.
+const CATEGORY_EMOJI: Record<string, string> = {
+  beach: "🏖️",
+  city: "🏙️",
+  luxury: "✨",
+  family: "👨‍👩‍👧",
+  budget: "💰",
+};
+
+// BBBB01 — gradient hero por categoría: si la imagen no carga, renderizamos
+// un gradient suave con el emoji de la categoría como background.
+const CATEGORY_GRADIENT: Record<string, string> = {
+  beach: "from-cyan-500/40 to-blue-700/40",
+  city: "from-purple-600/40 to-indigo-800/40",
+  luxury: "from-amber-500/40 to-orange-700/40",
+  family: "from-emerald-500/40 to-teal-700/40",
+  budget: "from-gray-500/40 to-gray-700/40",
+};
 
 export function HotelDealsStrip() {
   // Selecciona top 6 con mejor savings_pct (los hotel deals ya pasaron filtro
@@ -51,6 +69,13 @@ export function HotelDealsStrip() {
         {top.map((h) => {
           const url = h.booking_url || "/hoteles";
           const img = h.image_url || "";
+          // BBBB01: derivar categoría desde tags. Si no, "city" default.
+          const categoryRaw = (h.tags || []).find((t) =>
+            ["beach", "city", "luxury", "family", "budget"].includes(t),
+          );
+          const category = categoryRaw || "city";
+          const fallbackEmoji = CATEGORY_EMOJI[category] || "🏨";
+          const gradientCls = CATEGORY_GRADIENT[category] || CATEGORY_GRADIENT.city;
           return (
             <a
               key={h.id}
@@ -59,20 +84,34 @@ export function HotelDealsStrip() {
               rel="noopener noreferrer nofollow sponsored"
               className="group block rounded-lg overflow-hidden bg-gray-900 hover:bg-gray-800 transition-shadow hover:shadow-lg hover:shadow-amber-500/10 border border-gray-800 hover:border-amber-500/40"
             >
-              <div className="relative aspect-[4/3] bg-gray-800">
+              <div className={`relative aspect-[4/3] bg-gradient-to-br ${gradientCls}`}>
+                {/* BBBB01: <img> con onError → muestra emoji fallback (no <Image>
+                    de Next.js porque su mecanismo de fallback no funciona en
+                    SSR + unoptimized para URLs externas que devuelven 404). */}
                 {img && (
-                  <Image
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
                     src={img}
                     alt={h.headline || h.city_to || "Hotel"}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
-                    unoptimized
+                    decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      // Imagen rota → ocultar y dejar el gradient + emoji
+                      e.currentTarget.style.display = "none";
+                    }}
                   />
                 )}
+                {/* Fallback layer: emoji centrado, siempre presente debajo de la
+                    img. Si la img no carga / display:none, este queda visible. */}
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 flex items-center justify-center text-5xl opacity-90 select-none"
+                >
+                  {fallbackEmoji}
+                </div>
                 {(h.savings_pct ?? 0) > 0 && (
-                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-black">
+                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-black z-10">
                     -{Math.round(h.savings_pct ?? 0)}%
                   </div>
                 )}
