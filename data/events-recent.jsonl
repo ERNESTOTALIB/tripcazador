@@ -478,3 +478,8 @@
 {"ts":"2026-05-08T22:21:10.890Z","type":"page_view","visitor":"738e66fc46273a5b","meta":{"path":"/regiones/caribe"}}
 {"ts":"2026-05-08T22:21:22.068Z","type":"scroll_75","visitor":"738e66fc46273a5b","meta":{"path":"/regiones/caribe"}}
 {"ts":"2026-05-08T22:23:55.242Z","type":"page_view","visitor":"ad99b70fc920415b","meta":{"path":"/destinos/bali"}}
+{"ts":"2026-05-09T00:57:29.213Z","type":"page_view","visitor":"45365db931c8a89a","meta":{"path":"/deals"}}
+{"ts":"2026-05-09T00:57:36.991Z","type":"scroll_75","visitor":"53d8581d8b50e4e1","meta":{"path":"/deals"}}
+{"ts":"2026-05-09T00:57:50.243Z","type":"page_view","visitor":"6859471024ceb620","meta":{"path":"/deals"}}
+{"ts":"2026-05-09T00:58:03.005Z","type":"scroll_75","visitor":"45cf482dd921bc56","meta":{"path":"/deals"}}
+{"ts":"2026-05-09T01:20:34.891Z","type":"landing_arrived","visitor":"406d8abd37d0cb18","meta":{"path":"/","utm_source":"chatgpt.com"}}
