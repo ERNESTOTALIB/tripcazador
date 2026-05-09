@@ -511,6 +511,22 @@
       "destination": "RIO",
       "price_eur": 126.96,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "07b1c9652145",
+      "ts": "2026-05-09T15:44:31.771156+00:00",
+      "origin": "GIG",
+      "destination": "SAO",
+      "price_eur": 48.76,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "98634ee00fba",
+      "ts": "2026-05-09T15:44:31.771156+00:00",
+      "origin": "BSB",
+      "destination": "SAO",
+      "price_eur": 54.28,
+      "classification": "CRÍTICO"
     }
   ]
 }
