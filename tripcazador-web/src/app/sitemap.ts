@@ -458,10 +458,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }));
 
-  // WWW04 — i18n DACH/IT destinos[slug] (6 destinos × 3 idiomas = 18 URLs).
+  // WWW04+XXX01 — i18n DACH/IT destinos[slug] (10 destinos × 3 idiomas = 30 URLs).
   // Mantener sincronizado con DESTINATIONS_I18N en lib/destinations_i18n.ts.
   const I18N_DEST_SLUGS = [
     "japan", "thailand", "bali", "new-york", "iceland", "bangkok",
+    "paris", "london", "lisbon", "dubai",
   ];
   const I18N_DACH_LOCALES = ["it", "de", "fr"];
   const i18nDachDestPages: MetadataRoute.Sitemap = I18N_DACH_LOCALES.flatMap(
