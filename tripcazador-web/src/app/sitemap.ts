@@ -22,6 +22,8 @@ const DESTINOS = [
   "tailandia", "sudafrica", "islandia", "marruecos", "vietnam", "costa-rica",
   "marrakech", "tokio", "reykjavik", "singapur", "praga", "estambul",
   "berlin", "atenas", "dubai", "el-cairo", "hong-kong", "sydney",
+  // ZZZ02 — Capitales EU añadidas (alto search volume, antes 404).
+  "lisboa", "paris", "londres", "roma", "milan", "amsterdam", "viena",
 ];
 
 function getBlogSlugs(): string[] {

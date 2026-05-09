@@ -249,6 +249,89 @@ export const AIRLINES: Airline[] = [
     description:
       "British Airways es interesante para el viajero español por dos razones: el codeshare profundo con Iberia (mismo grupo IAG) y el programa Avios — la moneda de viaje más eficiente para vuelos cortos europeos. \n\nDesde España, la jugada típica es booking MAD-LHR-X o BCN-LHR-X cuando hay error fares en la pierna LHR-X. Por ejemplo, LHR-MIA business class glitched a €420 RT + segment MAD-LHR a €65 = total €485 RT business España-Miami. \n\nProducto en cabina business (Club World) es decente pero no destacable. Lo verdaderamente diferencial es el ecosistema Avios.",
   },
+  // ZZZ03 (May 2026) — Aerolíneas referenciadas desde blog posts (NH/JL/QR/TP/EK/SQ).
+  {
+    code: "NH",
+    icao: "ANA",
+    name: "ANA (All Nippon Airways)",
+    category: "luxury",
+    country: "Japón",
+    hubs: ["NRT", "HND"],
+    popularRoutesFromSpain: [
+      { route: "MAD-NRT", typicalPriceEur: 950, minPriceEur: 380 },
+      { route: "FRA-HND", typicalPriceEur: 1100, minPriceEur: 520 },
+      { route: "LHR-NRT", typicalPriceEur: 1050, minPriceEur: 480 },
+    ],
+    keyPoints: [
+      "Mejor producto economy del mundo — Skytrax 5★ desde 2013",
+      "Vuelos Europa-Japón con escala FRA o LHR (sin hub directo desde Madrid)",
+      "Star Alliance — acumulación con Lufthansa, United, Singapore",
+    ],
+    description:
+      "ANA (All Nippon Airways) es la aerolínea japonesa con el mejor producto economy del mundo según rankings independientes (Skytrax 5★, AirHelp top 5). Para el viajero español hacia Japón, requiere escala en FRA, LHR o MUC porque no opera ruta directa desde MAD/BCN. \n\nLos error fares NH son raros pero verdaderamente espectaculares cuando aparecen — €380 economy MAD-NRT vs €950 normal — porque el pricing engine de Star Alliance suma errores a través de codeshares. La cabina premium economy (Couchii) es la más espaciosa del mercado, mejor que la business de algunas aerolíneas EU.",
+  },
+  {
+    code: "JL",
+    icao: "JAL",
+    name: "JAL (Japan Airlines)",
+    category: "luxury",
+    country: "Japón",
+    hubs: ["NRT", "HND", "KIX"],
+    popularRoutesFromSpain: [
+      { route: "MAD-NRT", typicalPriceEur: 920, minPriceEur: 410 },
+      { route: "CDG-HND", typicalPriceEur: 1050, minPriceEur: 480 },
+      { route: "LHR-HND", typicalPriceEur: 1100, minPriceEur: 540 },
+    ],
+    keyPoints: [
+      "Servicio japonés clásico — comida + atención superior a competencia",
+      "Vía hub Tokio (NRT o HND), HND más céntrico al centro",
+      "Oneworld — codeshares con Iberia (IB) → MAD-NRT vía LHR posible",
+    ],
+    description:
+      "JAL (Japan Airlines) es el competidor de ANA con servicio igualmente premium pero con personalidad ligeramente diferente: más tradicional, comida regional auténtica, atención incluso más detallada. Para el viajero desde España, Oneworld-codeshare con Iberia/BA hace MAD-NRT factible vía LHR con un solo PNR. \n\nLa diferencia visible vs ANA: HND (Haneda) está mucho más cerca del centro Tokio (Shibuya 30min) que NRT (1h en tren), y JAL tiene más slots HND. Los error fares JL históricos: €410 economy MAD-NRT (2024), €1.500 business class round-trip (2025).",
+  },
+  {
+    code: "QR",
+    icao: "QTR",
+    name: "Qatar Airways",
+    category: "luxury",
+    country: "Catar",
+    hubs: ["DOH"],
+    popularRoutesFromSpain: [
+      { route: "MAD-DOH", typicalPriceEur: 480, minPriceEur: 195 },
+      { route: "DOH-BKK", typicalPriceEur: 380, minPriceEur: 165 },
+      { route: "DOH-MLE", typicalPriceEur: 540, minPriceEur: 280 },
+      { route: "MAD-DPS", typicalPriceEur: 850, minPriceEur: 380 },
+    ],
+    keyPoints: [
+      "Q-Suite Business class — votada mejor del mundo 2017-2024",
+      "Hub DOH conecta Europa-Asia/Oceanía/África con escala única",
+      "Error fares Europa-Asia frecuentes — pricing volátil",
+    ],
+    description:
+      "Qatar Airways es la aerolínea con el producto business class más reconocido del sector aéreo (Q-Suite, ganador Skytrax 7 años consecutivos). Para el viajero desde España hacia Asia, Oceanía o África, su hub DOH es competitivo con Emirates DXB pero típicamente más barato. \n\nError fares Europa-Asia con Qatar son frecuentes — 6-8 mistake fares al año Madrid/Barcelona-Bangkok/Bali/Tokio bajo €450 economy round-trip. La razón estructural es que Qatar tarifica Europa-Asia como una sola pierna virtual cuando hay escala en DOH, y los errores en uno de los segmentos se propagan al precio total.",
+  },
+  {
+    code: "TP",
+    icao: "TAP",
+    name: "TAP Air Portugal",
+    category: "full-service",
+    country: "Portugal",
+    hubs: ["LIS"],
+    popularRoutesFromSpain: [
+      { route: "MAD-LIS", typicalPriceEur: 95, minPriceEur: 35 },
+      { route: "LIS-GRU", typicalPriceEur: 580, minPriceEur: 290 },
+      { route: "LIS-EZE", typicalPriceEur: 720, minPriceEur: 340 },
+      { route: "LIS-RIO", typicalPriceEur: 620, minPriceEur: 310 },
+    ],
+    keyPoints: [
+      "Hub LIS conecta Europa con Brasil/Latam con escala corta + barata",
+      "Programa stopover gratuito en Lisboa hasta 5 noches",
+      "Sometidos a estrés financiero — error fares estructurales más frecuentes",
+    ],
+    description:
+      "TAP Air Portugal opera el hub más eficiente Europa-Brasil/Latam desde Lisboa, con vuelos diarios a São Paulo, Río, Buenos Aires, Caracas. Para el viajero desde España, la combinación MAD-LIS + LIS-GRU/EZE es típicamente €100-200 más barata que IB/AF/LH directos.\n\nEl programa Stopover Lisboa permite hasta 5 noches en Lisboa sin coste extra en el ticket — ideal para combinar Brasil + Lisboa en un solo viaje. Los error fares TAP son frecuentes (12+ al año) por restructuras IT y precariedad financiera del grupo, especialmente en segments LIS-Brasil business class.",
+  },
 ];
 
 export function getAirlineByCode(code: string): Airline | null {
