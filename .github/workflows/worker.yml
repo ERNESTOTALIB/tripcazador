@@ -100,13 +100,18 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             ORIGINS="${{ github.event.inputs.origins || 'tier1' }}"
           else
+            # AAAA02 fix: el slot "12" antes era "latam" PURO → /api/deals
+            # servía 100% rutas Brasil↔Brasil/México↔México a usuarios web ES.
+            # Cambio: latam-only NUNCA. Slot 12 ahora también mega (mixed
+            # tier1+tier2+es+latam) para que LATAM aparezca como bonus,
+            # NO como único preset del slot.
             case "$HOUR" in
               "00") ORIGINS="tier1" ;;
               "04") ORIGINS="spain" ;;
               "08") ORIGINS="tier2" ;;
-              "12") ORIGINS="latam" ;;
+              "12") ORIGINS="mega" ;;
               "16") ORIGINS="mega" ;;
-              "20") ORIGINS="tier1" ;;
+              "20") ORIGINS="spain" ;;
               *)    ORIGINS="tier1" ;;
             esac
           fi
