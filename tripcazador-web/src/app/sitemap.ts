@@ -428,6 +428,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.65,
   }));
 
+  // CCCC02 — /hoteles/ciudad/[city] páginas de listado por ciudad
+  const citySlug = (city: string) =>
+    city
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+  const hotelCityPages: MetadataRoute.Sitemap = Array.from(
+    new Set(getHotelEntries().map((h) => citySlug(h.city))),
+  )
+    .filter(Boolean)
+    .map((slug) => ({
+      url: `${BASE_URL}/hoteles/ciudad/${slug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+
   // SSS99 + TTT02: 50 rutas pareadas SEO long-tail (origen-destino keywords)
   // /vuelos/madrid-lisboa, /vuelos/barcelona-londres, etc.
   const TOP_ROUTE_SLUGS = [
@@ -509,6 +528,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     monthlyPriceIndex,
     ...monthlyPriceRoutes,
     ...hotelPages,
+    ...hotelCityPages,
     ...pairedRoutePages,
     ...i18nDachDestPages,
     ...feedPages,

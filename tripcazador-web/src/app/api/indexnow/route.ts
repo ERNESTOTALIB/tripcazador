@@ -5,6 +5,8 @@ import { HUBS } from "@/lib/hubs";
 import { COMPARISONS } from "@/lib/comparisons";
 import { REGIONS } from "@/lib/regions";
 import { MONTHS } from "@/lib/months";
+import { AIRLINE_COMPARISONS } from "@/lib/airline_comparisons";
+import { getHotelEntries } from "@/lib/hotel_seed";
 
 /**
  * IndexNow ping — abr-2026k
@@ -174,6 +176,26 @@ export async function GET(req: NextRequest) {
         (locale) => `https://${HOST}/${locale}/destinos/${slug}`,
       ),
     ),
+    // CCCC01+DDDD02 — head-to-head aerolínea (15 comparativas).
+    `https://${HOST}/comparar-aerolineas`,
+    ...AIRLINE_COMPARISONS.map(
+      (c) => `https://${HOST}/comparar-aerolineas/${c.slug}`,
+    ),
+    // CCCC02+DDDD03 — /hoteles/ciudad/[city] páginas SEO city-level.
+    ...Array.from(
+      new Set(
+        getHotelEntries().map((h) =>
+          h.city
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[̀-ͯ]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, ""),
+        ),
+      ),
+    )
+      .filter(Boolean)
+      .map((slug) => `https://${HOST}/hoteles/ciudad/${slug}`),
   ];
 
   const body = {
