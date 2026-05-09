@@ -164,6 +164,7 @@ export function enrichDealLocations<
     city_to?: string | null;
     country_to?: string | null;
     region?: string | null;
+    headline?: string | null;
   }
 >(deal: T): T {
   const result = { ...deal };
@@ -193,6 +194,22 @@ export function enrichDealLocations<
   }
   if ((!deal.region || deal.region === "Internacional") && toInfo) {
     result.region = toInfo.region;
+  }
+
+  // Fix headline si contiene el código IATA del destination (backend pre-formatea
+  // headlines como "🔥 Error fare: SAO desde GIG a solo 49€" cuando faltan
+  // city names). Reescribimos sustituyendo IATA→city.
+  if (deal.headline && toInfo) {
+    const destPattern = new RegExp(`\\b${destination}\\b`, "g");
+    if (destPattern.test(deal.headline)) {
+      result.headline = deal.headline.replace(destPattern, toInfo.city);
+    }
+  }
+  if (result.headline && fromInfo) {
+    const origPattern = new RegExp(`\\b${origin}\\b`, "g");
+    if (origPattern.test(result.headline)) {
+      result.headline = result.headline.replace(origPattern, fromInfo.city);
+    }
   }
 
   return result;

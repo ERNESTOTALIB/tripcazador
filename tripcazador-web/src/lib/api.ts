@@ -523,11 +523,11 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
       d.price_eur <= MAX_ATTRACTIVE_PRICE
   );
   const euOnly = cheapEconomy.filter(hasEuOrigin);
-  // Si tras filtrar EU quedan al menos `limit`, los usamos. Si no, mantenemos
-  // el pool original pero priorizando EU primero.
-  const finalPool = euOnly.length >= limit
-    ? euOnly
-    : [...euOnly, ...cheapEconomy.filter((d) => !hasEuOrigin(d))];
+  // AAAA01b: si euOnly tiene contenido, lo usamos puro (sin contaminar con
+  // LATAM-internos). Si está vacío, dejamos finalPool vacío para que caiga
+  // al FALLBACK_CHOLLOS hardcoded (rutas desde España reales) en lugar
+  // de mostrar GRU-POA o BSB-SAO en home de web ES.
+  const finalPool = euOnly;
 
   // 4. Sort SSS92: priorizar CRÍTICO/ERROR (wow reales <€50) ANTES de
   // savings/price/score. Antes home mostraba ANOMALÍA/OFERTA genéricos a
