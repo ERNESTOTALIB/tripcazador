@@ -483,3 +483,8 @@
 {"ts":"2026-05-09T00:57:50.243Z","type":"page_view","visitor":"6859471024ceb620","meta":{"path":"/deals"}}
 {"ts":"2026-05-09T00:58:03.005Z","type":"scroll_75","visitor":"45cf482dd921bc56","meta":{"path":"/deals"}}
 {"ts":"2026-05-09T01:20:34.891Z","type":"landing_arrived","visitor":"406d8abd37d0cb18","meta":{"path":"/","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-09T07:55:19.072Z","type":"landing_arrived","visitor":"735775be061377f2","meta":{"path":"/"}}
+{"ts":"2026-05-09T07:55:19.089Z","type":"page_view","visitor":"735775be061377f2","meta":{"path":"/"}}
+{"ts":"2026-05-09T07:55:19.758Z","type":"landing_arrived","visitor":"735775be061377f2","meta":{"path":"/"}}
+{"ts":"2026-05-09T07:55:22.511Z","type":"landing_arrived","visitor":"735775be061377f2","meta":{"path":"/"}}
+{"ts":"2026-05-09T07:55:23.224Z","type":"page_view","visitor":"735775be061377f2","meta":{"path":"/"}}
