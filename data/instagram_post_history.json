@@ -205,5 +205,14 @@
     "city_from": "Barcelona",
     "city_to": "Berlin Brandenburg",
     "price_eur": 38.15
+  },
+  {
+    "timestamp": 1778420394.0674517,
+    "deal_id": "ryanair_lis_agp_20260728_economy",
+    "origin": "LIS",
+    "destination": "AGP",
+    "city_from": "Lisboa",
+    "city_to": "Malaga",
+    "price_eur": 19.99
   }
 ]
