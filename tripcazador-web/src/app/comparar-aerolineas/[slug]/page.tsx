@@ -24,6 +24,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const c = getAirlineComparisonBySlug(params.slug);
   if (!c) return { title: "Comparativa no encontrada | TripCazador" };
+  // JJJJ02: OG image dinámico por comparativa con score X-Y wins
+  const ogImage = `https://tripcazador.com/api/og/airline/${c.slug}`;
   return {
     title: c.title,
     description: c.description,
@@ -33,6 +35,20 @@ export async function generateMetadata({
       description: c.description,
       type: "article",
       url: `https://tripcazador.com/comparar-aerolineas/${c.slug}`,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${c.a.name} vs ${c.b.name} — comparativa head-to-head`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: c.title,
+      description: c.description,
+      images: [ogImage],
     },
   };
 }
