@@ -223,5 +223,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Dublin",
     "price_eur": 34.99
+  },
+  {
+    "timestamp": 1778446501.70159,
+    "deal_id": "ryanair_mad_bds_20260907_economy",
+    "origin": "MAD",
+    "destination": "BDS",
+    "city_from": "Madrid",
+    "city_to": "Brindisi",
+    "price_eur": 29.99
   }
 ]
