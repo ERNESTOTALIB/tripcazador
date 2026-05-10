@@ -134,8 +134,20 @@ async function queryCloudflare(zoneTag: string, apiToken: string): Promise<CFGql
 
   // GraphQL — pedimos httpRequests1dGroups (granular por día) + httpRequests1hGroups (24h).
   // Documentación: https://developers.cloudflare.com/analytics/graphql-api/
+  // SSS117: httpRequestsAdaptiveGroups usa datetime_geq que requiere Time! ISO8601;
+  // httpRequests1dGroups usa date_geq que requiere Date! "YYYY-MM-DD". Se separan
+  // las variables para no mezclar tipos.
   const query = `
-    query Stats($zone: String!, $since24: Time!, $since7: Date!, $since30: Date!, $until: Time!, $until7d: Date!, $until30d: Date!) {
+    query Stats(
+      $zone: String!,
+      $since24: Time!,
+      $since7Date: Date!,
+      $since7Time: Time!,
+      $since30Date: Date!,
+      $until: Time!,
+      $until7d: Date!,
+      $until30d: Date!
+    ) {
       viewer {
         zones(filter: { zoneTag: $zone }) {
           h24: httpRequests1hGroups(
@@ -147,21 +159,21 @@ async function queryCloudflare(zoneTag: string, apiToken: string): Promise<CFGql
           }
           d7: httpRequests1dGroups(
             limit: 1
-            filter: { date_geq: $since7, date_leq: $until7d }
+            filter: { date_geq: $since7Date, date_leq: $until7d }
           ) {
             sum { requests pageViews bytes threats cachedRequests }
             uniq { uniques }
           }
           d30: httpRequests1dGroups(
             limit: 1
-            filter: { date_geq: $since30, date_leq: $until30d }
+            filter: { date_geq: $since30Date, date_leq: $until30d }
           ) {
             sum { requests pageViews bytes threats cachedRequests }
             uniq { uniques }
           }
           timeseries30: httpRequests1dGroups(
             limit: 31
-            filter: { date_geq: $since30, date_leq: $until30d }
+            filter: { date_geq: $since30Date, date_leq: $until30d }
             orderBy: [date_ASC]
           ) {
             dimensions { date }
@@ -170,7 +182,7 @@ async function queryCloudflare(zoneTag: string, apiToken: string): Promise<CFGql
           }
           topCountries: httpRequestsAdaptiveGroups(
             limit: 10
-            filter: { datetime_geq: $since7, datetime_lt: $until }
+            filter: { datetime_geq: $since7Time, datetime_lt: $until }
             orderBy: [count_DESC]
           ) {
             dimensions { clientCountryName }
@@ -178,7 +190,7 @@ async function queryCloudflare(zoneTag: string, apiToken: string): Promise<CFGql
           }
           topPaths: httpRequestsAdaptiveGroups(
             limit: 15
-            filter: { datetime_geq: $since7, datetime_lt: $until }
+            filter: { datetime_geq: $since7Time, datetime_lt: $until }
             orderBy: [count_DESC]
           ) {
             dimensions { clientRequestPath }
@@ -192,8 +204,9 @@ async function queryCloudflare(zoneTag: string, apiToken: string): Promise<CFGql
   const variables = {
     zone: zoneTag,
     since24,
-    since7: isoDateNDaysAgo(7),
-    since30: isoDateNDaysAgo(30),
+    since7Date: isoDateNDaysAgo(7),
+    since7Time: since7, // ISO8601 datetime para httpRequestsAdaptiveGroups
+    since30Date: isoDateNDaysAgo(30),
     until,
     until7d: isoDateNDaysAgo(0),
     until30d: isoDateNDaysAgo(0),
