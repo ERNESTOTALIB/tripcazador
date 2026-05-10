@@ -196,5 +196,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Dublin",
     "price_eur": 34.99
+  },
+  {
+    "timestamp": 1778406114.5554,
+    "deal_id": "ryanair_bcn_ber_20260709_economy",
+    "origin": "BCN",
+    "destination": "BER",
+    "city_from": "Barcelona",
+    "city_to": "Berlin Brandenburg",
+    "price_eur": 38.15
   }
 ]
