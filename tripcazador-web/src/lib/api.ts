@@ -5,7 +5,7 @@
 
 import { enhanceDealBookingUrl } from "./airline_links";
 import { diversifyDeals } from "./seed_diversifier";
-import { enrichDealLocations, hasEuOrigin } from "./iata_city";
+import { enrichDealLocations, hasEuOrigin, hasSpainOrigin } from "./iata_city";
 
 export interface Deal {
   id: string;
@@ -541,7 +541,13 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
     "ANOMALIA": 2,
     "OFERTA": 3,
   };
+  // EEEE02 (May 2026): primary sort key = origen España.
+  // Anomalía SSS113-post: 87% deals tenían origen NO-España (LIS/DUB/STN/WAW)
+  // tras filtro EU broad. Audiencia ES espera ver Madrid/Barcelona FIRST.
   finalPool.sort((a, b) => {
+    const esA = hasSpainOrigin(a) ? 0 : 1;
+    const esB = hasSpainOrigin(b) ? 0 : 1;
+    if (esA !== esB) return esA - esB;
     const tierA = TIER[a.classification || "OFERTA"] ?? 4;
     const tierB = TIER[b.classification || "OFERTA"] ?? 4;
     if (tierA !== tierB) return tierA - tierB;

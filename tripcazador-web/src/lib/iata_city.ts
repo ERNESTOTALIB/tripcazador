@@ -224,3 +224,30 @@ export function hasEuOrigin(deal: { origin?: string | null }): boolean {
   const origin = (deal?.origin || "").toUpperCase().trim();
   return EU_ORIGINS.has(origin);
 }
+
+/**
+ * EEEE01 (May 2026) — Set de IATAs origen España específicos.
+ *
+ * Usado para priorizar deals con salida desde España en la web ES.
+ * Anomalía detectada SSS113-post: tras corregir LATAM-only en AAAA01-02,
+ * la rotación EU broad acabó sirviendo 87% deals con origen NO-España
+ * (LIS/DUB/STN/WAW/ATH). Audiencia ES espera ver "Madrid → X" first.
+ *
+ * Mantén sincronizado con la sección "España" de IATA_CITY_FALLBACK
+ * y EU_ORIGINS arriba.
+ */
+export const ES_ORIGINS = new Set<string>([
+  "MAD", "BCN", "AGP", "PMI", "VLC", "SVQ", "BIO", "TFS", "TFN", "LPA",
+  "ALC", "IBZ", "MAH", "GRO", "REU", "ZAZ", "VGO", "SCQ", "OVD", "MJV",
+  "ACE", "FUE", "MLN", "RJL", "BJZ",
+]);
+
+/**
+ * True si el deal tiene origen en un aeropuerto de España.
+ * Se usa para sort secundario "España first" en getAttractiveDeals
+ * y /api/deals.
+ */
+export function hasSpainOrigin(deal: { origin?: string | null }): boolean {
+  const origin = (deal?.origin || "").toUpperCase().trim();
+  return ES_ORIGINS.has(origin);
+}

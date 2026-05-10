@@ -16,6 +16,7 @@
  * todos ven los 1271 deals reales en lugar de 3 seeds.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { enrichDealLocations, hasSpainOrigin, hasEuOrigin } from "@/lib/iata_city";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -177,9 +178,30 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
   }
 
+  // EEEE03 (May 2026): enriquecer city_from/city_to/headline (IATA→nombre)
+  // y ordenar España-first → EU → resto. Anomalía SSS113-post: 87% deals
+  // visibles eran origen no-España (LIS/DUB/STN). Audiencia ES espera
+  // ver MAD/BCN/VLC primero. Permitimos opt-out con ?strict_es=0.
+  const enriched = deals.map((d) => enrichDealLocations(d as Parameters<typeof enrichDealLocations>[0])) as Deal[];
+  const strictEs = params.get("strict_es") !== "0";
+  if (strictEs) {
+    enriched.sort((a, b) => {
+      const esA = hasSpainOrigin({ origin: typeof a.origin === "string" ? a.origin : null }) ? 0 : 1;
+      const esB = hasSpainOrigin({ origin: typeof b.origin === "string" ? b.origin : null }) ? 0 : 1;
+      if (esA !== esB) return esA - esB;
+      const euA = hasEuOrigin({ origin: typeof a.origin === "string" ? a.origin : null }) ? 0 : 1;
+      const euB = hasEuOrigin({ origin: typeof b.origin === "string" ? b.origin : null }) ? 0 : 1;
+      if (euA !== euB) return euA - euB;
+      // tiebreak por price_eur ascendente (más barato primero)
+      const pA = typeof a.price_eur === "number" ? a.price_eur : 9e9;
+      const pB = typeof b.price_eur === "number" ? b.price_eur : 9e9;
+      return pA - pB;
+    });
+  }
+
   // SSS84: aplicar conversión de moneda si ?currency=USD/GBP/...
   const currency = (params.get("currency") || params.get("c") || "EUR").toUpperCase();
-  const converted = applyCurrency(deals, currency);
+  const converted = applyCurrency(enriched, currency);
 
   // Aplicar limit final
   const limited = converted.slice(0, limit);
