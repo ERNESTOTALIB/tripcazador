@@ -623,6 +623,22 @@
       "destination": "RAK",
       "price_eur": 25.64,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7e9722971ffb",
+      "ts": "2026-05-10T11:51:05.240033+00:00",
+      "origin": "MAD",
+      "destination": "BDS",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e856530109b1",
+      "ts": "2026-05-10T11:51:05.240033+00:00",
+      "origin": "DUB",
+      "destination": "BTS",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
