@@ -13,7 +13,11 @@ import { getAirlineComparisonBySlug } from "@/lib/airline_comparisons";
  * "head-to-head" del contenido.
  */
 
-export const runtime = "edge";
+// SSS124: nodejs runtime (no edge) — AIRLINE_COMPARISONS 30 entries supera
+// el bundle límit edge 1MB. nodejs no tiene esa restricción y para OG
+// images cacheadas 1 año immutable la latencia extra (~150ms cold start)
+// es irrelevante.
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const SIZE = { width: 1200, height: 630 } as const;
