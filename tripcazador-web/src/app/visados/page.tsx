@@ -101,7 +101,7 @@ export default function VisadosPage() {
             <a className="text-amber-400 underline" href="https://www.iatatravelcentre.com/" target="_blank" rel="noopener nofollow">IATA Travel Centre</a>.
           </p>
           <p className="text-sm text-gray-400 mt-3">
-            ¿Vas a viajar? <Link href="/" className="text-amber-400 underline">Busca vuelos</Link> · <Link href="/seguro-viaje" className="text-amber-400 underline">Seguro</Link> · <Link href="/packing-list" className="text-amber-400 underline">Packing list</Link>
+            ¿Vas a viajar? <Link href="/" className="text-amber-400 underline">Busca vuelos</Link> · <Link href="/como-viajar/seguro-viaje" className="text-amber-400 underline">Seguro</Link> · <Link href="/packing-list" className="text-amber-400 underline">Packing list</Link>
           </p>
         </div>
       </main>
