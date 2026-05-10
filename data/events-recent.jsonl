@@ -678,3 +678,8 @@
 {"ts":"2026-05-09T21:33:40.512Z","type":"landing_arrived","visitor":"c31211b5a57d43ff","meta":{"path":"/"}}
 {"ts":"2026-05-09T21:33:40.572Z","type":"page_view","visitor":"c31211b5a57d43ff","meta":{"path":"/"}}
 {"ts":"2026-05-09T21:33:41.884Z","type":"page_view","visitor":"c31211b5a57d43ff","meta":{"path":"/"}}
+{"ts":"2026-05-10T03:11:48.061Z","type":"scroll_75","visitor":"3ee7694186b4c7a2","meta":{"path":"/"}}
+{"ts":"2026-05-10T03:12:12.620Z","type":"landing_arrived","visitor":"3ee7694186b4c7a2","meta":{"path":"/destinos/nueva-york"}}
+{"ts":"2026-05-10T03:13:18.435Z","type":"result_viewed","visitor":"3ee7694186b4c7a2","meta":{"deal_id":"seed-0012f2bae8","destination":"JFK","origin":"DUB","price":199,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-10T03:13:24.104Z","type":"result_viewed","visitor":"3ee7694186b4c7a2","meta":{"deal_id":"seed-0046c9f998","destination":"JFK","origin":"LHR","price":269,"classification":"OFERTA"}}
+{"ts":"2026-05-10T03:13:26.566Z","type":"result_viewed","visitor":"3ee7694186b4c7a2","meta":{"deal_id":"seed-00bc632c1c","destination":"JFK","origin":"MUC","price":339,"classification":"OFERTA"}}
