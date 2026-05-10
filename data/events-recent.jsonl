@@ -848,3 +848,8 @@
 {"ts":"2026-05-10T16:44:36.116Z","type":"page_view","visitor":"b6743255a8965005","meta":{"path":"/"}}
 {"ts":"2026-05-10T16:44:37.093Z","type":"landing_arrived","visitor":"b6743255a8965005","meta":{"path":"/"}}
 {"ts":"2026-05-10T16:44:38.901Z","type":"page_view","visitor":"b6743255a8965005","meta":{"path":"/"}}
+{"ts":"2026-05-10T16:44:38.985Z","type":"page_view","visitor":"b6743255a8965005","meta":{"path":"/"}}
+{"ts":"2026-05-10T16:44:41.718Z","type":"landing_arrived","visitor":"fb642820a3ca6846","meta":{"path":"/"}}
+{"ts":"2026-05-10T16:44:43.347Z","type":"page_view","visitor":"fb642820a3ca6846","meta":{"path":"/"}}
+{"ts":"2026-05-10T16:44:44.876Z","type":"page_view","visitor":"fb642820a3ca6846","meta":{"path":"/"}}
+{"ts":"2026-05-10T16:44:44.902Z","type":"landing_arrived","visitor":"fb642820a3ca6846","meta":{"path":"/"}}
