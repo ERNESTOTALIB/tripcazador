@@ -182,7 +182,7 @@ async function queryCloudflare(zoneTag: string, apiToken: string): Promise<CFGql
           }
           topCountries: httpRequestsAdaptiveGroups(
             limit: 10
-            filter: { datetime_geq: $since7Time, datetime_lt: $until }
+            filter: { datetime_geq: $since24, datetime_lt: $until }
             orderBy: [count_DESC]
           ) {
             dimensions { clientCountryName }
@@ -190,7 +190,7 @@ async function queryCloudflare(zoneTag: string, apiToken: string): Promise<CFGql
           }
           topPaths: httpRequestsAdaptiveGroups(
             limit: 15
-            filter: { datetime_geq: $since7Time, datetime_lt: $until }
+            filter: { datetime_geq: $since24, datetime_lt: $until }
             orderBy: [count_DESC]
           ) {
             dimensions { clientRequestPath }
