@@ -639,6 +639,22 @@
       "destination": "BTS",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "0a0c1b16e8c6",
+      "ts": "2026-05-10T21:41:37.883798+00:00",
+      "origin": "PMI",
+      "destination": "FMO",
+      "price_eur": 24.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "87757bd71528",
+      "ts": "2026-05-10T21:41:37.883798+00:00",
+      "origin": "MAD",
+      "destination": "VCE",
+      "price_eur": 24.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
