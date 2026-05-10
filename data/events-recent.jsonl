@@ -858,3 +858,8 @@
 {"ts":"2026-05-10T18:16:21.930Z","type":"page_view","visitor":"678704a0a899cf30","meta":{"path":"/deals"}}
 {"ts":"2026-05-10T18:16:33.283Z","type":"page_view","visitor":"678704a0a899cf30","meta":{"path":"/deals"}}
 {"ts":"2026-05-10T18:17:04.935Z","type":"scroll_75","visitor":"678704a0a899cf30","meta":{"path":"/deals"}}
+{"ts":"2026-05-10T19:53:11.950Z","type":"page_view","visitor":"bce8b9eb626ca966","meta":{"path":"/"}}
+{"ts":"2026-05-10T19:53:13.768Z","type":"landing_arrived","visitor":"bce8b9eb626ca966","meta":{"path":"/"}}
+{"ts":"2026-05-10T19:53:14.450Z","type":"page_view","visitor":"bce8b9eb626ca966","meta":{"path":"/"}}
+{"ts":"2026-05-10T19:53:15.494Z","type":"page_view","visitor":"bce8b9eb626ca966","meta":{"path":"/"}}
+{"ts":"2026-05-10T19:53:17.028Z","type":"page_view","visitor":"bce8b9eb626ca966","meta":{"path":"/"}}
