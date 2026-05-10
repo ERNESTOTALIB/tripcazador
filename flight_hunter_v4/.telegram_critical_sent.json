@@ -655,6 +655,22 @@
       "destination": "VCE",
       "price_eur": 24.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d137411ec511",
+      "ts": "2026-05-10T22:40:28.148394+00:00",
+      "origin": "AGP",
+      "destination": "IBZ",
+      "price_eur": 14.98,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "474166269d4b",
+      "ts": "2026-05-10T22:40:28.148394+00:00",
+      "origin": "MAD",
+      "destination": "FUE",
+      "price_eur": 35.56,
+      "classification": "CRÍTICO"
     }
   ]
 }
