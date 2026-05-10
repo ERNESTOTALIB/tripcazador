@@ -2,21 +2,21 @@ import { ImageResponse } from "next/og";
 import { getAirlineComparisonBySlug } from "@/lib/airline_comparisons";
 
 /**
- * /api/og/airline/[slug] — JJJJ02 (May 2026)
+ * /api/og-comparison/[slug] — JJJJ02 + KKKK03 (May 2026)
  *
  * OG image dinámico 1200x630 para /comparar-aerolineas/[slug].
- * Diseño: hero "AIRLINE A vs AIRLINE B" + emojis + flags + verdict score
- * (X-Y wins, Z ties), con paleta navy + amber TripCazador.
+ * Diseño: hero "AIRLINE A vs AIRLINE B" + score X-Y wins, paleta
+ * navy + amber TripCazador.
  *
- * Boost share/CTR esperado: 15-25% en social media (Twitter/Telegram)
- * tras publicar comparativas — el OG genérico no transmite el contexto
- * "head-to-head" del contenido.
+ * KKKK03 (post-debug): re-escrito para evitar Satori errors.
+ *  - Sin emojis flag (Satori no los renderiza sin custom font)
+ *  - Sin `position`, `gap`, `flex: 1` (Satori limited support)
+ *  - Todos los `<div>` con children siempre `display: "flex"` explícito
+ *  - Layout vertical simple sin nested flex complejo
+ *
+ * Boost share/CTR esperado 15-25% en social media post-deploy.
  */
 
-// SSS124: nodejs runtime (no edge) — AIRLINE_COMPARISONS 30 entries supera
-// el bundle límit edge 1MB. nodejs no tiene esa restricción y para OG
-// images cacheadas 1 año immutable la latencia extra (~150ms cold start)
-// es irrelevante.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -33,9 +33,8 @@ export async function GET(
 
   const aWins = c.criteria.filter((cr) => cr.winner === "a").length;
   const bWins = c.criteria.filter((cr) => cr.winner === "b").length;
-
-  // Trim title si supera 60 chars para evitar overflow
-  const titleTrim = c.title.length > 64 ? c.title.slice(0, 61) + "…" : c.title;
+  const winnerA = aWins > bWins;
+  const winnerB = bWins > aWins;
 
   return new ImageResponse(
     (
@@ -45,56 +44,51 @@ export async function GET(
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          background:
-            "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+          background: "#0f172a",
           padding: "60px",
-          fontFamily: "system-ui, -apple-system, sans-serif",
           color: "#fff",
-          position: "relative",
+          fontFamily: "system-ui, sans-serif",
         }}
       >
-        {/* Header brand */}
+        {/* Brand row */}
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "40px",
+            justifyContent: "space-between",
+            marginBottom: "30px",
           }}
         >
           <div
             style={{
+              display: "flex",
               fontSize: "32px",
               fontWeight: 800,
               color: "#fbbf24",
-              letterSpacing: "-0.02em",
             }}
           >
-            ⚡ TripCazador
+            TripCazador
           </div>
           <div
             style={{
+              display: "flex",
               fontSize: "18px",
               color: "#94a3b8",
-              marginLeft: "auto",
               padding: "6px 14px",
               border: "1px solid #334155",
               borderRadius: "999px",
             }}
           >
-            HEAD-TO-HEAD · {c.routeContext}
+            HEAD-TO-HEAD
           </div>
         </div>
 
-        {/* Versus block */}
+        {/* Versus row */}
         <div
           style={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
-            gap: "30px",
+            alignItems: "center",
             marginBottom: "40px",
-            flex: 1,
           }}
         >
           {/* Side A */}
@@ -103,41 +97,53 @@ export async function GET(
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "16px",
-              flex: 1,
+              width: "440px",
               padding: "32px 20px",
-              border: aWins > bWins ? "2px solid #fbbf24" : "1px solid #334155",
+              border: winnerA ? "3px solid #fbbf24" : "1px solid #334155",
               borderRadius: "20px",
-              background: aWins > bWins ? "rgba(251, 191, 36, 0.08)" : "rgba(15, 23, 42, 0.5)",
+              background: winnerA ? "#1e293b" : "#0f172a",
             }}
           >
-            <div style={{ fontSize: "80px" }}>{c.a.emoji}</div>
             <div
               style={{
-                fontSize: "36px",
+                display: "flex",
+                fontSize: "64px",
+                fontWeight: 900,
+                color: winnerA ? "#fbbf24" : "#94a3b8",
+                letterSpacing: "0.05em",
+                marginBottom: "12px",
+              }}
+            >
+              {c.a.code}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                fontSize: "32px",
                 fontWeight: 800,
-                color: aWins > bWins ? "#fbbf24" : "#fff",
+                color: winnerA ? "#fbbf24" : "#fff",
+                marginBottom: "8px",
                 textAlign: "center",
-                lineHeight: 1.1,
               }}
             >
               {c.a.name}
             </div>
             <div
               style={{
-                fontSize: "20px",
+                display: "flex",
+                fontSize: "18px",
                 color: "#94a3b8",
-                textAlign: "center",
+                marginBottom: "16px",
               }}
             >
-              {c.a.country} · {c.a.skytraxStars}★
+              {c.a.country}
             </div>
             <div
               style={{
-                fontSize: "28px",
+                display: "flex",
+                fontSize: "26px",
                 fontWeight: 700,
-                color: aWins > bWins ? "#fbbf24" : "#cbd5e1",
-                marginTop: "8px",
+                color: winnerA ? "#fbbf24" : "#cbd5e1",
               }}
             >
               {aWins} {aWins === 1 ? "victoria" : "victorias"}
@@ -147,13 +153,10 @@ export async function GET(
           {/* VS */}
           <div
             style={{
-              fontSize: "60px",
+              display: "flex",
+              fontSize: "56px",
               fontWeight: 900,
               color: "#fbbf24",
-              padding: "0 12px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
             }}
           >
             VS
@@ -165,41 +168,53 @@ export async function GET(
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "16px",
-              flex: 1,
+              width: "440px",
               padding: "32px 20px",
-              border: bWins > aWins ? "2px solid #fbbf24" : "1px solid #334155",
+              border: winnerB ? "3px solid #fbbf24" : "1px solid #334155",
               borderRadius: "20px",
-              background: bWins > aWins ? "rgba(251, 191, 36, 0.08)" : "rgba(15, 23, 42, 0.5)",
+              background: winnerB ? "#1e293b" : "#0f172a",
             }}
           >
-            <div style={{ fontSize: "80px" }}>{c.b.emoji}</div>
             <div
               style={{
-                fontSize: "36px",
+                display: "flex",
+                fontSize: "64px",
+                fontWeight: 900,
+                color: winnerB ? "#fbbf24" : "#94a3b8",
+                letterSpacing: "0.05em",
+                marginBottom: "12px",
+              }}
+            >
+              {c.b.code}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                fontSize: "32px",
                 fontWeight: 800,
-                color: bWins > aWins ? "#fbbf24" : "#fff",
+                color: winnerB ? "#fbbf24" : "#fff",
+                marginBottom: "8px",
                 textAlign: "center",
-                lineHeight: 1.1,
               }}
             >
               {c.b.name}
             </div>
             <div
               style={{
-                fontSize: "20px",
+                display: "flex",
+                fontSize: "18px",
                 color: "#94a3b8",
-                textAlign: "center",
+                marginBottom: "16px",
               }}
             >
-              {c.b.country} · {c.b.skytraxStars}★
+              {c.b.country}
             </div>
             <div
               style={{
-                fontSize: "28px",
+                display: "flex",
+                fontSize: "26px",
                 fontWeight: 700,
-                color: bWins > aWins ? "#fbbf24" : "#cbd5e1",
-                marginTop: "8px",
+                color: winnerB ? "#fbbf24" : "#cbd5e1",
               }}
             >
               {bWins} {bWins === 1 ? "victoria" : "victorias"}
@@ -207,33 +222,25 @@ export async function GET(
           </div>
         </div>
 
-        {/* Footer subtitle */}
+        {/* Footer */}
         <div
           style={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
-            gap: "20px",
-            paddingTop: "20px",
+            alignItems: "center",
+            paddingTop: "24px",
             borderTop: "1px solid #334155",
           }}
         >
-          <div
-            style={{
-              fontSize: "20px",
-              color: "#cbd5e1",
-              flex: 1,
-              lineHeight: 1.3,
-            }}
-          >
-            {titleTrim.replace(/\s\|\sTripCazador$/, "")}
+          <div style={{ display: "flex", fontSize: "20px", color: "#cbd5e1" }}>
+            Comparativa cazador 2026
           </div>
           <div
             style={{
+              display: "flex",
               fontSize: "18px",
               color: "#fbbf24",
               fontWeight: 700,
-              whiteSpace: "nowrap",
             }}
           >
             tripcazador.com
