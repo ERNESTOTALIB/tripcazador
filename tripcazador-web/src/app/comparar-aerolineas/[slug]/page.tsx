@@ -24,8 +24,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const c = getAirlineComparisonBySlug(params.slug);
   if (!c) return { title: "Comparativa no encontrada | TripCazador" };
-  // JJJJ02: OG image dinámico por comparativa con score X-Y wins
-  const ogImage = `https://tripcazador.com/api/og/airline/${c.slug}`;
+  // JJJJ02 + KKKK01: OG image dinámico por comparativa con score X-Y wins.
+  // Path /api/og-comparison/[slug] (no /api/og/airline/[slug]) para evitar
+  // conflict con rewrite Next/Vercel dynamic segments en nested paths.
+  const ogImage = `https://tripcazador.com/api/og-comparison/${c.slug}`;
   return {
     title: c.title,
     description: c.description,
