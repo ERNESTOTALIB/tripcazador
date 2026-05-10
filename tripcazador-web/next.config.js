@@ -346,12 +346,24 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${API_URL}/api/:path*`,
-      },
-    ];
+    // KKKK02 (May 2026): mover /api/:path* rewrite a `fallback`.
+    // Antes era array plano (= afterFiles default), pero Vercel runtime
+    // estaba enrutando dynamic routes Next (/api/og-comparison/[slug])
+    // al backend antes de que Next file-system las capturara.
+    //
+    // `fallback` se aplica SOLO si ninguna ruta Next.js (static + dynamic
+    // + file-system) coincidió. Eso garantiza que /api/og-comparison/...,
+    // /api/og/social/post, /api/admin/cloudflare, etc. queden en Next.js,
+    // y solo paths como /api/deals?limit, /api/airports, etc. (que son
+    // del backend FastAPI) se rewrite al VPS.
+    return {
+      fallback: [
+        {
+          source: "/api/:path*",
+          destination: `${API_URL}/api/:path*`,
+        },
+      ],
+    };
   },
 };
 
