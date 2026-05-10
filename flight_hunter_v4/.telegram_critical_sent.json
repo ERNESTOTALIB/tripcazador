@@ -607,6 +607,22 @@
       "destination": "PMF",
       "price_eur": 21.65,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "880c8f7a2e71",
+      "ts": "2026-05-10T10:56:58.365123+00:00",
+      "origin": "BUD",
+      "destination": "RMI",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a18e7152e0d2",
+      "ts": "2026-05-10T10:56:58.365123+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 25.64,
+      "classification": "CRÍTICO"
     }
   ]
 }
