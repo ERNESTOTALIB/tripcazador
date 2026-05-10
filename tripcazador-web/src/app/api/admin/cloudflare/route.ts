@@ -114,11 +114,11 @@ interface CFGqlResp {
         }>;
         topCountries?: Array<{
           dimensions?: { clientCountryName?: string };
-          sum?: { requests?: number };
+          count?: number;
         }>;
         topPaths?: Array<{
           dimensions?: { clientRequestPath?: string };
-          sum?: { requests?: number };
+          count?: number;
         }>;
       }>;
     };
@@ -171,18 +171,18 @@ async function queryCloudflare(zoneTag: string, apiToken: string): Promise<CFGql
           topCountries: httpRequestsAdaptiveGroups(
             limit: 10
             filter: { datetime_geq: $since7, datetime_lt: $until }
-            orderBy: [sum_requests_DESC]
+            orderBy: [count_DESC]
           ) {
             dimensions { clientCountryName }
-            sum { requests }
+            count
           }
           topPaths: httpRequestsAdaptiveGroups(
             limit: 15
             filter: { datetime_geq: $since7, datetime_lt: $until }
-            orderBy: [sum_requests_DESC]
+            orderBy: [count_DESC]
           ) {
             dimensions { clientRequestPath }
-            sum { requests }
+            count
           }
         }
       }
@@ -304,14 +304,14 @@ export async function GET(_req: NextRequest): Promise<NextResponse<CFResponse | 
     .filter((c) => c.dimensions?.clientCountryName)
     .map((c) => ({
       country: c.dimensions!.clientCountryName!,
-      requests: c.sum?.requests ?? 0,
+      requests: c.count ?? 0,
     }));
 
   const topPaths: CFPath[] = (zone.topPaths || [])
     .filter((p) => p.dimensions?.clientRequestPath)
     .map((p) => ({
       path: p.dimensions!.clientRequestPath!,
-      requests: p.sum?.requests ?? 0,
+      requests: p.count ?? 0,
     }));
 
   return NextResponse.json({
