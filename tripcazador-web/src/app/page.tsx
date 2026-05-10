@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { SkyHero, type FloatingDeal } from "@/components/SkyHero";
 import { TrendingNowWidget } from "@/components/TrendingNowWidget";
+import { SocialProofStrip } from "@/components/SocialProofStrip";
 import { RecentSearchesStrip } from "@/components/RecentSearchesStrip";
 import { MyFeedStrip } from "@/components/MyFeedStrip";
 import { HotelDealsStrip } from "@/components/HotelDealsStrip";
@@ -138,6 +139,12 @@ async function TopDeals() {
 
       {/* fff F3 — Live trending widget: prueba social en tiempo real */}
       <TrendingNowWidget />
+
+      {/* HHHH01 (May 2026) — SocialProofStrip con stats reales del motor.
+          Existía sin uso. Tras audit CF SSS118 (500 unique/día reales),
+          añadirlo arriba del NL boost de credibility + conversion del
+          signup. Datos: total chollos activos, precio mínimo, último hunt. */}
+      <SocialProofStrip />
 
       {/* SSS95 — Newsletter prominent above-fold: 0 subs detectados en
           monitoring, hay que aumentar visibilidad. Lead magnet PDF concreto. */}
