@@ -214,5 +214,14 @@
     "city_from": "Lisboa",
     "city_to": "Malaga",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1778432468.1814466,
+    "deal_id": "ryanair_ams_dub_20260624_economy",
+    "origin": "AMS",
+    "destination": "DUB",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Dublin",
+    "price_eur": 34.99
   }
 ]
