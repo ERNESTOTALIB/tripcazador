@@ -398,6 +398,357 @@ export const NEIGHBORHOOD_COMPARISONS: NeighborhoodComparison[] = [
     hotelsA: ["Hotel Alfonso XIII", "EME Catedral Mercer", "Hotel Casa 1800"],
     hotelsB: ["Hotel Boutique Casas de Santa Cruz", "Triana Boutique Hotel", "Patio de la Cartuja"],
   },
+  // ─── 7. Berlín: Mitte vs Kreuzberg ─────────────────────────────────
+  {
+    slug: "berlin-mitte-vs-kreuzberg",
+    citySlug: "berlin",
+    cityName: "Berlín",
+    title:
+      "Dónde dormir en Berlín 2026: Mitte vs Kreuzberg (datos honestos)",
+    description:
+      "Comparativa barrios Berlín 2026: Mitte céntrico vs Kreuzberg alternativo turco-techno. Precios reales, transporte BER, vibe. Veredicto cazador.",
+    seasonContext:
+      "Pico jul-sep + fin de año. Berghain effect: precios suben jueves-domingo",
+    a: {
+      name: "Mitte",
+      emoji: "🏛️",
+      tagline:
+        "Centro histórico, Puerta Brandenburgo, museos isla y vida 24/7",
+      avgPriceEur: 120,
+      avgPrice4starEur: 180,
+      bestFor: "primera vez, business, monumentos",
+      centerDistance: "0 min (es el centro)",
+      vibe: "histórico institucional",
+    },
+    b: {
+      name: "Kreuzberg",
+      emoji: "🥙",
+      tagline:
+        "Turco-multicultural, techno mecca, street art y bares hasta el alba",
+      avgPriceEur: 95,
+      avgPrice4starEur: 145,
+      bestFor: "alternativo, treintañeros, nightlife",
+      centerDistance: "12-18 min metro a Alexanderplatz",
+      vibe: "alternativo creativo",
+    },
+    criteria: [
+      { label: "Precio medio noche", aScore: 6, bScore: 9, winner: "b", note: "Kreuzberg ~20% más barato. Mitte hoteles cadena premium" },
+      { label: "Monumentos", aScore: 10, bScore: 5, winner: "a", note: "Mitte = Brandenburgo, Reichstag, Museumsinsel a pie. Kreuzberg solo East Side Gallery" },
+      { label: "Vida nocturna", aScore: 6, bScore: 10, winner: "b", note: "Kreuzberg = Berghain, Watergate, About Blank. Mitte más turista" },
+      { label: "Comida internacional", aScore: 6, bScore: 10, winner: "b", note: "Kreuzberg = mejor kebab del mundo (Mustafas), vegano top, mercado turco viernes" },
+      { label: "Familia con niños", aScore: 8, bScore: 5, winner: "a", note: "Mitte tiene Tiergarten + Museum Island. Kreuzberg ruidoso fin de semana" },
+      { label: "Transporte BER", aScore: 8, bScore: 7, winner: "a", note: "Mitte = S-Bahn directo. Kreuzberg requiere transbordo S+U Bahn" },
+      { label: "Cultura indie", aScore: 5, bScore: 10, winner: "b", note: "Kreuzberg = galería SO36, Jüdisches Museum, Tempelhofer Feld. Mitte más mainstream" },
+    ],
+    verdict:
+      "Mitte gana si vienes a Berlín por la historia (Muro, judaísmo, monumentos) y por estancia <4 noches. Kreuzberg gana en relación calidad-precio, gastronomía real y la noche berlinesa de verdad — pero necesitas metro para tocar lo central. Si tu plan incluye Berghain, duerme en Kreuzberg o Friedrichshain (al lado).",
+    pickA: [
+      "Primera vez Berlín, plan monumentos + historia muro",
+      "Vienes con padres/familia",
+      "Estancia 2-3 noches intensa",
+      "Llegada tarde aeropuerto BER",
+    ],
+    pickB: [
+      "Treintañero, plan nightlife + techno",
+      "Foodie buscando real cocina turca/multicultural",
+      "Vienes 4+ noches y ya conoces Berlin básica",
+      "Presupuesto medio <€100/noche",
+    ],
+    hotelsA: ["Hotel de Rome", "The Mandala Hotel", "Hotel Adlon Kempinski"],
+    hotelsB: ["Michelberger Hotel", "nhow Berlin", "Orania.Berlin"],
+  },
+  // ─── 8. Amsterdam: Centrum vs Jordaan ──────────────────────────────
+  {
+    slug: "amsterdam-centrum-vs-jordaan",
+    citySlug: "amsterdam",
+    cityName: "Amsterdam",
+    title:
+      "Dónde dormir en Amsterdam 2026: Centrum vs Jordaan (guía cazador)",
+    description:
+      "Comparativa barrios Amsterdam 2026: Centrum monumentos vs Jordaan tranquilo elegante. Precios, transporte Schiphol, mejor zona por viajero.",
+    seasonContext: "Pico abr-sep + King's Day 27 abr. Hoteles colapsan",
+    a: {
+      name: "Centrum",
+      emoji: "🚲",
+      tagline: "Canales históricos, Rijksmuseum, Red Light a 10 min andando",
+      avgPriceEur: 175,
+      avgPrice4starEur: 265,
+      bestFor: "primera vez, monumentos",
+      centerDistance: "0 min (es el centro)",
+      vibe: "turístico canales",
+    },
+    b: {
+      name: "Jordaan",
+      emoji: "🌷",
+      tagline:
+        "Antiguo barrio obrero, canales íntimos, brown cafés y boutiques",
+      avgPriceEur: 145,
+      avgPrice4starEur: 220,
+      bestFor: "pareja, segunda vez, foodie",
+      centerDistance: "5-10 min andando al Centrum",
+      vibe: "elegante íntimo",
+    },
+    criteria: [
+      { label: "Precio medio noche", aScore: 5, bScore: 7, winner: "b", note: "Jordaan ~15% más barato. Centrum premium ubicación" },
+      { label: "Monumentos a pie", aScore: 10, bScore: 7, winner: "a", note: "Centrum = Plaza Dam, Anne Frank, Rijksmuseum. Jordaan andable pero más lejos" },
+      { label: "Tranquilidad nocturna", aScore: 3, bScore: 9, winner: "b", note: "Centrum = stag parties + Red Light noise. Jordaan silencioso tras 22h" },
+      { label: "Restaurantes locales", aScore: 5, bScore: 9, winner: "b", note: "Jordaan = mejores brown cafés, Foodhallen cerca, brunch indie. Centrum tarjetas turísticas" },
+      { label: "Tiendas vintage", aScore: 6, bScore: 9, winner: "b", note: "Jordaan = mercado Noordermarkt, boutiques diseñador NL, anticuarios" },
+      { label: "Aeropuerto Schiphol", aScore: 8, bScore: 7, winner: "a", note: "Centrum = tren directo 17min desde Centraal. Jordaan via Centraal sumando trayecto" },
+      { label: "Pareja romántica", aScore: 7, bScore: 10, winner: "b", note: "Jordaan canales secundarios = postales sin masas. Centrum saturado fotografía" },
+    ],
+    verdict:
+      "Centrum gana en pura conveniencia turística si es tu primera vez y vienes <3 noches. Jordaan gana en autenticidad, mejor precio y la Amsterdam que viven los locales — y sigue estando a 10 min del centro. Si tu prioridad son canales románticos y brunch tranquilo, Jordaan. Si quieres correr Red Light + museos en 48h, Centrum.",
+    pickA: [
+      "Primera vez Amsterdam, 2-3 noches",
+      "Plan intenso: Anne Frank + Rijksmuseum + Red Light",
+      "Quieres todo andando sin gestionar metro",
+      "Despedida soltero/a (no recomendado, pero útil)",
+    ],
+    pickB: [
+      "Pareja romántica, segunda vez en Amsterdam",
+      "Foodie buscando brunch y brown cafés reales",
+      "Estancia 4+ noches con plan tranquilo",
+      "Quieres dormir bien tras día de bici",
+    ],
+    hotelsA: ["Hotel Pulitzer Amsterdam", "Hotel Estheréa", "Conservatorium Hotel"],
+    hotelsB: ["The Toren", "Mr. Jordaan", "Hotel IX Amsterdam"],
+  },
+  // ─── 9. Praga: Staré Město vs Vinohrady ────────────────────────────
+  {
+    slug: "praga-stare-mesto-vs-vinohrady",
+    citySlug: "praga",
+    cityName: "Praga",
+    title:
+      "Dónde dormir en Praga 2026: Staré Město vs Vinohrady (datos honestos)",
+    description:
+      "Comparativa barrios Praga 2026: Casco Viejo turistas vs Vinohrady residencial elegante. Precios, transporte aeropuerto, qué zona elegir.",
+    seasonContext:
+      "Pico mayo-sep + diciembre mercados Navidad. Pascua sube 60%",
+    a: {
+      name: "Staré Město",
+      emoji: "🕰️",
+      tagline:
+        "Casco antiguo, Reloj Astronómico, callejones medievales y catedrales",
+      avgPriceEur: 100,
+      avgPrice4starEur: 155,
+      bestFor: "primera vez, pareja",
+      centerDistance: "0 min (es el corazón)",
+      vibe: "histórico turístico",
+    },
+    b: {
+      name: "Vinohrady",
+      emoji: "🌳",
+      tagline:
+        "Art Nouveau residencial, parques, bares de vinos y vida real checa",
+      avgPriceEur: 75,
+      avgPrice4starEur: 120,
+      bestFor: "segunda vez, presupuesto, foodie",
+      centerDistance: "10-15 min metro a Staroměstská",
+      vibe: "elegante residencial",
+    },
+    criteria: [
+      { label: "Precio medio noche", aScore: 6, bScore: 9, winner: "b", note: "Vinohrady ~25% más barato. Diferencia gigante en mercados Navidad" },
+      { label: "Monumentos a pie", aScore: 10, bScore: 5, winner: "a", note: "Staré = Karluv Most, Astronomical Clock, Castle a pie. Vinohrady necesita metro" },
+      { label: "Restaurantes locales", aScore: 4, bScore: 9, winner: "b", note: "Vinohrady = mejores hospodas, cafés indie. Staré dominado por menús turísticos" },
+      { label: "Vida nocturna", aScore: 5, bScore: 8, winner: "b", note: "Vinohrady = bares vinícolas serios. Staré = stag parties internacionales ruidosas" },
+      { label: "Aeropuerto PRG", aScore: 7, bScore: 8, winner: "b", note: "Vinohrady = directo bus 100 a metro B. Staré transbordo extra" },
+      { label: "Parques verdes", aScore: 4, bScore: 9, winner: "b", note: "Vinohrady = Riegrovy Sady (vistas castillo), Havlíčkovy Sady. Staré sin parques" },
+      { label: "Familia con niños", aScore: 6, bScore: 9, winner: "b", note: "Vinohrady amplio + parques. Staré callejuelas estrechas con turistas" },
+    ],
+    verdict:
+      "Staré Město gana si vienes 2-3 noches en plan postal medieval — duermes a 5 min del Reloj Astronómico y el Puente de Carlos. Vinohrady gana en relación calidad-precio brutal (25% menos), mejor gastronomía real checa y la calma residencial de Praga. Para 4+ noches, Vinohrady es la elección de cualquier viajero serio.",
+    pickA: [
+      "Primera vez Praga, máximo 3 noches",
+      "Plan intenso casco antiguo + castillo",
+      "Pareja romántica con presupuesto medio",
+      "Mercados Navidad (a pie del Old Town Square)",
+    ],
+    pickB: [
+      "Estancia 4+ noches, ya conoces Praga turística",
+      "Buscas mejores restaurantes checos no-trampa",
+      "Presupuesto ajustado <€80/noche en 3★",
+      "Familia con niños buscando parques",
+    ],
+    hotelsA: ["Hotel U Prince", "Grand Hotel Bohemia", "Ventana Hotel Prague"],
+    hotelsB: ["Mama Shelter Prague", "Le Palais Art Hotel", "Hotel Anna"],
+  },
+  // ─── 10. Estambul: Sultanahmet vs Beyoğlu ─────────────────────────
+  {
+    slug: "estambul-sultanahmet-vs-beyoglu",
+    citySlug: "estambul",
+    cityName: "Estambul",
+    title:
+      "Dónde dormir en Estambul 2026: Sultanahmet vs Beyoğlu (guía cazador)",
+    description:
+      "Comparativa barrios Estambul 2026: Sultanahmet monumentos vs Beyoğlu cosmopolita. Precios reales, transporte IST/SAW, mejor zona por viajero.",
+    seasonContext:
+      "Pico abr-jun + sep-oct. Ramadán y Eid pueden afectar restaurantes",
+    a: {
+      name: "Sultanahmet",
+      emoji: "🕌",
+      tagline:
+        "Casco histórico, Santa Sofía, Mezquita Azul, Topkapı en 500m",
+      avgPriceEur: 80,
+      avgPrice4starEur: 135,
+      bestFor: "primera vez, monumentos",
+      centerDistance: "0 min (es Casco Antiguo)",
+      vibe: "histórico monumental",
+    },
+    b: {
+      name: "Beyoğlu / Taksim",
+      emoji: "🌉",
+      tagline:
+        "Otro lado del Bósforo, İstiklal Cad., Galata Tower, vida moderna",
+      avgPriceEur: 90,
+      avgPrice4starEur: 145,
+      bestFor: "segunda vez, foodie, nightlife",
+      centerDistance: "15 min tranvía cruzando Gálata",
+      vibe: "cosmopolita moderno",
+    },
+    criteria: [
+      { label: "Precio medio noche", aScore: 8, bScore: 7, winner: "a", note: "Sultanahmet ligeramente más barato en 3★. Beyoğlu sube en 4★ tipo Soho House" },
+      { label: "Monumentos icónicos", aScore: 10, bScore: 6, winner: "a", note: "Sultanahmet = Santa Sofía, Mezquita Azul, Topkapı, Cisterna en 600m. Beyoğlu = Gálata Tower" },
+      { label: "Restaurantes modernos", aScore: 5, bScore: 10, winner: "b", note: "Beyoğlu = Mikla, Cinaralti, Karakoy Lokantasi. Sultanahmet menús turísticos" },
+      { label: "Vida nocturna", aScore: 3, bScore: 10, winner: "b", note: "Sultanahmet cierra 22h (zona religiosa). Beyoğlu = rooftops bars + İstiklal hasta 4am" },
+      { label: "Aeropuerto IST", aScore: 7, bScore: 8, winner: "b", note: "Ambos con M11/metro. Beyoğlu transbordo M2 directo. Sultanahmet T1 transbordo" },
+      { label: "Mercados y shopping", aScore: 9, bScore: 8, winner: "a", note: "Sultanahmet = Gran Bazar + Bazar Especias andando. Beyoğlu = boutiques modernas" },
+      { label: "Pareja romántica", aScore: 7, bScore: 9, winner: "b", note: "Beyoğlu = rooftops con vistas Bósforo + Cuerno de Oro. Sultanahmet más austero" },
+    ],
+    verdict:
+      "Sultanahmet es la elección obvia para primera vez: literalmente duermes entre Santa Sofía y la Mezquita Azul. Beyoğlu gana en autenticidad cosmopolita, mejores restaurantes serios y la noche estambulí real — pero pierdes andable los monumentos top. Para una primera escapada de 3 noches, Sultanahmet. Para 5+ noches o segunda vez, divide: 2 noches Sultanahmet + 3 noches Beyoğlu.",
+    pickA: [
+      "Primera vez Estambul, 2-3 noches",
+      "Plan intenso: Santa Sofía + Mezquita Azul + Topkapı",
+      "Compras en Gran Bazar / Bazar Especias",
+      "Plan tranquilo sin nightlife",
+    ],
+    pickB: [
+      "Foodie buscando alta cocina turca moderna",
+      "Pareja con plan rooftops + Bósforo",
+      "Segunda vez en Estambul",
+      "Vienes a conferencia/evento (mayoría en Beyoğlu)",
+    ],
+    hotelsA: ["Four Seasons Sultanahmet", "Hotel Amira", "Sirkeci Mansion"],
+    hotelsB: ["Soho House Istanbul", "The House Hotel Galatasaray", "Vault Karaköy"],
+  },
+  // ─── 11. Atenas: Plaka vs Koukaki ──────────────────────────────────
+  {
+    slug: "atenas-plaka-vs-koukaki",
+    citySlug: "atenas",
+    cityName: "Atenas",
+    title:
+      "Dónde dormir en Atenas 2026: Plaka vs Koukaki (guía cazador)",
+    description:
+      "Comparativa barrios Atenas 2026: Plaka pintoresco vs Koukaki hipster con Acrópolis. Precios, transporte ATH, mejor zona por tipo de viajero.",
+    seasonContext: "Pico jul-sep. Plaka satura abril-octubre con cruceros",
+    a: {
+      name: "Plaka",
+      emoji: "🏛️",
+      tagline:
+        "Barrio antiguo bajo la Acrópolis, callejones empedrados y tabernas",
+      avgPriceEur: 110,
+      avgPrice4starEur: 175,
+      bestFor: "primera vez, pareja",
+      centerDistance: "0 min (es el centro turístico)",
+      vibe: "histórico turístico",
+    },
+    b: {
+      name: "Koukaki",
+      emoji: "☕",
+      tagline:
+        "Barrio hipster sur Acrópolis, cafés, brunch y galerías indie",
+      avgPriceEur: 85,
+      avgPrice4starEur: 135,
+      bestFor: "foodie, treintañeros, presupuesto",
+      centerDistance: "10 min andando a la Acrópolis sur",
+      vibe: "hipster creativo",
+    },
+    criteria: [
+      { label: "Precio medio noche", aScore: 6, bScore: 9, winner: "b", note: "Koukaki ~22% más barato. Plaka cobra premium ubicación Acrópolis" },
+      { label: "Acrópolis a pie", aScore: 10, bScore: 9, winner: "a", note: "Plaka = entrada norte (oficial). Koukaki = entrada sur (cola más corta)" },
+      { label: "Restaurantes auténticos", aScore: 4, bScore: 9, winner: "b", note: "Plaka = trampas turistas con menús en 6 idiomas. Koukaki = brunch indie + tabernas reales" },
+      { label: "Vida nocturna", aScore: 5, bScore: 8, winner: "b", note: "Koukaki = bares cocktail jóvenes. Plaka cierra 23h" },
+      { label: "Aeropuerto ATH", aScore: 8, bScore: 7, winner: "a", note: "Plaka = metro Syntagma directo. Koukaki = Syngrou-Fix + transbordo" },
+      { label: "Compras", aScore: 9, bScore: 5, winner: "a", note: "Plaka = artesanías, souvenirs, anticuarios. Koukaki residencial" },
+      { label: "Pareja romántica", aScore: 9, bScore: 7, winner: "a", note: "Plaka empedrado + Anafiotika postal. Koukaki más urbano" },
+    ],
+    verdict:
+      "Plaka gana si es tu primera vez en Atenas y vienes 2 noches en plan postal acrópolis-tabernas. Koukaki gana en relación calidad-precio, brunch real ateniense y proximidad a la entrada sur de la Acrópolis (menos colas). Para 3+ noches, Koukaki te da +20% más por tu dinero.",
+    pickA: [
+      "Primera vez Atenas, 2 noches",
+      "Pareja romántica con paseos empedrados",
+      "Compras de artesanía y souvenirs",
+      "Plan crucero con escala 24h",
+    ],
+    pickB: [
+      "Foodie buscando brunch y nueva cocina griega",
+      "Treintañero, plan cafés + bares cocktail",
+      "Presupuesto <€90/noche en 3★",
+      "Estancia 3+ noches",
+    ],
+    hotelsA: ["Electra Palace Athens", "Hermes Hotel", "Plaka Hotel"],
+    hotelsB: ["Coco-Mat Athens BC", "Athens Was", "The Foundry Suites Athens"],
+  },
+  // ─── 12. Marrakech: Medina vs Gueliz ──────────────────────────────
+  {
+    slug: "marrakech-medina-vs-gueliz",
+    citySlug: "marrakech",
+    cityName: "Marrakech",
+    title:
+      "Dónde dormir en Marrakech 2026: Medina vs Gueliz (datos honestos)",
+    description:
+      "Comparativa barrios Marrakech 2026: Medina riads vs Gueliz ville nouvelle. Precios, transporte aeropuerto RAK, qué barrio elegir.",
+    seasonContext:
+      "Pico oct-abr (clima ideal). Ramadán afecta horarios pero baja precios 25%",
+    a: {
+      name: "Medina",
+      emoji: "🕌",
+      tagline:
+        "Casco antiguo amurallado, zoco, riads tradicionales y Yamaa el-Fna",
+      avgPriceEur: 70,
+      avgPrice4starEur: 130,
+      bestFor: "primera vez, autenticidad",
+      centerDistance: "0 min (es el centro histórico)",
+      vibe: "auténtico inmersivo",
+    },
+    b: {
+      name: "Gueliz",
+      emoji: "🌴",
+      tagline:
+        "Ville Nouvelle francesa, bulevares anchos, cafés modernos y comodidad",
+      avgPriceEur: 60,
+      avgPrice4starEur: 110,
+      bestFor: "primera vez, business, comodidad",
+      centerDistance: "15 min taxi a Yamaa el-Fna",
+      vibe: "moderno colonial",
+    },
+    criteria: [
+      { label: "Precio medio noche", aScore: 7, bScore: 9, winner: "b", note: "Gueliz ~15% más barato. Medina riads top 4★ son carísimos" },
+      { label: "Autenticidad cultural", aScore: 10, bScore: 5, winner: "a", note: "Medina = riads tradicionales, zoco, llamada al rezo. Gueliz podría ser cualquier ciudad francesa" },
+      { label: "Plaza Yamaa el-Fna", aScore: 10, bScore: 5, winner: "a", note: "Medina = literalmente al lado. Gueliz = taxi 15 min" },
+      { label: "Restaurantes modernos", aScore: 5, bScore: 9, winner: "b", note: "Gueliz = mejores restaurantes contemporáneos. Medina = menús turísticos en derbs" },
+      { label: "Aeropuerto RAK", aScore: 6, bScore: 8, winner: "b", note: "Gueliz = 15 min taxi sin problemas. Medina = taxi se queda fuera murallas, andar con maletas" },
+      { label: "Mujeres solas comfort", aScore: 5, bScore: 8, winner: "b", note: "Gueliz más anónimo. Medina puede agotar el acoso comercial en zoco" },
+      { label: "Romance / luxury", aScore: 10, bScore: 7, winner: "a", note: "Medina = riad con jardín-fuente, hammam privado, terraza. Gueliz cadenas convencionales" },
+    ],
+    verdict:
+      "Medina gana en pura experiencia Marrakech — duermes en un riad histórico a 2 minutos del zoco y Yamaa el-Fna. Gueliz gana en comodidad pragmática: mejores restaurantes modernos, taxis fáciles, bulevares anchos y menos abrumador. Recomendación cazador: si vienes 4 noches, divide 2+2. Si solo 2-3 noches: Medina sin duda — es lo que vas a recordar.",
+    pickA: [
+      "Primera vez Marrakech, 2-4 noches",
+      "Pareja luxury con presupuesto riad alto",
+      "Quieres experiencia plena (zoco, hammam, terraza)",
+      "Foodie buscando tagines tradicionales",
+    ],
+    pickB: [
+      "Primera vez con familia / mayores",
+      "Mujer sola buscando menos acoso",
+      "Vienes a evento/conferencia",
+      "Plan tranquilo con day-trips Atlas/Essaouira",
+    ],
+    hotelsA: ["La Mamounia", "Riad Yasmine", "Riad Kheirredine"],
+    hotelsB: ["Hotel Sahrai", "Albert Premier Hotel", "Hivernage Hotel & Spa"],
+  },
 ];
 
 export function getNeighborhoodComparisonBySlug(
