@@ -1,0 +1,26 @@
+name: Check Server Components
+
+on:
+  pull_request:
+    branches: [main, pre]
+    paths:
+      - "tripcazador-web/src/**"
+      - "tripcazador-web/scripts/check-rsc-event-handlers.mjs"
+      - ".github/workflows/check-rsc.yml"
+  push:
+    branches: [pre]
+
+jobs:
+  rsc-event-handlers:
+    name: No event handlers in Server Components
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run RSC event-handler check
+        working-directory: tripcazador-web
+        run: node scripts/check-rsc-event-handlers.mjs

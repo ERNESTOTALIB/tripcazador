@@ -1,12 +1,17 @@
+"use client";
 /**
  * HotelCrossSell.tsx — YYY02 (May 2026)
  *
  * CTA cross-sell de hotel insertado en páginas de destino (deal detail,
  * blog post, /destinos/[slug]). Lleva a Booking.com con aid=AID afiliado.
  *
- * Comisión Booking via Travelpayouts: ~4-7% del valor de reserva.
- * Si user reserva 2 noches @ €70 = €140 → comisión €5-10.
+ * SSS145 (11 may 2026): añadido "use client". El componente usa
+ * onClick={handleClick} para tracking afiliado (líneas 142 + 171). Sin
+ * "use client" era un Server Component con event handler JSX = mismo bug
+ * que tiró /destinos hoy (error.digest 1610473858). Detectado por linter
+ * scripts/check-rsc-event-handlers.mjs antes de llegar a prod.
  *
+ * Comisión Booking via Travelpayouts: ~4-7% del valor de reserva.
  * Conversión esperada cross-sell vuelo→hotel: 5-8% de los clicks.
  *
  * Uso:
