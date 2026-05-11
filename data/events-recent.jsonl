@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:07:15.096Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:07:15.250Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:07:15.519Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:07:15.565Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:07:15.708Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:07:17.424Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:07:18.318Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:07:18.776Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-11T14:11:29.856Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/comparar-barrios"}}
 {"ts":"2026-05-11T14:12:04.848Z","type":"page_view","visitor":"ac9171f63dbb91d9","meta":{"path":"/"}}
 {"ts":"2026-05-11T14:12:04.872Z","type":"landing_arrived","visitor":"ac9171f63dbb91d9","meta":{"path":"/"}}
+{"ts":"2026-05-11T14:12:04.905Z","type":"page_view","visitor":"ac9171f63dbb91d9","meta":{"path":"/"}}
+{"ts":"2026-05-11T14:12:04.925Z","type":"landing_arrived","visitor":"ac9171f63dbb91d9","meta":{"path":"/"}}
+{"ts":"2026-05-11T14:12:07.775Z","type":"page_view","visitor":"ac9171f63dbb91d9","meta":{"path":"/"}}
+{"ts":"2026-05-11T14:12:09.028Z","type":"landing_arrived","visitor":"ac9171f63dbb91d9","meta":{"path":"/"}}
+{"ts":"2026-05-11T14:12:10.703Z","type":"page_view","visitor":"ac9171f63dbb91d9","meta":{"path":"/"}}
