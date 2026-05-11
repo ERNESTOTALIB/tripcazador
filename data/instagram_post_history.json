@@ -259,5 +259,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Podgorica",
     "price_eur": 27.34
+  },
+  {
+    "timestamp": 1778512953.4764254,
+    "deal_id": "ryanair_mad_bds_20260907_economy",
+    "origin": "MAD",
+    "destination": "BDS",
+    "city_from": "Madrid",
+    "city_to": "Brindisi",
+    "price_eur": 29.99
   }
 ]
