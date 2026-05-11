@@ -96,14 +96,22 @@ const HEAL_COOKIE_VALUE = "1";
 function shouldHeal(req: NextRequest): boolean {
   // Ya curado
   if (req.cookies.get(HEAL_COOKIE)?.value === HEAL_COOKIE_VALUE) return false;
-  // Sólo navegaciones HTML (no fetch/XHR/image/etc.)
+
+  const path = req.nextUrl.pathname;
+  if (path === "/reset" || path.startsWith("/api/")) return false;
+
+  // SSS140: /sw.js update-check va DIRECTO a red bypaseando el SW activo
+  // (browsers special-case esto). Si el SW v4 viejo está atascado sirviendo
+  // HTML cacheado del error, el browser NUNCA recibe Clear-Site-Data en la
+  // respuesta a la navegación porque el SW intercepta. Pero el update-check
+  // de /sw.js sí pasa. Aquí lo aprovechamos para wipear todo.
+  if (path === "/sw.js") return true;
+
+  // Navegaciones HTML (no fetch/XHR/image/etc.)
   const dest = req.headers.get("sec-fetch-dest");
   if (dest && dest !== "document") return false;
   const accept = req.headers.get("accept") || "";
   if (!accept.includes("text/html")) return false;
-  // No tocar /reset (ya lo hace por sí mismo) ni rutas con cache-buster fresh
-  const path = req.nextUrl.pathname;
-  if (path === "/reset" || path.startsWith("/api/")) return false;
   return true;
 }
 
