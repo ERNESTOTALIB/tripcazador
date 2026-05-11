@@ -1,8 +1,3 @@
-{"ts":"2026-05-09T21:33:37.315Z","type":"page_view","visitor":"c31211b5a57d43ff","meta":{"path":"/"}}
-{"ts":"2026-05-09T21:33:39.199Z","type":"page_view","visitor":"c31211b5a57d43ff","meta":{"path":"/"}}
-{"ts":"2026-05-09T21:33:40.512Z","type":"landing_arrived","visitor":"c31211b5a57d43ff","meta":{"path":"/"}}
-{"ts":"2026-05-09T21:33:40.572Z","type":"page_view","visitor":"c31211b5a57d43ff","meta":{"path":"/"}}
-{"ts":"2026-05-09T21:33:41.884Z","type":"page_view","visitor":"c31211b5a57d43ff","meta":{"path":"/"}}
 {"ts":"2026-05-10T03:11:48.061Z","type":"scroll_75","visitor":"3ee7694186b4c7a2","meta":{"path":"/"}}
 {"ts":"2026-05-10T03:12:12.620Z","type":"landing_arrived","visitor":"3ee7694186b4c7a2","meta":{"path":"/destinos/nueva-york"}}
 {"ts":"2026-05-10T03:13:18.435Z","type":"result_viewed","visitor":"3ee7694186b4c7a2","meta":{"deal_id":"seed-0012f2bae8","destination":"JFK","origin":"DUB","price":199,"classification":"ANOMALÍA"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-11T13:01:57.054Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:01:57.193Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:01:57.373Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
+{"ts":"2026-05-11T13:01:58.604Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:01:58.625Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:01:58.906Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:01:58.984Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
+{"ts":"2026-05-11T13:01:59.050Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
