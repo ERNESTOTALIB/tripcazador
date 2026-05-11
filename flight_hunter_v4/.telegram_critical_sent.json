@@ -687,6 +687,22 @@
       "destination": "PMF",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2cc3e7b8a6d4",
+      "ts": "2026-05-11T18:53:33.047045+00:00",
+      "origin": "STN",
+      "destination": "KSC",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e45a0addd336",
+      "ts": "2026-05-11T18:53:33.047045+00:00",
+      "origin": "STN",
+      "destination": "CAG",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
