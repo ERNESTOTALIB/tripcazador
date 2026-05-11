@@ -224,23 +224,36 @@ jobs:
             # /api/deals con deals seed (12) en lugar de los 1248 reales del hunter.
             # Ahora reintenta hasta 5 veces con pull --rebase entre cada intento.
             PUSHED=0
-            for i in 1 2 3 4 5; do
+            # SSS148 (11 may 2026): bumped 5→10 intentos + jittered sleep + exit 1
+            # final. Antes el step terminaba ✓ aunque push fallara las 5 veces
+            # (solo echo "::error::"), dejando `deals-latest.json` stale 9h+.
+            # Causa raíz: race con bots Telegram/IG/track committing a main en
+            # paralelo. Solución: más reintentos + sleep aleatorio + fail loud.
+            for i in 1 2 3 4 5 6 7 8 9 10; do
               if git push origin HEAD:main; then
                 PUSHED=1
                 echo "✅ deals.json committeado y pusheado a public/ (intento $i)"
                 break
               else
-                echo "⚠️ Push falló intento $i — git pull --rebase y retry"
+                # Jittered sleep 1-5s para escapar de la ventana de race con bots
+                SLEEP=$(( (RANDOM % 5) + 1 ))
+                echo "⚠️ Push falló intento $i — sleep ${SLEEP}s + git pull --rebase y retry"
+                sleep "$SLEEP"
+                git fetch origin main
                 git pull --rebase origin main || {
                   echo "::warning::pull --rebase falló intento $i"
                   git rebase --abort 2>/dev/null || true
+                  # Si rebase falla, intenta merge en su lugar
+                  git merge origin/main --no-edit || true
                 }
               fi
             done
             if [ "$PUSHED" -eq 0 ]; then
-              echo "::error::Push falló 5 veces consecutivas — deals.json del runner se descarta"
-              # No bloqueamos el workflow porque el artifact upload sigue activo
-              # (deals-{run_id}.zip recoverable manualmente desde Actions UI).
+              echo "::error::Push falló 10 veces consecutivas — deals.json del runner se descarta"
+              # SSS148 FAIL LOUD: antes era warning silencioso. Ahora exit 1
+              # para que el job aparezca como FAILED en Actions UI y el cron
+              # nocturno alerta vía Telegram (paso "Notify Telegram" trigger).
+              exit 1
             fi
           fi
 
