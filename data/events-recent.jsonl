@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:07:33.948Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:07:34.504Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:07:34.587Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:07:34.732Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:07:34.906Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:07:37.123Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:07:38.573Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:07:38.728Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-11T14:27:55.446Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-11T14:27:58.731Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T14:28:44.021Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/destinos/buenos-aires"}}
+{"ts":"2026-05-11T14:52:42.443Z","type":"page_view","visitor":"63a8442a1341042d","meta":{"path":"/"}}
+{"ts":"2026-05-11T14:52:42.839Z","type":"page_view","visitor":"63a8442a1341042d","meta":{"path":"/"}}
+{"ts":"2026-05-11T14:52:42.853Z","type":"landing_arrived","visitor":"63a8442a1341042d","meta":{"path":"/"}}
+{"ts":"2026-05-11T14:52:48.944Z","type":"landing_arrived","visitor":"63a8442a1341042d","meta":{"path":"/"}}
+{"ts":"2026-05-11T14:52:49.010Z","type":"page_view","visitor":"63a8442a1341042d","meta":{"path":"/"}}
