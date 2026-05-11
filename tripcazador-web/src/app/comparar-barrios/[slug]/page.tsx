@@ -356,6 +356,16 @@ export default function NeighborhoodComparisonPage({
         context={`comparar-barrios-${c.slug}`}
       />
 
+      {/* Related lectura — link a guía Europa */}
+      <section className="rounded-xl border border-gray-800 bg-gray-900/40 p-4 text-sm text-gray-300">
+        <Link
+          href="/blog/donde-dormir-europa-2026-12-ciudades-barrios"
+          className="text-amber-300 font-bold hover:text-amber-200"
+        >
+          Guía completa: dónde dormir en 12 ciudades europeas →
+        </Link>
+      </section>
+
       {/* Related */}
       {related.length > 0 && (
         <section>

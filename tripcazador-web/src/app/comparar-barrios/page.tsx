@@ -89,6 +89,23 @@ export default function NeighborhoodComparisonsIndex() {
         ))}
       </section>
 
+      <section className="rounded-xl border border-gray-800 bg-gray-900/40 p-5">
+        <h2 className="text-base font-bold text-white mb-2">
+          Visión general de Europa
+        </h2>
+        <p className="text-sm text-gray-300 mb-3">
+          Si todavía no has decidido a qué ciudad ir, lee primero la guía
+          completa con TL;DR de las 12 ciudades y errores que comete el viajero
+          medio.
+        </p>
+        <Link
+          href="/blog/donde-dormir-europa-2026-12-ciudades-barrios"
+          className="inline-block text-sm font-bold text-amber-400 hover:text-amber-300"
+        >
+          Dónde dormir en Europa 2026 — guía 12 ciudades →
+        </Link>
+      </section>
+
       <section className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
         <h2 className="text-base font-bold text-amber-300 mb-2">
           Cómo leemos cada comparativa
