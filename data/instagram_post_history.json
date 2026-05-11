@@ -241,5 +241,14 @@
     "city_from": "Barcelona",
     "city_to": "Gdansk",
     "price_eur": 30.99
+  },
+  {
+    "timestamp": 1778485920.8515513,
+    "deal_id": "ryanair_ams_dub_20260630_economy",
+    "origin": "AMS",
+    "destination": "DUB",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Dublin",
+    "price_eur": 34.99
   }
 ]
