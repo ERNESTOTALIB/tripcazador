@@ -918,3 +918,8 @@
 {"ts":"2026-05-11T09:50:17.985Z","type":"page_view","visitor":"579b55d5264d4a88","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T09:50:44.111Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_lis_vlc_20260710_economy","destination":"VLC","origin":"LIS","price":26.49,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-11T09:50:50.509Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_stn_ace_20260708_economy","destination":"ACE","origin":"STN","price":29.99,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-11T09:50:51.042Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_waw_par_20260616_economy","destination":"PAR","origin":"WAW","price":61.64,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-11T09:50:54.949Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_stn_gro_20260708_economy","destination":"GRO","origin":"STN","price":21.99,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-11T09:50:56.113Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_stn_reu_20260609_economy","destination":"REU","origin":"STN","price":39.56,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-11T09:50:57.174Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_mad_pmo_20260713_economy","destination":"PMO","origin":"MAD","price":47.91,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-11T09:50:58.306Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_fra_ibz_20260624_economy","destination":"IBZ","origin":"FRA","price":55.2,"classification":"ANOMALÍA"}}
