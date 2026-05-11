@@ -6,6 +6,7 @@ import { COMPARISONS } from "@/lib/comparisons";
 import { REGIONS } from "@/lib/regions";
 import { MONTHS } from "@/lib/months";
 import { AIRLINE_COMPARISONS } from "@/lib/airline_comparisons";
+import { NEIGHBORHOOD_COMPARISONS } from "@/lib/neighborhood_comparisons";
 import { getHotelEntries } from "@/lib/hotel_seed";
 
 /**
@@ -180,6 +181,11 @@ export async function GET(req: NextRequest) {
     `https://${HOST}/comparar-aerolineas`,
     ...AIRLINE_COMPARISONS.map(
       (c) => `https://${HOST}/comparar-aerolineas/${c.slug}`,
+    ),
+    // LLLL01 — head-to-head barrios para alojarse (12 comparativas).
+    `https://${HOST}/comparar-barrios`,
+    ...NEIGHBORHOOD_COMPARISONS.map(
+      (c) => `https://${HOST}/comparar-barrios/${c.slug}`,
     ),
     // CCCC02+DDDD03 — /hoteles/ciudad/[city] páginas SEO city-level.
     ...Array.from(
