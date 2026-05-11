@@ -85,9 +85,10 @@ export function HotelDealsStrip() {
               className="group block rounded-lg overflow-hidden bg-gray-900 hover:bg-gray-800 transition-shadow hover:shadow-lg hover:shadow-amber-500/10 border border-gray-800 hover:border-amber-500/40"
             >
               <div className={`relative aspect-[4/3] bg-gradient-to-br ${gradientCls}`}>
-                {/* BBBB01: <img> con onError → muestra emoji fallback (no <Image>
-                    de Next.js porque su mecanismo de fallback no funciona en
-                    SSR + unoptimized para URLs externas que devuelven 404). */}
+                {/* SSS143 BUGFIX: el onError handler causaba Server Components
+                    render error (digest 1610473858) — event handlers no son
+                    serializables en RSC. Quito onError; el fallback emoji
+                    queda detrás como red de seguridad si la img 404. */}
                 {img && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -96,10 +97,6 @@ export function HotelDealsStrip() {
                     loading="lazy"
                     decoding="async"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      // Imagen rota → ocultar y dejar el gradient + emoji
-                      e.currentTarget.style.display = "none";
-                    }}
                   />
                 )}
                 {/* Fallback layer: emoji centrado, siempre presente debajo de la

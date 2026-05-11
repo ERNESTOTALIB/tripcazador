@@ -423,7 +423,7 @@ export default async function HomePage() {
         </Suspense>
       </section>
 
-      {/* SSS141: HotelDealsStrip deshabilitado temporalmente */}
+      <HotelDealsStrip />
 
       {/* Destinos populares con tarjetas visuales */}
       <section className="space-y-6">
