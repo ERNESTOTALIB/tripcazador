@@ -928,3 +928,8 @@
 {"ts":"2026-05-11T09:51:00.374Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_stn_ibz_20260628_economy","destination":"IBZ","origin":"STN","price":27.99,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-11T09:51:00.825Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_fco_buh_20260613_economy","destination":"BUH","origin":"FCO","price":37.72,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-11T09:51:05.766Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_arn_bru_20260602_economy","destination":"BRU","origin":"ARN","price":43.24,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-11T10:18:39.066Z","type":"page_view","visitor":"71b167dbcbeda538","meta":{"path":"/"}}
+{"ts":"2026-05-11T10:18:40.683Z","type":"page_view","visitor":"71b167dbcbeda538","meta":{"path":"/"}}
+{"ts":"2026-05-11T10:18:41.546Z","type":"page_view","visitor":"71b167dbcbeda538","meta":{"path":"/"}}
+{"ts":"2026-05-11T10:18:42.539Z","type":"page_view","visitor":"71b167dbcbeda538","meta":{"path":"/"}}
+{"ts":"2026-05-11T10:18:44.481Z","type":"page_view","visitor":"71b167dbcbeda538","meta":{"path":"/"}}
