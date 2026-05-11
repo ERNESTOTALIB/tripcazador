@@ -277,5 +277,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Dublin",
     "price_eur": 34.99
+  },
+  {
+    "timestamp": 1778534499.092485,
+    "deal_id": "ryanair_stn_gdn_20260825_economy",
+    "origin": "STN",
+    "destination": "GDN",
+    "city_from": "Londres Stansted",
+    "city_to": "Gdansk",
+    "price_eur": 16.99
   }
 ]
