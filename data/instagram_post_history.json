@@ -232,5 +232,14 @@
     "city_from": "Madrid",
     "city_to": "Brindisi",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1778471933.4967308,
+    "deal_id": "ryanair_bcn_gdn_20260903_economy",
+    "origin": "BCN",
+    "destination": "GDN",
+    "city_from": "Barcelona",
+    "city_to": "Gdansk",
+    "price_eur": 30.99
   }
 ]
