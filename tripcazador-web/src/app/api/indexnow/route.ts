@@ -7,6 +7,7 @@ import { REGIONS } from "@/lib/regions";
 import { MONTHS } from "@/lib/months";
 import { AIRLINE_COMPARISONS } from "@/lib/airline_comparisons";
 import { NEIGHBORHOOD_COMPARISONS } from "@/lib/neighborhood_comparisons";
+import { CUANDO_VIAJAR_DESTINOS } from "@/lib/cuando_viajar";
 import { getHotelEntries } from "@/lib/hotel_seed";
 
 /**
@@ -186,6 +187,11 @@ export async function GET(req: NextRequest) {
     `https://${HOST}/comparar-barrios`,
     ...NEIGHBORHOOD_COMPARISONS.map(
       (c) => `https://${HOST}/comparar-barrios/${c.slug}`,
+    ),
+    // MMMM01 — cuando-viajar mes a mes por destino (8 destinos).
+    `https://${HOST}/cuando-viajar`,
+    ...CUANDO_VIAJAR_DESTINOS.map(
+      (d) => `https://${HOST}/cuando-viajar/${d.slug}`,
     ),
     // CCCC02+DDDD03 — /hoteles/ciudad/[city] páginas SEO city-level.
     ...Array.from(
