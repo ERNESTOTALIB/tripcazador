@@ -703,6 +703,22 @@
       "destination": "CAG",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "cba6645b7b16",
+      "ts": "2026-05-11T20:29:25.906114+00:00",
+      "origin": "STN",
+      "destination": "PMF",
+      "price_eur": 21.91,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "44f65e724f72",
+      "ts": "2026-05-11T20:29:25.906114+00:00",
+      "origin": "STN",
+      "destination": "OLB",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
