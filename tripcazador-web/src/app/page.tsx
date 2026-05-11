@@ -328,28 +328,24 @@ export default async function HomePage() {
     },
   };
 
+  // SSS141 (11 may 2026) — DIAGNÓSTICO emergencia
+  // El "Algo salió mal en el radar ref:1610473858" sigue mostrándose en
+  // browser pese a que curl devuelve HTML correcto. Hipótesis: alguno de
+  // los Server Components renderea bien EN AGGREGATE en algunos requests
+  // y falla en otros (intermittent), o algún componente cliente crashea
+  // tan temprano que pinta error.tsx encima del contenido renderizado.
+  // Bisección: deshabilitamos sospechosos uno a uno.
+  void faqSchema;
+  void orgSchema;
+  void websiteSchema;
+
   return (
     <div>
-      <JsonLd data={faqSchema} />
-      <JsonLd data={orgSchema} />
-      <JsonLd data={websiteSchema} />
+      {/* SSS141: JsonLd deshabilitado temporalmente */}
 
-      {/* fase uu UU3 — SkyHero glass full-width.
-          Reemplaza el hero-map dark anterior. Sky gradient + searchbar
-          glass + 3 floating deal cards translúcidas. El header se monta
-          encima con backdrop transparent (transición a glass al scrollear). */}
       <SkyHero floating={heroFloating} />
 
-      {/* JJJ3 — Mi feed (silent si no hay favoritos guardados) */}
-      <MyFeedStrip />
-
-      {/* III4 — Recent searches strip (silent if no consent / no history) */}
-      <RecentSearchesStrip />
-
-      {/* F7 — Streak badge gamification (sólo si user >2 días seguidos) */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 text-center">
-        <StreakBadge />
-      </div>
+      {/* SSS141: MyFeedStrip + RecentSearchesStrip + StreakBadge deshabilitados temporalmente */}
 
       {/* Stats + chips quick-filters en sección body light, después del hero.
           full-bleed escapando del max-w-7xl del <main> */}
@@ -427,8 +423,7 @@ export default async function HomePage() {
         </Suspense>
       </section>
 
-      {/* YYY06 — Hotel deals strip (Booking AID afiliado, mayor margen) */}
-      <HotelDealsStrip />
+      {/* SSS141: HotelDealsStrip deshabilitado temporalmente */}
 
       {/* Destinos populares con tarjetas visuales */}
       <section className="space-y-6">
@@ -453,10 +448,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Social proof agregado (flag: habilitar testimonios reales cuando existan) */}
-      <Testimonials
-        enabled={process.env.NEXT_PUBLIC_TESTIMONIALS_ENABLED === "1"}
-      />
+      {/* SSS141: Testimonials deshabilitado temporalmente */}
 
       {/* Cómo funciona */}
       <section className="panel p-8 sm:p-10 space-y-6">
