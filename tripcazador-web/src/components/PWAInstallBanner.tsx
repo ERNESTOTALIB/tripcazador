@@ -61,14 +61,15 @@ export function PWAInstallBanner() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // 1) Registrar SW
-    if ("serviceWorker" in navigator && process.env.NODE_ENV === "production") {
+    // SSS136 (11 may 2026): NO registramos /sw.js — sw.js es ahora un kill-switch
+    // NO-OP que se autodesinstala. Re-registrarlo en cada mount creaba ciclo de
+    // register/unregister inútil. En su lugar, desinstalamos cualquier SW viejo
+    // que el browser tenga cacheado (silencioso, sin recargar).
+    if ("serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register("/sw.js")
-        .catch((err) => {
-          // No bloquear UX si SW falla (ej. dev tools desactivados)
-          console.warn("SW register failed", err);
-        });
+        .getRegistrations()
+        .then((regs) => regs.forEach((r) => r.unregister().catch(() => {})))
+        .catch(() => {});
     }
 
     if (isStandalone()) return; // ya instalada
