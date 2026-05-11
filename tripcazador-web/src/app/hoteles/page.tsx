@@ -110,6 +110,26 @@ export default async function HotelesPage() {
         </>
       )}
 
+      {/* LLLL03 — Cross-link a comparar-barrios (alto commercial intent) */}
+      <section className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-white mb-1">
+              ¿Aún no sabes en qué zona alojarte?
+            </h2>
+            <p className="text-sm text-gray-300">
+              Comparativas honestas barrio vs barrio: Gòtic vs Eixample, Trastevere vs Centro Storico, Alfama vs Chiado…
+            </p>
+          </div>
+          <Link
+            href="/comparar-barrios"
+            className="flex-shrink-0 px-4 py-2 rounded-lg bg-amber-500 text-gray-900 font-bold text-sm hover:bg-amber-400 transition-colors whitespace-nowrap"
+          >
+            Comparar barrios →
+          </Link>
+        </div>
+      </section>
+
       {/* SEO content block */}
       <section className="prose prose-invert max-w-3xl mx-auto text-sm">
         <h2 className="text-white">Cómo cazamos chollos de hotel</h2>

@@ -7,6 +7,7 @@ import { AIRLINES } from "@/lib/airlines";
 import { HUBS } from "@/lib/hubs";
 import { COMPARISONS } from "@/lib/comparisons";
 import { AIRLINE_COMPARISONS } from "@/lib/airline_comparisons";
+import { NEIGHBORHOOD_COMPARISONS } from "@/lib/neighborhood_comparisons";
 import { REGIONS } from "@/lib/regions";
 import { MONTHS } from "@/lib/months";
 import { MONTHLY_ROUTES } from "@/lib/monthly_prices";
@@ -396,6 +397,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     })),
   ];
+  // LLLL01 — neighborhood-vs-neighborhood comparisons (comm intent alto, Booking AID)
+  const neighborhoodComparisonPages: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/comparar-barrios`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    ...NEIGHBORHOOD_COMPARISONS.map((c) => ({
+      url: `${BASE_URL}/comparar-barrios/${c.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.65,
+    })),
+  ];
   // abr-2026dd: 12 month pages (URL: /vuelos-baratos/{slug})
   // Renamed from /vuelos-baratos-{slug} (top-level bracket route) en abr-2026ee tras
   // descubrir que Vercel CLI sin git source no servía rutas con corchetes en prefix.
@@ -523,6 +539,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...hubPages,
     ...comparisonPages,
     ...airlineComparisonPages,
+    ...neighborhoodComparisonPages,
     ...regionPages,
     ...monthPages,
     monthlyPriceIndex,

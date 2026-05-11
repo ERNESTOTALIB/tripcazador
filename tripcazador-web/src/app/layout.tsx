@@ -405,6 +405,7 @@ export default function RootLayout({
                   <li><a href="/blog" className="hover:text-amber-400">Blog</a></li>
                   <li><a href="/comparar" className="hover:text-amber-400">Comparativas</a></li>
                   <li><a href="/comparar-aerolineas" className="hover:text-amber-400">Aerolínea vs aerolínea ⚡</a></li>
+                  <li><a href="/comparar-barrios" className="hover:text-amber-400">Dónde dormir: barrio vs barrio 🏘️</a></li>
                   <li><a href="/hoteles-vs-airbnb" className="hover:text-amber-400">Hotel vs Airbnb</a></li>
                   <li><a href="/hoteles" className="hover:text-amber-400">Hoteles por ciudad 🏨</a></li>
                   <li><a href="/regalo" className="hover:text-amber-400">Regalar 🎁</a></li>

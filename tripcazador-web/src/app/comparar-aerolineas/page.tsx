@@ -24,6 +24,17 @@ export default function AirlineComparisonsIndex() {
         </p>
       </header>
 
+      <div className="text-sm text-gray-400">
+        Si ya tienes el vuelo decidido, mira también nuestras{" "}
+        <Link
+          href="/comparar-barrios"
+          className="text-amber-400 hover:underline"
+        >
+          comparativas de barrios para alojarse
+        </Link>
+        .
+      </div>
+
       <section className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {AIRLINE_COMPARISONS.map((c) => (
           <Link
