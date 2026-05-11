@@ -328,24 +328,24 @@ export default async function HomePage() {
     },
   };
 
-  // SSS141 (11 may 2026) — DIAGNÓSTICO emergencia
-  // El "Algo salió mal en el radar ref:1610473858" sigue mostrándose en
-  // browser pese a que curl devuelve HTML correcto. Hipótesis: alguno de
-  // los Server Components renderea bien EN AGGREGATE en algunos requests
-  // y falla en otros (intermittent), o algún componente cliente crashea
-  // tan temprano que pinta error.tsx encima del contenido renderizado.
-  // Bisección: deshabilitamos sospechosos uno a uno.
-  void faqSchema;
-  void orgSchema;
-  void websiteSchema;
-
+  // SSS142 (11 may 2026) — BISECT v2
+  // SSS141 verificó: deshabilitar JsonLd + MyFeed + RecentSearches + Streak +
+  // HotelDealsStrip + Testimonials FIX el error "Algo salió mal en el radar".
+  // Ahora re-activo TODOS excepto HotelDealsStrip (sospechoso #1: modificó
+  // hotel_seed.ts recientemente, es Server Component sin try/catch).
   return (
     <div>
-      {/* SSS141: JsonLd deshabilitado temporalmente */}
+      <JsonLd data={faqSchema} />
+      <JsonLd data={orgSchema} />
+      <JsonLd data={websiteSchema} />
 
       <SkyHero floating={heroFloating} />
 
-      {/* SSS141: MyFeedStrip + RecentSearchesStrip + StreakBadge deshabilitados temporalmente */}
+      <MyFeedStrip />
+      <RecentSearchesStrip />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 text-center">
+        <StreakBadge />
+      </div>
 
       {/* Stats + chips quick-filters en sección body light, después del hero.
           full-bleed escapando del max-w-7xl del <main> */}
@@ -448,7 +448,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* SSS141: Testimonials deshabilitado temporalmente */}
+      <Testimonials
+        enabled={process.env.NEXT_PUBLIC_TESTIMONIALS_ENABLED === "1"}
+      />
 
       {/* Cómo funciona */}
       <section className="panel p-8 sm:p-10 space-y-6">
