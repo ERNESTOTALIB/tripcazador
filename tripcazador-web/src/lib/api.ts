@@ -81,23 +81,45 @@ export async function getDeals(params?: {
 
   const url = `${API_BASE}/api/deals${query.toString() ? "?" + query : ""}`;
 
-  const res = await fetch(url, {
-    next: { revalidate: 300 }, // Revalidar cada 5 minutos (ISR)
-  });
+  // SSS134 (May 2026): wrap fetch externo en try/catch. Si VPS api.tripcazador.com
+  // está caído / timeout / DNS issue, antes lanzaba al Server Component y
+  // disparaba error.tsx en home ("Algo salió mal en el radar"). Ahora cae
+  // limpiamente al static fallback (worker output / deals-latest.json).
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      next: { revalidate: 300 }, // Revalidar cada 5 minutos (ISR)
+    });
+  } catch (e) {
+    console.warn("[api.getDeals] fetch fail, fallback to static:", e);
+    return getDealsFromStatic();
+  }
 
   if (!res.ok) {
     // Fallback: intentar cargar desde deals.json estático
     return getDealsFromStatic();
   }
 
-  const json = await res.json();
+  let json: unknown;
+  try {
+    json = await res.json();
+  } catch (e) {
+    console.warn("[api.getDeals] JSON parse fail, fallback to static:", e);
+    return getDealsFromStatic();
+  }
 
   // SSS81 (May 2026): detectar seed VPS y caer al worker JSONL.
   // El backend FastAPI a veces devuelve seed deals (id="seed-…",
   // sources=["seed"], tags=["seed"]) cuando el upload del worker
   // no llega o el deals.json del VPS está stale. En ese caso el repo
   // tiene 1259+ deals reales en /deals-latest.json — usamos ESE.
-  const arr = Array.isArray(json) ? json : (json && Array.isArray(json.deals) ? json.deals : null);
+  // SSS134: json es `unknown` desde el try-parse, cast a any para el path-check
+  // siguiente (resto de la función ya trataba json como Deal[] | DealsResponse).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const jsonAny = json as any;
+  const arr: Deal[] | null = Array.isArray(jsonAny)
+    ? (jsonAny as Deal[])
+    : (jsonAny && Array.isArray(jsonAny.deals) ? (jsonAny.deals as Deal[]) : null);
   if (arr && arr.length > 0) {
     const sample = arr.slice(0, 5);
     const allSeed = sample.every((d: Deal) =>
@@ -124,7 +146,7 @@ export async function getDeals(params?: {
   // lo envolvemos para mantener el contrato del cliente.
   // Bug fase-ee: sin este wrap, `data.stats.total` lanzaba en el server
   // component de la home → error.tsx mostraba "Algo salió mal en el radar".
-  if (Array.isArray(json)) {
+  if (Array.isArray(jsonAny)) {
     // Reescribir booking_url genérico (Google Flights) → URL directa
     // de la aerolínea (Ryanair / easyJet / Wizz) o Kayak/Travelpayouts.
     // Implementado fase EE6/B1 — usuarios prefieren ir directo a la web
@@ -133,7 +155,7 @@ export async function getDeals(params?: {
     // C1: si el seed VPS devuelve solo un mes (síntoma seed legacy),
     // diversifyDeals reemplaza por catálogo TS con Jul-2026..Jun-2027.
     // No-op transparente cuando el motor devuelve datos diversos.
-    const rawDeals = json as Deal[];
+    const rawDeals = jsonAny as Deal[];
     // BUG fix fase-hh: pasar params al diversifier para que filtre el catálogo
     // fallback. Sin esto /deals?classification=CRÍTICO devolvía el catálogo
     // entero ignorando el filtro del usuario.
@@ -176,7 +198,7 @@ export async function getDeals(params?: {
   }
 
   // Backend devolvió forma DealsResponse: enhancear cada deal igualmente
-  const wrapped = json as DealsResponse;
+  const wrapped = jsonAny as DealsResponse;
   if (wrapped?.deals && Array.isArray(wrapped.deals)) {
     wrapped.deals = wrapped.deals.map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
   }

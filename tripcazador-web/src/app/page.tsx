@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getDeals, getAttractiveDeals } from "@/lib/api";
+import { getDeals, getAttractiveDeals, type Deal } from "@/lib/api";
 import { DealCard } from "@/components/DealCard";
 // fase vv VV13: SearchBar legacy retirado del home (SkyHero ya cubre todo)
 import { DestinationCard } from "@/components/DestinationCard";
@@ -29,8 +29,28 @@ async function HeroStats() {
   // Sin limit para que stats refleje el total real, no el del query paginado.
   // Bug fase-ee: con limit:1, getDeals (tras wrap) computaba stats sobre 1 deal
   // y la home mostraba "1 Deals activos / 89€" en vez de los totales reales.
-  const data = await getDeals();
-  const stats = data.stats;
+  // SSS134: defensive try/catch — si la API externa falla, mostrar stats
+  // genéricas en lugar de crashear el Server Component (que disparaba el
+  // error.tsx "Algo salió mal en el radar" en home).
+  let stats = {
+    total: 0,
+    price_min: 0,
+    verified_count: 0,
+    by_region: {} as Record<string, number>,
+  };
+  try {
+    const data = await getDeals();
+    if (data?.stats) {
+      stats = {
+        total: data.stats.total ?? 0,
+        price_min: data.stats.price_min ?? 0,
+        verified_count: data.stats.verified_count ?? 0,
+        by_region: data.stats.by_region ?? {},
+      };
+    }
+  } catch (e) {
+    console.warn("[HomePage HeroStats] getDeals fail:", e);
+  }
   // G3 fase jj: stats inteligentes — verified_count cuando >0, sino destinos
   const regionCount = Object.keys(stats.by_region || {}).length;
   return (
@@ -76,7 +96,17 @@ async function TopDeals() {
   // Fix: TODO el pool de la home pasa por getAttractiveDeals (hard-reject
   // business + filter precio ≤ MAX_ATTRACTIVE_PRICE). Business sigue
   // apareciendo en /deals?cabin=business para usuarios premium.
-  const featured = await getAttractiveDeals(12);
+  //
+  // SSS134: defensive try/catch — getAttractiveDeals puede lanzar si el
+  // fetch a /deals-latest.json o VPS API timeout/falla. Antes crasheaba
+  // el Server Component → "Algo salió mal en el radar" en home prod.
+  let featured: Deal[] = [];
+  try {
+    featured = await getAttractiveDeals(12);
+  } catch (e) {
+    console.warn("[HomePage TopDeals] getAttractiveDeals fail:", e);
+    featured = [];
+  }
   const featuredHero = featured.slice(0, 3);
   const featuredIds = new Set(featuredHero.map((d) => d.id));
   const deals = [
