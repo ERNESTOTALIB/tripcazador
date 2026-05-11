@@ -1,8 +1,3 @@
-{"ts":"2026-05-07T12:06:12.826Z","type":"page_view","visitor":"265996b2f77a2cc6","meta":{"path":"/"}}
-{"ts":"2026-05-07T12:06:22.660Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"ryanair_stn_gdn_20260825_economy","destination":"GDN","origin":"STN","price":16.99,"classification":"CRÍTICO"}}
-{"ts":"2026-05-07T12:06:24.384Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"ryanair_stn_cag_20260623_economy","destination":"CAG","origin":"STN","price":19.99,"classification":"CRÍTICO"}}
-{"ts":"2026-05-07T12:06:25.649Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"ryanair_mad_vil_20260622_economy","destination":"VIL","origin":"MAD","price":14.99,"classification":"ANOMALÍA"}}
-{"ts":"2026-05-07T12:07:03.841Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"seed-00bb871c54","destination":"SYD","origin":"MAD","price":2295,"classification":"CRÍTICO"}}
 {"ts":"2026-05-07T12:07:06.111Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"seed-00cfd2138a","destination":"IST","origin":"MAD","price":1195,"classification":"CRÍTICO"}}
 {"ts":"2026-05-07T12:07:06.374Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"seed-00bef3e637","destination":"SYD","origin":"MAD","price":2495,"classification":"CRÍTICO"}}
 {"ts":"2026-05-07T12:07:06.702Z","type":"result_viewed","visitor":"265996b2f77a2cc6","meta":{"deal_id":"seed-00e0cf188c","destination":"FCO","origin":"BCN","price":29,"classification":"OFERTA"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-11T12:56:09.791Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T12:56:10.015Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T12:56:10.314Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
+{"ts":"2026-05-11T12:56:10.691Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
+{"ts":"2026-05-11T12:56:11.202Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
+{"ts":"2026-05-11T12:56:11.396Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
+{"ts":"2026-05-11T12:56:11.750Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
+{"ts":"2026-05-11T12:56:11.973Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
