@@ -1,8 +1,3 @@
-{"ts":"2026-05-09T20:36:40.614Z","type":"page_view","visitor":"a7c17aa6ca85f01b","meta":{"path":"/"}}
-{"ts":"2026-05-09T20:36:42.233Z","type":"landing_arrived","visitor":"a7c17aa6ca85f01b","meta":{"path":"/"}}
-{"ts":"2026-05-09T20:36:42.501Z","type":"page_view","visitor":"a7c17aa6ca85f01b","meta":{"path":"/"}}
-{"ts":"2026-05-09T20:36:43.691Z","type":"page_view","visitor":"a7c17aa6ca85f01b","meta":{"path":"/"}}
-{"ts":"2026-05-09T20:36:44.734Z","type":"page_view","visitor":"13a7a0ceb47049bc","meta":{"path":"/destinos/tailandia"}}
 {"ts":"2026-05-09T20:36:46.277Z","type":"landing_arrived","visitor":"c2094debb96550e7","meta":{"path":"/"}}
 {"ts":"2026-05-09T20:36:48.163Z","type":"page_view","visitor":"c2094debb96550e7","meta":{"path":"/"}}
 {"ts":"2026-05-09T20:36:48.270Z","type":"landing_arrived","visitor":"c2094debb96550e7","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-11T13:01:35.448Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:01:35.532Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:01:35.634Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:01:36.738Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:01:37.093Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:01:37.132Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:01:37.289Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:01:37.727Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
