@@ -268,5 +268,14 @@
     "city_from": "Madrid",
     "city_to": "Brindisi",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1778522332.983296,
+    "deal_id": "ryanair_ams_dub_20260630_economy",
+    "origin": "AMS",
+    "destination": "DUB",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Dublin",
+    "price_eur": 34.99
   }
 ]
