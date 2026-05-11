@@ -913,3 +913,8 @@
 {"ts":"2026-05-11T09:37:53.701Z","type":"page_view","visitor":"4f803ef74a8fd906","meta":{"path":"/"}}
 {"ts":"2026-05-11T09:37:54.514Z","type":"page_view","visitor":"4f803ef74a8fd906","meta":{"path":"/"}}
 {"ts":"2026-05-11T09:37:56.402Z","type":"landing_arrived","visitor":"4f803ef74a8fd906","meta":{"path":"/"}}
+{"ts":"2026-05-11T09:48:58.482Z","type":"scroll_75","visitor":"579b55d5264d4a88","meta":{"path":"/deals"}}
+{"ts":"2026-05-11T09:49:35.437Z","type":"page_view","visitor":"579b55d5264d4a88","meta":{"path":"/deals"}}
+{"ts":"2026-05-11T09:50:17.985Z","type":"page_view","visitor":"579b55d5264d4a88","meta":{"path":"/deals"}}
+{"ts":"2026-05-11T09:50:44.111Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_lis_vlc_20260710_economy","destination":"VLC","origin":"LIS","price":26.49,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-11T09:50:50.509Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_stn_ace_20260708_economy","destination":"ACE","origin":"STN","price":29.99,"classification":"ANOMALÍA"}}
