@@ -84,6 +84,7 @@ class TestImageProxy:
 # ════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skip(reason="SSS147: sw.js reduced to NO-OP in SSS136/SSS143 — these tests target deleted complex SW (versioned caches, networkFirstWithTimeout, etc).")
 class TestServiceWorker:
     SW = PUBLIC / "sw.js"
 
@@ -92,7 +93,6 @@ class TestServiceWorker:
 
     def test_versioned_caches(self):
         src = _read(self.SW)
-        # VERSION + 3 caches separadas
         assert "const VERSION" in src
         assert "SHELL_CACHE" in src
         assert "RUNTIME_CACHE" in src
@@ -105,7 +105,6 @@ class TestServiceWorker:
             assert url in src
 
     def test_excludes_admin_and_alerts(self):
-        """Endpoints admin / price-alerts NUNCA se cachean."""
         src = _read(self.SW)
         assert "/api/admin" in src
         assert "/api/price-alerts" in src
@@ -122,7 +121,6 @@ class TestServiceWorker:
         assert "trimCache" in src
 
     def test_skip_waiting_message(self):
-        """App puede activar nueva versión sin reload manual."""
         src = _read(self.SW)
         assert "SKIP_WAITING" in src
 
@@ -133,12 +131,11 @@ class TestPWAInstallBanner:
     def test_component_exists(self):
         assert self.P.exists()
 
+    @pytest.mark.skip(reason="SSS147: SW reduced to NO-OP — PWAInstallBanner no longer registers /sw.js.")
     def test_registers_service_worker(self):
         src = _read(self.P)
-        # Permitimos line-break entre `serviceWorker` y `.register(...)`
         assert "navigator.serviceWorker" in src
         assert '.register("/sw.js")' in src
-        # Sólo en producción para no poluir dev tools
         assert 'process.env.NODE_ENV === "production"' in src
 
     def test_listens_beforeinstallprompt(self):

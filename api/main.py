@@ -656,9 +656,14 @@ async def get_deals(
     classification: Optional[str] = Query(None, description="Filtrar por clasificación: CRÍTICO, ERROR, ANOMALÍA, OFERTA"),
     region: Optional[str] = Query(None, description="Filtrar por región: Europa, Asia, América Norte, etc."),
     cabin: Optional[str] = Query(None, description="Filtrar por cabina: economy, business, premium_economy, first"),
-    max_price: Optional[float] = Query(None, description="Precio máximo en EUR"),
+    max_price: Optional[float] = Query(None, description="Precio máximo en EUR (0 = sin filtro)"),
     min_score: Optional[float] = Query(None, description="Score mínimo (0-100)"),
     verified_only: Optional[bool] = Query(False, description="Solo deals verificados por 2+ fuentes"),
+    # SSS146 FIX bug 3: filtros origin/destination ausentes — frontend
+    # llama con ?origin=MAD&destination=NYC y no se filtra, devolviendo
+    # todo el catálogo. Ahora se respeta. Match exacto IATA (3 letras).
+    origin: Optional[str] = Query(None, description="Filtrar por IATA de origen (ej. MAD, BCN)", min_length=3, max_length=3),
+    destination: Optional[str] = Query(None, description="Filtrar por IATA de destino (ej. NYC, JFK)", min_length=3, max_length=3),
     limit: int = Query(50, ge=1, le=500, description="Número máximo de resultados"),
     offset: int = Query(0, ge=0, description="Offset para paginación"),
 ):
@@ -672,6 +677,8 @@ async def get_deals(
 
     # Filtros
     now = datetime.now().isoformat()
+    origin_upper = origin.upper() if origin else None
+    destination_upper = destination.upper() if destination else None
     filtered = []
     for d in deals:
         # Expiración
@@ -683,11 +690,19 @@ async def get_deals(
             continue
         if cabin and d.get("cabin") != cabin:
             continue
-        if max_price is not None and d.get("price_eur", 9999) > max_price:
+        # SSS146 FIX bug 4: max_price=0 antes filtraba todo (price > 0
+        # devolvía 0 deals). Ahora 0 trata como "sin filtro" — consistente
+        # con la convención UI donde 0/empty significa wildcard.
+        if max_price is not None and max_price > 0 and d.get("price_eur", 9999) > max_price:
             continue
         if min_score is not None and d.get("score", 0) < min_score:
             continue
         if verified_only and not d.get("verified"):
+            continue
+        # SSS146 bug 3 fix: filtros origin/destination
+        if origin_upper and d.get("origin", "").upper() != origin_upper:
+            continue
+        if destination_upper and d.get("destination", "").upper() != destination_upper:
             continue
         filtered.append(d)
 

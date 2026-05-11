@@ -1,10 +1,9 @@
 """Tests para POST /api/admin/deals — upload del deals.json desde GitHub Actions worker.
 
-El endpoint tiene cuatro modos:
-  - ADMIN_TOKEN vacío       → 503 (no configurado)
-  - Token inválido          → 401
-  - Payload inválido        → 400 / 422
-  - Token válido + JSON ok  → 200 + escribe deals.json + invalida caché
+SSS147 (May 2026): The /api/admin/upload-deals endpoint was removed from
+the FastAPI backend — the worker now commits deals-latest.json directly
+to GitHub and the frontend fetches from raw.githubusercontent.com.
+Entire module skipped.
 """
 from __future__ import annotations
 
@@ -14,6 +13,10 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+
+pytestmark = pytest.mark.skip(
+    reason="SSS147: /api/admin/upload-deals endpoint removed — worker now commits deals-latest.json to GitHub directly"
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "api"))

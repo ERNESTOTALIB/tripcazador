@@ -93,14 +93,16 @@ class TestDeals:
         for d in r.json():
             assert d["classification"] == "CRÍTICO"
 
-    def test_deals_max_price_zero_returns_empty(self, api_client):
-        # max_price=0: implementación actual lo trata como 0€, devuelve [].
-        # AUDIT FINDING: si max_price=0 es bypass intent (ningún filtro),
-        # el código actual NO lo soporta. Documenta comportamiento real.
+    def test_deals_max_price_zero_is_bypass(self, api_client):
+        # SSS147 FIX: max_price=0 trata como "ningún filtro" (bypass).
+        # Antes el código aplicaba `price <= 0` y devolvía [].
+        # Ahora `max_price > 0` para activar el filtro — 0 = no aplicar.
         r = api_client.get("/api/deals?max_price=0")
         assert r.status_code == 200
-        # Con deals de 15€-250€, max_price=0 → []
-        assert r.json() == []
+        # Con deals reales en el seed (15€-250€), max_price=0 → devuelve la lista completa.
+        deals = r.json()
+        assert isinstance(deals, list)
+        assert len(deals) > 0, "max_price=0 debería actuar como bypass y devolver deals"
 
     def test_deals_limit_validation(self, api_client):
         # limit fuera de rango → 422

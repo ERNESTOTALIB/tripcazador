@@ -21,6 +21,10 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+pytestmark = pytest.mark.skip(
+    reason="SSS147: API seed fallback / serving_seed flag removed — frontend now reads deals-latest.json from GitHub raw URL on startup"
+)
+
 
 @pytest.fixture
 def api_client_no_deals(tmp_path: Path, monkeypatch):

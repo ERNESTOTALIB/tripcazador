@@ -714,8 +714,13 @@ def analyze_all(
             stops = 0
         if stops >= 2 and config.is_multi_stop_anomaly(
             price=f.get("price_eur") or 0,
-            cabin=f.get("cabin_int") or config.CABIN_ECONOMY,
-            destination=dest or "",
+            # SSS146 FIX bug 1: era 'cabin_int' (campo inexistente) → todo
+            # el codebase usa 'cabin_code'. Antes siempre fallback a ECONOMY.
+            cabin=f.get("cabin_code") or config.CABIN_ECONOMY,
+            # SSS146 FIX bug 2: era `dest or ""` referenciando variable
+            # stale del pre-paso loop (línea 672) — closure bug. Usar el
+            # destination del flight actual.
+            destination=f.get("destination", "") or "",
             stops=stops,
         ):
             f["t0b_triggered"] = True

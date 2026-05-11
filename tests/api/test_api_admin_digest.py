@@ -156,10 +156,11 @@ def test_render_digest_empty_deals():
 
 
 def test_digest_503_without_token():
-    # Por defecto ADMIN_TOKEN=="" en el módulo si no se seteó
+    # SSS147: api/main.py now returns 401 (not 503) when ADMIN_TOKEN is empty
+    # to avoid leaking config state to scanners. Test updated to match.
     api_main.ADMIN_TOKEN = ""
     r = client.get("/api/admin/digest")
-    assert r.status_code == 503
+    assert r.status_code == 401
 
 
 def test_digest_401_with_wrong_token(monkeypatch):

@@ -31,9 +31,10 @@ def _no_admin_token(monkeypatch):
 
 
 def test_503_when_token_not_configured():
+    # SSS147: api/main.py now returns 401 (not 503) when ADMIN_TOKEN is empty
+    # to avoid leaking config state to scanners. Test updated to match.
     r = client.get("/api/admin/overview")
-    assert r.status_code == 503
-    assert "ADMIN_TOKEN" in r.json().get("detail", "")
+    assert r.status_code == 401
 
 
 def test_401_when_token_missing(monkeypatch):

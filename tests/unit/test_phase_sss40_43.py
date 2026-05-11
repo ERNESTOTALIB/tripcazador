@@ -10,11 +10,15 @@ import re
 from pathlib import Path
 import sys
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 WEB = ROOT / "tripcazador-web"
 HUNTER = ROOT / "flight_hunter_v4"
 
-sys.path.insert(0, str(HUNTER))
+# Note: HUNTER is already on sys.path via conftest.py; do NOT re-insert at
+# index 0 or it shadows api/main.py for any subsequent tests that
+# `import main` expecting the FastAPI app (SSS147 contamination fix).
 
 
 def _read(p: Path) -> str:
@@ -64,6 +68,7 @@ class TestOGSocialEndpoints:
         assert "#0a1530" in c
         assert "#fbbf24" in c
 
+    @pytest.mark.skip(reason="SSS147: /api/og/social/post rewritten in SSS73/SSS74 (Barcelona magazine layout) — classification badges removed from design.")
     def test_post_has_classification_badges(self):
         c = _read(self.POST)
         for cls in ("CRÍTICO", "ERROR", "ANOMALÍA", "OFERTA"):
@@ -176,31 +181,36 @@ class TestPWAPolish:
         assert 'addEventListener("online"' in c
         assert "location.reload" in c
 
+    @pytest.mark.skip(reason="SSS147: sw.js reduced to NO-OP in SSS136 — no offline fallback in current SW.")
     def test_sw_uses_offline_html_fallback(self):
         c = _read(self.SW)
         assert "/offline.html" in c
 
+    @pytest.mark.skip(reason="SSS147: sw.js reduced to NO-OP in SSS136 — no action buttons in current SW.")
     def test_sw_push_has_action_buttons(self):
         c = _read(self.SW)
         assert "actions:" in c
         assert '"snooze"' in c or "'snooze'" in c
         assert '"view"' in c or "'view'" in c
 
+    @pytest.mark.skip(reason="SSS147: sw.js reduced to NO-OP in SSS136 — push payload simplified.")
     def test_sw_push_supports_image_payload(self):
         c = _read(self.SW)
         assert "image: data.image" in c
 
+    @pytest.mark.skip(reason="SSS147: sw.js reduced to NO-OP in SSS136 — requireInteraction removed.")
     def test_sw_supports_require_interaction(self):
         c = _read(self.SW)
         assert "requireInteraction" in c
 
+    @pytest.mark.skip(reason="SSS147: sw.js reduced to NO-OP in SSS136 — notificationclose handler removed.")
     def test_sw_handles_notification_close(self):
         c = _read(self.SW)
         assert 'addEventListener("notificationclose"' in c
 
+    @pytest.mark.skip(reason="SSS147: sw.js reduced to NO-OP in SSS136 — snooze action removed.")
     def test_sw_snooze_reschedules(self):
         c = _read(self.SW)
-        # snooze action debe tener setTimeout para 1h
         assert 'action === "snooze"' in c
         assert "3600 * 1000" in c
 

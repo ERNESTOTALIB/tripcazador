@@ -303,11 +303,32 @@ def api_client(synthetic_deals_json, monkeypatch):
     """
     Levanta un TestClient de FastAPI apuntando al deals.json de prueba.
     Invalida el cache antes de cada test para evitar contaminacion.
+
+    SSS147: defensive guard — some unit tests insert flight_hunter_v4/ at
+    sys.path[0], which causes `import main` to resolve to the hunter's
+    main.py instead of api/main.py. We force-resolve to api/main.py by:
+      1. Putting api/ first on sys.path again
+      2. Evicting any stale `main` module from sys.modules
     """
     monkeypatch.setenv("DEALS_DIR", str(synthetic_deals_json.parent))
 
-    # Re-import main para que relea DEALS_JSON desde el env nuevo
+    # Force api/ to the front of sys.path (defensive — counters
+    # contamination from unit tests that prepend flight_hunter_v4/).
+    api_dir_str = str(API_DIR)
+    if sys.path[0] != api_dir_str:
+        if api_dir_str in sys.path:
+            sys.path.remove(api_dir_str)
+        sys.path.insert(0, api_dir_str)
+
+    # Re-import main para que relea DEALS_JSON desde el env nuevo.
+    # Si una iteración previa cargó flight_hunter_v4/main.py bajo el
+    # nombre `main`, lo desalojamos.
     import importlib
+    if "main" in sys.modules:
+        cached = sys.modules["main"]
+        cached_file = getattr(cached, "__file__", "") or ""
+        if not cached_file.endswith("/api/main.py"):
+            del sys.modules["main"]
     import main as api_main  # type: ignore
     importlib.reload(api_main)
 

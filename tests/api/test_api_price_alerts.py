@@ -2,17 +2,10 @@
 API tests: POST /api/price-alerts + GET /api/price-alerts/cancel
 =================================================================
 
-Cubrimos:
- - Creación correcta → 200 + id + cancel_token
- - Email inválido → 422 (Pydantic) o 400
- - IATA inválido (longitud o no-A-Z) → 422 o 400
- - target_price inválido (<= 0, > 100000) → 422
- - Solo email sin ruta ni deal_id → 400 (need_route_or_deal)
- - Dedupe: dos POST idénticos → misma id, status "already_exists"
- - Cancel con token válido → 200
- - Cancel con token inválido → 403
- - Cancel de alerta ya cancelada → 200 (idempotente)
- - Persistencia: PRICE_ALERTS_PATH respeta env var
+SSS147 (May 2026): The /api/price-alerts endpoints were removed from the
+FastAPI backend (api/main.py). Price alerts now live in the Next.js API
+route under tripcazador-web/src/app/api/price-alerts/route.ts. These
+backend tests are obsolete — entire module skipped.
 """
 from __future__ import annotations
 
@@ -20,6 +13,10 @@ import json
 from pathlib import Path
 
 import pytest
+
+pytestmark = pytest.mark.skip(
+    reason="SSS147: /api/price-alerts backend endpoints removed — feature moved to Next.js route"
+)
 
 
 @pytest.fixture
