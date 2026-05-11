@@ -1,8 +1,3 @@
-{"ts":"2026-05-10T03:11:48.061Z","type":"scroll_75","visitor":"3ee7694186b4c7a2","meta":{"path":"/"}}
-{"ts":"2026-05-10T03:12:12.620Z","type":"landing_arrived","visitor":"3ee7694186b4c7a2","meta":{"path":"/destinos/nueva-york"}}
-{"ts":"2026-05-10T03:13:18.435Z","type":"result_viewed","visitor":"3ee7694186b4c7a2","meta":{"deal_id":"seed-0012f2bae8","destination":"JFK","origin":"DUB","price":199,"classification":"ANOMALÍA"}}
-{"ts":"2026-05-10T03:13:24.104Z","type":"result_viewed","visitor":"3ee7694186b4c7a2","meta":{"deal_id":"seed-0046c9f998","destination":"JFK","origin":"LHR","price":269,"classification":"OFERTA"}}
-{"ts":"2026-05-10T03:13:26.566Z","type":"result_viewed","visitor":"3ee7694186b4c7a2","meta":{"deal_id":"seed-00bc632c1c","destination":"JFK","origin":"MUC","price":339,"classification":"OFERTA"}}
 {"ts":"2026-05-10T08:07:14.065Z","type":"page_view","visitor":"7f1c76eb6aacad62","meta":{"path":"/"}}
 {"ts":"2026-05-10T08:07:14.086Z","type":"landing_arrived","visitor":"7f1c76eb6aacad62","meta":{"path":"/"}}
 {"ts":"2026-05-10T08:07:14.102Z","type":"landing_arrived","visitor":"7f1c76eb6aacad62","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-11T13:01:58.906Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:01:58.984Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:01:59.050Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:02:04.069Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:02:04.260Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
+{"ts":"2026-05-11T13:02:04.511Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
+{"ts":"2026-05-11T13:02:04.678Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:02:04.746Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
