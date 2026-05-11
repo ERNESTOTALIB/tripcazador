@@ -671,6 +671,22 @@
       "destination": "FUE",
       "price_eur": 35.56,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "979d6dc96fb0",
+      "ts": "2026-05-11T10:56:15.314810+00:00",
+      "origin": "BUD",
+      "destination": "RMI",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f6f5ab628fe4",
+      "ts": "2026-05-11T10:56:15.314810+00:00",
+      "origin": "STN",
+      "destination": "PMF",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
