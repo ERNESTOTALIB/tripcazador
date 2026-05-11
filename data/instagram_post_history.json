@@ -250,5 +250,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Dublin",
     "price_eur": 34.99
+  },
+  {
+    "timestamp": 1778499013.9587944,
+    "deal_id": "ryanair_stn_tgd_20260826_economy",
+    "origin": "STN",
+    "destination": "TGD",
+    "city_from": "Londres Stansted",
+    "city_to": "Podgorica",
+    "price_eur": 27.34
   }
 ]
