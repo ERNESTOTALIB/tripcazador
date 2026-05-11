@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T10:26:52.916Z","type":"landing_arrived","visitor":"54bfade2bbfdd410","meta":{"path":"/"}}
-{"ts":"2026-05-11T10:26:55.053Z","type":"page_view","visitor":"54bfade2bbfdd410","meta":{"path":"/"}}
-{"ts":"2026-05-11T10:26:57.990Z","type":"landing_arrived","visitor":"d10f06db497408aa","meta":{"path":"/"}}
-{"ts":"2026-05-11T10:26:58.616Z","type":"page_view","visitor":"d10f06db497408aa","meta":{"path":"/"}}
-{"ts":"2026-05-11T10:27:00.605Z","type":"page_view","visitor":"d10f06db497408aa","meta":{"path":"/"}}
 {"ts":"2026-05-11T10:26:58.629Z","type":"landing_arrived","visitor":"d10f06db497408aa","meta":{"path":"/"}}
 {"ts":"2026-05-11T10:27:00.576Z","type":"landing_arrived","visitor":"d10f06db497408aa","meta":{"path":"/"}}
 {"ts":"2026-05-11T10:27:02.262Z","type":"page_view","visitor":"d10f06db497408aa","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-11T13:04:47.655Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:04:47.762Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:04:47.908Z","type":"page_view","visitor":"77374875e947cc34","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:04:48.450Z","type":"page_view","visitor":"77374875e947cc34","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:04:49.128Z","type":"page_view","visitor":"77374875e947cc34","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:04:49.168Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:04:49.210Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
+{"ts":"2026-05-11T13:04:49.986Z","type":"page_view","visitor":"77374875e947cc34","meta":{"path":"/"}}
