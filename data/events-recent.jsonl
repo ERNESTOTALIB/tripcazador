@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T09:50:51.042Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_waw_par_20260616_economy","destination":"PAR","origin":"WAW","price":61.64,"classification":"ANOMALÍA"}}
-{"ts":"2026-05-11T09:50:54.949Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_stn_gro_20260708_economy","destination":"GRO","origin":"STN","price":21.99,"classification":"ANOMALÍA"}}
-{"ts":"2026-05-11T09:50:56.113Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_stn_reu_20260609_economy","destination":"REU","origin":"STN","price":39.56,"classification":"ANOMALÍA"}}
-{"ts":"2026-05-11T09:50:57.174Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_mad_pmo_20260713_economy","destination":"PMO","origin":"MAD","price":47.91,"classification":"ANOMALÍA"}}
-{"ts":"2026-05-11T09:50:58.306Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_fra_ibz_20260624_economy","destination":"IBZ","origin":"FRA","price":55.2,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-11T09:50:58.403Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_lgw_dlm_20260613_economy","destination":"DLM","origin":"LGW","price":55.2,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-11T09:50:59.434Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"travelpayouts_prg_tia_20260617_economy","destination":"TIA","origin":"PRG","price":41.4,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-11T09:51:00.374Z","type":"result_viewed","visitor":"579b55d5264d4a88","meta":{"deal_id":"ryanair_stn_ibz_20260628_economy","destination":"IBZ","origin":"STN","price":27.99,"classification":"ANOMALÍA"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-11T13:04:25.237Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:04:25.335Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:04:25.917Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:04:25.989Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
+{"ts":"2026-05-11T13:04:26.182Z","type":"page_view","visitor":"77374875e947cc34","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:04:26.906Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:04:26.930Z","type":"page_view","visitor":"77374875e947cc34","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:04:27.150Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
