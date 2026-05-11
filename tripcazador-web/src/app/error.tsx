@@ -21,6 +21,43 @@ export default function GlobalError({
       ? (window as unknown as { Sentry?: { captureException?: (e: unknown) => void } }).Sentry
       : undefined);
     sentry?.captureException?.(error);
+
+    // SSS137 (11 may 2026) self-heal: si llegamos aquí con HTML cacheado de
+    // un SW viejo (SSS135 kill-switch buggy) o similar, intentamos UNA SOLA
+    // vez purgar SW + caches + reload para que el user reciba HTML fresco.
+    // sessionStorage flag previene loop: si tras reload sigue crasheando,
+    // mostramos el panel con botones manuales (Reintentar / Home / TG).
+    if (typeof window === "undefined") return;
+    try {
+      if (window.sessionStorage.getItem("tc_self_heal_attempted")) return;
+      window.sessionStorage.setItem("tc_self_heal_attempted", "1");
+    } catch {
+      return; // sin sessionStorage no podemos garantizar anti-loop → bail
+    }
+
+    (async () => {
+      try {
+        if ("serviceWorker" in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map((r) => r.unregister().catch(() => {})));
+        }
+      } catch {
+        /* silent */
+      }
+      try {
+        if (typeof caches !== "undefined") {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k).catch(() => false)));
+        }
+      } catch {
+        /* silent */
+      }
+      // Hard reload bypass-cache. Espera 100ms para que unregister/caches.delete
+      // tengan tiempo de propagarse antes de pedir HTML nuevo.
+      setTimeout(() => {
+        window.location.reload();
+      }, 150);
+    })();
   }, [error]);
 
   return (
