@@ -1,8 +1,3 @@
-{"ts":"2026-05-08T22:08:26.189Z","type":"page_view","visitor":"6f42d31c1cdf6a57","meta":{"path":"/"}}
-{"ts":"2026-05-08T22:08:27.216Z","type":"page_view","visitor":"6f42d31c1cdf6a57","meta":{"path":"/"}}
-{"ts":"2026-05-08T22:08:30.599Z","type":"page_view","visitor":"6f42d31c1cdf6a57","meta":{"path":"/"}}
-{"ts":"2026-05-08T22:08:31.850Z","type":"landing_arrived","visitor":"6f42d31c1cdf6a57","meta":{"path":"/"}}
-{"ts":"2026-05-08T22:08:34.067Z","type":"landing_arrived","visitor":"6f42d31c1cdf6a57","meta":{"path":"/"}}
 {"ts":"2026-05-08T22:20:44.928Z","type":"landing_arrived","visitor":"738e66fc46273a5b","meta":{"path":"/","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-08T22:20:44.957Z","type":"page_view","visitor":"738e66fc46273a5b","meta":{"path":"/"}}
 {"ts":"2026-05-08T22:21:10.890Z","type":"page_view","visitor":"738e66fc46273a5b","meta":{"path":"/regiones/caribe"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-11T13:00:10.877Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:00:11.097Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:00:12.368Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:00:13.390Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
+{"ts":"2026-05-11T13:00:13.560Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
+{"ts":"2026-05-11T13:00:13.740Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
+{"ts":"2026-05-11T13:00:14.031Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
+{"ts":"2026-05-11T13:00:14.065Z","type":"page_view","visitor":"7bab99bc44f50dd7","meta":{"path":"/"}}
