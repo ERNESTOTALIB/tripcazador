@@ -69,6 +69,44 @@ function buildCSP(nonce: string): string {
   return directives;
 }
 
+/**
+ * SSS139 (11 may 2026) — Auto-heal masivo para usuarios atascados.
+ *
+ * El SW v4-2026-05-04 cacheó HTML "Algo salió mal en el radar" en cientos
+ * de navegadores. /reset cura uno a uno, pero hay ~1000 visitantes activos
+ * que no van a saber visitar /reset. Solución: el middleware envía el header
+ * Clear-Site-Data en la PRIMERA respuesta a cualquier visitante que no
+ * tenga el cookie marcador `tc_heal_v1`. Dosis única, idempotente.
+ *
+ *   - "cache" + "storage" + "executionContexts": wipe SW + IDB + localStorage
+ *     + HTTP cache. NO incluimos "cookies" para que sobreviva el marcador.
+ *   - Cookie 1 año Max-Age: una vez curado, jamás se repite la limpieza.
+ *
+ * Sólo aplicar a navegaciones HTML (no a APIs, fetch, assets), detectadas
+ * por:
+ *   - Sec-Fetch-Dest: document (Chrome / FF / Edge / Safari 16+)
+ *   - O fallback Accept: text/html
+ *
+ * Trade-off: localStorage del usuario (favoritos, dismiss flags, etc.) se
+ * borra una sola vez. Aceptable comparado con que vean error fare en la home.
+ */
+const HEAL_COOKIE = "tc_heal_v1";
+const HEAL_COOKIE_VALUE = "1";
+
+function shouldHeal(req: NextRequest): boolean {
+  // Ya curado
+  if (req.cookies.get(HEAL_COOKIE)?.value === HEAL_COOKIE_VALUE) return false;
+  // Sólo navegaciones HTML (no fetch/XHR/image/etc.)
+  const dest = req.headers.get("sec-fetch-dest");
+  if (dest && dest !== "document") return false;
+  const accept = req.headers.get("accept") || "";
+  if (!accept.includes("text/html")) return false;
+  // No tocar /reset (ya lo hace por sí mismo) ni rutas con cache-buster fresh
+  const path = req.nextUrl.pathname;
+  if (path === "/reset" || path.startsWith("/api/")) return false;
+  return true;
+}
+
 export function middleware(req: NextRequest) {
   const nonce = generateNonce();
   const csp = buildCSP(nonce);
@@ -84,6 +122,29 @@ export function middleware(req: NextRequest) {
   res.headers.set("Content-Security-Policy", csp);
   // Exponer nonce al layout para `<Script nonce={nonce}>`
   res.headers.set("x-nonce", nonce);
+
+  // SSS139 auto-heal masivo
+  if (shouldHeal(req)) {
+    // Wipe browser state EXCEPT cookies (para que el marcador sobreviva).
+    // Tras esto, en milisegundos:
+    //   - Service Workers viejos: desinstalados
+    //   - Cache Storage: vaciado
+    //   - HTTP cache para este origen: vaciado
+    //   - IndexedDB + localStorage + sessionStorage: vaciados
+    //   - WebSQL: vaciado
+    res.headers.set(
+      "Clear-Site-Data",
+      '"cache", "storage", "executionContexts"',
+    );
+    res.cookies.set(HEAL_COOKIE, HEAL_COOKIE_VALUE, {
+      maxAge: 60 * 60 * 24 * 365, // 1 año
+      path: "/",
+      sameSite: "lax",
+      httpOnly: false, // permitir lectura desde JS si hace falta
+      secure: !isDev,
+    });
+  }
+
   return res;
 }
 
