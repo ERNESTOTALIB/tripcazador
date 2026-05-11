@@ -374,6 +374,11 @@ def _flight_to_unified(f: Dict) -> Dict:
         "image_url": f.get("image_url", ""),
         "booking_url": f.get("booking_url", ""),
         "verified": f.get("verified", False),
+        # SSS149: campo `engine` (singular) — antes solo había `sources` (plural)
+        # y los stats globales mostraban `by_engine: {'?': N}` porque ningún
+        # consumer (incluyendo el JSON stats summary) buscaba `sources`.
+        # Propagamos el source ya validado al campo canónico `engine`.
+        "engine": source,
         "sources": f.get("sources", [f.get("source", "unknown")]),
         "found_at": f.get("scraped_at") or f.get("found_at") or datetime.now().isoformat(),
         "expires_at": f.get("expires_at", ""),

@@ -90,6 +90,23 @@ jobs:
             echo "⏭️  Hotels skipped this run (hour=$HOUR, save SerpAPI free quota 250/mes)"
           fi
 
+      - name: "SSS149: Determine if business class run (2x/day at 00 & 12 UTC)"
+        id: business_flag
+        run: |
+          HOUR=$(date -u +%H)
+          # SSS149: el cron mode=all NO incluye Duffel business ni SerpAPI biz
+          # por defecto. Sin --include-business el dataset queda 100% economy
+          # — pero la web vende "Business class barata". Activamos business
+          # 2x/día (00 y 12 UTC) para no agotar SerpAPI free (250/mes) ni Duffel.
+          # Budget: 2 runs × 30 días = 60/mes → ~80 SerpAPI calls (queda margen).
+          if [ "$HOUR" = "00" ] || [ "$HOUR" = "12" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "include=1" >> $GITHUB_OUTPUT
+            echo "💺 Business search enabled this run (hour=$HOUR or manual)"
+          else
+            echo "include=0" >> $GITHUB_OUTPUT
+            echo "⏭️  Business skipped this run (hour=$HOUR, only 00/12 UTC)"
+          fi
+
       - name: "SSS97: Rotate origins preset por hora UTC"
         id: origins_rotation
         run: |
@@ -137,11 +154,18 @@ jobs:
           TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           cd flight_hunter_v4
+          # SSS149: --include-business activo 2x/día (gate en steps.business_flag).
+          # Permite que Duffel + SerpAPI biz alimenten cabin=business en deals.json.
+          INCLUDE_BIZ=""
+          if [ "${{ steps.business_flag.outputs.include }}" = "1" ]; then
+            INCLUDE_BIZ="--include-business"
+          fi
           python main.py \
             --mode "${{ github.event.inputs.mode || 'all' }}" \
             --origins "${{ steps.origins_rotation.outputs.preset }}" \
             --date-from "${{ steps.dates.outputs.from }}" \
             --date-to "${{ steps.dates.outputs.to }}" \
+            $INCLUDE_BIZ \
             --quiet || echo "::warning::Hunter terminó con código != 0"
           # main.py escribe deals.json en report_dir (= parent dir, raíz del repo)
           ls -la ../deals.json || true
