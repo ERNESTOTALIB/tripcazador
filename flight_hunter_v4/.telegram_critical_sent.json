@@ -799,6 +799,22 @@
       "destination": "VRN",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "12ccd222baad",
+      "ts": "2026-05-12T20:27:29.294985+00:00",
+      "origin": "PRG",
+      "destination": "ZAD",
+      "price_eur": 25.64,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "bbcdb08eed73",
+      "ts": "2026-05-12T20:27:29.294985+00:00",
+      "origin": "STN",
+      "destination": "PFO",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
