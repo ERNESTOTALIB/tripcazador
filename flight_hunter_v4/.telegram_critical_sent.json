@@ -783,6 +783,22 @@
       "destination": "PMF",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e4439865e519",
+      "ts": "2026-05-12T18:53:04.586086+00:00",
+      "origin": "STN",
+      "destination": "BIQ",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2260809aaaf3",
+      "ts": "2026-05-12T18:53:04.586086+00:00",
+      "origin": "STN",
+      "destination": "VRN",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
