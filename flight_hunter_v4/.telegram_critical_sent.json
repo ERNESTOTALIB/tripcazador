@@ -767,6 +767,22 @@
       "destination": "RMI",
       "price_eur": 32.44,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fc75ad326be3",
+      "ts": "2026-05-12T16:15:12.446225+00:00",
+      "origin": "STN",
+      "destination": "KSC",
+      "price_eur": 18.89,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "241c55050d95",
+      "ts": "2026-05-12T16:15:12.446225+00:00",
+      "origin": "STN",
+      "destination": "PMF",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
