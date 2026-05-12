@@ -815,6 +815,22 @@
       "destination": "PFO",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "01cfe914ffad",
+      "ts": "2026-05-12T22:07:39.069604+00:00",
+      "origin": "STN",
+      "destination": "PMF",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "350ed60f4b6d",
+      "ts": "2026-05-12T22:07:39.069604+00:00",
+      "origin": "DUB",
+      "destination": "RZE",
+      "price_eur": 27.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
