@@ -735,6 +735,22 @@
       "destination": "RMI",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6ac9f2b23a14",
+      "ts": "2026-05-12T10:27:00.103818+00:00",
+      "origin": "ATH",
+      "destination": "MLA",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "90c8a1c3d3d7",
+      "ts": "2026-05-12T10:27:00.103818+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 21.95,
+      "classification": "CRÍTICO"
     }
   ]
 }
