@@ -90,21 +90,31 @@ jobs:
             echo "⏭️  Hotels skipped this run (hour=$HOUR, save SerpAPI free quota 250/mes)"
           fi
 
-      - name: "SSS149: Determine if business class run (2x/day at 00 & 12 UTC)"
+      - name: "SSS149: Determine if business class run (2x/day, cron 00 + 12 UTC slots)"
         id: business_flag
         run: |
+          # SSS149 (v2): GitHub cron tiene delay variable (15min-2h en runners
+          # gratuitos). El check original `hour=00/12` raramente matcheaba —
+          # el cron 00:00 a menudo ejecutaba a las 01:29, no a las 00:XX.
+          # Solución: bucket por slot de 4h, business activo en 2 slots/día.
+          # Cron schedule: 00, 04, 08, 12, 16, 20 UTC (cada 4h).
+          #   Slot 00 → hour real 00-03 → BUSINESS
+          #   Slot 04 → hour real 04-07 → skip
+          #   Slot 08 → hour real 08-11 → skip
+          #   Slot 12 → hour real 12-15 → BUSINESS
+          #   Slot 16 → hour real 16-19 → skip
+          #   Slot 20 → hour real 20-23 → skip
+          # Budget: 2 runs × 30 días = 60/mes → cabe en SerpAPI free 250/mes.
           HOUR=$(date -u +%H)
-          # SSS149: el cron mode=all NO incluye Duffel business ni SerpAPI biz
-          # por defecto. Sin --include-business el dataset queda 100% economy
-          # — pero la web vende "Business class barata". Activamos business
-          # 2x/día (00 y 12 UTC) para no agotar SerpAPI free (250/mes) ni Duffel.
-          # Budget: 2 runs × 30 días = 60/mes → ~80 SerpAPI calls (queda margen).
-          if [ "$HOUR" = "00" ] || [ "$HOUR" = "12" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          HOUR_INT=$((10#$HOUR))  # force decimal (08, 09 fallarían como octal)
+          if { [ "$HOUR_INT" -ge 0 ] && [ "$HOUR_INT" -lt 4 ]; } || \
+             { [ "$HOUR_INT" -ge 12 ] && [ "$HOUR_INT" -lt 16 ]; } || \
+             [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "include=1" >> $GITHUB_OUTPUT
-            echo "💺 Business search enabled this run (hour=$HOUR or manual)"
+            echo "💺 Business search enabled this run (hour=$HOUR slot=00/12 or manual)"
           else
             echo "include=0" >> $GITHUB_OUTPUT
-            echo "⏭️  Business skipped this run (hour=$HOUR, only 00/12 UTC)"
+            echo "⏭️  Business skipped this run (hour=$HOUR, only slots 00-03 / 12-15 UTC)"
           fi
 
       - name: "SSS97: Rotate origins preset por hora UTC"
