@@ -322,5 +322,14 @@
     "city_from": "Lisboa",
     "city_to": "Malaga",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1778609044.5644424,
+    "deal_id": "ryanair_mad_pmi_20260725_economy",
+    "origin": "MAD",
+    "destination": "PMI",
+    "city_from": "Madrid",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 21.99
   }
 ]
