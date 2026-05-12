@@ -295,5 +295,14 @@
     "city_from": "Barcelona",
     "city_to": "Tangier",
     "price_eur": 20.71
+  },
+  {
+    "timestamp": 1778568033.652911,
+    "deal_id": "ryanair_mad_pmi_20260728_economy",
+    "origin": "MAD",
+    "destination": "PMI",
+    "city_from": "Madrid",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 21.99
   }
 ]
