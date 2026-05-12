@@ -151,6 +151,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/agencia-de-viajes`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/comparar-vuelos`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${BASE_URL}/como-viajar`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS152: landing /seguro-viaje (afiliado Heymondo, captura "seguro viaje 2026" SEO)
+    { url: `${BASE_URL}/seguro-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
   ];
 
   const destinoPages: MetadataRoute.Sitemap = DESTINOS.map((slug) => ({
