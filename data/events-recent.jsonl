@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:08:12.895Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:08:13.233Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:08:14.242Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:08:14.638Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:08:15.003Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:08:18.509Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:08:19.693Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:08:19.715Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-12T09:59:47.565Z","type":"result_viewed","visitor":"11b77b7d70937a8a","meta":{"deal_id":"ryanair_mad_cph_20260908_economy","destination":"CPH","origin":"MAD","price":52.99,"classification":"CRÍTICO"}}
 {"ts":"2026-05-12T10:08:55.210Z","type":"page_view","visitor":"6222082bf10b49f5","meta":{"path":"/"}}
 {"ts":"2026-05-12T10:08:55.310Z","type":"page_view","visitor":"6222082bf10b49f5","meta":{"path":"/deals"}}
+{"ts":"2026-05-12T16:00:08.603Z","type":"page_view","visitor":"38667fbb87487fae","meta":{"path":"/"}}
+{"ts":"2026-05-12T16:00:08.720Z","type":"landing_arrived","visitor":"38667fbb87487fae","meta":{"path":"/"}}
+{"ts":"2026-05-12T16:00:08.741Z","type":"page_view","visitor":"38667fbb87487fae","meta":{"path":"/"}}
+{"ts":"2026-05-12T16:00:15.383Z","type":"landing_arrived","visitor":"38667fbb87487fae","meta":{"path":"/"}}
+{"ts":"2026-05-12T16:00:16.448Z","type":"page_view","visitor":"38667fbb87487fae","meta":{"path":"/"}}
