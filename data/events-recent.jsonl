@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:08:44.154Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:08:44.198Z","type":"page_view","visitor":"ec1ad0943eaa2d4c","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:08:44.230Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:08:44.473Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:08:44.573Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:08:46.020Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:08:46.137Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:08:46.159Z","type":"page_view","visitor":"ec1ad0943eaa2d4c","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-13T10:10:33.851Z","type":"landing_arrived","visitor":"3aa0d8a17b09ad9e","meta":{"path":"/"}}
 {"ts":"2026-05-13T10:10:36.657Z","type":"page_view","visitor":"3aa0d8a17b09ad9e","meta":{"path":"/"}}
 {"ts":"2026-05-13T10:10:38.695Z","type":"page_view","visitor":"3aa0d8a17b09ad9e","meta":{"path":"/"}}
+{"ts":"2026-05-13T14:20:31.688Z","type":"landing_arrived","visitor":"f263eed7967e5d35","meta":{"path":"/","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-13T14:20:31.714Z","type":"page_view","visitor":"f263eed7967e5d35","meta":{"path":"/"}}
+{"ts":"2026-05-13T14:35:14.698Z","type":"page_view","visitor":"0591ce5944ef72a9","meta":{"path":"/"}}
+{"ts":"2026-05-13T14:35:14.727Z","type":"landing_arrived","visitor":"0591ce5944ef72a9","meta":{"path":"/"}}
+{"ts":"2026-05-13T14:35:14.748Z","type":"page_view","visitor":"0591ce5944ef72a9","meta":{"path":"/"}}
