@@ -349,5 +349,14 @@
     "city_from": "Lisboa",
     "city_to": "Malaga",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1778655129.8153548,
+    "deal_id": "ryanair_mad_prg_20260906_economy",
+    "origin": "MAD",
+    "destination": "PRG",
+    "city_from": "Madrid",
+    "city_to": "Prague",
+    "price_eur": 45.99
   }
 ]
