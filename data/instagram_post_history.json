@@ -340,5 +340,14 @@
     "city_from": "Barcelona",
     "city_to": "Tangier",
     "price_eur": 20.71
+  },
+  {
+    "timestamp": 1778644298.4942918,
+    "deal_id": "ryanair_lis_agp_20260714_economy",
+    "origin": "LIS",
+    "destination": "AGP",
+    "city_from": "Lisboa",
+    "city_to": "Malaga",
+    "price_eur": 19.99
   }
 ]
