@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:09:46.097Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:09:46.256Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:09:47.072Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:09:47.154Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
-{"ts":"2026-05-11T13:09:47.406Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/panel/login"}}
 {"ts":"2026-05-11T13:09:47.457Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:09:47.475Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:09:47.729Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-13T22:35:49.502Z","type":"landing_arrived","visitor":"b3555471095249ca","meta":{"path":"/"}}
 {"ts":"2026-05-13T22:35:49.521Z","type":"page_view","visitor":"b3555471095249ca","meta":{"path":"/"}}
 {"ts":"2026-05-13T22:35:54.761Z","type":"page_view","visitor":"b3555471095249ca","meta":{"path":"/"}}
+{"ts":"2026-05-13T22:36:12.745Z","type":"landing_arrived","visitor":"1b412587815a49c1","meta":{"path":"/"}}
+{"ts":"2026-05-13T22:36:14.579Z","type":"landing_arrived","visitor":"1b412587815a49c1","meta":{"path":"/"}}
+{"ts":"2026-05-13T22:36:14.662Z","type":"page_view","visitor":"1b412587815a49c1","meta":{"path":"/"}}
+{"ts":"2026-05-13T22:36:17.179Z","type":"landing_arrived","visitor":"1b412587815a49c1","meta":{"path":"/"}}
+{"ts":"2026-05-13T22:36:17.635Z","type":"landing_arrived","visitor":"1b412587815a49c1","meta":{"path":"/"}}
