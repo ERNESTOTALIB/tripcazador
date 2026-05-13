@@ -376,5 +376,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Malaga",
     "price_eur": 38.91
+  },
+  {
+    "timestamp": 1778695537.7016127,
+    "deal_id": "ryanair_prg_gdn_20260826_economy",
+    "origin": "PRG",
+    "destination": "GDN",
+    "city_from": "Praga",
+    "city_to": "Gdansk",
+    "price_eur": 22.99
   }
 ]
