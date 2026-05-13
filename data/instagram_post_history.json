@@ -358,5 +358,14 @@
     "city_from": "Madrid",
     "city_to": "Prague",
     "price_eur": 45.99
+  },
+  {
+    "timestamp": 1778668488.9175668,
+    "deal_id": "ryanair_bcn_tng_20260829_economy",
+    "origin": "BCN",
+    "destination": "TNG",
+    "city_from": "Barcelona",
+    "city_to": "Tangier",
+    "price_eur": 20.71
   }
 ]
