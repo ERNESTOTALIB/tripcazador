@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken, COOKIE_KEY } from "@/lib/panel_auth";
+import {
+  RATELIMIT_WINDOW_MS,
+  getLastTrigger,
+  setLastTrigger,
+} from "@/lib/trigger_worker_ratelimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,14 +36,6 @@ export const dynamic = "force-dynamic";
 const REPO_OWNER = "ERNESTOTALIB";
 const REPO_NAME = "tripcazador";
 const WORKFLOW_FILE = "worker.yml";
-const RATELIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 min
-
-// In-memory rate limit. Reset al deploy, suficiente para 1 owner.
-const lastTriggerByUser: Map<string, number> = new Map();
-
-export function _resetRateLimitForTests() {
-  lastTriggerByUser.clear();
-}
 
 export async function POST(req: NextRequest) {
   // 1. Auth
@@ -70,7 +67,7 @@ export async function POST(req: NextRequest) {
 
   // 3. Rate limit por usuario panel
   const now = Date.now();
-  const last = lastTriggerByUser.get(session.user) || 0;
+  const last = getLastTrigger(session.user);
   const elapsed = now - last;
   if (last > 0 && elapsed < RATELIMIT_WINDOW_MS) {
     const retryInSec = Math.ceil((RATELIMIT_WINDOW_MS - elapsed) / 1000);
@@ -113,7 +110,7 @@ export async function POST(req: NextRequest) {
 
     if (resp.status === 204) {
       // GH devuelve 204 No Content en éxito
-      lastTriggerByUser.set(session.user, now);
+      setLastTrigger(session.user, now);
       return NextResponse.json(
         {
           ok: true,

@@ -22,13 +22,18 @@ vi.mock("@/lib/subscribers_store", () => ({
 // En vitest, el cwd es tripcazador-web/, así que public/deals-latest.json existe.
 // Los tests que necesiten controlar deals exportan via la fn pickTopFiveDeals.
 
+import { GET } from "../route";
 import {
-  GET,
   pickTopFiveDeals,
-  renderNewsletterHtml,
-  _resetRateLimitForTest,
-} from "../route";
+  renderNewsletterHtml as renderHtmlRaw,
+  resetNewsletterRateLimit as _resetRateLimitForTest,
+} from "@/lib/newsletter_weekly_helpers";
 import { listPendingDrip } from "@/lib/subscribers_store";
+
+// El test original llamaba renderNewsletterHtml(deals, unsubUrl). El nuevo
+// helper toma además siteUrl como 3er arg; lo wrapeamos con default fixed.
+const renderNewsletterHtml = (deals: Parameters<typeof renderHtmlRaw>[0], unsub: string) =>
+  renderHtmlRaw(deals, unsub, "https://tripcazador.com");
 
 function buildReq(url: string): NextRequest {
   return new NextRequest(new URL(url, "http://localhost"));

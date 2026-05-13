@@ -8,7 +8,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { POST, _resetRateLimitForTests } from "./route";
+import { POST } from "../route";
+import { resetRateLimitForTests } from "@/lib/trigger_worker_ratelimit";
 import { issueToken, buildSetCookieHeader, COOKIE_KEY } from "@/lib/panel_auth";
 
 // Mock next/headers cookies() para inyectar la cookie de sesión por test
@@ -33,7 +34,7 @@ function makeRequest(body: object = {}): import("next/server").NextRequest {
 describe("/api/admin/trigger-worker", () => {
   beforeEach(() => {
     mockCookieValue = undefined;
-    _resetRateLimitForTests();
+    resetRateLimitForTests();
     // Default: no PAT — los tests que lo necesitan lo setean
     delete process.env.GITHUB_PAT_TRIGGER_WORKER;
     // Silenciamos fetch por defecto — cada test lo mockea si lo necesita
