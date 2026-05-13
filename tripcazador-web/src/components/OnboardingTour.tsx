@@ -53,9 +53,15 @@ export function OnboardingTour() {
     if (typeof window === "undefined") return;
     if (localStorage.getItem(KEY)) return;
 
-    // Espera 3s antes de aparecer — dejar que el hero hidrate y el usuario
-    // mire la home antes de bombardearlo con un tour.
-    const t = setTimeout(() => setVisible(true), 3000);
+    // SSS156: deshabilitado auto-popup. El modal `fixed inset-0 z-[9999]`
+    // atrapaba wheel events y daba la impresión de scroll bloqueado al
+    // usuario (reportado en Chrome). Ahora opt-in: solo aparece si la URL
+    // tiene `?tour=1` (link explícito desde footer u onboarding intencional).
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tour") !== "1") return;
+
+    // Si llega aquí (con ?tour=1) sí aparece el tour con delay corto.
+    const t = setTimeout(() => setVisible(true), 800);
     return () => clearTimeout(t);
   }, [pathname]);
 
