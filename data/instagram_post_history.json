@@ -385,5 +385,14 @@
     "city_from": "Praga",
     "city_to": "Gdansk",
     "price_eur": 22.99
+  },
+  {
+    "timestamp": 1778708377.8748589,
+    "deal_id": "ryanair_bcn_tng_20260828_economy",
+    "origin": "BCN",
+    "destination": "TNG",
+    "city_from": "Barcelona",
+    "city_to": "Tangier",
+    "price_eur": 20.71
   }
 ]
