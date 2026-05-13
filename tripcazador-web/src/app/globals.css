@@ -150,15 +150,30 @@ body {
 /* Evitar scroll horizontal accidental por overflow en viewports estrechos.
    Nota: esto enmascara bugs de layout, pero también evita que el usuario
    sufra mientras los arreglamos. Tests de regresión harán grep de anchos
-   fijos sospechosos. */
+   fijos sospechosos.
+
+   SSS156 fix: explícitamente permitir scroll vertical en ambos. Usuario
+   reportó "no permite bajar" en Chrome — añadimos overflow-y: auto explícito
+   defensivo (algunas builds Chrome computaban "hidden auto" como "hidden"
+   en ambos ejes cuando el viewport era inestable durante load). */
 html, body {
   overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* SSS156: scroll-behavior smooth + asegurar scrollingElement funciona.
+   El usuario reportó scroll bloqueado en home; añadimos scroll-behavior
+   declarativo para forzar comportamiento estándar. */
+html {
+  scroll-behavior: smooth;
 }
 
 /* iOS: evitar el "rubber-band" vertical del body (mantiene sticky header
-   pegado al borde en scroll). Mantiene overscroll de scroll interno. */
+   pegado al borde en scroll). Mantiene overscroll de scroll interno.
+   SSS156: cambiamos de "none" → "auto" en body para no bloquear scroll
+   en algunos browsers que interpretan "none" como "stop scroll completo". */
 body {
-  overscroll-behavior-y: none;
+  overscroll-behavior-y: auto;
   -webkit-tap-highlight-color: transparent;
 }
 
