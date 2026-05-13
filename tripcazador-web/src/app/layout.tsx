@@ -391,6 +391,7 @@ export default function RootLayout({
                 <ul className="space-y-2 text-gray-400">
                   <li><a href="/planificador" className="hover:text-amber-400 font-semibold">Planificador IA ✨</a></li>
                   <li><a href="/como-viajar" className="hover:text-amber-400">Cómo viajar 🧰</a></li>
+                  <li><a href="/alertas" className="hover:text-amber-400">Alertas de precio 🔔</a></li>
                   <li><a href="/favoritos" className="hover:text-amber-400">Tus favoritos</a></li>
                   <li><a href="/calculadora" className="hover:text-amber-400">Calculadora valor</a></li>
                   <li><a href="/mapa-precios" className="hover:text-amber-400">Mapa de precios</a></li>

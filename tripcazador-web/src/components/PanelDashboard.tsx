@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { AdminWorkerTrigger } from "./AdminWorkerTrigger";
 
 /**
  * PanelDashboard — fase yyy (Real Visitor Truth + Revenue + Subs unified)
@@ -562,6 +563,9 @@ export function PanelDashboard() {
       {/* Acciones owner */}
       <section className="bg-gray-900 border border-gray-800 rounded-lg p-5">
         <h2 className="text-lg font-semibold text-amber-300 mb-3">Acciones rápidas</h2>
+        <div className="mb-4">
+          <AdminWorkerTrigger />
+        </div>
         <div className="flex flex-wrap gap-3">
           <a href="/admin" className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md text-sm">
             Admin clásico (hunt manual)
