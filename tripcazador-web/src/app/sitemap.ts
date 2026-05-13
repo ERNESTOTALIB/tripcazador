@@ -153,6 +153,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/como-viajar`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS152: landing /seguro-viaje (afiliado Heymondo, captura "seguro viaje 2026" SEO)
     { url: `${BASE_URL}/seguro-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    // SSS153: índices que estaban 404 — breadcrumbs internos rotos
+    { url: `${BASE_URL}/vuelos`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
+    { url: `${BASE_URL}/vuelos-baratos`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    { url: `${BASE_URL}/fr/destinos`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/it/destinos`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/de/destinos`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/en/comparar`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
   ];
 
   const destinoPages: MetadataRoute.Sitemap = DESTINOS.map((slug) => ({
