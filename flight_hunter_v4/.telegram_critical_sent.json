@@ -847,6 +847,22 @@
       "destination": "GDN",
       "price_eur": 23.01,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "da40c6a3b526",
+      "ts": "2026-05-13T13:08:14.841664+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ae7ffcaeab6c",
+      "ts": "2026-05-13T13:08:14.841664+00:00",
+      "origin": "STN",
+      "destination": "AGA",
+      "price_eur": 28.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
