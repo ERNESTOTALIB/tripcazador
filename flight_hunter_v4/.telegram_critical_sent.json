@@ -879,6 +879,22 @@
       "destination": "BIQ",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2f553549620f",
+      "ts": "2026-05-13T18:54:01.668378+00:00",
+      "origin": "BCN",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "b4aae278bc50",
+      "ts": "2026-05-13T18:54:01.668378+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 22.66,
+      "classification": "CRÍTICO"
     }
   ]
 }
