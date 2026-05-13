@@ -831,6 +831,22 @@
       "destination": "RZE",
       "price_eur": 27.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "cae48858f7e7",
+      "ts": "2026-05-13T10:18:03.365860+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "21ae5fc8c387",
+      "ts": "2026-05-13T10:18:03.365860+00:00",
+      "origin": "PRG",
+      "destination": "GDN",
+      "price_eur": 23.01,
+      "classification": "CRÍTICO"
     }
   ]
 }
