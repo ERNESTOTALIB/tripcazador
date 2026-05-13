@@ -1,0 +1,113 @@
+name: Scroll Regression (SSS156 anti-regression)
+
+# Triggers:
+# - PRs a main/pre → corremos sobre el preview deploy para detectar
+#   un OnboardingTour-style bug ANTES de merge a prod.
+# - Push a main (post-merge) → smoke contra prod.
+# - Cron diario → catch regresiones causadas por bots o flags remotos
+#   (env vars, feature flags Cloudflare, etc).
+
+on:
+  pull_request:
+    branches: [main, pre]
+    paths:
+      - "tripcazador-web/src/**"
+      - "tripcazador-web/e2e/**"
+      - "tripcazador-web/playwright.config.ts"
+  push:
+    branches: [main]
+    paths:
+      - "tripcazador-web/src/components/OnboardingTour.tsx"
+      - "tripcazador-web/src/components/SkyHero.tsx"
+      - "tripcazador-web/src/app/globals.css"
+  schedule:
+    - cron: "0 7 * * *"  # 07:00 UTC daily
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "BASE_URL para los tests (default: prod)"
+        required: false
+        default: "https://tripcazador.com"
+
+jobs:
+  scroll-regression:
+    name: scroll-regression-${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - chromium
+          - firefox
+          - webkit
+          - mobile-chrome
+          - mobile-safari
+          - mobile-safari-small
+          - tablet-ipad
+          - tablet-ipad-landscape
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: tripcazador-web/package-lock.json
+
+      - name: Install deps
+        working-directory: tripcazador-web
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Playwright browsers
+        working-directory: tripcazador-web
+        run: npx playwright install --with-deps ${{ matrix.project == 'firefox' && 'firefox' || matrix.project == 'webkit' && 'webkit' || 'chromium' }}
+
+      - name: Determine BASE_URL
+        id: url
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # PR → preview URL del branch
+            if [ "${{ github.event.pull_request.base.ref }}" = "main" ]; then
+              echo "url=https://tripcazador-git-pre-ernesto-talibs-projects.vercel.app" >> $GITHUB_OUTPUT
+            else
+              echo "url=https://tripcazador-git-pre-ernesto-talibs-projects.vercel.app" >> $GITHUB_OUTPUT
+            fi
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "url=${{ github.event.inputs.base_url }}" >> $GITHUB_OUTPUT
+          else
+            echo "url=https://tripcazador.com" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run scroll regression spec
+        working-directory: tripcazador-web
+        env:
+          BASE_URL: ${{ steps.url.outputs.url }}
+        run: |
+          npx playwright test e2e/tests/home_scroll_regression.spec.ts \
+            --project=${{ matrix.project }} \
+            --reporter=list
+
+      - name: Upload Playwright report on fail
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: tripcazador-web/playwright-report/
+          retention-days: 7
+
+      - name: Telegram alert if cron fails
+        if: failure() && github.event_name == 'schedule'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets not set, skip notify"
+            exit 0
+          fi
+          msg="⚠️ SCROLL REGRESSION en ${{ matrix.project }} — home está bloqueando scroll otra vez (SSS156 redux). Revisar https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -sS -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+            -d "chat_id=$TELEGRAM_CHAT_ID" \
+            -d "text=$msg" || true

@@ -27,13 +27,39 @@ export default defineConfig({
     navigationTimeout: 15_000,
   },
   projects: [
+    // Desktop browsers — cubren cross-browser parity.
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
     {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+    },
+    // Mobile devices — verifican que el viewport pequeño NO rompe scroll.
+    {
       name: "mobile-chrome",
       use: { ...devices["Pixel 5"] },
+    },
+    {
+      name: "mobile-safari",
+      use: { ...devices["iPhone 14"] },
+    },
+    {
+      name: "mobile-safari-small",
+      use: { ...devices["iPhone SE"] },
+    },
+    {
+      name: "tablet-ipad",
+      use: { ...devices["iPad (gen 7)"] },
+    },
+    {
+      name: "tablet-ipad-landscape",
+      use: { ...devices["iPad (gen 7) landscape"] },
     },
   ],
 });
