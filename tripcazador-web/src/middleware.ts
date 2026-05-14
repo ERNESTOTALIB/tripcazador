@@ -55,7 +55,7 @@ function buildCSP(nonce: string): string {
     "style-src-attr 'unsafe-inline'",
     "img-src 'self' data: https: blob:",
     "font-src 'self' data:",
-    `connect-src 'self' ${API_URL} https://www.google-analytics.com https://plausible.io https://tile.openstreetmap.org`,
+    `connect-src 'self' ${API_URL} https://www.google-analytics.com https://plausible.io https://tile.openstreetmap.org https://fundingchoicesmessages.google.com https://pagead2.googlesyndication.com`,
     "frame-src 'self' https://www.openstreetmap.org",
     "worker-src 'self' blob:",
     "manifest-src 'self'",

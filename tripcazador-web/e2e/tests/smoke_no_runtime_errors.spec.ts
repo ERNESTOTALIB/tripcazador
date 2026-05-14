@@ -119,7 +119,15 @@ for (const route of ROUTES) {
       const fatal = consoleErrors.filter(
         (e) =>
           !/Minified React error #(418|425|422)/.test(e) &&
-          !/AdSense head tag/.test(e),
+          !/AdSense head tag/.test(e) &&
+          // SSS162c: CSP block de fundingchoicesmessages (AdSense consent
+          // RGPD) y pagead2 NO son errores fatales — son warnings que el
+          // browser emite cuando CSP bloquea fetch de un script no
+          // crítico. Cubierto por CSP whitelist en next.config.js +
+          // middleware.ts, pero algunos browsers loguean igual.
+          !/fundingchoicesmessages\.google\.com/.test(e) &&
+          !/pagead2\.googlesyndication\.com/.test(e) &&
+          !/Content Security Policy directive/.test(e),
       );
       if (fatal.length > 0) {
         throw new Error(
