@@ -123,8 +123,11 @@ test.describe(`Mutaciones @ ${ENV}`, () => {
   test.skip(IS_PROD, "skipping mutations in prod env");
 
   test("POST /api/track no-PII permitido", async ({ request }) => {
+    // SSS162: "smoke_test" no está en VALID_TYPES (route rechaza 400).
+    // Usar un tipo real del whitelist garantiza que el test valida el
+    // happy-path de tracking, no el handler de tipos inválidos.
     const r = await request.post("/api/track", {
-      data: { type: "smoke_test", path: "/test", ts: Date.now() },
+      data: { type: "page_view", path: "/test", ts: Date.now() },
     });
     expect([200, 202, 204]).toContain(r.status());
   });

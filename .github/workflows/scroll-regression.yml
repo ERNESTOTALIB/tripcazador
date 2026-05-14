@@ -60,9 +60,21 @@ jobs:
         working-directory: tripcazador-web
         run: npm ci --legacy-peer-deps
 
+      - name: Determine browser for install
+        id: browser
+        run: |
+          case "${{ matrix.project }}" in
+            firefox) echo "name=firefox" >> $GITHUB_OUTPUT ;;
+            webkit|mobile-safari|mobile-safari-small|tablet-ipad|tablet-ipad-landscape)
+              # SSS162: mobile-safari + tablet-ipad emulan iOS = WebKit engine,
+              # necesitan libs sistema webkit (libgtk-4, libgraphene, etc).
+              echo "name=webkit" >> $GITHUB_OUTPUT ;;
+            *) echo "name=chromium" >> $GITHUB_OUTPUT ;;
+          esac
+
       - name: Install Playwright browsers
         working-directory: tripcazador-web
-        run: npx playwright install --with-deps ${{ matrix.project == 'firefox' && 'firefox' || matrix.project == 'webkit' && 'webkit' || 'chromium' }}
+        run: npx playwright install --with-deps ${{ steps.browser.outputs.name }}
 
       - name: Determine BASE_URL
         id: url
