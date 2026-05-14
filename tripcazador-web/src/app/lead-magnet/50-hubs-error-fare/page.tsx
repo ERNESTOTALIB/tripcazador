@@ -22,6 +22,7 @@ export const metadata: Metadata = {
     title: "50 hubs europeos con más error fares",
     description: "Ranking gratuito basado en 12 meses de monitorización 24/7 con TripCazador.",
     type: "article",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
   robots: { index: true, follow: true },
 };

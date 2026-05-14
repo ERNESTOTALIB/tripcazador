@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     description:
       "Itinerarios automáticos con vuelos, hoteles y actividades enlazados a las mejores ofertas reales.",
     type: "website",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     type: "website",
     title: "Partnerships con TripCazador",
     description: "Colabora con el cazador automatizado de error fares más grande de habla hispana.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

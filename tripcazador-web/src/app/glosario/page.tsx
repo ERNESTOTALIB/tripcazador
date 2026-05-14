@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: "Glosario de vuelos — TripCazador",
     description:
       "50+ términos del sector aviación explicados en español. De \"error fare\" a \"yield management\".",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     type: "website",
     title: "Top destinos en tendencia — TripCazador",
     description: "Lo que buscan los viajeros esta semana, con precios y crecimiento",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

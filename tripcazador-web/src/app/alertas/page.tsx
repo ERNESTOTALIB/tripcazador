@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     title: "Alertas de precio — TripCazador",
     description: "Te avisamos cuando un vuelo baje a tu precio objetivo.",
     type: "website",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

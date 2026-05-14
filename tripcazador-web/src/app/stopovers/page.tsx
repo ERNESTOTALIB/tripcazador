@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     type: "website",
     title: "Stopovers gratis — TripCazador",
     description: "7 programas de stopover gratuitos comparados.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

@@ -31,6 +31,7 @@ export const metadata: Metadata = {
     description:
       "Tanzania, Japón, Maldivas, Nueva York, Bali, Buenos Aires y más. Guías con mejor época y chollos activos.",
     type: "website",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

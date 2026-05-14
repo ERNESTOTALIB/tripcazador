@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: "Análisis de aerolíneas con datos reales — TripCazador",
     description:
       "Las 10 aerolíneas más relevantes desde España, con rangos de precio reales y error fares observados.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

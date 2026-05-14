@@ -13,6 +13,7 @@ export const metadata: Metadata = {
       "Comparativas honestas barrio vs barrio en BCN, MAD, Roma, París, Lisboa, Sevilla. Precios, vibe y veredicto cazador.",
     type: "website",
     url: "https://tripcazador.com/comparar-barrios",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

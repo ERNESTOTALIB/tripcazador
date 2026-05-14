@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     type: "website",
     title: "FAQ — TripCazador",
     description: "25 preguntas frecuentes con respuestas claras.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

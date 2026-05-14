@@ -26,6 +26,7 @@ export const metadata: Metadata = {
     description:
       "El seguro de viaje correcto te ahorra €30.000+ en una urgencia médica en EE.UU. o Asia. Comparativa real Heymondo vs IATI vs Mondo.",
     type: "article",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

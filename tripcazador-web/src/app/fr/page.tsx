@@ -35,6 +35,7 @@ export const metadata: Metadata = {
     title: "TripCazador — Vols pas chers depuis l'Europe",
     description:
       "Error fares, Business au prix Economy, surveillance 24/7 depuis CDG/BSL/ZRH/AMS.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

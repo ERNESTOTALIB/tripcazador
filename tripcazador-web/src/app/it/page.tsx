@@ -40,6 +40,7 @@ export const metadata: Metadata = {
     title: "TripCazador — Voli economici dall'Europa",
     description:
       "Error fare, business a prezzo economy, monitoraggio 24/7 da MXP/FCO/BGY/VCE.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

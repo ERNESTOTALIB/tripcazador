@@ -29,6 +29,7 @@ export const metadata: Metadata = {
       "4 niveles de servicio. Sin cuotas. Pagas solo cuando viajas. Garantía de ahorro o reembolso.",
     url: "/agencia-de-viajes",
     type: "website",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://tripcazador.com/en/blog",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

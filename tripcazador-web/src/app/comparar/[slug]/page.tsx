@@ -28,7 +28,8 @@ export async function generateMetadata({
       type: "article",
       title: c.title,
       description: c.description,
-    },
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
+  },
   };
 }
 

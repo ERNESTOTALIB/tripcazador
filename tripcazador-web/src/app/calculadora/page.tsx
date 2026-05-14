@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: "Calculadora de vuelos — TripCazador",
     description:
       "Coste real por hora de vuelo y ahorro de flexibilidad de fechas. Calculadora interactiva.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

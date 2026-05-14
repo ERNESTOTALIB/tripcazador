@@ -11,6 +11,7 @@ export const metadata: Metadata = {
     type: "website",
     title: "Calculadora CO2 vuelo vs tren — TripCazador",
     description: "9 rutas europeas con cálculo de emisiones. Datos oficiales.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

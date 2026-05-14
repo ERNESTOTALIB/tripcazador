@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     type: "website",
     title: "Press kit TripCazador",
     description: "Información, assets y contacto para periodistas.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

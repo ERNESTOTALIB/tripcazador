@@ -33,7 +33,8 @@ export async function generateMetadata({
       type: "website",
       locale: "es_ES",
       siteName: "TripCazador",
-    },
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
+  },
   };
 }
 

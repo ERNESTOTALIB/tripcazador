@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     description:
       "Todo lo que hemos aprendido monitorizando tarifas 24/7 desde hubs europeos.",
     type: "website",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

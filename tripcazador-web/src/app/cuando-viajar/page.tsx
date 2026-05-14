@@ -28,6 +28,7 @@ export const metadata: Metadata = {
       "Sweet-spot, clima, crowds y precios mes a mes para 12 destinos. Decide cuándo ir antes de buscar el vuelo.",
     type: "website",
     url: "https://tripcazador.com/cuando-viajar",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
   twitter: {
     card: "summary_large_image",

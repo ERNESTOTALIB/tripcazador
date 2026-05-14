@@ -39,6 +39,7 @@ export const metadata: Metadata = {
     title: "TripCazador — Günstige Flüge aus Europa",
     description:
       "Error Fares, Business zum Economy-Preis, 24/7-Tracking ab BSL/ZRH/MUC/FRA.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

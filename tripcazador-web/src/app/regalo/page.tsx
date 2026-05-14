@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: "Regala TripCazador — el regalo que se convierte en un viaje",
     description: "Tarjetas regalo desde 25€. Sin caducidad. Aplica a vuelos, hoteles y tours.",
     type: "website",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

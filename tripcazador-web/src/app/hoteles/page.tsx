@@ -19,6 +19,7 @@ export const metadata: Metadata = {
       "Buscador completo de hoteles con autocomplete, fechas, huéspedes y filtros avanzados. Categorías Playa / Ciudad / Lujo / Familia / Económico.",
     url: "/hoteles",
     type: "website",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 

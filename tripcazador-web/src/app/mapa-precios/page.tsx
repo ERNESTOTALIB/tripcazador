@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     type: "website",
     title: "Mapa de precios — TripCazador",
     description: "Visualiza los precios reales por mes para 12 rutas desde España.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TripCazador — chollos de vuelo desde Europa" }],
   },
 };
 
