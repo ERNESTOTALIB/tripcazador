@@ -421,5 +421,14 @@
     "city_from": "Barcelona",
     "city_to": "Tangier",
     "price_eur": 20.71
+  },
+  {
+    "timestamp": 1778768769.839205,
+    "deal_id": "ryanair_lis_mad_20260630_economy",
+    "origin": "LIS",
+    "destination": "MAD",
+    "city_from": "Lisboa",
+    "city_to": "Madrid",
+    "price_eur": 18.49
   }
 ]
