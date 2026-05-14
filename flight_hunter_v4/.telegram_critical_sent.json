@@ -991,6 +991,22 @@
       "destination": "BRE",
       "price_eur": 16.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "76793b307f82",
+      "ts": "2026-05-14T19:39:50.090340+00:00",
+      "origin": "BUD",
+      "destination": "RMI",
+      "price_eur": 22.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ff42d60075e0",
+      "ts": "2026-05-14T19:39:50.090340+00:00",
+      "origin": "WAW",
+      "destination": "GOA",
+      "price_eur": 35.88,
+      "classification": "CRÍTICO"
     }
   ]
 }
