@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:15:25.468Z","type":"page_view","visitor":"e2da7d130909a3bf","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:15:25.622Z","type":"page_view","visitor":"e2da7d130909a3bf","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:15:26.045Z","type":"page_view","visitor":"e2da7d130909a3bf","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:15:26.117Z","type":"page_view","visitor":"e2da7d130909a3bf","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:15:26.563Z","type":"page_view","visitor":"e2da7d130909a3bf","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:15:26.686Z","type":"page_view","visitor":"e2da7d130909a3bf","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:15:27.182Z","type":"page_view","visitor":"e2da7d130909a3bf","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:15:27.325Z","type":"page_view","visitor":"e2da7d130909a3bf","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T17:38:02.133Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
 {"ts":"2026-05-14T17:38:03.422Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
 {"ts":"2026-05-14T17:38:03.759Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
+{"ts":"2026-05-14T17:38:03.795Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
+{"ts":"2026-05-14T17:38:05.054Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/tanzania"}}
+{"ts":"2026-05-14T17:38:05.380Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/japon"}}
+{"ts":"2026-05-14T17:38:08.555Z","type":"result_viewed","visitor":"a3e2333ba436dfbe","meta":{"deal_id":"ryanair_bcn_rak_20260629_economy","destination":"RAK","origin":"BCN","price":22.66,"classification":"CRÍTICO"}}
+{"ts":"2026-05-14T17:38:08.577Z","type":"result_viewed","visitor":"a3e2333ba436dfbe","meta":{"deal_id":"ryanair_mad_bds_20260810_economy","destination":"BDS","origin":"MAD","price":26.81,"classification":"CRÍTICO"}}
