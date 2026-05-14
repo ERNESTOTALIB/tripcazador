@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:57:25.449Z","type":"landing_arrived","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:57:26.087Z","type":"page_view","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:57:28.082Z","type":"landing_arrived","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:57:28.794Z","type":"page_view","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:57:29.860Z","type":"page_view","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:57:30.400Z","type":"landing_arrived","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:57:30.791Z","type":"page_view","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:57:31.269Z","type":"page_view","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T17:41:07.956Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
 {"ts":"2026-05-14T17:41:09.724Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/tanzania"}}
 {"ts":"2026-05-14T17:41:09.760Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/tanzania"}}
+{"ts":"2026-05-14T17:41:09.951Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
+{"ts":"2026-05-14T17:41:09.970Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
+{"ts":"2026-05-14T17:41:11.000Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
+{"ts":"2026-05-14T17:41:14.928Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T17:41:19.097Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/favoritos"}}
