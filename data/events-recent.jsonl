@@ -1,8 +1,3 @@
-{"ts":"2026-05-12T08:39:06.465Z","type":"page_view","visitor":"f8d0b0baf404a836","meta":{"path":"/"}}
-{"ts":"2026-05-12T08:39:07.603Z","type":"page_view","visitor":"f8d0b0baf404a836","meta":{"path":"/"}}
-{"ts":"2026-05-12T08:39:11.070Z","type":"landing_arrived","visitor":"f8d0b0baf404a836","meta":{"path":"/"}}
-{"ts":"2026-05-12T08:39:12.053Z","type":"page_view","visitor":"f8d0b0baf404a836","meta":{"path":"/"}}
-{"ts":"2026-05-12T08:39:12.149Z","type":"landing_arrived","visitor":"f8d0b0baf404a836","meta":{"path":"/"}}
 {"ts":"2026-05-12T09:38:17.273Z","type":"landing_arrived","visitor":"a8016179c3717387","meta":{"path":"/"}}
 {"ts":"2026-05-12T09:38:17.319Z","type":"landing_arrived","visitor":"a8016179c3717387","meta":{"path":"/"}}
 {"ts":"2026-05-12T09:38:23.117Z","type":"landing_arrived","visitor":"a8016179c3717387","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T18:04:33.990Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-14T18:04:34.012Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-14T18:04:35.296Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/this-hotel-does-not-exist-xyz"}}
+{"ts":"2026-05-14T18:04:35.369Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
+{"ts":"2026-05-14T18:04:35.391Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
+{"ts":"2026-05-14T18:04:35.779Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/the-mulia-bali"}}
+{"ts":"2026-05-14T18:04:35.791Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/the-mulia-bali"}}
+{"ts":"2026-05-14T18:04:37.013Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
