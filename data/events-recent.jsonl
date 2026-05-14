@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:11:01.488Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:11:02.133Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:11:02.151Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:11:02.413Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:11:02.463Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:11:04.039Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:11:04.351Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:11:04.983Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T09:36:36.672Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/comparar"}}
 {"ts":"2026-05-14T09:36:37.701Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/aerolineas"}}
 {"ts":"2026-05-14T09:36:37.732Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/regiones"}}
+{"ts":"2026-05-14T09:36:39.227Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/alertas"}}
+{"ts":"2026-05-14T09:36:39.667Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/telegram"}}
+{"ts":"2026-05-14T09:36:39.953Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/embed"}}
+{"ts":"2026-05-14T09:36:41.449Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:36:41.650Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
