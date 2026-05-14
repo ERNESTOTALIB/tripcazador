@@ -975,6 +975,22 @@
       "destination": "RMI",
       "price_eur": 22.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ed6a257a2c53",
+      "ts": "2026-05-14T17:45:17.081159+00:00",
+      "origin": "STN",
+      "destination": "GDN",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "063e416494b6",
+      "ts": "2026-05-14T17:45:17.081159+00:00",
+      "origin": "STN",
+      "destination": "BRE",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
