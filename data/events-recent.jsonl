@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:57:30.400Z","type":"landing_arrived","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:57:30.791Z","type":"page_view","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:57:31.269Z","type":"page_view","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:57:33.076Z","type":"landing_arrived","visitor":"0775404c29ce7cec","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:57:33.507Z","type":"page_view","visitor":"691b2ba55c333ef8","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:57:33.497Z","type":"landing_arrived","visitor":"691b2ba55c333ef8","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:57:37.044Z","type":"page_view","visitor":"691b2ba55c333ef8","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:57:37.464Z","type":"landing_arrived","visitor":"691b2ba55c333ef8","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T17:41:11.000Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
 {"ts":"2026-05-14T17:41:14.928Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-14T17:41:19.097Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/favoritos"}}
+{"ts":"2026-05-14T17:41:10.982Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
+{"ts":"2026-05-14T17:41:14.933Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T17:41:19.104Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/favoritos"}}
+{"ts":"2026-05-14T17:41:22.170Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/japon"}}
+{"ts":"2026-05-14T17:41:23.201Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/bali"}}
