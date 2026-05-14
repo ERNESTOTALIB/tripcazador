@@ -412,5 +412,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1778754285.7866514,
+    "deal_id": "ryanair_bcn_tng_20260828_economy",
+    "origin": "BCN",
+    "destination": "TNG",
+    "city_from": "Barcelona",
+    "city_to": "Tangier",
+    "price_eur": 20.71
   }
 ]
