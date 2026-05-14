@@ -22,13 +22,24 @@ interface Props {
  * Si no hay expires_at, muestra un chip sobrio con "Encontrado hace X".
  */
 export function ExpiryCountdown({ expiresAt, foundAt, critical }: Props) {
-  const [now, setNow] = useState<number>(() => Date.now());
+  // SSS166: usar `mounted` flag para evitar hydration mismatch React #422/#425.
+  // Antes: `useState(() => Date.now())` ejecutaba en SSR con un timestamp
+  // distinto al de hydration cliente — los labels "Hace 3 min" vs "Hace 2 min"
+  // no matchean entre server y client. React 18 lo log silently y recupera
+  // pero genera #422/#425 en consola.
+  // Ahora: renderizamos null hasta mount cliente, luego empezamos a contar.
+  const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
-    // Actualizamos cada 30s (no necesitamos precisión de segundo; evitamos churn).
+    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(id);
   }, []);
+
+  // Pre-mount: no renderizamos timestamp para evitar mismatch SSR↔CSR.
+  if (now === null) {
+    return null;
+  }
 
   // Caso 1 — sin expires_at: chip de frescura con código de color por antigüedad
   if (!expiresAt) {
