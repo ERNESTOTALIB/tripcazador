@@ -1,8 +1,3 @@
-{"ts":"2026-05-12T09:59:47.484Z","type":"result_viewed","visitor":"11b77b7d70937a8a","meta":{"deal_id":"ryanair_bcn_gdn_20260903_economy","destination":"GDN","origin":"BCN","price":31.99,"classification":"CRÍTICO"}}
-{"ts":"2026-05-12T09:59:47.534Z","type":"result_viewed","visitor":"11b77b7d70937a8a","meta":{"deal_id":"ryanair_bcn_ber_20260709_economy","destination":"BER","origin":"BCN","price":38.79,"classification":"CRÍTICO"}}
-{"ts":"2026-05-12T09:59:47.565Z","type":"result_viewed","visitor":"11b77b7d70937a8a","meta":{"deal_id":"ryanair_mad_cph_20260908_economy","destination":"CPH","origin":"MAD","price":52.99,"classification":"CRÍTICO"}}
-{"ts":"2026-05-12T10:08:55.210Z","type":"page_view","visitor":"6222082bf10b49f5","meta":{"path":"/"}}
-{"ts":"2026-05-12T10:08:55.310Z","type":"page_view","visitor":"6222082bf10b49f5","meta":{"path":"/deals"}}
 {"ts":"2026-05-12T16:00:08.603Z","type":"page_view","visitor":"38667fbb87487fae","meta":{"path":"/"}}
 {"ts":"2026-05-12T16:00:08.720Z","type":"landing_arrived","visitor":"38667fbb87487fae","meta":{"path":"/"}}
 {"ts":"2026-05-12T16:00:08.741Z","type":"page_view","visitor":"38667fbb87487fae","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T18:04:44.889Z","type":"landing_arrived","visitor":"67586f7f3b896085","meta":{"path":"/"}}
 {"ts":"2026-05-14T18:04:45.346Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
 {"ts":"2026-05-14T18:04:46.672Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
+{"ts":"2026-05-14T18:04:39.059Z","type":"landing_arrived","visitor":"67586f7f3b896085","meta":{"path":"/"}}
+{"ts":"2026-05-14T18:04:40.433Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T18:04:41.701Z","type":"page_view","visitor":"67586f7f3b896085","meta":{"path":"/"}}
+{"ts":"2026-05-14T18:04:42.618Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T18:04:47.611Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
