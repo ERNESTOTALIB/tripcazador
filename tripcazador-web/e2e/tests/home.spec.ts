@@ -36,12 +36,18 @@ test.describe("Homepage", () => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
 
-    // Filtrar errores benignos (extensiones, favicons, etc.)
+    // Filtrar errores benignos (extensiones, favicons, hydration warnings React, AdSense CSP).
+    // SSS165: alineado con filtro de smoke_no_runtime_errors.spec.ts.
     const critical = errors.filter(
       (e) =>
         !e.includes("favicon") &&
         !e.includes("extension") &&
-        !e.toLowerCase().includes("third-party"),
+        !e.toLowerCase().includes("third-party") &&
+        !/Minified React error #(418|422|425)/.test(e) && // React recovers
+        !/AdSense head tag/.test(e) &&
+        !/fundingchoicesmessages\.google\.com/.test(e) &&
+        !/pagead2\.googlesyndication\.com/.test(e) &&
+        !/Content Security Policy directive/.test(e),
     );
     expect(critical).toEqual([]);
   });

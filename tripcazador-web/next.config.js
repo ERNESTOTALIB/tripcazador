@@ -345,6 +345,25 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    // SSS165: rutas legales subpath devolvían 404. El contenido completo
+    // (privacidad/cookies/aviso-legal/disclaimer/afiliacion) está en /legal
+    // como single page con anchors. Redirigimos URLs comunes a su anchor
+    // — bueno para SEO (URL canónica /legal) y para AdSense / RGPD
+    // crawlers que buscan /privacy-policy estándar.
+    return [
+      { source: "/legal/privacidad", destination: "/legal#privacidad", permanent: true },
+      { source: "/legal/privacy", destination: "/legal#privacidad", permanent: true },
+      { source: "/legal/cookies", destination: "/legal#cookies", permanent: true },
+      { source: "/legal/aviso-legal", destination: "/legal#aviso-legal", permanent: true },
+      { source: "/legal/terminos", destination: "/legal#disclaimer", permanent: true },
+      { source: "/legal/disclaimer", destination: "/legal#disclaimer", permanent: true },
+      { source: "/legal/afiliacion", destination: "/legal#afiliacion", permanent: true },
+      { source: "/privacy", destination: "/legal#privacidad", permanent: true },
+      { source: "/privacy-policy", destination: "/legal#privacidad", permanent: true },
+      { source: "/cookies", destination: "/legal#cookies", permanent: true },
+    ];
+  },
   async rewrites() {
     // KKKK02 (May 2026): mover /api/:path* rewrite a `fallback`.
     // Antes era array plano (= afterFiles default), pero Vercel runtime
