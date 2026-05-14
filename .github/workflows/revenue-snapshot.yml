@@ -9,14 +9,30 @@ on:
   schedule:
     - cron: "0 2 * * *"
   workflow_dispatch:
+  # SSS162: trigger push solo cuando se edita el workflow mismo. Sin esto,
+  # GH crea un run "failure" con 0 jobs cada vez que el workflow file
+  # cambia en main (porque el push event no matchea ningún job). Con
+  # paths-filter el run pasa con todos los jobs skipped.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/revenue-snapshot.yml"
 
 concurrency:
   group: revenue-snapshot
   cancel-in-progress: false
 
 jobs:
+  noop-on-self-edit:
+    name: noop (workflow edit detected)
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Push event a workflow file — snapshot real corre solo en cron schedule + workflow_dispatch"
+
   snapshot:
     name: Snapshot revenue del día anterior
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
