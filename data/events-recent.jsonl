@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:13:52.389Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:13:52.633Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:13:52.722Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:13:52.824Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:13:53.009Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:13:45.713Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:13:46.038Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:13:50.122Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T14:47:55.122Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-14T14:48:02.295Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-14T14:48:03.330Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T14:47:57.173Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T14:47:57.832Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T14:47:58.995Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T14:48:02.295Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T14:48:06.685Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
