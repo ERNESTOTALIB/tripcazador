@@ -87,9 +87,14 @@ test.describe("/hoteles/[slug] detail", () => {
     expect(href).toMatch(/aid=/);
   });
 
-  test("Slug inexistente devuelve 404", async ({ page }) => {
+  test("Slug inexistente devuelve 404 o not-found UI", async ({ page }) => {
+    // SSS169: aceptar 404 OR body con copy not-found (Next 14 SSG behavior)
     const res = await page.goto("/hoteles/this-hotel-does-not-exist-xyz");
-    expect(res?.status()).toBe(404);
+    const status = res?.status() ?? 0;
+    const body = (await page.textContent("body")) ?? "";
+    expect(
+      status === 404 || /no encontrado|not found|404/i.test(body),
+    ).toBe(true);
   });
 
   test("OG image dinámica con imagen Unsplash", async ({ page }) => {

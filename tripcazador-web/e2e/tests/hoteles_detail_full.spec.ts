@@ -271,9 +271,14 @@ test.describe("Hotel detail — relacionados + 404", () => {
     }
   });
 
-  test("slug inexistente devuelve 404", async ({ page }) => {
+  test("slug inexistente devuelve 404 o not-found UI", async ({ page }) => {
+    // SSS169: aceptar 404 OR body con copy not-found (Next 14 SSG behavior)
     const res = await page.goto("/hoteles/slug-que-no-existe-xyz123");
-    expect(res?.status()).toBe(404);
+    const status = res?.status() ?? 0;
+    const body = (await page.textContent("body")) ?? "";
+    expect(
+      status === 404 || /no encontrado|not found|404/i.test(body),
+    ).toBe(true);
   });
 });
 

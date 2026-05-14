@@ -505,7 +505,10 @@ h1, h2 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 280px;
+  /* SSS169: quitar max-width 280px que permitía a "Madrid → Brindisi"
+   * desbordar el card 200px min-width → overlap con badge. Sin max-width
+   * el block sigue el ancho del padre (card 200px - paddings 40px = 160px
+   * disponibles, padding-right 56px reserva badge area → 104px texto). */
 }
 
 .sky-fc-price {
