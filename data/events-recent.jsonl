@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:10:04.288Z","type":"page_view","visitor":"03e4bab99658c486","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:10:04.462Z","type":"page_view","visitor":"03e4bab99658c486","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:10:08.374Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:10:08.454Z","type":"page_view","visitor":"03e4bab99658c486","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:10:08.475Z","type":"page_view","visitor":"03e4bab99658c486","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:10:14.469Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:10:14.580Z","type":"landing_arrived","visitor":"03e4bab99658c486","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:10:14.602Z","type":"page_view","visitor":"03e4bab99658c486","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T09:30:52.739Z","type":"page_view","visitor":"79d4a2283527a45a","meta":{"path":"/"}}
 {"ts":"2026-05-14T09:30:53.036Z","type":"landing_arrived","visitor":"f039ecc7dab8d7dd","meta":{"path":"/"}}
 {"ts":"2026-05-14T09:30:53.342Z","type":"landing_arrived","visitor":"f039ecc7dab8d7dd","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:30:53.514Z","type":"landing_arrived","visitor":"79d4a2283527a45a","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:30:56.054Z","type":"result_viewed","visitor":"79d4a2283527a45a","meta":{"deal_id":"ryanair_bcn_mla_20260829_economy","destination":"MLA","origin":"BCN","price":14.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-14T09:30:56.659Z","type":"page_view","visitor":"f039ecc7dab8d7dd","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:30:57.968Z","type":"page_view","visitor":"79d4a2283527a45a","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:30:58.183Z","type":"page_view","visitor":"79d4a2283527a45a","meta":{"path":"/"}}
