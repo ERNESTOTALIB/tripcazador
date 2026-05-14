@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:11:15.280Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:11:15.382Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:11:15.647Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:11:15.782Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:11:15.909Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:11:22.412Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:11:22.606Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:11:22.839Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T09:36:56.887Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/zzz-no-existe-xxx"}}
 {"ts":"2026-05-14T09:36:56.977Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/japon"}}
 {"ts":"2026-05-14T09:36:59.309Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:37:00.939Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:37:00.975Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:37:03.526Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
+{"ts":"2026-05-14T09:37:03.625Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
+{"ts":"2026-05-14T09:37:03.650Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
