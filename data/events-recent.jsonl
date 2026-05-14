@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:13:19.174Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:13:19.332Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:13:19.461Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:13:19.594Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:13:19.705Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:13:20.687Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:13:20.740Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:13:20.915Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T14:47:10.182Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
 {"ts":"2026-05-14T14:47:11.446Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
 {"ts":"2026-05-14T14:47:12.706Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
+{"ts":"2026-05-14T14:47:14.062Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
+{"ts":"2026-05-14T14:47:14.385Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/tanzania"}}
+{"ts":"2026-05-14T14:47:15.407Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/japon"}}
+{"ts":"2026-05-14T14:47:15.912Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/alertas"}}
+{"ts":"2026-05-14T14:47:16.180Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
