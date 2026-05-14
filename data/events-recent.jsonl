@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:12:06.042Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:12:06.191Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:12:06.258Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/deals"}}
-{"ts":"2026-05-11T13:12:06.490Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:12:06.678Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/deals"}}
 {"ts":"2026-05-11T13:12:03.210Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:12:08.426Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:12:08.615Z","type":"page_view","visitor":"65d2662275fa9301","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T09:55:50.684Z","type":"page_view","visitor":"75b4d0fe7df60a0b","meta":{"path":"/"}}
 {"ts":"2026-05-14T09:55:53.055Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/favoritos"}}
 {"ts":"2026-05-14T09:55:53.105Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/favoritos"}}
+{"ts":"2026-05-14T09:55:56.376Z","type":"page_view","visitor":"75b4d0fe7df60a0b","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:55:57.266Z","type":"page_view","visitor":"75b4d0fe7df60a0b","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:55:58.804Z","type":"page_view","visitor":"75b4d0fe7df60a0b","meta":{"path":"/"}}
+{"ts":"2026-05-14T09:55:59.875Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/bali"}}
+{"ts":"2026-05-14T09:55:59.897Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/destinos/tailandia"}}
