@@ -959,6 +959,22 @@
       "destination": "MLA",
       "price_eur": 23.0,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f7eb0add6c6c",
+      "ts": "2026-05-14T15:14:54.174478+00:00",
+      "origin": "STN",
+      "destination": "OLB",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c6241decb4d8",
+      "ts": "2026-05-14T15:14:54.174478+00:00",
+      "origin": "BUD",
+      "destination": "RMI",
+      "price_eur": 22.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
