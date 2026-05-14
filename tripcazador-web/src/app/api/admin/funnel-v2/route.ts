@@ -144,10 +144,20 @@ function topDealsByRevenue(): DealRevenueRow[] {
 }
 
 export async function GET(req: NextRequest) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_KEY)?.value;
-  if (!token || !verifyToken(token)) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  // Doble auth: cookie panel HMAC O ADMIN_TOKEN bearer (workflow-friendly).
+  // SSS161: el cron revenue-snapshot usa Bearer para no depender de
+  // PANEL_USER/PANEL_PASS — más fiable (un solo secret en vez de tres).
+  const auth = req.headers.get("authorization") || "";
+  const provided = auth.replace(/^Bearer\s+/i, "");
+  const adminToken = process.env.ADMIN_TOKEN || "";
+  const bearerOk = adminToken && provided && provided === adminToken;
+
+  if (!bearerOk) {
+    const cookieStore = await cookies();
+    const cookieToken = cookieStore.get(COOKIE_KEY)?.value;
+    if (!cookieToken || !verifyToken(cookieToken)) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
   }
 
   const sp = req.nextUrl.searchParams;

@@ -1,8 +1,9 @@
 name: Revenue snapshot diario
 
-# SSS64: cron daily 02:00 UTC que llama /api/admin/funnel-v2 para obtener
-# el revenue del día y lo persiste vía /api/admin/revenue-history POST.
-# Genera la serie histórica para el gráfico /panel.
+# SSS64 + SSS161: cron daily 02:00 UTC que llama /api/admin/funnel-v2
+# para obtener revenue 24h y lo persiste en /api/admin/revenue-history.
+# Usa SOLO ADMIN_TOKEN bearer (no panel cookie) — fiabilidad: un solo
+# secret. Genera la serie histórica para el gráfico /panel.
 
 on:
   schedule:
@@ -19,27 +20,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Fetch funnel-v2 for previous 24h
+      - name: Fetch funnel-v2 (Bearer ADMIN_TOKEN)
         id: fetch
         env:
-          PANEL_USER: ${{ secrets.PANEL_USER }}
-          PANEL_PASS: ${{ secrets.PANEL_PASS }}
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         run: |
           set -e
-          # Login obtiene cookie panel
-          login=$(curl -sS -c /tmp/cookies.txt -X POST \
-            "https://tripcazador.com/api/panel/login" \
-            -H "Content-Type: application/json" \
-            -d "{\"username\":\"$PANEL_USER\",\"password\":\"$PANEL_PASS\"}" \
-            -w "\n%{http_code}")
-          status=$(echo "$login" | tail -1)
+          if [ -z "$ADMIN_TOKEN" ]; then
+            echo "::warning::ADMIN_TOKEN secret not set — skipping snapshot. Add it in repo Settings → Secrets."
+            exit 0
+          fi
+          funnel_resp=$(curl -sS -w "\n%{http_code}" \
+            "https://tripcazador.com/api/admin/funnel-v2?window=24h" \
+            -H "Authorization: Bearer $ADMIN_TOKEN")
+          status=$(echo "$funnel_resp" | tail -1)
+          body=$(echo "$funnel_resp" | head -n -1)
           if [ "$status" != "200" ]; then
-            echo "::error::Login fallo HTTP $status"
+            echo "::error::funnel-v2 returned HTTP $status — body: $body"
             exit 1
           fi
-          funnel=$(curl -sS -b /tmp/cookies.txt \
-            "https://tripcazador.com/api/admin/funnel-v2?window=24h")
-          echo "$funnel" | python3 -c "
+          echo "$body" | python3 -c "
 import json, sys
 data = json.load(sys.stdin)
 revenue = data.get('estimated_revenue_window_eur', 0)
@@ -54,17 +54,15 @@ print(f'deal_clicks={deal_clicks}')
 print(f'bookings={bookings_out}')
 print(f'premium_clicks={prem}')
 print(f'visitors={visitors}')
+print(f'have_data=1')
 " >> $GITHUB_OUTPUT
 
       - name: POST snapshot to revenue-history
+        if: steps.fetch.outputs.have_data == '1'
         env:
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         run: |
           set -e
-          if [ -z "$ADMIN_TOKEN" ]; then
-            echo "::error::ADMIN_TOKEN missing"
-            exit 1
-          fi
           DATE=$(date -u -d "yesterday" +%Y-%m-%d)
           payload=$(cat <<EOF
 {

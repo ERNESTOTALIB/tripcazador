@@ -48,10 +48,14 @@ jobs:
             sleep 2
           done
 
-      - name: Run Playwright tests
+      - name: Run Playwright tests (chromium only)
         env:
           BASE_URL: http://localhost:3000
-        run: npm run test:e2e
+        # SSS161: --project=chromium limita a 1 browser (era todos los 8
+        # tras SSS157, lo que excedía timeout 20min y se cancelaba).
+        # Multi-browser cross-browser está cubierto por
+        # scroll-regression.yml (8-project matrix dedicado).
+        run: npx playwright test --project=chromium
 
       - name: Upload Playwright report
         if: always()
