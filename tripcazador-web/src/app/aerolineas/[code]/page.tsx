@@ -28,6 +28,21 @@ export async function generateMetadata({
       type: "website",
       title: `${a.name} desde España — Análisis 2026`,
       description: `Hubs: ${a.hubs.slice(0, 3).join(", ")}. ${a.keyPoints[0]}`,
+      // SSS167: OG image dinámica con nombre+IATA+categoría+país
+      images: [
+        {
+          url: `/api/og/airline/${a.code.toLowerCase()}`,
+          width: 1200,
+          height: 630,
+          alt: `${a.name} (${a.code}) — TripCazador`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${a.name} (${a.code}) — Análisis precios 2026`,
+      description: a.keyPoints[0] || `Rutas, precios y comparativas de ${a.name}`,
+      images: [`/api/og/airline/${a.code.toLowerCase()}`],
     },
   };
 }

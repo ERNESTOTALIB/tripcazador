@@ -362,6 +362,15 @@ const nextConfig = {
       { source: "/privacy", destination: "/legal#privacidad", permanent: true },
       { source: "/privacy-policy", destination: "/legal#privacidad", permanent: true },
       { source: "/cookies", destination: "/legal#cookies", permanent: true },
+      // SSS167: feeds RSS — /api/feed.xml y /blog/feed.xml apuntaban a 404.
+      // El feed real está en /rss.xml. Redirect 301 para crawlers/lectores.
+      { source: "/api/feed.xml", destination: "/rss.xml", permanent: true },
+      { source: "/blog/feed.xml", destination: "/rss.xml", permanent: true },
+      { source: "/feed.xml", destination: "/rss.xml", permanent: true },
+      { source: "/feed", destination: "/rss.xml", permanent: true },
+      { source: "/atom.xml", destination: "/rss.xml", permanent: true },
+      // /manifest.json → /site.webmanifest (algunos browsers/extensions buscan ese path)
+      { source: "/manifest.json", destination: "/site.webmanifest", permanent: false },
     ];
   },
   async rewrites() {

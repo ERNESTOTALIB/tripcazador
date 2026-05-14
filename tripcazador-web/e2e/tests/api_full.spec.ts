@@ -121,7 +121,9 @@ test.describe("GET endpoints públicos", () => {
     expect.soft(r.status()).toBeLessThan(500);
   });
 
-  test("/api/metrics público", async ({ request }) => {
+  test("/api/metrics público (o no existe)", async ({ request }) => {
+    // SSS167: el endpoint backend /api/metrics no se expone en web (404).
+    // Mantenemos el test soft — solo verifica que NO es 500 si existe.
     const r = await request.get("/api/metrics");
     expect.soft(r.status()).toBeLessThan(500);
   });
@@ -140,9 +142,12 @@ test.describe("GET endpoints públicos", () => {
     expect(body).toMatch(/User-agent/i);
   });
 
-  test("/api/feed.xml o /blog/feed.xml válido", async ({ request }) => {
-    let r = await request.get("/api/feed.xml");
-    if (r.status() === 404) r = await request.get("/blog/feed.xml");
+  test("RSS feed válido (/rss.xml con fallbacks)", async ({ request }) => {
+    // SSS167: feed canónico está en /rss.xml. /api/feed.xml y /blog/feed.xml
+    // ahora redirigen a /rss.xml (301). Playwright follow redirects por default.
+    let r = await request.get("/rss.xml");
+    if (r.status() !== 200) r = await request.get("/api/feed.xml");
+    if (r.status() !== 200) r = await request.get("/blog/feed.xml");
     expect(r.status()).toBe(200);
     const body = await r.text();
     expect(body).toMatch(/<rss|<feed/);
