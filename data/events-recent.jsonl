@@ -1,8 +1,3 @@
-{"ts":"2026-05-11T13:41:36.895Z","type":"landing_arrived","visitor":"506abf7741cd3676","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:41:36.992Z","type":"page_view","visitor":"506abf7741cd3676","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:41:38.746Z","type":"page_view","visitor":"506abf7741cd3676","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:41:39.506Z","type":"page_view","visitor":"506abf7741cd3676","meta":{"path":"/"}}
-{"ts":"2026-05-11T13:41:41.130Z","type":"landing_arrived","visitor":"506abf7741cd3676","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:41:41.721Z","type":"page_view","visitor":"506abf7741cd3676","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:41:43.045Z","type":"landing_arrived","visitor":"506abf7741cd3676","meta":{"path":"/"}}
 {"ts":"2026-05-11T13:41:43.106Z","type":"page_view","visitor":"506abf7741cd3676","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T17:38:38.314Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
 {"ts":"2026-05-14T17:38:38.603Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
 {"ts":"2026-05-14T17:38:38.627Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
+{"ts":"2026-05-14T17:38:38.323Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
+{"ts":"2026-05-14T17:38:38.630Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
+{"ts":"2026-05-14T17:38:41.824Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
+{"ts":"2026-05-14T17:38:42.109Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
+{"ts":"2026-05-14T17:38:43.155Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
