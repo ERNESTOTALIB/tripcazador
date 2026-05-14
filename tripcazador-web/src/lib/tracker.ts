@@ -102,6 +102,7 @@ export function trackClick(type: ClientEventType, meta: EventMeta = {}): void {
  * (ej. tracking sin JS), borra este return early. Pero antes considera
  * que GA4 + CF cubren el caso al 99%.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function trackPageView(_extra: EventMeta = {}): void {
   // intencionalmente vacío — ver docstring
   return;

@@ -303,7 +303,7 @@ export function getHotelSeedFallback(opts?: {
   const cat = opts?.category;
   const region = opts?.region;
   const city = opts?.city?.toLowerCase();
-  let arr = HOTEL_SEED.filter((h) => {
+  const arr = HOTEL_SEED.filter((h) => {
     const ppn = h.price_per_night ?? 0;
     const stars = parseInt(
       (h.tags || []).find((t) => t.endsWith("-stars"))?.split("-")[0] ?? "0",

@@ -18,6 +18,10 @@ on:
     paths:
       - "tripcazador-web/**"
       - ".github/workflows/lighthouse.yml"
+  # SSS163: cron semanal sobre prod para detectar regresiones perf
+  # incluso sin PRs (usamos push directo a main, sin preview).
+  schedule:
+    - cron: "0 6 * * 1"  # lunes 06:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -31,9 +35,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Esperar al preview Vercel — este action escucha al webhook.
+      # En cron/manual run, no hay preview — usa prod directo.
+      - name: Determine target URL
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "url=" >> $GITHUB_OUTPUT  # wait_preview se encarga
+            echo "use_preview=1" >> $GITHUB_OUTPUT
+          else
+            echo "url=https://tripcazador.com" >> $GITHUB_OUTPUT
+            echo "use_preview=0" >> $GITHUB_OUTPUT
+          fi
+
+      # Esperar al preview Vercel — solo en PR — este action escucha al webhook.
       - name: Wait for Vercel preview
         id: wait_preview
+        if: steps.target.outputs.use_preview == '1'
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -41,38 +58,47 @@ jobs:
           allow_inactive: false
         continue-on-error: true
 
-      - name: Skip if no preview URL
-        if: steps.wait_preview.outputs.url == ''
+      - name: Skip if PR and no preview URL
+        if: steps.target.outputs.use_preview == '1' && steps.wait_preview.outputs.url == ''
         run: |
           echo "::warning::No preview URL — skipping Lighthouse"
           exit 0
 
+      - name: Compute base URL
+        id: base
+        run: |
+          if [ "${{ steps.target.outputs.use_preview }}" = "1" ]; then
+            echo "url=${{ steps.wait_preview.outputs.url }}" >> $GITHUB_OUTPUT
+          else
+            echo "url=${{ steps.target.outputs.url }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Run Lighthouse CI
-        if: steps.wait_preview.outputs.url != ''
+        if: steps.base.outputs.url != ''
         id: lhci
         uses: treosh/lighthouse-ci-action@v11
         with:
           urls: |
-            ${{ steps.wait_preview.outputs.url }}/
-            ${{ steps.wait_preview.outputs.url }}/deals
-            ${{ steps.wait_preview.outputs.url }}/blog
-            ${{ steps.wait_preview.outputs.url }}/destinos/japon
-            ${{ steps.wait_preview.outputs.url }}/destinos/lisboa
-            ${{ steps.wait_preview.outputs.url }}/destinos/paris
-            ${{ steps.wait_preview.outputs.url }}/it/destinos/japan
-            ${{ steps.wait_preview.outputs.url }}/de/destinos/paris
-            ${{ steps.wait_preview.outputs.url }}/vuelos/madrid-lisboa
-            ${{ steps.wait_preview.outputs.url }}/vuelos/barcelona-paris
-            ${{ steps.wait_preview.outputs.url }}/aerolineas/iberia
-            ${{ steps.wait_preview.outputs.url }}/aerolineas/qr
-            ${{ steps.wait_preview.outputs.url }}/comparar-aerolineas/iberia-vs-vueling
-            ${{ steps.wait_preview.outputs.url }}/comparar-aerolineas/qatar-vs-emirates
+            ${{ steps.base.outputs.url }}/
+            ${{ steps.base.outputs.url }}/deals
+            ${{ steps.base.outputs.url }}/blog
+            ${{ steps.base.outputs.url }}/destinos/japon
+            ${{ steps.base.outputs.url }}/destinos/lisboa
+            ${{ steps.base.outputs.url }}/destinos/paris
+            ${{ steps.base.outputs.url }}/it/destinos/japan
+            ${{ steps.base.outputs.url }}/de/destinos/paris
+            ${{ steps.base.outputs.url }}/vuelos/madrid-lisboa
+            ${{ steps.base.outputs.url }}/vuelos/barcelona-paris
+            ${{ steps.base.outputs.url }}/aerolineas/iberia
+            ${{ steps.base.outputs.url }}/aerolineas/qr
+            ${{ steps.base.outputs.url }}/comparar-aerolineas/iberia-vs-vueling
+            ${{ steps.base.outputs.url }}/comparar-aerolineas/qatar-vs-emirates
           configPath: ".github/workflows/lighthouserc.json"
           uploadArtifacts: true
           temporaryPublicStorage: true
 
       - name: Comment results on PR
-        if: steps.lhci.outputs.manifest != ''
+        if: steps.lhci.outputs.manifest != '' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |

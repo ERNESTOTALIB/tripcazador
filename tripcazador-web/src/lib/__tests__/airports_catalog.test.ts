@@ -141,14 +141,12 @@ describe("fuzzySearchAirports — country search", () => {
 
 describe("fuzzySearchAirports — limit", () => {
   it("respeta limit explícito", () => {
-    const r = fuzzySearchAirports("a", 5);
-    // "a" es 1 char → vacío, no testea limit. Probar "ma"
+    // "a" es 1 char → vacío, no testea limit. Probar "ma" directamente.
     const r2 = fuzzySearchAirports("ma", 3);
     expect(r2.length).toBeLessThanOrEqual(3);
   });
 
   it("default limit es 18", () => {
-    const r = fuzzySearchAirports("a");
     // "a" es 1 char → vacío. Probar algo más
     const r2 = fuzzySearchAirports("aero");
     expect(r2.length).toBeLessThanOrEqual(18);
