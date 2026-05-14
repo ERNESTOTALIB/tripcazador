@@ -1,8 +1,3 @@
-{"ts":"2026-05-12T09:38:17.273Z","type":"landing_arrived","visitor":"a8016179c3717387","meta":{"path":"/"}}
-{"ts":"2026-05-12T09:38:17.319Z","type":"landing_arrived","visitor":"a8016179c3717387","meta":{"path":"/"}}
-{"ts":"2026-05-12T09:38:23.117Z","type":"landing_arrived","visitor":"a8016179c3717387","meta":{"path":"/"}}
-{"ts":"2026-05-12T09:38:24.995Z","type":"landing_arrived","visitor":"a8016179c3717387","meta":{"path":"/"}}
-{"ts":"2026-05-12T09:38:25.013Z","type":"page_view","visitor":"a8016179c3717387","meta":{"path":"/"}}
 {"ts":"2026-05-12T09:38:23.104Z","type":"page_view","visitor":"a8016179c3717387","meta":{"path":"/"}}
 {"ts":"2026-05-12T09:38:26.125Z","type":"page_view","visitor":"a8016179c3717387","meta":{"path":"/"}}
 {"ts":"2026-05-12T09:38:28.565Z","type":"page_view","visitor":"a8016179c3717387","meta":{"path":"/"}}
@@ -998,3 +993,8 @@
 {"ts":"2026-05-14T18:04:35.779Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/the-mulia-bali"}}
 {"ts":"2026-05-14T18:04:35.791Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/the-mulia-bali"}}
 {"ts":"2026-05-14T18:04:37.013Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T18:04:35.326Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/this-hotel-does-not-exist-xyz"}}
+{"ts":"2026-05-14T18:04:37.013Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T18:04:39.419Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
+{"ts":"2026-05-14T18:04:39.640Z","type":"page_view","visitor":"67586f7f3b896085","meta":{"path":"/"}}
+{"ts":"2026-05-14T18:04:39.678Z","type":"landing_arrived","visitor":"67586f7f3b896085","meta":{"path":"/"}}
