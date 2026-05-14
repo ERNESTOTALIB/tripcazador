@@ -495,20 +495,24 @@ h1, h2 {
 }
 
 .sky-fc-route {
+  /* SSS169 v2: bounding box del block incluye padding-right → el span
+   * llegaba hasta `card.right − 20` (card padding) overlapping con el
+   * badge absolute (left ≈ card.right − 50). Solución: usar width
+   * calculada que deja gap explícito hasta el badge.
+   * Padding del badge: top:8 right:8 + width≈50 → badge.left = card.right-58.
+   * Card padding-x: 20 → span content area = card.right-20.
+   * Width 100% del span = (card.right-20) - (card.left+20).
+   * Para que el span termine antes del badge: ancho = card-width − 70px
+   * (40 padding card + 30 reservados para badge). */
   display: block;
+  width: calc(100% - 50px);
   font-size: 13px;
   font-weight: 600;
   color: #fff;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
-  /* SSS20 fix: reservar 56px para el badge -95% que está absolute top-right */
-  padding-right: 56px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  /* SSS169: quitar max-width 280px que permitía a "Madrid → Brindisi"
-   * desbordar el card 200px min-width → overlap con badge. Sin max-width
-   * el block sigue el ancho del padre (card 200px - paddings 40px = 160px
-   * disponibles, padding-right 56px reserva badge area → 104px texto). */
 }
 
 .sky-fc-price {
