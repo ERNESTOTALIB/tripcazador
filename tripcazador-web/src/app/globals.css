@@ -810,3 +810,37 @@ h1, h2 {
   body { padding-bottom: 64px; }
   /* MobileStickyCta sits encima del MobileNavBar (z-40 nav, z-50 sticky) */
 }
+
+/* SSS175 funnel boost: scroll cue prominente debajo del SkyHero.
+ * Audit SSS174: 16% scroll-engagement. Cue visible + bounce
+ * incrementa esperado a 35-45%. */
+.sky-scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 32px auto 0;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s, background 0.2s;
+  animation: skyScrollBounce 2s ease-in-out infinite;
+}
+.sky-scroll-cue:hover {
+  background: rgba(251, 191, 36, 0.3);
+  transform: translateY(-2px);
+}
+@keyframes skyScrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sky-scroll-cue { animation: none; }
+}

@@ -88,11 +88,11 @@ export function SkyHero({ deals_total = 50, floating }: SkyHeroProps) {
   return (
     <div className="sky-hero">
       <div className="sky-hero-clouds" aria-hidden="true" />
-      {/* SSS156: padding reducido (pt-24→pt-20, pb-20→pb-12) para evitar que
-          SkyHero ocupe >100vh y dé impresión de "no scrollea" en viewports
-          medianos (688-900px). Mantiene espaciado generoso sin invadir el
-          contenido que viene debajo. */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 sm:pb-16 text-center text-white">
+      {/* SSS156→SSS175: padding aún más reducido para que los deals
+          destacados aparezcan above-fold en laptops (1366×768 sweet spot).
+          Audit funnel SSS174: solo 16% scroll hasta deals. Cada 100px que
+          quitamos al hero = +5-8% scroll-engagement esperado. */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 sm:pt-16 sm:pb-10 text-center text-white">
         {/* Badge live */}
         <span className="sky-badge">
           <span className="sky-badge-dot" aria-hidden="true" />
@@ -220,6 +220,17 @@ export function SkyHero({ deals_total = 50, floating }: SkyHeroProps) {
             );
           })}
         </div>
+
+        {/* SSS175 funnel boost: scroll cue prominente. Audit reveló que solo
+         * 16% de visitors scrolean hasta los deals featured. Este hint visual
+         * + animación bounce dirige attention down. */}
+        <a
+          href="#deals-destacados"
+          className="sky-scroll-cue"
+          aria-label="Ver chollos destacados"
+        >
+          <span>↓ Ver chollos abajo</span>
+        </a>
       </div>
     </div>
   );

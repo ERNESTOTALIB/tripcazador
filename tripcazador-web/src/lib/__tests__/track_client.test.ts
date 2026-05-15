@@ -30,9 +30,12 @@ describe("tcTrack — consent + transports", () => {
   });
 
   it("usa sendBeacon cuando está disponible", () => {
+    // SSS175: ahora envía a /api/p primero (adblocker bypass), con fallback
+    // a /api/track si beacon devuelve false. El default mock retorna undefined
+    // (truthy) → solo /api/p se llama.
     tcTrack("page_view", { path: "/" });
     expect(beaconSpy).toHaveBeenCalledWith(
-      "/api/track",
+      "/api/p",
       expect.anything(),
     );
   });

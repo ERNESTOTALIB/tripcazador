@@ -67,17 +67,38 @@ export function tcTrack(type: string, meta: Record<string, unknown> = {}): void 
   if (!consentOk()) return;
 
   const payload = JSON.stringify({ type, meta });
-  const url = "/api/track";
+  // SSS175: AdBlockers (uBlock, EasyPrivacy) bloquean /api/track agresivamente.
+  // 93% events perdidos vs CF unique. Probamos /api/p (alias, mismo handler)
+  // primero; si beacon falla, fallback a /api/track con fetch keepalive.
+  const primaryUrl = "/api/p";
+  const fallbackUrl = "/api/track";
   try {
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(url, new Blob([payload], { type: "application/json" }));
+      const ok = navigator.sendBeacon(
+        primaryUrl,
+        new Blob([payload], { type: "application/json" }),
+      );
+      if (!ok) {
+        // sendBeacon devuelve false si adblocker o queue full → fallback
+        navigator.sendBeacon(
+          fallbackUrl,
+          new Blob([payload], { type: "application/json" }),
+        );
+      }
     } else {
-      fetch(url, {
+      fetch(primaryUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: payload,
         keepalive: true,
-      }).catch(() => undefined);
+      }).catch(() =>
+        fetch(fallbackUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+          keepalive: true,
+        }).catch(() => undefined),
+      );
     }
   } catch {
     /* swallow */

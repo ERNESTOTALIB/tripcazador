@@ -149,8 +149,9 @@ async function TopDeals() {
 
   return (
     <div className="space-y-10">
-      {/* Deals destacados — grid 1/2/3 columnas */}
-      <div>
+      {/* Deals destacados — grid 1/2/3 columnas. SSS175: id para scroll-cue
+       * del SkyHero — el "↓ Ver chollos abajo" lleva a esta sección. */}
+      <div id="deals-destacados" className="scroll-mt-24">
         <div className="flex items-end justify-between mb-5">
           <h2 className="text-base font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-amber-400 pulse-ring" aria-hidden="true" />
