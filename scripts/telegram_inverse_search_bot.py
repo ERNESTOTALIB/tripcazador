@@ -207,6 +207,47 @@ def format_response(q: Dict[str, Any], matches: List[Dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def unsubscribe_all(chat_id: int) -> int:
+    """
+    SSS218: marca todas las subs del chat_id con unsubscribed_at timestamp.
+    inverse_search_notifier.py respeta el field y skip esos subs.
+
+    Returns: número de subs desactivadas.
+    """
+    if not SUBS_FILE.exists():
+        return 0
+    try:
+        subs = json.loads(SUBS_FILE.read_text("utf-8"))
+    except Exception:  # noqa: BLE001
+        return 0
+    now = datetime.now(timezone.utc).isoformat()
+    count = 0
+    for s in subs:
+        if s.get("chat_id") == chat_id and not s.get("unsubscribed_at"):
+            s["unsubscribed_at"] = now
+            count += 1
+    if count > 0:
+        SUBS_FILE.write_text(
+            json.dumps(subs, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    return count
+
+
+def list_active_subs(chat_id: int) -> List[Dict[str, Any]]:
+    """SSS218: lista subs activas (sin unsubscribed_at) del chat_id."""
+    if not SUBS_FILE.exists():
+        return []
+    try:
+        subs = json.loads(SUBS_FILE.read_text("utf-8"))
+    except Exception:  # noqa: BLE001
+        return []
+    return [
+        s for s in subs
+        if s.get("chat_id") == chat_id and not s.get("unsubscribed_at")
+    ]
+
+
 def save_subscription(chat_id: int, q: Dict[str, Any]) -> None:
     SUBS_FILE.parent.mkdir(parents=True, exist_ok=True)
     subs: List[Dict[str, Any]] = []
@@ -262,6 +303,10 @@ def handle_update(update: Dict[str, Any], deals: List[Dict[str, Any]]) -> None:
             "• <code>/buscar Tokio septiembre</code>\n"
             "• <code>/buscar Tailandia 2026-08 600</code>\n"
             "• <code>/buscar Tirana junio 100</code>\n\n"
+            "<b>Comandos:</b>\n"
+            "• <code>/buscar</code> — crear alerta\n"
+            "• <code>/list</code> — ver tus alertas activas\n"
+            "• <code>/stop</code> — desuscribir todo\n\n"
             "Cuando me pides un destino te aviso cuando aparezca uno bueno. "
             "Más chollos en " + SITE_URL
         )
@@ -283,6 +328,43 @@ def handle_update(update: Dict[str, Any], deals: List[Dict[str, Any]]) -> None:
         if q:
             save_subscription(chat_id, q)
             tg_send(chat_id, f"🔔 Alerta activa para <b>{q['destination'].title()}</b>. Te avisaré.")
+        return
+
+    # SSS218 (15 may 2026): /stop o /unsubscribe permite al user desactivar
+    # todas sus alertas. inverse_search_notifier.py respeta unsubscribed_at
+    # → skip del notification loop.
+    if text.startswith("/stop") or text.startswith("/unsubscribe"):
+        unsubscribe_all(chat_id)
+        tg_send(
+            chat_id,
+            "✅ <b>Te he desuscrito de todas tus alertas.</b>\n\n"
+            "Para reactivar, envía <code>/buscar &lt;destino&gt;</code> de nuevo.\n"
+            "Para borrar una alerta concreta: <code>/stop &lt;destino&gt;</code>",
+        )
+        return
+
+    if text.startswith("/list") or text.startswith("/mis-alertas"):
+        # SSS218: lista las alertas activas del user
+        active = list_active_subs(chat_id)
+        if not active:
+            tg_send(chat_id, "📭 No tienes alertas activas. Usa <code>/buscar &lt;destino&gt;</code> para crear una.")
+            return
+        lines = [f"🔔 <b>Tus {len(active)} alertas activas:</b>", ""]
+        for s in active[:20]:
+            dest = s.get("destination", "?")
+            month = s.get("month")
+            pmax = s.get("price_max")
+            extras = []
+            if month:
+                month_names = ["", "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+                extras.append(month_names[month] if 1 <= month <= 12 else str(month))
+            if pmax:
+                extras.append(f"≤{int(pmax)}€")
+            extra_str = f" ({', '.join(extras)})" if extras else ""
+            lines.append(f"• {dest}{extra_str}")
+        lines.append("")
+        lines.append("Para desuscribir todas: <code>/stop</code>")
+        tg_send(chat_id, "\n".join(lines))
         return
 
 
