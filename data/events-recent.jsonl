@@ -1,6 +1,3 @@
-{"ts":"2026-05-14T09:30:58.183Z","type":"page_view","visitor":"79d4a2283527a45a","meta":{"path":"/"}}
-{"ts":"2026-05-14T09:31:01.304Z","type":"landing_arrived","visitor":"f039ecc7dab8d7dd","meta":{"path":"/"}}
-{"ts":"2026-05-14T09:31:02.999Z","type":"page_view","visitor":"f039ecc7dab8d7dd","meta":{"path":"/"}}
 {"ts":"2026-05-14T09:31:05.476Z","type":"page_view","visitor":"f039ecc7dab8d7dd","meta":{"path":"/"}}
 {"ts":"2026-05-14T09:31:07.906Z","type":"page_view","visitor":"1c47cc72d71d072d","meta":{"path":"/"}}
 {"ts":"2026-05-14T09:31:07.923Z","type":"landing_arrived","visitor":"1c47cc72d71d072d","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-15T21:42:54.682Z","type":"landing_arrived","visitor":"eda18ececfe4f1cf","meta":{"path":"/"}}
 {"ts":"2026-05-15T21:42:54.778Z","type":"landing_arrived","visitor":"eda18ececfe4f1cf","meta":{"path":"/"}}
 {"ts":"2026-05-15T21:43:10.150Z","type":"landing_arrived","visitor":"84647280149e65d3","meta":{"path":"/"}}
+{"ts":"2026-05-15T22:07:03.405Z","type":"landing_arrived","visitor":"e15387370a20ec80","meta":{"path":"/","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-15T22:07:03.472Z","type":"page_view","visitor":"e15387370a20ec80","meta":{"path":"/"}}
+{"ts":"2026-05-15T22:07:13.629Z","type":"page_view","visitor":"e15387370a20ec80","meta":{"path":"/deals"}}
