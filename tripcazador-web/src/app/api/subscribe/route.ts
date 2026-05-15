@@ -75,6 +75,12 @@ async function sendWelcome(email: string, locale: string): Promise<boolean> {
         },
       }),
     });
+    if (!res.ok) {
+      // SSS190: antes silent → "welcome_sent=false" sin causa. Ahora log status+body.
+      const body = await res.text().catch(() => "<unread>");
+      const hash = email.slice(0, 3) + "***@" + (email.split("@")[1] || "?");
+      console.error(`[subscribe] Resend HTTP ${res.status} to ${hash}: ${body.slice(0, 200)}`);
+    }
     return res.ok;
   } catch (err) {
     console.error("[subscribe] resend fail:", err);
