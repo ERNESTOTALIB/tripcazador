@@ -29,16 +29,15 @@ on:
     # segundo disparo redundante: 14:00 UTC (16:00 CEST verano / 15:00 CET)
     - cron: "0 14 * * *"
   workflow_dispatch:
-  # SSS212 (15 may 2026): GitHub sigue creando "synthetic" push event runs
-  # con 0 jobs y conclusion=failure cuando se hace push a main, aunque el
-  # workflow NO tenga push trigger. SSS209 rename no lo arregló — el comportamiento
-  # parece deberse a que GH evalúa cada workflow file en main por commit.
-  # Fix definitivo: añadir push trigger CON un job no-op que skip everything,
-  # así las runs aparecen como SUCCESS con 0 work realizado, dejando el UI limpio.
+  # SSS212+221 (15-16 may 2026): GitHub creaba "synthetic" push runs con
+  # 0 jobs / failure cada push a main. SSS212 intentó paths-filter pero
+  # no funcionó (paths ignorado para synthetic runs). SSS221 fix:
+  # push trigger SIN paths-filter — fuerza GH a ejecutar el no-op job
+  # en cada push. Cost: ~5s/push × ~30 pushes/día = 2.5min/día runtime
+  # extra. Beneficio: UI completamente limpio, no ghost failures
+  # enmascarando fallos reales.
   push:
     branches: [main]
-    paths:
-      - ".github/workflows/revenue-snapshot-cron.yml"
 
 concurrency:
   group: revenue-snapshot
