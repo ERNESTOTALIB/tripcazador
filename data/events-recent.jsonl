@@ -1,6 +1,3 @@
-{"ts":"2026-05-13T20:18:22.109Z","type":"landing_arrived","visitor":"0d06d948b4e5981e","meta":{"path":"/"}}
-{"ts":"2026-05-13T20:18:22.654Z","type":"landing_arrived","visitor":"0d06d948b4e5981e","meta":{"path":"/"}}
-{"ts":"2026-05-13T22:18:15.153Z","type":"result_viewed","visitor":"c8401b5198bb283f","meta":{"deal_id":"ryanair_bcn_tng_20260828_economy","destination":"TNG","origin":"BCN","price":20.71,"classification":"CRÍTICO"}}
 {"ts":"2026-05-13T22:18:18.694Z","type":"result_viewed","visitor":"c8401b5198bb283f","meta":{"deal_id":"travelpayouts_bcn_kut_20260604_economy","destination":"KUT","origin":"BCN","price":121.44,"classification":"CRÍTICO"}}
 {"ts":"2026-05-13T22:18:21.193Z","type":"result_viewed","visitor":"c8401b5198bb283f","meta":{"deal_id":"ryanair_mad_lis_20260902_economy","destination":"LIS","origin":"MAD","price":14.99,"classification":"CRÍTICO"}}
 {"ts":"2026-05-13T22:18:23.925Z","type":"result_viewed","visitor":"c8401b5198bb283f","meta":{"deal_id":"ryanair_mad_bru_20260708_economy","destination":"BRU","origin":"MAD","price":29.99,"classification":"CRÍTICO"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-15T12:28:10.126Z","type":"page_view","visitor":"b1893f43cf3406b1","meta":{"path":"/deals"}}
 {"ts":"2026-05-15T12:28:16.260Z","type":"scroll_75","visitor":"b1893f43cf3406b1","meta":{"path":"/deals"}}
 {"ts":"2026-05-15T12:28:45.338Z","type":"page_view","visitor":"b1893f43cf3406b1","meta":{"path":"/deals"}}
+{"ts":"2026-05-15T14:19:17.242Z","type":"page_view","visitor":"f5e343a24a1bf134","meta":{"path":"/"}}
+{"ts":"2026-05-15T14:19:18.814Z","type":"page_view","visitor":"f5e343a24a1bf134","meta":{"path":"/deals"}}
+{"ts":"2026-05-15T14:19:21.596Z","type":"result_viewed","visitor":"f5e343a24a1bf134","meta":{"deal_id":"ryanair_mad_bds_20260810_economy","destination":"BDS","origin":"MAD","price":26.81,"classification":"CRÍTICO"}}
