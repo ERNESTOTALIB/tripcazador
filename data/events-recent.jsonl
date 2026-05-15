@@ -1,4 +1,3 @@
-{"ts":"2026-05-14T08:36:18.743Z","type":"landing_arrived","visitor":"1e4362c45392edcb","meta":{"path":"/"}}
 {"ts":"2026-05-14T09:30:51.787Z","type":"page_view","visitor":"79d4a2283527a45a","meta":{"path":"/"}}
 {"ts":"2026-05-14T09:30:51.812Z","type":"landing_arrived","visitor":"79d4a2283527a45a","meta":{"path":"/"}}
 {"ts":"2026-05-14T09:30:52.739Z","type":"page_view","visitor":"79d4a2283527a45a","meta":{"path":"/"}}
@@ -998,3 +997,4 @@
 {"ts":"2026-05-15T20:32:21.567Z","type":"landing_arrived","visitor":"8fe7f5d3479289b8","meta":{"path":"/"}}
 {"ts":"2026-05-15T20:32:23.305Z","type":"page_view","visitor":"8fe7f5d3479289b8","meta":{"path":"/"}}
 {"ts":"2026-05-15T20:32:23.390Z","type":"landing_arrived","visitor":"8fe7f5d3479289b8","meta":{"path":"/"}}
+{"ts":"2026-05-15T21:08:14.696Z","type":"deal_click","visitor":"449579bc7f05e9de","meta":{"deal_id":"final213_1778879294","smoke":true}}
