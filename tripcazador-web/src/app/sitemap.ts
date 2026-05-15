@@ -291,6 +291,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
+      // SSS217 (15 may 2026): landing SEO long-tail "precios vuelos baratos"
+      url: `${BASE_URL}/precios-vuelos-baratos`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
       url: `${BASE_URL}/embed`,
       lastModified: now,
       changeFrequency: "monthly",

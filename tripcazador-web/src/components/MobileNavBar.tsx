@@ -40,10 +40,41 @@ const ITEMS: NavItem[] = [
   { href: "/favoritos", label: "Favoritos", icon: Heart, match: (p) => p.startsWith("/favoritos") },
 ];
 
+// SSS216 (15 may 2026): dot indicator en "Chollos" cuando hay deals nuevos
+// desde la última visita del user a /deals. Usa localStorage `tc_deals_seen_at`
+// timestamp. Si deals-latest.json `generated_at` > tc_deals_seen_at → mostrar dot.
+//
+// Polling: cada 5min mientras user esté en home (no en /deals). Fetch HEAD
+// no-store contra /deals-latest.json → Last-Modified header.
+const DEALS_SEEN_KEY = "tc_deals_seen_at";
+const DEALS_POLL_MS = 5 * 60_000;
+
+async function hasFreshDeals(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  try {
+    const seen = parseInt(window.localStorage.getItem(DEALS_SEEN_KEY) || "0", 10);
+    // First visit ever → mostrar dot (highlight feature)
+    if (!seen) return true;
+    const res = await fetch("/deals-latest.json", {
+      method: "HEAD",
+      cache: "no-store",
+    });
+    if (!res.ok) return false;
+    const lastMod = res.headers.get("last-modified");
+    if (!lastMod) return false;
+    const lastModMs = new Date(lastMod).getTime();
+    if (!Number.isFinite(lastModMs)) return false;
+    return lastModMs > seen;
+  } catch {
+    return false;
+  }
+}
+
 export function MobileNavBar() {
   const pathname = usePathname() || "/";
   const [favCount, setFavCount] = useState(0);
   const [hydrated, setHydrated] = useState(false);
+  const [dealsFresh, setDealsFresh] = useState(false);
 
   // Hide en panel y en rutas embed/api
   const hidden =
@@ -51,10 +82,39 @@ export function MobileNavBar() {
     pathname.startsWith("/embed") ||
     pathname.startsWith("/api");
 
+  // SSS216: dot indicator "Chollos" — poll cada 5min mientras user no esté en /deals
+  useEffect(() => {
+    if (hidden) return;
+    setHydrated(true);
+    if (pathname.startsWith("/deals")) {
+      // User está en /deals → marca como visto + reset dot
+      try {
+        window.localStorage.setItem(DEALS_SEEN_KEY, String(Date.now()));
+      } catch {
+        /* localStorage blocked */
+      }
+      setDealsFresh(false);
+      return;
+    }
+    // Off /deals → check fresh
+    let cancelled = false;
+    hasFreshDeals().then((fresh) => {
+      if (!cancelled) setDealsFresh(fresh);
+    });
+    const id = window.setInterval(() => {
+      hasFreshDeals().then((fresh) => {
+        if (!cancelled) setDealsFresh(fresh);
+      });
+    }, DEALS_POLL_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [hidden, pathname]);
+
   useEffect(() => {
     if (hidden) return;
     setFavCount(getFavorites().length);
-    setHydrated(true);
     return subscribeFavorites(() => setFavCount(getFavorites().length));
   }, [hidden]);
 
@@ -72,12 +132,22 @@ export function MobileNavBar() {
           const Icon = item.icon;
           const isActive = item.match(pathname);
           const isFav = item.href === "/favoritos";
+          const isDealsTab = item.href === "/deals";
+          // SSS216: dot indicator solo en "Chollos" cuando hay deals nuevos
+          // y el user NO está actualmente en /deals (else: redundante).
+          const showFreshDot = isDealsTab && hydrated && dealsFresh && !isActive;
           return (
             <li key={item.href} className="flex-1">
               <Link
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                aria-label={isFav && hydrated && favCount > 0 ? `${item.label} (${favCount})` : item.label}
+                aria-label={
+                  isFav && hydrated && favCount > 0
+                    ? `${item.label} (${favCount})`
+                    : showFreshDot
+                      ? `${item.label} (novedades)`
+                      : item.label
+                }
                 className={`relative flex flex-col items-center justify-center gap-0.5 py-2 min-h-[56px] transition-colors ${
                   isActive ? "text-amber-400" : "text-gray-400 hover:text-white"
                 }`}
@@ -92,6 +162,13 @@ export function MobileNavBar() {
                     <span className="absolute -top-1 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-amber-500 text-black text-[9px] font-bold flex items-center justify-center">
                       {favCount > 99 ? "99+" : favCount}
                     </span>
+                  )}
+                  {/* SSS216 — pulsing dot: deals frescos desde última visita */}
+                  {showFreshDot && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-gray-950 animate-pulse"
+                    />
                   )}
                 </span>
                 <span className="text-[10px] font-semibold">{item.label}</span>
