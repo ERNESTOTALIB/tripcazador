@@ -59,8 +59,15 @@ class TelegramNotifier:
         try:
             with open(self.DEDUP_FILE, "w") as f:
                 json.dump({"hashes": hashes}, f)
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001
+            # SSS203 (15 may 2026): antes silent — si disco lleno o permisos,
+            # dedup file no se guardaba → alertas Telegram duplicadas
+            # constantemente sin diagnóstico. Ahora log explícito.
+            print(
+                f"   ⚠️  Notifier _save_sent_hashes failed (alertas pueden duplicarse): "
+                f"{type(exc).__name__}: {exc}",
+                flush=True,
+            )
 
     def _deal_hash(self, deal: Dict) -> str:
         """Hash único para un deal (evita alertas duplicadas)."""

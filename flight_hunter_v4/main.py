@@ -522,10 +522,46 @@ async def run_pipeline(args):
             idx += 1
         biz_res      = parallel_results[idx] if include_business and len(parallel_results) > idx else []
 
+        # SSS203 (15 may 2026): antes el loop `for res in [...]` filtraba
+        # `if isinstance(res, list)` y descartaba SILENCIOSAMENTE las
+        # Exception() retornadas por `return_exceptions=True`. Si Duffel
+        # crasheaba (token expired, network), su excepción se perdía y el
+        # sistema decía "0 deals Duffel" sin diagnóstico. Ahora distinguimos
+        # explícitamente: list = ok, Exception = log con motor name.
+        engine_names = ["Ryanair", "Travelpayouts", "Vueling", "Duffel"]
+        engine_results = [ryanair_res, tp_res, vueling_res, duffel_res]
+        if amadeus.available:
+            engine_names.append("Amadeus")
+            engine_results.append(amadeus_res)
+        if include_business:
+            engine_names.append("SerpAPI-biz")
+            engine_results.append(biz_res)
+
         combined = []
-        for res in [ryanair_res, tp_res, vueling_res, duffel_res, amadeus_res, biz_res]:
+        for name, res in zip(engine_names, engine_results):
+            if isinstance(res, Exception):
+                # SSS203: motor crasheó → log explícito a stderr para GH Actions
+                # logs. Antes invisible — un motor podía estar broken durante
+                # semanas sin que el operator lo detectara.
+                import traceback as _tb
+                print(
+                    f"   ❌ MOTOR CRASH {name}: {type(res).__name__}: {res}",
+                    flush=True,
+                )
+                # Imprimir traceback corto si está disponible (asyncio gather
+                # con return_exceptions=True conserva __traceback__).
+                try:
+                    tb_str = "".join(_tb.format_exception(type(res), res, res.__traceback__))[-500:]
+                    print(f"      traceback: {tb_str}", flush=True)
+                except Exception:  # noqa: BLE001
+                    pass
+                continue
             if isinstance(res, list):
                 combined.extend(res)
+                # SSS203: contador por motor para detectar 0-result motors
+                # incluso cuando no crashean (empty result también es señal).
+                if not res:
+                    print(f"   ⚠️  Motor {name} devolvió 0 deals (sin crash)", flush=True)
 
         # Dedup final: más barato por (origin, dest, date_out, cabin_code)
         seen = {}
