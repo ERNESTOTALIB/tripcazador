@@ -157,8 +157,20 @@ class TestSSS64Workflows:
         assert "main" in c
 
     def test_revenue_snapshot(self):
-        f = ROOT / ".github/workflows/revenue-snapshot.yml"
-        assert f.exists()
+        # SSS209 (15 may 2026): renombrado de revenue-snapshot.yml →
+        # revenue-snapshot-cron.yml para liberar el workflow_id viejo de
+        # ghost failures post-SSS186 (push trigger removed pero GH seguía
+        # creando synthetic runs con 0 jobs).
+        candidates = [
+            ROOT / ".github/workflows/revenue-snapshot-cron.yml",
+            # Acepta legacy nombre por si revert
+            ROOT / ".github/workflows/revenue-snapshot.yml",
+        ]
+        f = next((p for p in candidates if p.exists()), None)
+        assert f is not None, (
+            "Workflow revenue-snapshot[-cron].yml debe existir bajo .github/workflows/. "
+            f"Buscados: {[str(p) for p in candidates]}"
+        )
         c = _read(f)
         assert "schedule:" in c
         assert "revenue-history" in c
