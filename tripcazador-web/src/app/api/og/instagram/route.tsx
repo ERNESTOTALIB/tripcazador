@@ -224,6 +224,14 @@ export async function GET(req: NextRequest) {
     {
       width: 1080,
       height: 1350,
+      // SSS213 (15 may 2026): IG OG images cambian raramente (deal-specific
+      // pero el deal_id en URL ya invalida cache si cambia). 1h browser +
+      // 24h CDN + 7d stale-while-revalidate = mismo patrón que airline OG.
+      // Reduce Vercel function invocations ~80% vs regenerar cada request.
+      headers: {
+        "Cache-Control":
+          "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+      },
     },
   );
 }
