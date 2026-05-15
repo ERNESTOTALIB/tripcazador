@@ -191,21 +191,21 @@ const HOTEL_ENTRIES: HotelEntry[] = [
   { id: "th-5", slug: "kc-resort-phi-phi", name: "KC Resort Phi Phi", city: "Phi Phi", country: "Tailandia", region: "Asia", stars: 4, pricePerNight: 88, emoji: "🐠", daysAgo: 4, category: "beach", imageId: "1506929562872-bb421503ef21", reviewScore: 8.5, reviewCount: 1620, highlight: "Snorkel en aguas cristalinas" },
 
   // ───────── Asia · Indonesia
-  { id: "id-1", slug: "padma-resort-ubud", name: "Padma Resort Ubud", city: "Ubud", country: "Indonesia", region: "Asia", stars: 5, pricePerNight: 125, emoji: "🌴", daysAgo: 2, category: "luxury", imageId: "1518002171953-a080ee817e1f", reviewScore: 9.2, reviewCount: 2150, highlight: "Vistas a las terrazas de arroz" },
+  { id: "id-1", slug: "padma-resort-ubud", name: "Padma Resort Ubud", city: "Ubud", country: "Indonesia", region: "Asia", stars: 5, pricePerNight: 125, emoji: "🌴", daysAgo: 2, category: "luxury", imageId: "1537996194471-e657df975ab4", reviewScore: 9.2, reviewCount: 2150, highlight: "Vistas a las terrazas de arroz" },
   { id: "id-2", slug: "the-mulia-bali", name: "The Mulia Bali", city: "Nusa Dua", country: "Indonesia", region: "Asia", stars: 5, pricePerNight: 165, emoji: "🏖️", daysAgo: 4, category: "luxury", imageId: "1582719508461-905c673771fd", reviewScore: 9.3, reviewCount: 4180, highlight: "Suite con jacuzzi privado" },
   { id: "id-3", slug: "komaneka-bisma", name: "Komaneka at Bisma", city: "Ubud", country: "Indonesia", region: "Asia", stars: 4, pricePerNight: 78, emoji: "🌿", daysAgo: 6, category: "beach", imageId: "1622396481328-9b1b78cdd9fd", reviewScore: 8.9, reviewCount: 980, highlight: "Inmerso en la jungla balinesa" },
-  { id: "id-4", slug: "alila-seminyak", name: "Alila Seminyak", city: "Seminyak", country: "Indonesia", region: "Asia", stars: 5, pricePerNight: 145, emoji: "🌅", daysAgo: 5, category: "beach", imageId: "1559814047-7f788ef58e7d", reviewScore: 9.0, reviewCount: 1730, highlight: "Frente al mar de Seminyak" },
+  { id: "id-4", slug: "alila-seminyak", name: "Alila Seminyak", city: "Seminyak", country: "Indonesia", region: "Asia", stars: 5, pricePerNight: 145, emoji: "🌅", daysAgo: 5, category: "beach", imageId: "1582719508461-905c673771fd", reviewScore: 9.0, reviewCount: 1730, highlight: "Frente al mar de Seminyak" },
   { id: "id-5", slug: "fairmont-sanur", name: "Fairmont Sanur Beach Bali", city: "Sanur", country: "Indonesia", region: "Asia", stars: 5, pricePerNight: 135, emoji: "🌊", daysAgo: 8, category: "family", imageId: "1571003123894-1f0594d2b5d9", reviewScore: 8.8, reviewCount: 2050, highlight: "Familiar con kids club" },
 
   // ───────── Asia · Maldivas
   { id: "mv-1", slug: "adaaran-hudhuranfushi", name: "Adaaran Select Hudhuranfushi", city: "Atolón Norte de Malé", country: "Maldivas", region: "Asia", stars: 4, pricePerNight: 285, emoji: "🏝️", daysAgo: 8, category: "beach", imageId: "1514282401047-d79a71a590e8", reviewScore: 8.5, reviewCount: 890, highlight: "Bungalows sobre el agua" },
   { id: "mv-2", slug: "oblu-sangeli", name: "OBLU Select Sangeli", city: "Atolón Norte de Malé", country: "Maldivas", region: "Asia", stars: 5, pricePerNight: 425, emoji: "🌊", daysAgo: 12, category: "luxury", imageId: "1551918120-9739cb430c6d", reviewScore: 9.4, reviewCount: 1240, highlight: "All-inclusive premium 5★" },
-  { id: "mv-3", slug: "soneva-fushi", name: "Soneva Fushi", city: "Atolón Baa", country: "Maldivas", region: "Asia", stars: 5, pricePerNight: 750, emoji: "✨", daysAgo: 15, category: "luxury", imageId: "1517840901100-8179e982acb7", reviewScore: 9.7, reviewCount: 480, highlight: "Eco-luxury con observatorio" },
+  { id: "mv-3", slug: "soneva-fushi", name: "Soneva Fushi", city: "Atolón Baa", country: "Maldivas", region: "Asia", stars: 5, pricePerNight: 750, emoji: "✨", daysAgo: 15, category: "luxury", imageId: "1514282401047-d79a71a590e8", reviewScore: 9.7, reviewCount: 480, highlight: "Eco-luxury con observatorio" },
 
   // ───────── Asia · Vietnam
   { id: "vn-1", slug: "intercontinental-danang", name: "InterContinental Danang", city: "Da Nang", country: "Vietnam", region: "Asia", stars: 5, pricePerNight: 195, emoji: "🌊", daysAgo: 7, category: "luxury", imageId: "1571896349842-33c89424de2d", reviewScore: 9.2, reviewCount: 1560, highlight: "Diseño Bill Bensley impresionante" },
   { id: "vn-2", slug: "metropole-hanoi", name: "Sofitel Legend Metropole Hanoi", city: "Hanói", country: "Vietnam", region: "Asia", stars: 5, pricePerNight: 165, emoji: "🏯", daysAgo: 9, category: "city", imageId: "1540541338287-41700207dee6", reviewScore: 9.3, reviewCount: 3450, highlight: "Hotel histórico colonial" },
-  { id: "vn-3", slug: "fusion-resort-cam-ranh", name: "Fusion Resort Cam Ranh", city: "Nha Trang", country: "Vietnam", region: "Asia", stars: 5, pricePerNight: 125, emoji: "🏖️", daysAgo: 11, category: "beach", imageId: "1605538883669-825200433431", reviewScore: 8.8, reviewCount: 920, highlight: "Spa ilimitado incluido" },
+  { id: "vn-3", slug: "fusion-resort-cam-ranh", name: "Fusion Resort Cam Ranh", city: "Nha Trang", country: "Vietnam", region: "Asia", stars: 5, pricePerNight: 125, emoji: "🏖️", daysAgo: 11, category: "beach", imageId: "1571003123894-1f0594d2b5d9", reviewScore: 8.8, reviewCount: 920, highlight: "Spa ilimitado incluido" },
 
   // ───────── Asia · Japón
   { id: "jp-1", slug: "hotel-niwa-tokyo", name: "Hotel Niwa Tokyo", city: "Tokio", country: "Japón", region: "Asia", stars: 4, pricePerNight: 145, emoji: "🗼", daysAgo: 16, category: "city", imageId: "1493976040374-85c8e12f0c0e", reviewScore: 8.7, reviewCount: 4200, highlight: "Estética japonesa contemporánea" },
@@ -219,15 +219,15 @@ const HOTEL_ENTRIES: HotelEntry[] = [
   { id: "gr-1", slug: "aqua-blu-kos", name: "Aqua Blu Boutique Hotel", city: "Kos", country: "Grecia", region: "Europa", stars: 5, pricePerNight: 195, emoji: "🏛️", daysAgo: 2, category: "beach", imageId: "1497302347632-904729bc24aa", reviewScore: 9.1, reviewCount: 1820, highlight: "Adults-only frente al mar Egeo" },
   { id: "gr-2", slug: "mykonos-theoxenia", name: "Mykonos Theoxenia", city: "Mykonos", country: "Grecia", region: "Europa", stars: 5, pricePerNight: 245, emoji: "⛵", daysAgo: 9, category: "beach", imageId: "1533105079780-92b9be482077", reviewScore: 8.9, reviewCount: 920, highlight: "En el casco antiguo de Mykonos" },
   { id: "gr-3", slug: "astro-palace-santorini", name: "Astro Palace Suites", city: "Santorini", country: "Grecia", region: "Europa", stars: 5, pricePerNight: 320, emoji: "🏛️", daysAgo: 11, category: "luxury", imageId: "1556909114-f6e7ad7d3136", reviewScore: 9.3, reviewCount: 1450, highlight: "Vistas a la caldera de Fira" },
-  { id: "gr-4", slug: "athens-was-hotel", name: "Athens Was Hotel", city: "Atenas", country: "Grecia", region: "Europa", stars: 5, pricePerNight: 165, emoji: "🏛️", daysAgo: 14, category: "city", imageId: "1601565415267-724ddf3f57c2", reviewScore: 9.2, reviewCount: 2150, highlight: "Vistas a la Acrópolis" },
+  { id: "gr-4", slug: "athens-was-hotel", name: "Athens Was Hotel", city: "Atenas", country: "Grecia", region: "Europa", stars: 5, pricePerNight: 165, emoji: "🏛️", daysAgo: 14, category: "city", imageId: "1503152394-c571994fd383", reviewScore: 9.2, reviewCount: 2150, highlight: "Vistas a la Acrópolis" },
   { id: "gr-5", slug: "blue-palace-creta", name: "Blue Palace Elounda", city: "Creta", country: "Grecia", region: "Europa", stars: 5, pricePerNight: 295, emoji: "🌅", daysAgo: 6, category: "luxury", imageId: "1601751818941-571144562ff8", reviewScore: 9.0, reviewCount: 1680, highlight: "Bungalows con piscina privada" },
 
   // ───────── Europa · Italia
   { id: "it-1", slug: "caruso-belvedere", name: "Hotel Caruso Belvedere", city: "Ravello", country: "Italia", region: "Europa", stars: 5, pricePerNight: 380, emoji: "⛪", daysAgo: 6, category: "luxury", imageId: "1467269204594-9661b134dd2b", reviewScore: 9.5, reviewCount: 580, highlight: "Vistas a la Costa Amalfitana" },
   { id: "it-2", slug: "locarno-roma", name: "Hotel Locarno Roma", city: "Roma", country: "Italia", region: "Europa", stars: 4, pricePerNight: 145, emoji: "🏛️", daysAgo: 4, category: "city", imageId: "1552832230-c0197dd311b5", reviewScore: 8.6, reviewCount: 3420, highlight: "Cerca de Piazza del Popolo" },
   { id: "it-3", slug: "belmond-cipriani", name: "Hotel Belmond Cipriani", city: "Venecia", country: "Italia", region: "Europa", stars: 5, pricePerNight: 510, emoji: "🛶", daysAgo: 10, category: "luxury", imageId: "1564013799919-ab600027ffc6", reviewScore: 9.6, reviewCount: 720, highlight: "Lancha privada al San Marcos" },
-  { id: "it-4", slug: "castello-ama-toscana", name: "Castello di Ama", city: "Toscana", country: "Italia", region: "Europa", stars: 5, pricePerNight: 295, emoji: "🍷", daysAgo: 13, category: "luxury", imageId: "1611346024156-8c95cf1d4a2c", reviewScore: 9.3, reviewCount: 410, highlight: "Castillo del s.XII + bodega" },
-  { id: "it-5", slug: "grand-hotel-tremezzo", name: "Grand Hotel Tremezzo", city: "Lago Como", country: "Italia", region: "Europa", stars: 5, pricePerNight: 425, emoji: "💎", daysAgo: 8, category: "luxury", imageId: "1551133989-93c5c93ff547", reviewScore: 9.4, reviewCount: 980, highlight: "Frente al Lago di Como" },
+  { id: "it-4", slug: "castello-ama-toscana", name: "Castello di Ama", city: "Toscana", country: "Italia", region: "Europa", stars: 5, pricePerNight: 295, emoji: "🍷", daysAgo: 13, category: "luxury", imageId: "1518733057094-95b53143d2a7", reviewScore: 9.3, reviewCount: 410, highlight: "Castillo del s.XII + bodega" },
+  { id: "it-5", slug: "grand-hotel-tremezzo", name: "Grand Hotel Tremezzo", city: "Lago Como", country: "Italia", region: "Europa", stars: 5, pricePerNight: 425, emoji: "💎", daysAgo: 8, category: "luxury", imageId: "1518733057094-95b53143d2a7", reviewScore: 9.4, reviewCount: 980, highlight: "Frente al Lago di Como" },
   { id: "it-6", slug: "ravello-art-hotel", name: "Ravello Art Hotel Marmorata", city: "Costa Amalfitana", country: "Italia", region: "Europa", stars: 4, pricePerNight: 125, emoji: "🍋", daysAgo: 5, category: "beach", imageId: "1505881502353-a1986add3762", reviewScore: 8.7, reviewCount: 1240, highlight: "Vistas al mar Tirreno" },
 
   // ───────── Europa · España
@@ -256,25 +256,25 @@ const HOTEL_ENTRIES: HotelEntry[] = [
   { id: "ma-3", slug: "kasbah-tamadot", name: "Kasbah Tamadot", city: "Atlas", country: "Marruecos", region: "África", stars: 5, pricePerNight: 385, emoji: "🏔️", daysAgo: 18, category: "luxury", imageId: "1566073771259-6a8506099945", reviewScore: 9.6, reviewCount: 280, highlight: "Kasbah de Richard Branson" },
   { id: "za-1", slug: "twelve-apostles-cape-town", name: "The Twelve Apostles Hotel", city: "Ciudad del Cabo", country: "Sudáfrica", region: "África", stars: 5, pricePerNight: 245, emoji: "🦁", daysAgo: 12, category: "luxury", imageId: "1547721064-da6cfb341d50", reviewScore: 9.3, reviewCount: 1450, highlight: "Frente al océano Atlántico" },
   { id: "za-2", slug: "mount-nelson-cape-town", name: "Belmond Mount Nelson Hotel", city: "Ciudad del Cabo", country: "Sudáfrica", region: "África", stars: 5, pricePerNight: 285, emoji: "🌷", daysAgo: 8, category: "city", imageId: "1535827841776-24afc1e255ac", reviewScore: 9.2, reviewCount: 2150, highlight: "Té de la tarde icónico" },
-  { id: "tz-1", slug: "andbeyond-ngorongoro", name: "&Beyond Ngorongoro Crater Lodge", city: "Cráter Ngorongoro", country: "Tanzania", region: "África", stars: 5, pricePerNight: 875, emoji: "🦓", daysAgo: 20, category: "luxury", imageId: "1494500764479-0c8f2919a3d8", reviewScore: 9.7, reviewCount: 180, highlight: "Vistas al cráter + safaris" },
+  { id: "tz-1", slug: "andbeyond-ngorongoro", name: "&Beyond Ngorongoro Crater Lodge", city: "Cráter Ngorongoro", country: "Tanzania", region: "África", stars: 5, pricePerNight: 875, emoji: "🦓", daysAgo: 20, category: "luxury", imageId: "1516026672322-bc52d61a55d5", reviewScore: 9.7, reviewCount: 180, highlight: "Vistas al cráter + safaris" },
 
   // ───────── Caribe
   { id: "do-1", slug: "iberostar-grand-bavaro", name: "Iberostar Grand Bávaro", city: "Punta Cana", country: "República Dominicana", region: "Caribe", stars: 5, pricePerNight: 285, emoji: "🌴", daysAgo: 4, category: "family", imageId: "1552074284-5e88ef1aef18", reviewScore: 9.0, reviewCount: 8420, highlight: "All-inclusive premium adults" },
   { id: "cu-1", slug: "iberostar-varadero", name: "Iberostar Selection Varadero", city: "Varadero", country: "Cuba", region: "Caribe", stars: 5, pricePerNight: 195, emoji: "🏖️", daysAgo: 7, category: "family", imageId: "1500759285222-a95626b934cb", reviewScore: 8.7, reviewCount: 5240, highlight: "Playa de arena blanca" },
   { id: "mx-1", slug: "rosewood-mayakoba", name: "Rosewood Mayakoba", city: "Riviera Maya", country: "México", region: "Caribe", stars: 5, pricePerNight: 525, emoji: "🌊", daysAgo: 10, category: "luxury", imageId: "1602002418082-a4443e081dd1", reviewScore: 9.5, reviewCount: 1680, highlight: "Suites con piscina privada" },
-  { id: "mx-2", slug: "secrets-the-vine-cancun", name: "Secrets The Vine Cancún", city: "Cancún", country: "México", region: "Caribe", stars: 5, pricePerNight: 245, emoji: "🍷", daysAgo: 9, category: "family", imageId: "1547504717-65b6395b3a7b", reviewScore: 9.0, reviewCount: 4820, highlight: "Adults-only all-inclusive" },
+  { id: "mx-2", slug: "secrets-the-vine-cancun", name: "Secrets The Vine Cancún", city: "Cancún", country: "México", region: "Caribe", stars: 5, pricePerNight: 245, emoji: "🍷", daysAgo: 9, category: "family", imageId: "1552074284-5e88ef1aef18", reviewScore: 9.0, reviewCount: 4820, highlight: "Adults-only all-inclusive" },
   { id: "jm-1", slug: "sandals-royal-caribbean", name: "Sandals Royal Caribbean", city: "Montego Bay", country: "Jamaica", region: "Caribe", stars: 5, pricePerNight: 365, emoji: "🌺", daysAgo: 11, category: "luxury", imageId: "1538935732373-f7a495fea3f6", reviewScore: 9.1, reviewCount: 3240, highlight: "Adults-only frente al Caribe" },
 
   // ───────── América
   { id: "us-1", slug: "the-plaza-new-york", name: "The Plaza New York", city: "Nueva York", country: "Estados Unidos", region: "América Norte", stars: 5, pricePerNight: 685, emoji: "🗽", daysAgo: 13, category: "luxury", imageId: "1545324418-cc1a3fa10c00", reviewScore: 9.0, reviewCount: 4280, highlight: "Frente a Central Park" },
   { id: "us-2", slug: "fontainebleau-miami", name: "Fontainebleau Miami Beach", city: "Miami", country: "Estados Unidos", region: "América Norte", stars: 4, pricePerNight: 345, emoji: "🌴", daysAgo: 8, category: "beach", imageId: "1500916434205-0c77489c6cf7", reviewScore: 8.6, reviewCount: 5840, highlight: "Frente al océano + Liv club" },
-  { id: "ar-1", slug: "alvear-buenos-aires", name: "Alvear Palace Hotel", city: "Buenos Aires", country: "Argentina", region: "América Sur", stars: 5, pricePerNight: 195, emoji: "🥩", daysAgo: 7, category: "city", imageId: "1589395937772-f67057e233df", reviewScore: 9.2, reviewCount: 1820, highlight: "Estilo Belle Époque parisino" },
+  { id: "ar-1", slug: "alvear-buenos-aires", name: "Alvear Palace Hotel", city: "Buenos Aires", country: "Argentina", region: "América Sur", stars: 5, pricePerNight: 195, emoji: "🥩", daysAgo: 7, category: "city", imageId: "1589909202802-8f4aadce1849", reviewScore: 9.2, reviewCount: 1820, highlight: "Estilo Belle Époque parisino" },
   { id: "br-1", slug: "copacabana-palace", name: "Copacabana Palace", city: "Río de Janeiro", country: "Brasil", region: "América Sur", stars: 5, pricePerNight: 425, emoji: "🏖️", daysAgo: 14, category: "luxury", imageId: "1483729558449-99ef09a8c325", reviewScore: 9.3, reviewCount: 2640, highlight: "Frente a Copacabana" },
   { id: "pe-1", slug: "belmond-machu-picchu", name: "Belmond Sanctuary Lodge", city: "Machu Picchu", country: "Perú", region: "América Sur", stars: 5, pricePerNight: 685, emoji: "🏔️", daysAgo: 19, category: "luxury", imageId: "1606830733744-0ad778449672", reviewScore: 9.4, reviewCount: 480, highlight: "Único hotel en Machu Picchu" },
 
   // ───────── Oceanía
   { id: "au-1", slug: "park-hyatt-sydney", name: "Park Hyatt Sydney", city: "Sídney", country: "Australia", region: "Oceanía", stars: 5, pricePerNight: 565, emoji: "🌉", daysAgo: 16, category: "luxury", imageId: "1506973035872-a4ec16b8e8d9", reviewScore: 9.4, reviewCount: 1820, highlight: "Vistas a la Opera House" },
-  { id: "pf-1", slug: "intercontinental-bora-bora", name: "InterContinental Bora Bora Resort", city: "Bora Bora", country: "Polinesia Francesa", region: "Oceanía", stars: 5, pricePerNight: 945, emoji: "🌊", daysAgo: 21, category: "luxury", imageId: "1542301554-c6018851abeb", reviewScore: 9.5, reviewCount: 320, highlight: "Bungalows sobre laguna turquesa" },
+  { id: "pf-1", slug: "intercontinental-bora-bora", name: "InterContinental Bora Bora Resort", city: "Bora Bora", country: "Polinesia Francesa", region: "Oceanía", stars: 5, pricePerNight: 945, emoji: "🌊", daysAgo: 21, category: "luxury", imageId: "1502602898657-3e91760cbb34", reviewScore: 9.5, reviewCount: 320, highlight: "Bungalows sobre laguna turquesa" },
 
   // ───────── Oriente Medio
   { id: "ae-1", slug: "burj-al-arab", name: "Burj Al Arab Jumeirah", city: "Dubái", country: "Emiratos Árabes Unidos", region: "Oriente Medio", stars: 5, pricePerNight: 1450, emoji: "💎", daysAgo: 17, category: "luxury", imageId: "1512453979798-5ea266f8880c", reviewScore: 9.2, reviewCount: 1240, highlight: "Suite 7 estrellas icónica" },
@@ -353,21 +353,21 @@ const GALLERY_POOL_BY_CAT: Record<HotelCategory, string[]> = {
   beach: [
     "1582719508461-905c673771fd", // pool resort
     "1610530460358-dc9ed7e15ba0", // tropical island
-    "1559814047-7f788ef58e7d",    // beach resort
+    "1582719508461-905c673771fd",    // beach resort
     "1622396481328-9b1b78cdd9fd", // jungle bungalow
     "1505881502353-a1986add3762", // mediterranean
     "1620735692151-26a7e0748429", // beach umbrella
-    "1517840901100-8179e982acb7", // beach villa
+    "1514282401047-d79a71a590e8", // beach villa
     "1571003123894-1f0594d2b5d9", // suite balcony
     "1611892440504-42a792e24d32", // spa modern
     "1584132967334-10e028bd69f7", // pool view
   ],
   city: [
     "1564501049412-61c2a3083791", // modern lobby
-    "1601565415267-724ddf3f57c2", // penthouse view
+    "1503152394-c571994fd383", // penthouse view
     "1551105378-78e609e1d468",    // urban suite
     "1567593810070-7a3d471af022", // city architecture
-    "1542301554-c6018851abeb",    // boutique
+    "1502602898657-3e91760cbb34",    // boutique
     "1535827841776-24afc1e255ac", // panorama
     "1551918120-9739cb430c6d",    // skyline view
     "1611339555312-e607c8352fd7", // modern interior
@@ -378,10 +378,10 @@ const GALLERY_POOL_BY_CAT: Record<HotelCategory, string[]> = {
     "1551882547-ff40c63fe5fa",    // luxury bed white
     "1542314831-068cd1dbfeeb",    // luxury bedroom
     "1564013799919-ab600027ffc6", // luxury bedroom 2
-    "1611346024156-8c95cf1d4a2c", // luxe interior
+    "1518733057094-95b53143d2a7", // luxe interior
     "1566073771259-6a8506099945", // bed luxury
     "1602002418082-a4443e081dd1", // resort villa
-    "1551133989-93c5c93ff547",    // lake view
+    "1518733057094-95b53143d2a7",    // lake view
     "1571397133301-3f0b3676f8e3", // modern luxe
     "1538935732373-f7a495fea3f6", // suite
     "1601751818941-571144562ff8", // cliff hotel
@@ -389,18 +389,18 @@ const GALLERY_POOL_BY_CAT: Record<HotelCategory, string[]> = {
   family: [
     "1582719508461-905c673771fd", // pool
     "1571003123894-1f0594d2b5d9", // family balcony
-    "1605538883669-825200433431", // resort spa
+    "1571003123894-1f0594d2b5d9", // resort spa
     "1576354302919-96748cb8299e", // exterior
     "1620735692151-26a7e0748429", // beach
-    "1517840901100-8179e982acb7", // resort villa
+    "1514282401047-d79a71a590e8", // resort villa
     "1500916434205-0c77489c6cf7", // beach palms
-    "1547504717-65b6395b3a7b",    // colonial city
+    "1552074284-5e88ef1aef18",    // colonial city
     "1559599189-d8669cdd9e96",    // spa
-    "1559814047-7f788ef58e7d",    // beach resort
+    "1582719508461-905c673771fd",    // beach resort
   ],
   budget: [
     "1576354302919-96748cb8299e", // simple exterior
-    "1542301554-c6018851abeb",    // boutique
+    "1502602898657-3e91760cbb34",    // boutique
     "1568084680786-a84f91d1153c", // riad
     "1542640244-7e672d6cef4e",    // asian themed
     "1611892440504-42a792e24d32", // bath
