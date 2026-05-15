@@ -1,5 +1,3 @@
-{"ts":"2026-05-13T22:57:39.718Z","type":"page_view","visitor":"b837b71f2ca236f6","meta":{"path":"/"}}
-{"ts":"2026-05-13T22:57:40.426Z","type":"landing_arrived","visitor":"b837b71f2ca236f6","meta":{"path":"/"}}
 {"ts":"2026-05-13T22:57:43.084Z","type":"landing_arrived","visitor":"b837b71f2ca236f6","meta":{"path":"/"}}
 {"ts":"2026-05-14T07:36:13.684Z","type":"landing_arrived","visitor":"2f3bf747b75f6907","meta":{"path":"/"}}
 {"ts":"2026-05-14T07:36:13.711Z","type":"page_view","visitor":"2f3bf747b75f6907","meta":{"path":"/"}}
@@ -998,3 +996,5 @@
 {"ts":"2026-05-15T17:23:51.835Z","type":"scroll_75","visitor":"56c06ff3ce4e6443","meta":{"path":"/"}}
 {"ts":"2026-05-15T17:23:57.842Z","type":"page_view","visitor":"ca4ecdb23d648560","meta":{"path":"/"}}
 {"ts":"2026-05-15T17:23:58.171Z","type":"page_view","visitor":"ca4ecdb23d648560","meta":{"path":"/"}}
+{"ts":"2026-05-15T17:24:06.558Z","type":"page_view","visitor":"ca4ecdb23d648560","meta":{"path":"/"}}
+{"ts":"2026-05-15T17:24:17.228Z","type":"deal_click","visitor":"449579bc7f05e9de","meta":{"deal_id":"final206_1778865856","destination":"END","origin":"DPL","price":1,"smoke":true}}
