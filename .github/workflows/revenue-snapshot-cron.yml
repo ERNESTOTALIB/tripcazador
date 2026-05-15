@@ -29,13 +29,38 @@ on:
     # segundo disparo redundante: 14:00 UTC (16:00 CEST verano / 15:00 CET)
     - cron: "0 14 * * *"
   workflow_dispatch:
+  # SSS212 (15 may 2026): GitHub sigue creando "synthetic" push event runs
+  # con 0 jobs y conclusion=failure cuando se hace push a main, aunque el
+  # workflow NO tenga push trigger. SSS209 rename no lo arregló — el comportamiento
+  # parece deberse a que GH evalúa cada workflow file en main por commit.
+  # Fix definitivo: añadir push trigger CON un job no-op que skip everything,
+  # así las runs aparecen como SUCCESS con 0 work realizado, dejando el UI limpio.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/revenue-snapshot-cron.yml"
 
 concurrency:
   group: revenue-snapshot
   cancel-in-progress: false
 
 jobs:
+  noop-on-push:
+    # SSS212: solo corre en push events para producir SUCCESS y silenciar el UI.
+    # NO ejecuta lógica real — eso lo hace el job `snapshot` en schedule/dispatch.
+    name: No-op (push event — schedule lo hace real)
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Echo skip
+        run: |
+          echo "::notice::Push event — snapshot real corre en cron schedule + workflow_dispatch."
+          echo "Workflow OK (no-op success)."
+
   snapshot:
+    # Solo corre en schedule cron o dispatch manual — NUNCA en push.
+    if: github.event_name != 'push'
     name: Snapshot revenue del día anterior
     runs-on: ubuntu-latest
     timeout-minutes: 5
