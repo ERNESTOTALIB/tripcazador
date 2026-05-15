@@ -18,6 +18,7 @@
  * Usage: en /destinos/[slug], /deals/[id], y blog posts de viajes.
  */
 import { Smartphone, ExternalLink } from "lucide-react";
+import { tcTrack } from "@/lib/track_client";
 
 const HOLAFLY_REF = process.env.NEXT_PUBLIC_HOLAFLY_REF || "";
 
@@ -75,8 +76,10 @@ export function EsimBanner({ countryName, countryCode }: Props) {
 
 function trackEsim(country: string) {
   if (typeof window === "undefined") return;
+  // SSS185: AMBOS — GA4 (visible en dashboard) y /api/p (AdBlocker-resistant)
   const w = window as unknown as { gtag?: (...a: unknown[]) => void };
   if (w.gtag) {
     w.gtag("event", "affiliate_click", { provider: "holafly", country });
   }
+  tcTrack("deal_click", { partner: "holafly", country, source: "esim_banner" });
 }

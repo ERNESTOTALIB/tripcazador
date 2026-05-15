@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getBookingUrl } from "@/lib/airline_links";
 import { AirportCombobox } from "@/components/AirportCombobox";
 import { PriceCalendarHeatmap } from "@/components/PriceCalendarHeatmap";
+import { tcTrack } from "@/lib/track_client";
 
 /**
  * FlightSearchForm — fase ii F4
@@ -105,7 +106,9 @@ export function FlightSearchForm() {
     });
 
     if (typeof window !== "undefined") {
-      // Track GA4
+      // SSS185: emit a AMBOS — GA4 (gtag) + /api/p (tcTrack). search_submitted
+      // está en VALID_TYPES (ver /api/track/route.ts) pero NO en FLUSH_IMMEDIATELY
+      // (no es revenue directo, conversion path indirecta).
       const gtag = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
       if (gtag) {
         gtag("event", "search_submitted", {
@@ -116,6 +119,13 @@ export function FlightSearchForm() {
           airline_code: airline || "any",
         });
       }
+      tcTrack("search_submitted", {
+        origin: o,
+        destination: d,
+        date_out: dateOut,
+        one_way: oneWay,
+        airline_code: airline || "any",
+      });
       window.open(url, "_blank", "noopener,noreferrer");
     }
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { tcTrack } from "@/lib/track_client";
 
 /**
  * NewsletterSignup — formulario de captación de email (abr-2026r/s).
@@ -70,10 +71,13 @@ export function NewsletterSignup({ variant = "compact", context = "site" }: Prop
         } else {
           setStatus("success");
           setEmail("");
-          // GA4 event
+          // SSS185: GA4 (gtag) + server-side /api/p (tcTrack) — newsletter_signup
+          // está en FLUSH_IMMEDIATELY (SSS178), así que server lo flusha sync
+          // a GitHub para que /api/admin/revenue lo cuente.
           if (typeof window !== "undefined" && typeof window.gtag === "function") {
             window.gtag("event", "newsletter_signup", { context });
           }
+          tcTrack("newsletter_signup", { context });
         }
       } else if (res.status === 409) {
         setStatus("duplicate");

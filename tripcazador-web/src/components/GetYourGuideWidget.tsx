@@ -21,6 +21,7 @@
  * Uso: en /destinos/[slug] debajo de hero, en /deals/[id] debajo del booking.
  */
 import { Compass, ExternalLink } from "lucide-react";
+import { tcTrack } from "@/lib/track_client";
 
 const PARTNER_ID = process.env.NEXT_PUBLIC_GYG_PARTNER_ID || "";
 
@@ -108,18 +109,16 @@ export function GetYourGuideWidget({ city, destinationIata, gygLocationId }: Pro
 
 function trackAffiliateClick(provider: string, city: string, slot: string) {
   if (typeof window === "undefined") return;
+  // SSS185 (May 2026): antes esta función tenía DOS bugs en cascada:
+  //   1) sendBeacon directo a "/api/track" (NO /api/p) — AdBlockers bloquean
+  //      el endpoint con la palabra "track"; SSS175 introdujo /api/p alias.
+  //   2) type "affiliate_click" no está en VALID_TYPES de /api/track → /api/p
+  //      lo rechazaba con HTTP 400 (revisa src/app/api/track/route.ts).
+  // Fix: usar tcTrack del lib/track_client que ya hace AdBlocker bypass
+  // (/api/p primary + /api/track fallback) y type valid ("deal_click").
   const w = window as unknown as { gtag?: (...a: unknown[]) => void };
   if (w.gtag) {
     w.gtag("event", "affiliate_click", { provider, city, slot });
   }
-  if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
-    try {
-      const body = new Blob([JSON.stringify({ type: "affiliate_click", meta: { provider, city, slot } })], {
-        type: "application/json",
-      });
-      navigator.sendBeacon("/api/track", body);
-    } catch {
-      /* no-op */
-    }
-  }
+  tcTrack("deal_click", { partner: provider, city, source: `gyg_${slot}` });
 }
