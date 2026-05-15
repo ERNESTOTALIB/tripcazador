@@ -58,7 +58,20 @@ const FLUSH_IMMEDIATELY = new Set([
 
 async function flushBufferToGitHub() {
   const ghToken = process.env.GH_TRACK_TOKEN || process.env.GITHUB_TOKEN || "";
-  if (!ghToken || ghBuffer.length === 0) return;
+  if (!ghToken) {
+    // SSS181: si no hay token, los events se pierden silenciosamente. Antes
+    // era simplemente `return`. Ahora log a stderr para que Vercel logs
+    // tengan visibilidad — el operator puede grep "[track] GH_TRACK_TOKEN"
+    // y ver que la env var falta.
+    if (ghBuffer.length > 0) {
+      console.error(
+        `[track] GH_TRACK_TOKEN/GITHUB_TOKEN no seteado — perdiendo ${ghBuffer.length} events (set en Vercel env vars).`,
+      );
+      ghBuffer.length = 0; // limpiamos para no acumular indefinidamente
+    }
+    return;
+  }
+  if (ghBuffer.length === 0) return;
   const events = ghBuffer.splice(0, ghBuffer.length);
   const repo = "ERNESTOTALIB/tripcazador";
   const path = "data/events-recent.jsonl";
@@ -72,12 +85,17 @@ async function flushBufferToGitHub() {
       const data = await getR.json();
       sha = data.sha;
       current = Buffer.from(data.content, "base64").toString("utf-8");
+    } else if (getR.status !== 404) {
+      // SSS181: 401/403 = token inválido. 422 = conflict por SHA. Log para
+      // hacer visible cuál es la causa real del fail. 404 es OK (file no
+      // existe aún, lo creamos abajo).
+      console.error(`[track] GH contents GET ${getR.status} — losing ${events.length} events`);
     }
     const newLines = events.map((e) => JSON.stringify(e)).join("\n");
     const all = (current ? current.trimEnd() + "\n" : "") + newLines + "\n";
     // Mantén last 1000 lines para que el archivo no crezca infinitamente
     const trimmed = all.split("\n").filter((l) => l.trim()).slice(-1000).join("\n") + "\n";
-    await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+    const putR = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
       method: "PUT",
       headers: {
         Authorization: `token ${ghToken}`,
@@ -90,8 +108,21 @@ async function flushBufferToGitHub() {
         sha,
       }),
     });
-  } catch {
-    // failure = perdemos esos eventos. mejor que bloquear el response.
+    if (!putR.ok) {
+      // SSS181: explicit log when PUT fails (lo más común: 409 Conflict por
+      // concurrent flushes de lambdas distintos). Antes silent → 80% visibility
+      // loss invisible.
+      console.error(`[track] GH PUT ${putR.status} — lost ${events.length} events`);
+    }
+  } catch (err) {
+    // SSS181: log unexpected errors (network, timeout). Mejor que bloquear el
+    // response del user, pero AL MENOS dejar rastro en Vercel logs para que
+    // el operator pueda diagnosticar visibility gaps.
+    console.error(
+      "[track] GH flush failed:",
+      err instanceof Error ? err.message : String(err),
+      `(lost ${events.length} events)`,
+    );
   }
 }
 

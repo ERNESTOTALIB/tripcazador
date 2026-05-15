@@ -8,6 +8,7 @@ import {
   resolvePriceIdForTier,
   type ConciergeTier,
 } from "@/lib/concierge_tiers";
+import { captureRevenueError } from "@/lib/sentry_helper";
 
 /**
  * /api/concierge/checkout — fase sss SSS10 (May 2026, tiered)
@@ -244,6 +245,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url, order_id: order.id, tier });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
+    // SSS181 (May 2026): antes solo devolvíamos error JSON sin tag a Sentry.
+    // Failures de Stripe Checkout son revenue-critical: bug invisible durante
+    // semanas porque /panel no las cuenta (event_store solo registra success).
+    // Now: capture a Sentry vía helper común (con tags module+code estructurados).
+    captureRevenueError(err, {
+      module: "concierge_checkout",
+      code: "stripe_session_failed",
+      extra: { order_id: order.id, tier, email_hash: order.email.slice(0, 3) + "***" },
+    });
     return NextResponse.json(
       { error: "stripe_session_failed", detail: msg, order_id: order.id, tier },
       { status: 502 },

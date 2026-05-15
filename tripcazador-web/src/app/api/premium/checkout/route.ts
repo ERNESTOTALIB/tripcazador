@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { captureRevenueError } from "@/lib/sentry_helper";
 
 /**
  * /api/premium/checkout — fase SSS9 LIVE
@@ -67,6 +68,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: session.url, id: session.id });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "stripe_error";
+    // SSS181 (May 2026): premium subscription failure es revenue-critical
+    // (€2.99/mes recurrente perdido). Antes silent return, ahora Sentry tag.
+    captureRevenueError(e, {
+      module: "premium_checkout",
+      code: "stripe_session_failed",
+      extra: { has_email: !!customerEmail },
+    });
     return NextResponse.json(
       { error: "stripe_session_failed", message: msg },
       { status: 500 },

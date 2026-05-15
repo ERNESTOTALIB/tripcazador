@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { captureRevenueError } from "@/lib/sentry_helper";
 
 /**
  * /api/stripe/webhook — fase SSS9 LIVE
@@ -139,6 +140,16 @@ export async function POST(req: NextRequest) {
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "handler_error";
     console.error("[stripe-webhook] handler error:", msg);
+    // SSS181: handler crashes son revenue-critical — payment SE PROCESÓ en Stripe
+    // pero notifyAdmin/persist falló → no sabemos del nuevo subscriber.
+    // Sentry tag con event.type permite filtrar por subscription_created vs
+    // payment_succeeded etc.
+    captureRevenueError(e, {
+      module: "stripe_webhook",
+      code: "handler_error",
+      extra: { event_type: event.type, event_id: event.id },
+      level: "error",
+    });
     // 200 igual para que Stripe no reintente; loggeamos en server.
     return NextResponse.json({ received: true, error: msg });
   }
