@@ -74,7 +74,27 @@ def http_post(url: str, params: Dict[str, str], timeout: int = 30) -> Any:
             err_body = e.read().decode("utf-8")
         except Exception:
             err_body = "<no body>"
-        log(f"HTTP {e.code} body: {err_body[:500]}")
+        # SSS197 (15 may 2026): detectar token expiration explícitamente.
+        # IG access tokens "long-lived" expiran cada ~60 días; cuando esto
+        # ocurre Meta devuelve HTTP 400 con OAuthException error code 190.
+        # Antes el log decía solo "HTTP 400 body: {...}" — admin tenía que
+        # leer el body para diagnosticar. Ahora marca con bandera roja para
+        # que sea grep-able en GH Actions logs.
+        is_token_issue = (
+            "OAuthException" in err_body
+            or '"code":190' in err_body
+            or '"code": 190' in err_body
+            or "expired" in err_body.lower()
+            or "invalid OAuth" in err_body.lower()
+            or e.code == 401
+        )
+        if is_token_issue:
+            log(
+                f"🔴 IG_ACCESS_TOKEN EXPIRED OR INVALID — regenerate via "
+                f"ig_token_never_expire.py and update GH secret. HTTP {e.code} body: {err_body[:300]}"
+            )
+        else:
+            log(f"HTTP {e.code} body: {err_body[:500]}")
         raise
 
 
@@ -622,8 +642,16 @@ def generate_and_upload_carousel(deal: Dict[str, Any]) -> Optional[List[str]]:
         except Exception as e:
             log(f"WARN poll {test_url}: {e}")
         _t.sleep(delay)
-    log(f"WARN: Vercel deploy timeout ({max_wait}s) — intentando IG publish anyway")
-    return urls
+    # SSS197 (15 may 2026): antes el código devolvía `urls` igualmente con
+    # mensaje "intentando IG publish anyway" — race condition garantizada
+    # (URLs 404 → IG media creation falla con error opaco "URL inaccessible").
+    # Mejor abortar con None para que el caller marque la run como fallida
+    # y la próxima reintente con un Vercel deploy que sí esté listo.
+    log(
+        f"🔴 Vercel deploy timeout ({max_wait}s) — ABORT IG publish "
+        f"(URLs aún 404, próximo run reintentará con deploy ya activo)"
+    )
+    return None
 
 
 def echo_telegram(deal: Dict[str, Any], post_id: str) -> None:
@@ -639,8 +667,11 @@ def echo_telegram(deal: Dict[str, Any], post_id: str) -> None:
     try:
         url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
         http_post(url, {"chat_id": TG_CHAT_ID, "text": text})
-    except Exception:
-        pass
+    except Exception as exc:
+        # SSS197: antes silent — IG post publicado pero admin nunca lo veía
+        # si Telegram bot token revocado, chat blocked, o flood control.
+        # Log warn pero no aborta (IG post YA fue publicado exitosamente).
+        log(f"WARN echo_telegram failed (IG post {post_id} sí publicado): {exc}")
 
 
 def main() -> int:

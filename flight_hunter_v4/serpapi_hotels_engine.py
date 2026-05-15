@@ -177,9 +177,30 @@ class SerpApiHotelsEngine:
                     timeout=aiohttp.ClientTimeout(total=20),
                 ) as resp:
                     if resp.status != 200:
+                        # SSS196 (15 may 2026): antes silent — 0 hoteles durante
+                        # semanas si SERPAPI_KEY expired (401), quota agotada
+                        # (429), o domain bloqueado (403). Booking.com 4-7%
+                        # comm = revenue significativo perdido.
+                        body = ""
+                        try:
+                            body = (await resp.text())[:200]
+                        except Exception:  # noqa: BLE001
+                            body = "<failed to read body>"
+                        print(
+                            f"   ❌ SerpAPI Hotels {query} {checkin}-{checkout} "
+                            f"HTTP {resp.status} body={body}",
+                            flush=True,
+                        )
                         return []
                     data = await resp.json()
-            except (aiohttp.ClientError, asyncio.TimeoutError, ValueError):
+            except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as exc:
+                # SSS196: log type específico — timeout vs network vs JSON
+                # parse error indica causa distinta. Antes indistinguibles.
+                print(
+                    f"   ❌ SerpAPI Hotels {query} {checkin}-{checkout} "
+                    f"exception: {type(exc).__name__}: {exc}",
+                    flush=True,
+                )
                 return []
 
         properties = data.get("properties") or []
