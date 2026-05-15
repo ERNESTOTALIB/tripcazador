@@ -27,6 +27,7 @@ CRITICAL_ENGINES = [
     "duffel_engine.py",
     "amadeus_engine.py",
     "serpapi_engine.py",
+    "serpapi_hotels_engine.py",
 ]
 
 
