@@ -1071,6 +1071,22 @@
       "destination": "AGA",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "47148193c643",
+      "ts": "2026-05-15T15:10:59.494302+00:00",
+      "origin": "STN",
+      "destination": "BRE",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ec288b163e7b",
+      "ts": "2026-05-15T15:10:59.494302+00:00",
+      "origin": "BUD",
+      "destination": "CDT",
+      "price_eur": 35.59,
+      "classification": "CRÍTICO"
     }
   ]
 }
