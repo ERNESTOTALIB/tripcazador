@@ -1,38 +1,42 @@
 name: Revenue snapshot diario
 
-# SSS64 + SSS161: cron daily 02:00 UTC que llama /api/admin/funnel-v2
-# para obtener revenue 24h y lo persiste en /api/admin/revenue-history.
-# Usa SOLO ADMIN_TOKEN bearer (no panel cookie) — fiabilidad: un solo
-# secret. Genera la serie histórica para el gráfico /panel.
+# SSS64 + SSS161 + SSS186 (15 may 2026): cron daily 02:00 UTC + 14:00 UTC
+# que llama /api/admin/funnel-v2 para obtener revenue 24h y lo persiste
+# en /api/admin/revenue-history. Genera la serie histórica para el
+# gráfico /panel.
+#
+# SSS186 diagnóstico (15 may 2026):
+#   - Audit reveló que `0 2 * * *` jamás disparó (30 runs en 11 días,
+#     TODOS event=push y conclusion=failure; cero event=schedule).
+#   - Causa raíz: el `push.paths` filter creaba runs "failure" con 0 jobs
+#     cada vez que un push tocaba el workflow file. Esos failed runs
+#     contaminaban el listing y enmascaraban la ausencia de cron schedule.
+#   - Adicionalmente GitHub a veces deja workflows con schedule "stuck"
+#     tras cambios al `name:` field (este workflow lo cambió). Workaround:
+#     quitar el push trigger + bump al schedule (segundo time slot 14 UTC
+#     da redundancia si el primero falla).
+#
+# Fix:
+#   - Eliminar trigger `push` (era SSS162 anti-noise pero a la vez causa
+#     de las failures listadas — solo workflow_dispatch + schedule).
+#   - Añadir segunda cron entry para redundancia.
+#   - Eliminar job noop-on-self-edit que ya no aplica sin push trigger.
 
 on:
   schedule:
+    # primer disparo: 02:00 UTC (04:00 CEST verano / 03:00 CET invierno)
     - cron: "0 2 * * *"
+    # segundo disparo redundante: 14:00 UTC (16:00 CEST verano / 15:00 CET)
+    - cron: "0 14 * * *"
   workflow_dispatch:
-  # SSS162: trigger push solo cuando se edita el workflow mismo. Sin esto,
-  # GH crea un run "failure" con 0 jobs cada vez que el workflow file
-  # cambia en main (porque el push event no matchea ningún job). Con
-  # paths-filter el run pasa con todos los jobs skipped.
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/revenue-snapshot.yml"
 
 concurrency:
   group: revenue-snapshot
   cancel-in-progress: false
 
 jobs:
-  noop-on-self-edit:
-    name: noop (workflow edit detected)
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Push event a workflow file — snapshot real corre solo en cron schedule + workflow_dispatch"
-
   snapshot:
     name: Snapshot revenue del día anterior
-    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
