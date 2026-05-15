@@ -1087,6 +1087,22 @@
       "destination": "CDT",
       "price_eur": 35.59,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e359e51fbe0a",
+      "ts": "2026-05-15T17:23:38.114348+00:00",
+      "origin": "MXP",
+      "destination": "TGD",
+      "price_eur": 36.8,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "690808777bd0",
+      "ts": "2026-05-15T17:23:38.114348+00:00",
+      "origin": "LIS",
+      "destination": "MLA",
+      "price_eur": 43.27,
+      "classification": "CRÍTICO"
     }
   ]
 }
