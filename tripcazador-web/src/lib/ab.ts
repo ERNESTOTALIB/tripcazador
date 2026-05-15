@@ -55,15 +55,23 @@ export const EXPERIMENTS: Record<string, Experiment> = {
     bWeight: 50,
     defaultVariant: "A",
   },
-  // YYY01 — booking link routing: directo aerolínea (A) vs Aviasales/TP marker (B).
-  // A = Ryanair/EasyJet/Wizz directo (UX mejor, €0 comisión).
-  // B = aviasales.es?marker=714734 (1 click extra, €1-3 commission cuando hay booking).
-  // Hipótesis: B genera ≥€50/100 clicks vs €0 actual; coste = -10-20% CTR.
+  // YYY01 → SSS177 (May 2026): Promovido a 100% B tras audit funnel SSS174-176.
+  // Audit reveló: 100% Ryanair URLs en prod servían directo (€0 commission).
+  // Causa: 50/50 A/B + defaultVariant=A + sólo 7% consent_granted → ~95% direct.
+  // Con 50 unique/día y 0 deal_clicks rastreables en JSONL, no obtenemos data
+  // estadística suficiente para validar el experimento. Decisión: promover B
+  // (TP marker) a 100% para todos (consented o no), porque:
+  //   - €0/booking direct vs €1-3/booking TP marker → expected revenue 100% B
+  //   - Coste 10-20% CTR es irrelevante con 0€ baseline de Ryanair direct
+  //   - Si CTR drop fuese catastrófico, los GA4 events `deal_click` (consented)
+  //     y los tcTrack server-side (no requieren consent vía /api/p) lo revelarán
+  // Para revisar el cambio: subir bWeight a 50 + defaultVariant=A si se confirma
+  // drop >50% del booking_redirect rate en /api/admin/revenue.
   booking_router_v1: {
     id: "booking_router_v1",
-    name: "Booking URL routing — directo aerolínea vs TP marker",
-    bWeight: 50,
-    defaultVariant: "A",
+    name: "Booking URL routing — TP marker (SSS177 100% B)",
+    bWeight: 100,
+    defaultVariant: "B",
   },
 };
 
