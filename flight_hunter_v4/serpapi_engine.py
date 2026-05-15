@@ -152,7 +152,13 @@ def _gf_flight_to_dict(
             "gf_cabin_gf":       cabin_code_gf,
             "gf_total_duration": total_dur,
         }
-    except Exception:
+    except Exception as exc:  # noqa: BLE001
+        # SSS189: schema parse error. Antes silent → 0 deals individuales sin
+        # señal del schema change de Google Flights.
+        print(
+            f"   ⚠️  SerpAPI _gf_flight_to_dict parse error: {type(exc).__name__}: {exc}",
+            flush=True,
+        )
         return None
 
 
@@ -219,11 +225,29 @@ class SerpAPIEngine:
                     timeout=aiohttp.ClientTimeout(total=25),
                 ) as resp:
                     if resp.status != 200:
+                        # SSS189 (15 may 2026): además de _BREAKER, log status
+                        # + body snippet para que GH Actions logs muestren causa
+                        # real (429 rate-limit, 401 key inválida, 5xx).
+                        body = ""
+                        try:
+                            body = (await resp.text())[:200]
+                        except Exception:  # noqa: BLE001
+                            body = "<failed to read body>"
+                        print(
+                            f"   ❌ SerpAPI search HTTP {resp.status} body={body}",
+                            flush=True,
+                        )
                         _BREAKER.record_failure(f"HTTP {resp.status}")
                         return []
                     data = await resp.json()
                     _BREAKER.record_success()
             except Exception as e:
+                # SSS189: log exception además de _BREAKER. Antes silent →
+                # cuando el motor caía no sabíamos si era network, parse, o auth.
+                print(
+                    f"   ❌ SerpAPI search exception: {type(e).__name__}: {e}",
+                    flush=True,
+                )
                 _BREAKER.record_failure(e)
                 return []
 

@@ -226,7 +226,9 @@ def _amadeus_offer_to_dict(offer: Dict, origin: str) -> Optional[Dict]:
             "distance_category": dist_cat,
             "booking_url":       booking,
         }
-    except Exception:
+    except Exception as exc:  # noqa: BLE001
+        # SSS189: schema parse errors — si Amadeus cambia el shape, queremos saberlo.
+        print(f"   ⚠️  Amadeus _offer_to_dict parse error: {type(exc).__name__}: {exc}", flush=True)
         return None
 
 
@@ -281,13 +283,28 @@ class AmadeusEngine:
                 timeout=aiohttp.ClientTimeout(total=15),
             ) as resp:
                 if resp.status != 200:
+                    # SSS189: log status — antes silent → motor entire deshabilitado
+                    # sin diagnóstico (401=key inválido, 429=rate-limit, 5xx=AWS).
+                    body = ""
+                    try:
+                        body = (await resp.text())[:200]
+                    except Exception:  # noqa: BLE001
+                        body = "<failed to read body>"
+                    print(
+                        f"   ❌ Amadeus _get_token HTTP {resp.status} body={body}",
+                        flush=True,
+                    )
                     return None
                 data = await resp.json()
                 self._token        = data.get("access_token")
                 expires_in         = int(data.get("expires_in", 1799))
                 self._token_expiry = now + expires_in
                 return self._token
-        except Exception:
+        except Exception as exc:  # noqa: BLE001
+            print(
+                f"   ❌ Amadeus _get_token exception: {type(exc).__name__}: {exc}",
+                flush=True,
+            )
             return None
 
     async def _search_one(
@@ -331,11 +348,26 @@ class AmadeusEngine:
                 ) as resp:
                     if resp.status == 401:
                         self._token = None  # Forzar renovación
+                        print(
+                            f"   ⚠️  Amadeus 401 — token revoked. Forzando renovación próxima request.",
+                            flush=True,
+                        )
                         return []
                     if resp.status not in (200, 201):
+                        # SSS189: 429 rate-limit y 5xx ahora visibles en logs
+                        print(
+                            f"   ❌ Amadeus _search_one {origin}-{destination} {departure_date} "
+                            f"HTTP {resp.status}",
+                            flush=True,
+                        )
                         return []
                     data = await resp.json()
-            except Exception:
+            except Exception as exc:  # noqa: BLE001
+                print(
+                    f"   ❌ Amadeus _search_one {origin}-{destination} {departure_date} "
+                    f"exception: {type(exc).__name__}: {exc}",
+                    flush=True,
+                )
                 return []
 
         offers = data.get("data", [])

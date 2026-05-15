@@ -16,6 +16,7 @@
  * Uso: footer de blog posts largos donde el lector ya tiene "intent" de viaje.
  */
 import { Shield, ExternalLink } from "lucide-react";
+import { tcTrack } from "@/lib/track_client";
 
 const HEYMONDO_REF = process.env.NEXT_PUBLIC_HEYMONDO_REF || "";
 
@@ -98,8 +99,10 @@ export function TravelInsuranceCTA({ destination, variant = "compact" }: Props) 
 
 function trackClick(destination?: string) {
   if (typeof window === "undefined") return;
+  // SSS185: emit a AMBOS — GA4 (gtag) + /api/p (tcTrack server-side, AdBlocker-resistant)
   const w = window as unknown as { gtag?: (...a: unknown[]) => void };
   if (w.gtag) {
     w.gtag("event", "affiliate_click", { provider: "heymondo", destination: destination || "generic" });
   }
+  tcTrack("deal_click", { partner: "heymondo", destination: destination || "generic", source: "insurance_cta" });
 }

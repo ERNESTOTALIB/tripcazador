@@ -20,8 +20,12 @@ on:
       - ".github/workflows/lighthouse.yml"
   # SSS163: cron semanal sobre prod para detectar regresiones perf
   # incluso sin PRs (usamos push directo a main, sin preview).
+  # SSS188 (15 may 2026): añadido segundo cron diurno para redundancia tras
+  # detectar que `0 6 * * 1` (lunes 06:00) jamás disparó en 24 días (3 lunes
+  # missed). Probable cron-stuck bug de GitHub Actions tras updates al workflow.
   schedule:
-    - cron: "0 6 * * 1"  # lunes 06:00 UTC
+    - cron: "0 6 * * 1"   # lunes 06:00 UTC (mañana europea)
+    - cron: "0 18 * * 4"  # jueves 18:00 UTC redundante (mid-week health check)
   workflow_dispatch:
 
 permissions:

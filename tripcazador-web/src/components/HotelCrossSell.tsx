@@ -21,6 +21,7 @@
  */
 
 import { Bed, ExternalLink } from "lucide-react";
+import { tcTrack } from "@/lib/track_client";
 
 const TP_MARKER = process.env.NEXT_PUBLIC_BOOKING_AID || "714734";
 
@@ -120,6 +121,8 @@ export function HotelCrossSell({
 
   function handleClick() {
     if (typeof window === "undefined") return;
+    // SSS185 (May 2026): emit a AMBOS — GA4 (gtag) y server-side /api/p
+    // (tcTrack). gtag se pierde con AdBlocker (25% users), tcTrack sobrevive.
     const w = window as unknown as { gtag?: (...args: unknown[]) => void };
     if (typeof w.gtag === "function") {
       try {
@@ -132,6 +135,14 @@ export function HotelCrossSell({
         /* swallow */
       }
     }
+    // server-side mirror (AdBlocker-resistant via /api/p endpoint)
+    tcTrack("deal_click", {
+      partner: "booking",
+      city: cityClean,
+      variant,
+      locale,
+      source: "hotel_crosssell",
+    });
   }
 
   if (variant === "inline") {

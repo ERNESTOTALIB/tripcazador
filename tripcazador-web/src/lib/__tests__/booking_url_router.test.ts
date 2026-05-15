@@ -68,12 +68,12 @@ describe("routeBookingUrl — non-profitable", () => {
   });
 });
 
-describe("routeBookingUrl — profitable airline sin consent", () => {
+describe("routeBookingUrl — profitable airline (SSS177: 100% B)", () => {
   beforeEach(() => {
     try { localStorage.clear(); sessionStorage.clear(); } catch { /* noop */ }
   });
 
-  it("Ryanair (FR) sin consent → variant default A (no reescribe)", () => {
+  it("Ryanair (FR) sin consent → variant B (bWeight=100 SSS177+179)", () => {
     const r = routeBookingUrl({
       originalUrl: "https://ryanair.com/...",
       airlineCode: "FR",
@@ -81,13 +81,16 @@ describe("routeBookingUrl — profitable airline sin consent", () => {
       destination: "BCN",
       dateOut: "2026-06-01",
     });
-    // sin consent, getVariant cae a defaultVariant
-    expect(r.variant).toBe("A");
-    expect(r.rerouted).toBe(false);
-    expect(r.url).toBe("https://ryanair.com/...");
+    // SSS177: bWeight=100 + SSS179: getVariant siempre asigna por hash
+    // → con bWeight=100, todos los hash buckets caen en B.
+    expect(r.variant).toBe("B");
+    // rerouted depende de si TP_MARKER está set en env de test (suele no estar →
+    // travelpayoutsUrl fallback a kayak, que sí difiere del originalUrl ryanair).
+    expect(r.rerouted).toBe(true);
+    expect(r.url).not.toBe("https://ryanair.com/...");
   });
 
-  it("easyJet (U2) profitable code", () => {
+  it("easyJet (U2) profitable code → variant B (SSS177)", () => {
     const r = routeBookingUrl({
       originalUrl: "https://www.easyjet.com/x",
       airlineCode: "U2",
@@ -95,10 +98,10 @@ describe("routeBookingUrl — profitable airline sin consent", () => {
       destination: "PMI",
       dateOut: "2026-06-01",
     });
-    expect(r.variant).toBe("A");
+    expect(r.variant).toBe("B");
   });
 
-  it("Wizz (W6) profitable code", () => {
+  it("Wizz (W6) profitable code → variant B (SSS177)", () => {
     const r = routeBookingUrl({
       originalUrl: "https://wizzair.com/x",
       airlineCode: "W6",
@@ -106,10 +109,10 @@ describe("routeBookingUrl — profitable airline sin consent", () => {
       destination: "WAW",
       dateOut: "2026-06-01",
     });
-    expect(r.variant).toBe("A");
+    expect(r.variant).toBe("B");
   });
 
-  it("Detección por dominio URL — ryanair.com presente → profitable", () => {
+  it("Detección por dominio URL — ryanair.com presente → profitable + B", () => {
     const r = routeBookingUrl({
       originalUrl: "https://www.ryanair.com/special-deal",
       airlineCode: "", // sin code
@@ -117,7 +120,8 @@ describe("routeBookingUrl — profitable airline sin consent", () => {
       destination: "BCN",
       dateOut: "2026-06-01",
     });
-    // Sin consent: defaultVariant=A
-    expect(r.variant).toBe("A");
+    // SSS177: defaultVariant=B → siempre reescribe (consent o no)
+    expect(r.variant).toBe("B");
+    expect(r.rerouted).toBe(true);
   });
 });

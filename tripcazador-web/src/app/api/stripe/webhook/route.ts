@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { captureRevenueError } from "@/lib/sentry_helper";
 
 /**
  * /api/stripe/webhook — fase SSS9 LIVE
@@ -32,7 +33,7 @@ async function notifyAdmin(text: string): Promise<void> {
   const chat = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chat) return;
   try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -42,8 +43,17 @@ async function notifyAdmin(text: string): Promise<void> {
         disable_web_page_preview: true,
       }),
     });
-  } catch {
-    // Silencioso — no bloqueamos el webhook si Telegram falla
+    if (!res.ok) {
+      // SSS192 (15 may 2026): antes silent — nueva suscripción Premium / cancel
+      // / pago fallido no notificaba al admin sin saber por qué (token expired?
+      // chat blocked? Telegram down?). Ahora log status + body snippet.
+      const body = await res.text().catch(() => "<unread>");
+      console.error(`[stripe-webhook] notifyAdmin HTTP ${res.status}: ${body.slice(0, 200)}`);
+    }
+  } catch (err) {
+    console.error(
+      `[stripe-webhook] notifyAdmin network error: ${err instanceof Error ? err.message : String(err)}`,
+    );
   }
 }
 
@@ -139,6 +149,16 @@ export async function POST(req: NextRequest) {
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "handler_error";
     console.error("[stripe-webhook] handler error:", msg);
+    // SSS181: handler crashes son revenue-critical — payment SE PROCESÓ en Stripe
+    // pero notifyAdmin/persist falló → no sabemos del nuevo subscriber.
+    // Sentry tag con event.type permite filtrar por subscription_created vs
+    // payment_succeeded etc.
+    captureRevenueError(e, {
+      module: "stripe_webhook",
+      code: "handler_error",
+      extra: { event_type: event.type, event_id: event.id },
+      level: "error",
+    });
     // 200 igual para que Stripe no reintente; loggeamos en server.
     return NextResponse.json({ received: true, error: msg });
   }

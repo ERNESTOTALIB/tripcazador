@@ -92,6 +92,10 @@ async function sendOne(
   html: string,
   unsub: string,
 ): Promise<boolean> {
+  // SSS190 (15 may 2026): antes silent return false → al cron no se sabía
+  // POR QUÉ skipped count subía (401 key inválida? 429 rate-limit? domain
+  // not verified? Resend down?). Newsletter llevaba semanas sin enviarse
+  // sin log explicativo. Ahora console.error con status + body snippet.
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -110,8 +114,20 @@ async function sendOne(
         },
       }),
     });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "<unread>");
+      // Email hash para RGPD (no log full address en producción)
+      const hash = email.slice(0, 3) + "***@" + (email.split("@")[1] || "?");
+      console.error(
+        `[newsletter-weekly] Resend HTTP ${res.status} to ${hash}: ${body.slice(0, 200)}`,
+      );
+    }
     return res.ok;
-  } catch {
+  } catch (err) {
+    const hash = email.slice(0, 3) + "***@" + (email.split("@")[1] || "?");
+    console.error(
+      `[newsletter-weekly] Resend network error to ${hash}: ${err instanceof Error ? err.message : String(err)}`,
+    );
     return false;
   }
 }
@@ -157,7 +173,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const all = await listPendingDrip(Date.now() + 1000 * 365 * 24 * 3600);
     subs = all.filter((s) => !s.unsubscribed_at).map((s) => s.email);
-  } catch {
+  } catch (err) {
+    // SSS190: antes silent → "no_subscribers" como reason aunque la causa real
+    // fuese el backend caído. Ahora log para distinguir lista vacía vs error.
+    console.error(
+      `[newsletter-weekly] listPendingDrip failed: ${err instanceof Error ? err.message : String(err)}`,
+    );
     subs = [];
   }
 

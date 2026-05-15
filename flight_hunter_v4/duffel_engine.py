@@ -121,7 +121,10 @@ def _offer_to_dict(offer: Dict, origin: str, destination: str) -> Optional[Dict]
             "distance_category": dist_cat,
             "booking_url": booking_url,
         }
-    except Exception:
+    except Exception as exc:  # noqa: BLE001
+        # SSS189: log parsing errors — si Duffel cambia schema, queremos saberlo.
+        # Antes silent → deal individual perdido pero motor parecía OK.
+        print(f"   ⚠️  Duffel _offer_to_dict parse error: {type(exc).__name__}: {exc}", flush=True)
         return None
 
 
@@ -181,10 +184,30 @@ class DuffelEngine:
                     print(f"   ⚠️  Duffel rate-limit en {origin}-{destination} {departure_date}")
                     return None
                 if resp.status not in (200, 201):
+                    # SSS189 (15 may 2026): antes silenciaba 400/401/403/422/500.
+                    # Duffel 0 deals = misterio durante semanas. Log status + body
+                    # snippet a stderr para que GH Actions logs muestren causa real.
+                    body_snippet = ""
+                    try:
+                        body_snippet = (await resp.text())[:200]
+                    except Exception:  # noqa: BLE001
+                        body_snippet = "<failed to read body>"
+                    print(
+                        f"   ❌ Duffel _create_offer_request {origin}-{destination} {departure_date} "
+                        f"HTTP {resp.status} body={body_snippet}",
+                        flush=True,
+                    )
                     return None
                 data = await resp.json()
                 return ((data or {}).get("data") or {}).get("id")
-        except Exception:
+        except Exception as exc:  # noqa: BLE001
+            # SSS189: antes silent — network/timeout/parsing errors invisibles.
+            # Ahora print con traceback corto para que sea grep'able en CI logs.
+            print(
+                f"   ❌ Duffel _create_offer_request {origin}-{destination} {departure_date} "
+                f"exception: {type(exc).__name__}: {exc}",
+                flush=True,
+            )
             return None
 
     async def _retrieve_offers(self, session: aiohttp.ClientSession,
@@ -199,10 +222,20 @@ class DuffelEngine:
                 timeout=aiohttp.ClientTimeout(total=_REQUEST_TIMEOUT),
             ) as resp:
                 if resp.status not in (200, 201):
+                    # SSS189: log status para diagnosticar el motor stuck en 0 deals.
+                    print(
+                        f"   ❌ Duffel _retrieve_offers rid={request_id[:12]}... HTTP {resp.status}",
+                        flush=True,
+                    )
                     return []
                 data = await resp.json()
                 return ((data or {}).get("data") or {}).get("offers") or []
-        except Exception:
+        except Exception as exc:  # noqa: BLE001
+            print(
+                f"   ❌ Duffel _retrieve_offers rid={request_id[:12]}... "
+                f"exception: {type(exc).__name__}: {exc}",
+                flush=True,
+            )
             return []
 
     async def _search_one(self, session: aiohttp.ClientSession,
@@ -233,8 +266,19 @@ class DuffelEngine:
 
                 return await asyncio.wait_for(_flow(), timeout=_SEARCH_TIMEOUT + 8)
             except asyncio.TimeoutError:
+                # SSS189: log timeouts. Antes silent → no podíamos distinguir
+                # entre "0 offers válidas" vs "el motor cuelga sistemáticamente".
+                print(
+                    f"   ⏱️  Duffel _search_one timeout {origin}-{destination} {departure_date}",
+                    flush=True,
+                )
                 return []
-            except Exception:
+            except Exception as exc:  # noqa: BLE001
+                print(
+                    f"   ❌ Duffel _search_one {origin}-{destination} {departure_date} "
+                    f"exception: {type(exc).__name__}: {exc}",
+                    flush=True,
+                )
                 return []
 
     async def search_routes(self, origins: List[str], date_from: str,
@@ -337,7 +381,10 @@ def _dates_in_range(date_from: str, date_to: str, step_days: int = 7) -> List[st
     try:
         df = datetime.strptime(date_from, "%Y-%m-%d")
         dt = datetime.strptime(date_to, "%Y-%m-%d")
-    except Exception:
+    except Exception as exc:  # noqa: BLE001
+        # SSS189: log misuse — formato date invalid es bug del caller, queremos
+        # señal visible en CI logs en lugar de búsqueda silenciosa-sin-resultados.
+        print(f"   ⚠️  Duffel _dates_in_range invalid dates '{date_from}' '{date_to}': {exc}", flush=True)
         return []
     if df > dt:
         return []
