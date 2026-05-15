@@ -484,5 +484,14 @@
     "city_from": "Madrid",
     "city_to": "Cagliari",
     "price_eur": 32.44
+  },
+  {
+    "timestamp": 1778867111.6578424,
+    "deal_id": "ryanair_waw_pfo_20260724_economy",
+    "origin": "WAW",
+    "destination": "PFO",
+    "city_from": "Varsovia",
+    "city_to": "Paphos",
+    "price_eur": 31.79
   }
 ]
