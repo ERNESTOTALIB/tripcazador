@@ -1,6 +1,3 @@
-{"ts":"2026-05-13T20:18:22.042Z","type":"page_view","visitor":"0d06d948b4e5981e","meta":{"path":"/"}}
-{"ts":"2026-05-13T20:18:22.068Z","type":"landing_arrived","visitor":"0d06d948b4e5981e","meta":{"path":"/"}}
-{"ts":"2026-05-13T20:18:22.089Z","type":"page_view","visitor":"0d06d948b4e5981e","meta":{"path":"/"}}
 {"ts":"2026-05-13T20:18:22.109Z","type":"landing_arrived","visitor":"0d06d948b4e5981e","meta":{"path":"/"}}
 {"ts":"2026-05-13T20:18:22.654Z","type":"landing_arrived","visitor":"0d06d948b4e5981e","meta":{"path":"/"}}
 {"ts":"2026-05-13T22:18:15.153Z","type":"result_viewed","visitor":"c8401b5198bb283f","meta":{"deal_id":"ryanair_bcn_tng_20260828_economy","destination":"TNG","origin":"BCN","price":20.71,"classification":"CRÍTICO"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-15T12:02:32.865Z","type":"page_view","visitor":"cd233c50c96e5ec2","meta":{"path":"/"}}
 {"ts":"2026-05-15T12:02:33.394Z","type":"page_view","visitor":"cd233c50c96e5ec2","meta":{"path":"/"}}
 {"ts":"2026-05-15T12:02:36.611Z","type":"page_view","visitor":"cd233c50c96e5ec2","meta":{"path":"/"}}
+{"ts":"2026-05-15T12:28:10.126Z","type":"page_view","visitor":"b1893f43cf3406b1","meta":{"path":"/deals"}}
+{"ts":"2026-05-15T12:28:16.260Z","type":"scroll_75","visitor":"b1893f43cf3406b1","meta":{"path":"/deals"}}
+{"ts":"2026-05-15T12:28:45.338Z","type":"page_view","visitor":"b1893f43cf3406b1","meta":{"path":"/deals"}}
