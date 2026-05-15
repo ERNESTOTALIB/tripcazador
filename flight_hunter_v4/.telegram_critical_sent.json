@@ -1103,6 +1103,22 @@
       "destination": "MLA",
       "price_eur": 43.27,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5f8d7365e009",
+      "ts": "2026-05-15T19:22:58.856150+00:00",
+      "origin": "BCN",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2701f1ba5adf",
+      "ts": "2026-05-15T19:22:58.856150+00:00",
+      "origin": "BUD",
+      "destination": "RMI",
+      "price_eur": 22.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
