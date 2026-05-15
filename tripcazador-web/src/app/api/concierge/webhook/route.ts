@@ -75,7 +75,7 @@ async function notifyTelegram(text: string): Promise<void> {
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 3000);
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -87,8 +87,17 @@ async function notifyTelegram(text: string): Promise<void> {
       signal: ctrl.signal,
     });
     clearTimeout(t);
-  } catch {
-    /* no-op */
+    if (!res.ok) {
+      // SSS192 (15 may 2026): antes silent — nuevo pedido Concierge VIP no
+      // notificaba al admin sin saber por qué. Revenue-critical: orders
+      // express €2000+ requieren respuesta humana en <24h.
+      const body = await res.text().catch(() => "<unread>");
+      console.error(`[concierge-webhook] notifyTelegram HTTP ${res.status}: ${body.slice(0, 200)}`);
+    }
+  } catch (err) {
+    console.error(
+      `[concierge-webhook] notifyTelegram error: ${err instanceof Error ? err.message : String(err)}`,
+    );
   }
 }
 

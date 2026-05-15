@@ -201,7 +201,18 @@ def format_message(deal: Dict) -> str:
 
 
 def send_telegram(token: str, chat_id: str, text: str) -> bool:
-    """Envía un mensaje a Telegram con HTML parse mode."""
+    """Envía un mensaje a Telegram con HTML parse mode.
+
+    SSS192 (15 may 2026): antes solo validaba HTTP status==200, pero Telegram
+    devuelve 200 con `{"ok": false, "error_code": 401}` cuando el bot token
+    está revocado. Eso causaba que el dedup file marcara como "sent" sin
+    que el mensaje hubiera llegado realmente → alertas críticas perdidas
+    durante semanas hasta que alguien notara el silencio del canal.
+
+    Fix: parsear JSON response y verificar `ok == True`. Log explícito del
+    error_code de Telegram cuando viene (401 token, 400 parse_mode HTML
+    inválido, 403 bot kicked, 429 flood control, etc.).
+    """
     url = TG_API.format(token=token)
     payload = urllib.parse.urlencode({
         "chat_id": chat_id,
@@ -212,9 +223,41 @@ def send_telegram(token: str, chat_id: str, text: str) -> bool:
     try:
         req = urllib.request.Request(url, data=payload, method="POST")
         with urllib.request.urlopen(req, timeout=10) as resp:
-            return resp.status == 200
+            if resp.status != 200:
+                body_snip = ""
+                try:
+                    body_snip = resp.read(500).decode("utf-8", errors="replace")
+                except Exception:  # noqa: BLE001
+                    body_snip = "<failed to read body>"
+                print(
+                    f"   ⚠️  Telegram HTTP {resp.status} body={body_snip}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                return False
+            # SSS192: validar payload JSON. Telegram puede devolver 200 con
+            # error_code dentro del body.
+            try:
+                data = json.loads(resp.read().decode("utf-8"))
+            except Exception as parse_err:  # noqa: BLE001
+                print(
+                    f"   ⚠️  Telegram response no es JSON parseable: {parse_err}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                return False
+            if not data.get("ok"):
+                desc = data.get("description", "<no description>")
+                code = data.get("error_code", "?")
+                print(
+                    f"   ❌ Telegram error_code={code}: {desc}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                return False
+            return True
     except Exception as e:
-        print(f"   ⚠️  Telegram send failed: {e}", file=sys.stderr)
+        print(f"   ⚠️  Telegram send failed: {e}", file=sys.stderr, flush=True)
         return False
 
 
