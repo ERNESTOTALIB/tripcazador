@@ -52,9 +52,29 @@ async function fetchRemote(): Promise<RemoteAggregate | null> {
       `${baseUrl}/api/admin/events/aggregate?token=${encodeURIComponent(adminToken)}&hours=24`,
       { cache: "no-store", signal: AbortSignal.timeout(3000) },
     );
-    if (!res.ok) return null;
-    return (await res.json()) as RemoteAggregate;
-  } catch {
+    if (!res.ok) {
+      // SSS206 (15 may 2026): antes silent — VPS down/auth desde SSS80
+      // pero panel mostraba "memory" source sin diagnóstico. Log status
+      // para detectar 5xx (VPS down) vs 401 (token wrong).
+      console.error(`[admin/analytics] fetchRemote HTTP ${res.status}`);
+      return null;
+    }
+    // SSS206: wrap json() en try/catch — si VPS devuelve HTML error page
+    // crasheamos con SyntaxError opaco. Mejor return null + log.
+    try {
+      return (await res.json()) as RemoteAggregate;
+    } catch (parseErr) {
+      console.error(
+        `[admin/analytics] fetchRemote JSON parse failed: ${parseErr instanceof Error ? parseErr.message : String(parseErr)}`,
+      );
+      return null;
+    }
+  } catch (err) {
+    // SSS206: distinguir timeout vs network vs aborted — útil para
+    // detectar si VPS está down sistemáticamente vs latency spike.
+    console.error(
+      `[admin/analytics] fetchRemote error: ${err instanceof Error ? err.message : String(err)}`,
+    );
     return null;
   }
 }
