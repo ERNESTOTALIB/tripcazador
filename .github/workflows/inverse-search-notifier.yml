@@ -1,0 +1,72 @@
+name: Inverse Search Notifier
+
+# SSS211 (15 may 2026): cron que cruza inverse_search_subscriptions.json
+# con deals-latest.json y envía Telegram personal al chat_id de cada
+# sub cuando aparece match no notificado antes.
+#
+# Triggered cada 6h en horario diurno (08, 14, 20 UTC = 4 runs/day).
+# Workflow_dispatch para tests manual.
+#
+# Anti-spam: max 3 notif/user/run, dedup persistente en
+# data/.inverse_notified.json (FIFO 5000 entries).
+
+on:
+  schedule:
+    # 4 runs/día en horario europeo
+    - cron: "0 8 * * *"
+    - cron: "0 14 * * *"
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Para commitear .inverse_notified.json updates
+
+concurrency:
+  group: inverse-search-notifier
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    name: Send inverse search Telegram notifications
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run notifier
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          SITE_URL: https://tripcazador.com
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
+            echo "::warning::TELEGRAM_BOT_TOKEN no configurado — skip"
+            exit 0
+          fi
+          python3 scripts/inverse_search_notifier.py
+
+      - name: Commit notified state (if changed)
+        run: |
+          git config user.name "tripcazador-bot"
+          git config user.email "bot@tripcazador.com"
+          if git diff --quiet data/.inverse_notified.json 2>/dev/null; then
+            echo "No changes to .inverse_notified.json"
+            exit 0
+          fi
+          git add data/.inverse_notified.json
+          git commit -m "chore(inverse-notifier): update notified state [skip ci]" || exit 0
+          # Push retry — same pattern SSS148 worker
+          for i in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "✅ pushed (attempt $i)"
+              exit 0
+            fi
+            sleep $((RANDOM % 4 + 1))
+            git pull --rebase origin main || git rebase --abort || true
+          done
+          echo "::error::push falló 5 veces"
+          exit 1
