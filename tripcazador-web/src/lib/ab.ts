@@ -118,20 +118,35 @@ function consentGranted(): boolean {
 
 /**
  * Devuelve la variante asignada para este visitor + experimento.
- * Si no hay consent, devuelve `defaultVariant` (sin asignar realmente).
+ *
+ * SSS179 (May 2026): la versión previa devolvía `defaultVariant` si no había
+ * consent analytics → 93% de usuarios siempre veían defaultVariant, lo que
+ * hacía que ningún A/B test produjera data estadística representativa, y
+ * además invalidaba el booking_router_v1 (SSS177) en práctica.
+ *
+ * Análisis RGPD: visitor_id es un UUID v4 random sin PII guardado solo en
+ * localStorage del propio usuario (no se envía a server, no se usa para
+ * cross-site tracking). La asignación de variante (hash determinístico) es
+ * "preferencia funcional" que NO requiere consent estricto de analytics.
+ * Lo que SÍ requiere consent es la emisión a GA4 (gtag), que ya está
+ * gateada dentro de `trackExposure()`.
+ *
+ * Fix: getVariant asigna SIEMPRE por hash. trackExposure mantiene el gate
+ * para GA4. Solo si visitor_id no está disponible (storage bloqueado por
+ * el navegador, modo privado estricto), caemos a defaultVariant.
  */
 export function getVariant(experimentId: string): Variant {
   const exp = EXPERIMENTS[experimentId];
   if (!exp) return "A";
 
   const visitor = getVisitorId();
-  if (!visitor || !consentGranted()) return exp.defaultVariant;
+  if (!visitor) return exp.defaultVariant;
 
   const bucket = fnv1a(`${visitor}|${experimentId}`) % 100;
   const variant: Variant = bucket < exp.bWeight ? "B" : "A";
 
   // Emitir event de exposición la primera vez que evalúa este experimento
-  // en la sesión.
+  // en la sesión. trackExposure gate-a internamente por consent (GA4 fire).
   trackExposure(experimentId, variant);
   return variant;
 }
@@ -143,6 +158,13 @@ function trackExposure(experimentId: string, variant: Variant): void {
     if (map[experimentId]) return; // ya emitido en esta sesión
     map[experimentId] = variant;
     window.sessionStorage.setItem(EXPOSURE_KEY, JSON.stringify(map));
+
+    // SSS179: explicit consent gate ANTES de tocar gtag (GA4). El sessionStorage
+    // write sí ocurre siempre (no PII, dedup local) pero el fire a GA4 SÍ
+    // requiere consent legal. Antes confiábamos en que gtag no estaría
+    // cargado sin consent, pero el script de GA4 puede precargarse antes del
+    // banner — better defensiva explícita.
+    if (!consentGranted()) return;
 
     const w = window as unknown as { gtag?: (...args: unknown[]) => void };
     if (typeof w.gtag === "function") {

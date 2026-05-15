@@ -38,7 +38,7 @@ describe("EXPERIMENTS — registro", () => {
   });
 });
 
-describe("getVariant — sin consent", () => {
+describe("getVariant — sin consent (SSS179: asigna igual por hash)", () => {
   beforeEach(() => {
     try {
       localStorage.clear();
@@ -46,9 +46,29 @@ describe("getVariant — sin consent", () => {
     } catch { /* swallow */ }
   });
 
-  it("sin consent devuelve defaultVariant", () => {
+  it("sin consent asigna por hash (no devuelve siempre defaultVariant)", () => {
+    // SSS179: previo era "sin consent → defaultVariant"; ahora asigna por
+    // hash determinístico igualmente (visitor_id es UUID anonymous local,
+    // no PII, no requiere consent). Lo que sí requiere consent es la
+    // emisión a GA4 (que sigue gated dentro de trackExposure).
     const r = getVariant("telegram_cta_v2");
-    expect(r).toBe(EXPERIMENTS.telegram_cta_v2.defaultVariant);
+    expect(["A", "B"]).toContain(r);
+    // Y debe haber generado un visitor_id en localStorage
+    expect(localStorage.getItem("cv_visitor_id")).toBeTruthy();
+  });
+
+  it("sin consent: misma variante para el mismo visitor (determinístico)", () => {
+    const r1 = getVariant("telegram_cta_v2");
+    const r2 = getVariant("telegram_cta_v2");
+    expect(r1).toBe(r2);
+  });
+
+  it("experimento con bWeight=100 sin consent → B siempre", () => {
+    // booking_router_v1: bWeight=100, defaultVariant=B (SSS177). Sin consent
+    // debe seguir devolviendo B porque la asignación por hash con bWeight=100
+    // siempre cae en B.
+    const r = getVariant("booking_router_v1");
+    expect(r).toBe("B");
   });
 
   it("experimento desconocido → 'A'", () => {

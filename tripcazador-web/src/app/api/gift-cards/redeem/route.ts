@@ -23,8 +23,15 @@ export async function POST(req: Request) {
 
   // Stub: en producción comprobar en KV/DB que el código no se haya usado.
   // Por ahora simplemente devolver OK con sugerencias de reservas afiliadas.
-  const tpMarker = process.env.NEXT_PUBLIC_TP_MARKER || "tripcazador";
+  //
+  // SSS179 (May 2026): antes "tripcazador" como fallback de TP_MARKER pero
+  // Skyscanner NO acepta strings arbitrarios → invalida tracking + corre el
+  // riesgo de que Skyscanner lo trate como spam. Mejor omitir associateid
+  // si no está configurado. Mismo con GYG partner_id (era `|| ""` → enviaba
+  // `?partner_id=` con valor vacío, también invalida tracking).
+  const tpMarker = process.env.NEXT_PUBLIC_TP_MARKER || "";
   const bookingAid = process.env.NEXT_PUBLIC_BOOKING_AID || "714734";
+  const gygPartner = process.env.NEXT_PUBLIC_GYG_PARTNER_ID || "";
   return NextResponse.json({
     ok: true,
     code,
@@ -33,7 +40,9 @@ export async function POST(req: Request) {
       {
         type: "vuelo",
         label: "Buscar vuelos",
-        href: `https://www.skyscanner.es/?associateid=${tpMarker}`,
+        href: tpMarker
+          ? `https://www.skyscanner.es/?associateid=${tpMarker}`
+          : `https://www.skyscanner.es/`,
       },
       {
         type: "hotel",
@@ -43,7 +52,9 @@ export async function POST(req: Request) {
       {
         type: "actividad",
         label: "Reservar tours",
-        href: `https://www.getyourguide.com/?partner_id=${process.env.NEXT_PUBLIC_GYG_PARTNER_ID || ""}`,
+        href: gygPartner
+          ? `https://www.getyourguide.com/?partner_id=${gygPartner}`
+          : `https://www.getyourguide.com/`,
       },
     ],
   });

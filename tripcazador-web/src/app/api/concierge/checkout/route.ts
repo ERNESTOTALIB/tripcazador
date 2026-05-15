@@ -146,8 +146,16 @@ export async function POST(req: Request) {
     );
   }
 
-  // Best-effort persistencia (no bloquea la respuesta)
-  void persistToBackend(order);
+  // SSS180 (May 2026): antes era `void persistToBackend(order)` fire-and-forget
+  // → Vercel Node runtime no garantiza ejecución de async callbacks tras
+  // response. En modo "pending_setup" (sin Stripe) el pedido SOLO existe en
+  // este backend call → si lambda muere antes del fetch, el cliente recibe
+  // "pedido recibido" pero NO hay registro. Pérdida silenciosa de leads.
+  //
+  // Fix: awaitamos sync. persistToBackend ya tiene timeout 3s interno + try/catch,
+  // así que en peor caso añade ~3s de latencia (aceptable: el user está
+  // esperando a Stripe checkout de todos modos).
+  await persistToBackend(order);
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   const priceId = resolvePriceIdWithLegacy(tier);

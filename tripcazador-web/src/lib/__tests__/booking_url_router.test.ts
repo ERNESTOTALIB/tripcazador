@@ -73,7 +73,7 @@ describe("routeBookingUrl — profitable airline (SSS177: 100% B)", () => {
     try { localStorage.clear(); sessionStorage.clear(); } catch { /* noop */ }
   });
 
-  it("Ryanair (FR) sin consent → variant B (defaultVariant SSS177)", () => {
+  it("Ryanair (FR) sin consent → variant B (bWeight=100 SSS177+179)", () => {
     const r = routeBookingUrl({
       originalUrl: "https://ryanair.com/...",
       airlineCode: "FR",
@@ -81,7 +81,8 @@ describe("routeBookingUrl — profitable airline (SSS177: 100% B)", () => {
       destination: "BCN",
       dateOut: "2026-06-01",
     });
-    // SSS177: defaultVariant promovido a B → siempre rerouted aunque sin consent
+    // SSS177: bWeight=100 + SSS179: getVariant siempre asigna por hash
+    // → con bWeight=100, todos los hash buckets caen en B.
     expect(r.variant).toBe("B");
     // rerouted depende de si TP_MARKER está set en env de test (suele no estar →
     // travelpayoutsUrl fallback a kayak, que sí difiere del originalUrl ryanair).

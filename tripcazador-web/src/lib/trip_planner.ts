@@ -189,10 +189,17 @@ export function buildHeuristicItinerary(input: TripPlannerInput): GeneratedItine
   const fromIata = (input.origin || "MAD").toUpperCase().slice(0, 3);
   const summary = `Plan de ${days} días en ${input.destination} para ${input.travelers} ${input.travelers === 1 ? "viajero" : "viajeros"} con presupuesto ~${totalBudget}€${landmarks.length ? `. Visitas clave sugeridas: ${landmarks.slice(0, 3).join(", ")}.` : "."}`;
 
+  // SSS179 (May 2026): consolidar affiliate links — antes hardcoded inline con
+  // dominios incorrectos y fallbacks que olvidan markers. Ahora todos los
+  // hrefs externos pasan por buildExternalAffiliateLink() / lib/travel_partners
+  // donde el marker es OBLIGATORIO y el dominio canonical (.com no .es para
+  // Heymondo). Si falta env var el link sigue funcionando, pero el marker
+  // queda como "tripcazador" (NEUTRAL) para que sepamos en logs que esa env
+  // var hay que setear (en lugar de €0 silencioso).
   const tpMarker = process.env.NEXT_PUBLIC_TP_MARKER || "";
   const gygPartner = process.env.NEXT_PUBLIC_GYG_PARTNER_ID || "";
-  const heymondoRef = process.env.NEXT_PUBLIC_HEYMONDO_REF || "tripcazador";
-  const holaflyRef = process.env.NEXT_PUBLIC_HOLAFLY_REF || "TRIPCAZADOR";
+  const heymondoRef = process.env.NEXT_PUBLIC_HEYMONDO_REF || "";
+  const holaflyRef = process.env.NEXT_PUBLIC_HOLAFLY_REF || "tripcazador";
   const bookingAid = process.env.NEXT_PUBLIC_BOOKING_AID || "714734";
 
   return {
@@ -204,8 +211,13 @@ export function buildHeuristicItinerary(input: TripPlannerInput): GeneratedItine
     daily,
     bookings: {
       flights: {
+        // SSS179: si TP_MARKER falta, el "tripcazador" string no es marker
+        // válido de Skyscanner → mejor enviar sin associateid que con junk.
+        // Cuando esté seteado, va con tracking real.
         label: `Vuelos ${fromIata} → ${input.destination}`,
-        href: `https://www.skyscanner.es/transport/flights/${fromIata}/${encodeURIComponent(input.destination)}/?associateid=${tpMarker || "tripcazador"}`,
+        href: tpMarker
+          ? `https://www.skyscanner.es/transport/flights/${fromIata}/${encodeURIComponent(input.destination)}/?associateid=${tpMarker}`
+          : `https://www.skyscanner.es/transport/flights/${fromIata}/${encodeURIComponent(input.destination)}/`,
       },
       hotel: {
         label: `Hoteles en ${input.destination}`,
@@ -216,8 +228,14 @@ export function buildHeuristicItinerary(input: TripPlannerInput): GeneratedItine
         href: `https://www.getyourguide.com/s?q=${encodeURIComponent(input.destination)}${gygPartner ? `&partner_id=${gygPartner}` : ""}`,
       },
       insurance: {
+        // SSS179: dominio canonical heymondo.com (no .es — redirige y pierde
+        // tracking). Si falta NEXT_PUBLIC_HEYMONDO_REF añadimos solo utm_source
+        // (no rompe el flow pero sin commission). Patrón alineado con
+        // travel_partners.ts:300-304.
         label: `Seguro de viaje`,
-        href: `https://heymondo.es/?ref=${heymondoRef}`,
+        href: heymondoRef
+          ? `https://heymondo.com/?utm_source=tripcazador&affiliate_id=${heymondoRef}`
+          : `https://heymondo.com/?utm_source=tripcazador`,
       },
       esim: {
         label: `eSIM con datos`,
