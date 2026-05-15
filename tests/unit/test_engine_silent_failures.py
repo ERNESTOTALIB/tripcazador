@@ -26,6 +26,7 @@ ENGINES_DIR = Path(__file__).resolve().parents[2] / "flight_hunter_v4"
 CRITICAL_ENGINES = [
     "duffel_engine.py",
     "amadeus_engine.py",
+    "serpapi_engine.py",
 ]
 
 
@@ -135,5 +136,15 @@ def test_amadeus_engine_has_logged_excepts() -> None:
     error_prints = src.count("❌ Amadeus")
     assert error_prints >= 2, (
         f"amadeus_engine.py debe tener ≥2 prints '❌ Amadeus' en sus except handlers. "
+        f"Encontrados: {error_prints}."
+    )
+
+
+def test_serpapi_engine_has_logged_excepts() -> None:
+    """SSS189: serpapi_engine logea HTTP errors + parse exceptions."""
+    src = (ENGINES_DIR / "serpapi_engine.py").read_text()
+    error_prints = src.count("❌ SerpAPI")
+    assert error_prints >= 2, (
+        f"serpapi_engine.py debe tener ≥2 prints '❌ SerpAPI' en sus handlers. "
         f"Encontrados: {error_prints}."
     )
