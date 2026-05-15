@@ -1135,6 +1135,22 @@
       "destination": "MLA",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f1693ea3a1f7",
+      "ts": "2026-05-15T21:54:05.700372+00:00",
+      "origin": "BCN",
+      "destination": "AHO",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "41340dcbbc8e",
+      "ts": "2026-05-15T21:54:05.700372+00:00",
+      "origin": "VLC",
+      "destination": "TNG",
+      "price_eur": 18.19,
+      "classification": "CRÍTICO"
     }
   ]
 }
