@@ -457,5 +457,14 @@
     "city_from": "Lisboa",
     "city_to": "Madrid",
     "price_eur": 16.99
+  },
+  {
+    "timestamp": 1778830118.6607184,
+    "deal_id": "ryanair_waw_pfo_20260724_economy",
+    "origin": "WAW",
+    "destination": "PFO",
+    "city_from": "Varsovia",
+    "city_to": "Paphos",
+    "price_eur": 29.99
   }
 ]
