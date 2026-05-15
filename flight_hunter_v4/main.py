@@ -822,12 +822,17 @@ async def run_pipeline(args):
     print(f"📦 FASE 5.5: Exportando deals.json unificado")
     print(f"{'━'*70}")
     try:
-        export_send_alerts = getattr(args, "telegram", False) or bool(config.TELEGRAM_BOT_TOKEN)
+        # SSS208 (15 may 2026): send_alerts=False hardcoded — el worker NO
+        # debe enviar Telegram. El bot telegram_critical_publisher.py
+        # (cron 1h) es la ÚNICA source de alertas Telegram al canal público.
+        # Antes había duplicación: worker enviaba 10 alertas cada 4h (60/día)
+        # + telegram_critical_publisher enviaba 2/h (30/día) = ~90 msg/día con
+        # solapamiento → spam crítico.
         run_export(
             analyzed_flights=analyzed,
             hotel_deals=hotel_deals,
             output_dir=report_dir,
-            send_alerts=export_send_alerts,
+            send_alerts=False,
         )
     except Exception as e:
         print(f"   ⚠️  Error en export: {e}")
@@ -837,16 +842,15 @@ async def run_pipeline(args):
     print(f"📱 FASE 6: Notificaciones")
     print(f"{'━'*70}")
 
-    telegram_enabled = getattr(args, "telegram", False) or bool(config.TELEGRAM_BOT_TOKEN)
-    if telegram_enabled:
-        notif_stats = await notifier.notify_all(
-            analyzed, search_params,
-            telegram_classes=["CRÍTICO", "ERROR"],
-            max_telegram_alerts=10,
-        )
-    else:
-        notif_stats = {"telegram": 0, "logged": len(analyzed)}
-        notifier.file_logger.log_deals(analyzed, search_params)
+    # SSS208: telegram_enabled=False hardcoded en el worker. Las alertas
+    # Telegram al canal público las maneja exclusivamente el cron horario
+    # telegram_critical_publisher.py con su propio dedup (.telegram_critical_sent.json)
+    # y filtro estricto (TOP 2 críticos < 6h frescos, score≥75, precio≤300€).
+    # Si en el futuro hay un canal Telegram PRIVADO admin que quiera
+    # notificaciones por worker run, reactivar con un secret distinto y
+    # max_alerts=2 max.
+    notif_stats = {"telegram": 0, "logged": len(analyzed), "source": "telegram_critical_cron_only"}
+    notifier.file_logger.log_deals(analyzed, search_params)
 
     # ── RESUMEN FINAL ─────────────────────────────────────
     finish_run(run_id, len(all_flights), len(analyzed))
