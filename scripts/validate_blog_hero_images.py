@@ -32,11 +32,31 @@ HERO_RX = re.compile(r'^heroImage:\s*"([^"]+)"', re.MULTILINE)
 
 
 def head(url: str, timeout: float) -> tuple[int, str]:
-    """Return (status_code, error_message)."""
+    """Return (status_code, error_message).
+
+    SSS214 (15 may 2026): además de status code, hace GET para descargar
+    primeros bytes y detectar imágenes "200 OK con 29 bytes" (Unsplash 404
+    page que pasa el HEAD check pero no es una foto real). Es el patrón
+    descubierto en SSS213 (11 imageIds rotos en HOTEL_SEED).
+
+    Si size_download < 5000 bytes → marca como inválida con status 599 y
+    mensaje "SSS214 small response (likely 404 page)".
+    """
     try:
-        req = Request(url, method="HEAD", headers={"User-Agent": "TripCazador-validator/1.0"})
+        # GET en lugar de HEAD para poder validar tamaño (SSS214)
+        req = Request(url, headers={"User-Agent": "TripCazador-validator/1.0"})
         with urlopen(req, timeout=timeout) as resp:
-            return resp.status, ""
+            if resp.status != 200:
+                return resp.status, ""
+            # Leer solo los primeros 8KB para distinguir foto real vs error page
+            body = resp.read(8192)
+            if len(body) < 5000:
+                # Verificar el total content-length si disponible
+                cl = resp.headers.get("Content-Length")
+                if cl and int(cl) >= 5000:
+                    return 200, ""  # truncated but file is large enough
+                return 599, f"SSS214 small response ({len(body)}B — likely 404 page)"
+            return 200, ""
     except HTTPError as e:
         return e.code, str(e)
     except URLError as e:
