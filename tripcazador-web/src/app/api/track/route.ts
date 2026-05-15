@@ -200,7 +200,22 @@ export async function POST(req: NextRequest) {
   });
   // SSS174: flush inmediato para events de revenue/conversión (no perdemos
   // ninguno por cold-start), batch para los de bajo valor (page_view).
-  if (FLUSH_IMMEDIATELY.has(type) || ghBuffer.length >= GH_FLUSH_THRESHOLD) {
+  //
+  // SSS178 (May 2026, smoke audit reveló GH no commiteaba events de revenue
+  // tras smoke directo a /api/p): el fire-and-forget en Vercel Node runtime
+  // NO garantiza que el callback async complete antes de killar el lambda.
+  // Para revenue events ahora AWAITAMOS el flush (+200-500ms latency aceptable
+  // ya que sendBeacon no espera la respuesta — el user no nota nada).
+  // Para events de bajo valor (page_view, scroll_75) mantenemos fire-and-forget.
+  const mustFlushSync = FLUSH_IMMEDIATELY.has(type);
+  if (mustFlushSync) {
+    try {
+      await flushBufferToGitHub();
+    } catch {
+      // si el flush sync falla devolvemos OK igualmente — perder un evento es
+      // mejor que rejectar el response (frontend retry o se pierde silenciosamente)
+    }
+  } else if (ghBuffer.length >= GH_FLUSH_THRESHOLD) {
     flushBufferToGitHub().catch(() => { /* no-op */ });
   }
 
