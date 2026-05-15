@@ -39,7 +39,22 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
 // que se flusha cada 5 eventos al GH API. Antes el VPS estaba caído y los
 // eventos se perdían, dejándonos viendo 59 visitas vs los 476 reales de CF.
 const ghBuffer: Array<{ ts: string; type: string; visitor: string; meta: Record<string, string | number | boolean> }> = [];
-const GH_FLUSH_THRESHOLD = 5;
+// SSS174: era 5, pero events de alto valor (deal_click, booking_redirect,
+// favorite_added, newsletter_signup) son MUY raros (~1 cada 5 visitas).
+// Si lambda muere antes de acumular 5, perdíamos los más importantes.
+// Threshold inteligente: flush inmediato para events de revenue,
+// batch para eventos de bajo valor (page_view, scroll_75).
+const GH_FLUSH_THRESHOLD = 3;
+const FLUSH_IMMEDIATELY = new Set([
+  "deal_click",
+  "booking_redirect",
+  "favorite_added",
+  "newsletter_signup",
+  "alert_created",
+  "share_completed",
+  "premium_cta_click",
+  "concierge_click_pay",
+]);
 
 async function flushBufferToGitHub() {
   const ghToken = process.env.GH_TRACK_TOKEN || process.env.GITHUB_TOKEN || "";
@@ -183,7 +198,9 @@ export async function POST(req: NextRequest) {
     visitor: event.visitor_id,
     meta: sanitized,
   });
-  if (ghBuffer.length >= GH_FLUSH_THRESHOLD) {
+  // SSS174: flush inmediato para events de revenue/conversión (no perdemos
+  // ninguno por cold-start), batch para los de bajo valor (page_view).
+  if (FLUSH_IMMEDIATELY.has(type) || ghBuffer.length >= GH_FLUSH_THRESHOLD) {
     flushBufferToGitHub().catch(() => { /* no-op */ });
   }
 

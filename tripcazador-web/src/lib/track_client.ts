@@ -22,6 +22,22 @@ const SEEN_KEY = "tc_track_seen_v1";
 
 function consentOk(): boolean {
   try {
+    // SSS174: leer el consent REAL del CookieBanner (cv_consent_v1) además
+    // del legacy tc_analytics_ok. Antes track_client revisaba solo
+    // tc_analytics_ok que nunca lo escribía nadie → tracking SIEMPRE corriendo
+    // (RGPD breach). Ahora respeta lo que el user eligió en el banner.
+    const raw = localStorage.getItem("cv_consent_v1");
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw) as { analytics?: boolean };
+        if (parsed && typeof parsed.analytics === "boolean") {
+          return parsed.analytics === true;
+        }
+      } catch {
+        /* malformed JSON, ignore */
+      }
+    }
+    // Legacy fallback — solo bloquea si explícitamente "0"
     return localStorage.getItem("tc_analytics_ok") !== "0";
   } catch {
     return true;
