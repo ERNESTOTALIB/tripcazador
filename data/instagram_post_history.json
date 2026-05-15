@@ -466,5 +466,14 @@
     "city_from": "Varsovia",
     "city_to": "Paphos",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1778841027.270109,
+    "deal_id": "ryanair_bcn_mla_20260829_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 14.99
   }
 ]
