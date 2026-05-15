@@ -15,6 +15,11 @@ on:
   schedule:
     # Lunes 09:00 UTC = 11:00 CEST
     - cron: '0 9 * * 1'
+    # SSS188 (15 may 2026): añadido jueves redundante tras detectar que
+    # solo había 1 schedule run en historial pese a workflow creado hace
+    # semanas. Probable cron-stuck — el lunes jamás se ejecutó después de
+    # la primera vez. Redundancia jueves cubre mid-week.
+    - cron: '0 9 * * 4'
 
 jobs:
   report:
