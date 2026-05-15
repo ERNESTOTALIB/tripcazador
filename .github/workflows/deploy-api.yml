@@ -1,5 +1,17 @@
 name: Deploy API → VPS
 
+# SSS201 (15 may 2026): VPS está down desde SSS80 — el repo aún
+# tiene este workflow para cuando se reanime, pero los pushes a `api/**`
+# o `flight_hunter_v4/**` (que ocurren con cada SSS189/SSS196 fix al
+# worker Python) lo disparan y falla en Configure SSH si los secrets
+# SSH_PRIVATE_KEY / VPS_HOST están vacíos. Cada fail es noise en /actions
+# que enmascara fallos reales de otros workflows.
+#
+# Fix: el push trigger requiere secret VPS_DEPLOY_ENABLED='1' para correr.
+# Sin ese secret, el job no se ejecuta y no aparece como failure.
+# Para reactivar el deploy automático cuando VPS vuelva: añadir
+# VPS_DEPLOY_ENABLED=1 en Settings → Secrets de GitHub.
+
 on:
   push:
     branches: [main]
@@ -17,9 +29,29 @@ jobs:
     needs: []
 
     steps:
+      - name: SSS201 — Skip si VPS deploy no está habilitado
+        id: gate
+        run: |
+          if [ "${{ secrets.VPS_DEPLOY_ENABLED }}" != "1" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "::notice::VPS_DEPLOY_ENABLED secret no está '1' — SSS201 gate: skipping. Para reactivar añadir VPS_DEPLOY_ENABLED=1 en repo secrets."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate SSH secrets
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ] || [ -z "${{ secrets.VPS_HOST }}" ] || [ -z "${{ secrets.VPS_USER }}" ]; then
+            echo "::error::SSH_PRIVATE_KEY, VPS_HOST, o VPS_USER no configurado en repo secrets"
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.gate.outputs.skip != 'true'
 
       - name: Configure SSH
+        if: steps.gate.outputs.skip != 'true'
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
@@ -27,6 +59,7 @@ jobs:
           ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Deploy via SSH
+        if: steps.gate.outputs.skip != 'true'
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
@@ -43,6 +76,7 @@ jobs:
           EOF
 
       - name: Smoke check tras deploy
+        if: steps.gate.outputs.skip != 'true'
         run: |
           sleep 5
           curl -fsS --max-time 10 https://api.tripcazador.com/api/health | grep -q '"status":"ok"'

@@ -57,8 +57,18 @@ def _load_history() -> List[Dict]:
                     rows.append(json.loads(line))
                 except json.JSONDecodeError:
                     continue
-    except (OSError, IOError):
+    except FileNotFoundError:
+        # SSS203 (15 may 2026): first run sin history es esperado (silent OK)
         pass
+    except (OSError, IOError) as exc:
+        # SSS203: otros OS errors (permissions, disk full) NO son normales.
+        # Antes silent → baseline de precios siempre vacío → filter rechazaba
+        # todos los hoteles → 0 hotel deals durante semanas sin diagnóstico.
+        print(
+            f"   ⚠️  Hotel history load failed (OS error — baseline vacío, "
+            f"0 hotel deals esperados): {type(exc).__name__}: {exc}",
+            flush=True,
+        )
     return rows
 
 

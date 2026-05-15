@@ -65,7 +65,17 @@ def tg_api(method: str, params: Optional[Dict[str, Any]] = None, timeout: int = 
     data = urllib.parse.urlencode(params or {}).encode("utf-8")
     req = urllib.request.Request(url, data=data, headers={"User-Agent": "TripCazador-InverseBot/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read().decode("utf-8"))
+        resp = json.loads(r.read().decode("utf-8"))
+    # SSS204 (15 may 2026): mismo patrón SSS192 — Telegram puede devolver HTTP
+    # 200 con `{"ok": false, "error_code": 401/403/429}` cuando bot revocado,
+    # kicked, o flood control. Si no validamos `ok`, llamamos `resp["result"]`
+    # más tarde y crashea con KeyError opaco. Mejor failing fast con log.
+    if isinstance(resp, dict) and not resp.get("ok", True):
+        code = resp.get("error_code", "?")
+        desc = resp.get("description", "<no description>")
+        log(f"❌ Telegram API {method} error_code={code}: {desc}")
+        raise RuntimeError(f"Telegram API error {code}: {desc}")
+    return resp
 
 
 def tg_send(chat_id: int, text: str) -> None:
@@ -203,7 +213,21 @@ def save_subscription(chat_id: int, q: Dict[str, Any]) -> None:
     if SUBS_FILE.exists():
         try:
             subs = json.loads(SUBS_FILE.read_text("utf-8"))
-        except Exception:
+        except Exception as exc:  # noqa: BLE001
+            # SSS204: antes silent — corruption del JSON descartaba TODAS las
+            # subscripciones de users sin diagnóstico → users nunca recibían
+            # alertas. Ahora log explícito + creamos backup del archivo
+            # corrupto para inspeccionar después.
+            log(
+                f"⚠️  inverse_search_subscriptions.json corrupted: "
+                f"{type(exc).__name__}: {exc}. Backing up and resetting."
+            )
+            try:
+                backup_path = SUBS_FILE.with_suffix(f".corrupt.{int(time.time())}.json")
+                SUBS_FILE.rename(backup_path)
+                log(f"   backed up to {backup_path}")
+            except Exception:  # noqa: BLE001
+                pass
             subs = []
     sub = {
         "chat_id": chat_id,
