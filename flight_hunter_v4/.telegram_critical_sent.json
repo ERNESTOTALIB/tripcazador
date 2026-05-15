@@ -1119,6 +1119,22 @@
       "destination": "RMI",
       "price_eur": 22.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c6e98146433f",
+      "ts": "2026-05-15T20:55:18.280481+00:00",
+      "origin": "AGP",
+      "destination": "RAK",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "76d40f9e12a1",
+      "ts": "2026-05-15T20:55:18.280481+00:00",
+      "origin": "VLC",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
