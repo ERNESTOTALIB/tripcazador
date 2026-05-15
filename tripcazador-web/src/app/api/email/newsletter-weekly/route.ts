@@ -209,14 +209,39 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 
   const subject = `📬 Tu radar semanal · ${top5.length} chollos top (${new Date().toLocaleDateString("es-ES")})`;
+
+  // SSS210 (15 may 2026): antes secuencial `await sendOne` por suscriptor →
+  // 1s/email × 200 subs = 200s, cerca del Vercel lambda max 300s. Con >250
+  // subs lambda timeout antes de terminar → mitad no recibe email.
+  //
+  // Fix: batches concurrentes. Resend free tier acepta 10 req/s; usamos
+  // batches de 10 + 1.1s entre batches para no romper rate-limit (timestamp
+  // sliding window). Para 1000 subs: 100 batches × 1.1s = 110s total.
+  //
+  // Promise.allSettled para que un fallo de Resend (5xx, network) no aborte
+  // el batch entero — cada email es independiente.
+  const BATCH_SIZE = 10;
+  const BATCH_DELAY_MS = 1100;
   let sent = 0;
   let skipped = 0;
-  for (const email of subs) {
-    const unsub = unsubscribeUrl(email);
-    const html = renderNewsletterHtml(top5, unsub, SITE);
-    const ok = await sendOne(RESEND_API_KEY, RESEND_FROM, email, subject, html, unsub);
-    if (ok) sent += 1;
-    else skipped += 1;
+
+  for (let i = 0; i < subs.length; i += BATCH_SIZE) {
+    const batch = subs.slice(i, i + BATCH_SIZE);
+    const results = await Promise.allSettled(
+      batch.map((email) => {
+        const unsub = unsubscribeUrl(email);
+        const html = renderNewsletterHtml(top5, unsub, SITE);
+        return sendOne(RESEND_API_KEY, RESEND_FROM, email, subject, html, unsub);
+      }),
+    );
+    for (const r of results) {
+      if (r.status === "fulfilled" && r.value) sent += 1;
+      else skipped += 1;
+    }
+    // Rate-limit pause solo entre batches (no después del último)
+    if (i + BATCH_SIZE < subs.length) {
+      await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+    }
   }
 
   return NextResponse.json({
