@@ -1215,6 +1215,22 @@
       "destination": "JSI",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "4b412cbf1cb9",
+      "ts": "2026-05-16T14:51:00.819652+00:00",
+      "origin": "PSA",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "09ad509ba5fa",
+      "ts": "2026-05-16T14:51:00.819652+00:00",
+      "origin": "BGY",
+      "destination": "CRV",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
