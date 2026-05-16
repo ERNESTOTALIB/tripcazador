@@ -1311,6 +1311,22 @@
       "destination": "TNG",
       "price_eur": 20.71,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5210359739f3",
+      "ts": "2026-05-16T22:39:34.280750+00:00",
+      "origin": "BCN",
+      "destination": "PMO",
+      "price_eur": 15.99,
+      "classification": "ERROR"
+    },
+    {
+      "hash": "f81ea4e4c669",
+      "ts": "2026-05-16T22:39:34.280750+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 25.17,
+      "classification": "CRÍTICO"
     }
   ]
 }
