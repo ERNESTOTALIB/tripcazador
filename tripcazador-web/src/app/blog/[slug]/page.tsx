@@ -8,7 +8,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 import { JsonLd } from "@/components/JsonLd";
-import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { NewsletterABWidget } from "@/components/NewsletterABWidget";
 import { RelatedPosts } from "@/components/RelatedPosts";
 import { TableOfContents } from "@/components/TableOfContents";
 import { TravelInsuranceCTA } from "@/components/TravelInsuranceCTA";
@@ -224,14 +224,13 @@ export default function BlogPostPage({ params }: { params: Params }) {
             ← Volver al blog
           </a>
         </div>
-        {/* abr-2026t/u: Newsletter signup compact en bottom de cada post —
-            captura email tras lectura completa. Conversion ~5-10% en blog
-            posts long-form (lector ya invirtió 8-15min, alta intent). */}
+        {/* SSS258 (16 may 2026): Switched to NewsletterABWidget. A/B switch:
+            A = NewsletterSignup form embed (variante actual, compact)
+            B = NewsletterRibbon CTA banner → /alertas
+            Hipótesis: ribbon convierte mejor mid-blog. Validar tras N exposures
+            via newsletter_signup vs newsletter_ribbon_click event rate. */}
         <div className="mt-8">
-          <NewsletterSignup
-            variant="compact"
-            context={`blog-${params.slug}`}
-          />
+          <NewsletterABWidget context={`blog-${params.slug}`} />
         </div>
         {/* KKK4 — Travel insurance affiliate CTA en blog footer. Lector ya
             está en intent de viaje, alta conversion. */}

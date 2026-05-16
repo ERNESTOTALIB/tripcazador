@@ -66,6 +66,12 @@ export default function PanelPage() {
             >
               Outreach
             </Link>
+            <Link
+              href="/panel/vitals"
+              className="text-xs text-gray-400 hover:text-amber-300"
+            >
+              Vitals
+            </Link>
             <Link href="/" className="text-xs text-gray-400 hover:text-amber-300">
               ← Ir al sitio
             </Link>
