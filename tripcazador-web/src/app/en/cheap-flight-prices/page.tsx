@@ -25,6 +25,8 @@ export const metadata: Metadata = {
       "es-ES": `${SITE_URL}/precios-vuelos-baratos`,
       "en-US": `${SITE_URL}/en/cheap-flight-prices`,
       "de-DE": `${SITE_URL}/de/billige-flugpreise`,
+      "fr-FR": `${SITE_URL}/fr/prix-vols-pas-chers`,
+      "it-IT": `${SITE_URL}/it/prezzi-voli-economici`,
     },
   },
   openGraph: {
