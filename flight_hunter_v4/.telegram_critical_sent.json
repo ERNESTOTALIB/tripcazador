@@ -1183,6 +1183,22 @@
       "destination": "PFO",
       "price_eur": 47.95,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "312655c916d6",
+      "ts": "2026-05-16T11:52:19.799553+00:00",
+      "origin": "FCO",
+      "destination": "EVN",
+      "price_eur": 51.52,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e8a5014bd4d2",
+      "ts": "2026-05-16T11:52:19.799553+00:00",
+      "origin": "IST",
+      "destination": "NAV",
+      "price_eur": 56.12,
+      "classification": "CRÍTICO"
     }
   ]
 }
