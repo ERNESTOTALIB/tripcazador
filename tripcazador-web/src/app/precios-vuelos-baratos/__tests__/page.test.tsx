@@ -1,12 +1,16 @@
 /**
- * page.test.tsx — SSS225 (16 may 2026) — extended SSS234
+ * page.test.tsx — SSS225 (16 may 2026) — extended SSS234+243+244
  *
- * Regression tests para /precios-vuelos-baratos (SSS217),
- * /en/cheap-flight-prices (SSS223), y /de/billige-flugpreise (SSS234).
+ * Regression tests para los 5 pricing landings i18n:
+ *  - /precios-vuelos-baratos (SSS217, ES)
+ *  - /en/cheap-flight-prices (SSS223, EN)
+ *  - /de/billige-flugpreise (SSS234, DE)
+ *  - /fr/prix-vols-pas-chers (SSS243, FR)
+ *  - /it/prezzi-voli-economici (SSS244, IT)
  *
  * Verificaciones:
  * - JSON-LD schemas válidos (WebPage + FAQPage + BreadcrumbList)
- * - hreflang cross-references trí-direccional (es-ES, en-US, de-DE)
+ * - hreflang cross-references quinteto (es-ES, en-US, de-DE, fr-FR, it-IT)
  * - Tabla con destinos rendering
  * - FAQ items presente con summary + content
  */
@@ -30,10 +34,12 @@ describe("Pricing landing pages — SSS217+223", () => {
       expect(src).toMatch(/breadcrumbJsonLd|\"@type\":\s*\"BreadcrumbList\"/);
     });
 
-    it("tiene hreflang to English + German version (SSS223+234)", () => {
+    it("tiene hreflang QUINTETO completo (SSS223+234+243+244)", () => {
       expect(src).toMatch(/en-US.*\/en\/cheap-flight-prices/s);
       expect(src).toMatch(/es-ES.*\/precios-vuelos-baratos/s);
       expect(src).toMatch(/de-DE.*\/de\/billige-flugpreise/s);
+      expect(src).toMatch(/fr-FR.*\/fr\/prix-vols-pas-chers/s);
+      expect(src).toMatch(/it-IT.*\/it\/prezzi-voli-economici/s);
     });
 
     it("tiene metadata title + description", () => {
@@ -81,10 +87,12 @@ describe("Pricing landing pages — SSS217+223", () => {
       expect(src).toContain('"@type": "BreadcrumbList"');
     });
 
-    it("tiene hreflang to Spanish + German version (SSS234)", () => {
+    it("tiene hreflang QUINTETO completo (SSS234+243+244)", () => {
       expect(src).toMatch(/es-ES.*\/precios-vuelos-baratos/s);
       expect(src).toMatch(/en-US.*\/en\/cheap-flight-prices/s);
       expect(src).toMatch(/de-DE.*\/de\/billige-flugpreise/s);
+      expect(src).toMatch(/fr-FR.*\/fr\/prix-vols-pas-chers/s);
+      expect(src).toMatch(/it-IT.*\/it\/prezzi-voli-economici/s);
     });
 
     it("tabla incluye destinations en inglés (Lisbon, Istanbul, Tokyo)", () => {
@@ -121,10 +129,12 @@ describe("Pricing landing pages — SSS217+223", () => {
       expect(src).toContain('"@type": "BreadcrumbList"');
     });
 
-    it("tiene hreflang trio (es-ES, en-US, de-DE)", () => {
+    it("tiene hreflang QUINTETO (es-ES, en-US, de-DE, fr-FR, it-IT)", () => {
       expect(src).toMatch(/es-ES.*\/precios-vuelos-baratos/s);
       expect(src).toMatch(/en-US.*\/en\/cheap-flight-prices/s);
       expect(src).toMatch(/de-DE.*\/de\/billige-flugpreise/s);
+      expect(src).toMatch(/fr-FR.*\/fr\/prix-vols-pas-chers/s);
+      expect(src).toMatch(/it-IT.*\/it\/prezzi-voli-economici/s);
     });
 
     it("tabla incluye nombres alemanes (Lissabon, Marrakesch, Mailand, Wien, Prag)", () => {
@@ -160,12 +170,98 @@ describe("Pricing landing pages — SSS217+223", () => {
     });
   });
 
-  describe("Sitemap entries (SSS217+223+234)", () => {
+  describe("FR version /fr/prix-vols-pas-chers (SSS243)", () => {
+    const src = readPage("src/app/fr/prix-vols-pas-chers/page.tsx");
+
+    it("tiene JSON-LD WebPage en francés (inLanguage fr-FR)", () => {
+      expect(src).toContain('"@type": "WebPage"');
+      expect(src).toContain('inLanguage: "fr-FR"');
+    });
+
+    it("tiene FAQPage + BreadcrumbList", () => {
+      expect(src).toContain('"@type": "FAQPage"');
+      expect(src).toContain('"@type": "BreadcrumbList"');
+    });
+
+    it("tiene hreflang cuarteto (es-ES, en-US, de-DE, fr-FR)", () => {
+      expect(src).toMatch(/es-ES.*\/precios-vuelos-baratos/s);
+      expect(src).toMatch(/en-US.*\/en\/cheap-flight-prices/s);
+      expect(src).toMatch(/de-DE.*\/de\/billige-flugpreise/s);
+      expect(src).toMatch(/fr-FR.*\/fr\/prix-vols-pas-chers/s);
+    });
+
+    it("tabla incluye nombres franceses (Lisbonne, Londres, Vienne, Athènes)", () => {
+      expect(src).toContain('"Lisbonne"');
+      expect(src).toContain('"Londres"');
+      expect(src).toContain('"Vienne"');
+      expect(src).toContain('"Athènes"');
+    });
+
+    it("openGraph locale es fr_FR", () => {
+      expect(src).toContain('locale: "fr_FR"');
+    });
+
+    it("title incluye palabras clave SEO francesas (prix, vols, pas chers)", () => {
+      const titleMatch = src.match(/title:\s*["']([^"']+)["']/);
+      expect(titleMatch).toBeTruthy();
+      if (titleMatch) {
+        const title = titleMatch[1].toLowerCase();
+        expect(title).toContain("prix");
+        expect(title).toMatch(/vols? pas chers?/);
+      }
+    });
+  });
+
+  describe("IT version /it/prezzi-voli-economici (SSS244)", () => {
+    const src = readPage("src/app/it/prezzi-voli-economici/page.tsx");
+
+    it("tiene JSON-LD WebPage en italiano (inLanguage it-IT)", () => {
+      expect(src).toContain('"@type": "WebPage"');
+      expect(src).toContain('inLanguage: "it-IT"');
+    });
+
+    it("tiene FAQPage + BreadcrumbList", () => {
+      expect(src).toContain('"@type": "FAQPage"');
+      expect(src).toContain('"@type": "BreadcrumbList"');
+    });
+
+    it("tiene hreflang QUINTETO completo (es-ES, en-US, de-DE, fr-FR, it-IT)", () => {
+      expect(src).toMatch(/es-ES.*\/precios-vuelos-baratos/s);
+      expect(src).toMatch(/en-US.*\/en\/cheap-flight-prices/s);
+      expect(src).toMatch(/de-DE.*\/de\/billige-flugpreise/s);
+      expect(src).toMatch(/fr-FR.*\/fr\/prix-vols-pas-chers/s);
+      expect(src).toMatch(/it-IT.*\/it\/prezzi-voli-economici/s);
+    });
+
+    it("tabla incluye nombres italianos (Lisbona, Milano, Parigi, Londra, Berlino)", () => {
+      expect(src).toContain('"Lisbona"');
+      expect(src).toContain('"Milano"');
+      expect(src).toContain('"Parigi"');
+      expect(src).toContain('"Londra"');
+      expect(src).toContain('"Berlino"');
+    });
+
+    it("openGraph locale es it_IT", () => {
+      expect(src).toContain('locale: "it_IT"');
+    });
+
+    it("title incluye palabras clave SEO italianas (prezzi, voli, economici)", () => {
+      const titleMatch = src.match(/title:\s*["']([^"']+)["']/);
+      expect(titleMatch).toBeTruthy();
+      if (titleMatch) {
+        const title = titleMatch[1].toLowerCase();
+        expect(title).toContain("prezzi");
+        expect(title).toMatch(/voli/);
+        expect(title).toMatch(/economici/);
+      }
+    });
+  });
+
+  describe("Sitemap entries (SSS217+223+234+243+244)", () => {
     const src = readPage("src/app/sitemap.ts");
 
     it("incluye /precios-vuelos-baratos con priority 0.8", () => {
       expect(src).toContain("/precios-vuelos-baratos");
-      // priority debería estar cerca del slug
       expect(src).toMatch(/precios-vuelos-baratos[\s\S]{0,200}priority:\s*0\.8/);
     });
 
@@ -177,6 +273,25 @@ describe("Pricing landing pages — SSS217+223", () => {
     it("incluye /de/billige-flugpreise con priority 0.7 (SSS234)", () => {
       expect(src).toContain("/de/billige-flugpreise");
       expect(src).toMatch(/billige-flugpreise[\s\S]{0,200}priority:\s*0\.7/);
+    });
+
+    it("incluye /fr/prix-vols-pas-chers con priority 0.7 (SSS243)", () => {
+      expect(src).toContain("/fr/prix-vols-pas-chers");
+      expect(src).toMatch(/prix-vols-pas-chers[\s\S]{0,200}priority:\s*0\.7/);
+    });
+
+    it("incluye /it/prezzi-voli-economici con priority 0.7 (SSS244)", () => {
+      expect(src).toContain("/it/prezzi-voli-economici");
+      expect(src).toMatch(/prezzi-voli-economici[\s\S]{0,200}priority:\s*0\.7/);
+    });
+
+    it("LANG_ALT_PRICING incluye los 5 idiomas + x-default", () => {
+      expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*es-ES/);
+      expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*en-US/);
+      expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*de-DE/);
+      expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*fr-FR/);
+      expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*it-IT/);
+      expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*x-default/);
     });
   });
 });
