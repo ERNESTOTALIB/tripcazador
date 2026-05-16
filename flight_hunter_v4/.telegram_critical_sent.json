@@ -1199,6 +1199,22 @@
       "destination": "NAV",
       "price_eur": 56.12,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "9bb6c3069a2b",
+      "ts": "2026-05-16T13:08:58.922736+00:00",
+      "origin": "BCN",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6d12e489755b",
+      "ts": "2026-05-16T13:08:58.922736+00:00",
+      "origin": "BGY",
+      "destination": "JSI",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
