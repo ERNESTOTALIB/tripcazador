@@ -73,6 +73,18 @@ export const EXPERIMENTS: Record<string, Experiment> = {
     bWeight: 100,
     defaultVariant: "B",
   },
+  // SSS256 (May 2026): Newsletter widget variant — form vs ribbon.
+  // A = inline form completo (input email + submit button)
+  // B = ribbon CTA con link a /alertas page (lazy form)
+  // Hipótesis: ribbon convierte mejor en contexto mid-blog (menos fricción
+  // que ver un form mientras lees). Confirmar via newsletter_signup event
+  // post-click rate por variant.
+  newsletter_widget_v1: {
+    id: "newsletter_widget_v1",
+    name: "Newsletter mid-blog widget (form vs ribbon CTA)",
+    bWeight: 50,
+    defaultVariant: "A", // forma actual (form embed) hasta validar B
+  },
 };
 
 const VISITOR_KEY = "cv_visitor_id";
