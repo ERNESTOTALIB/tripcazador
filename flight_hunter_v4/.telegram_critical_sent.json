@@ -1167,6 +1167,22 @@
       "destination": "AGA",
       "price_eur": 27.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fe461df0887f",
+      "ts": "2026-05-16T10:57:50.076306+00:00",
+      "origin": "DUB",
+      "destination": "BDS",
+      "price_eur": 41.03,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a0ad5cc6e889",
+      "ts": "2026-05-16T10:57:50.076306+00:00",
+      "origin": "STN",
+      "destination": "PFO",
+      "price_eur": 47.95,
+      "classification": "CRÍTICO"
     }
   ]
 }
