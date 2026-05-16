@@ -1151,6 +1151,22 @@
       "destination": "TNG",
       "price_eur": 18.19,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "97bf9cf89b03",
+      "ts": "2026-05-16T09:25:40.826781+00:00",
+      "origin": "BCN",
+      "destination": "NDR",
+      "price_eur": 18.19,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2f28b41d6bda",
+      "ts": "2026-05-16T09:25:40.826781+00:00",
+      "origin": "STN",
+      "destination": "AGA",
+      "price_eur": 27.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
