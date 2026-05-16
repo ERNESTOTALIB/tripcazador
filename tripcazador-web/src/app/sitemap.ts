@@ -298,6 +298,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      // SSS223 (16 may 2026): English version "cheap flight prices"
+      url: `${BASE_URL}/en/cheap-flight-prices`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
       url: `${BASE_URL}/embed`,
       lastModified: now,
       changeFrequency: "monthly",

@@ -27,6 +27,11 @@ export const metadata: Metadata = {
     "Incluye mes más barato, día óptimo de reserva, y cuánto ahorra esperar vs reservar ya.",
   alternates: {
     canonical: `${SITE_URL}/precios-vuelos-baratos`,
+    // SSS223 (16 may 2026): hreflang to English version
+    languages: {
+      "es-ES": `${SITE_URL}/precios-vuelos-baratos`,
+      "en-US": `${SITE_URL}/en/cheap-flight-prices`,
+    },
   },
   openGraph: {
     title: "Precios reales de vuelos baratos — 30 destinos",
