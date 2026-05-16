@@ -19,6 +19,23 @@ export interface TPConversionEvent {
   partner_url?: string; // booking_url destino
 }
 
+/**
+ * SSS235: extraer host de URL sin propagar throw. Antes
+ * `new URL(evt.partner_url).host` dentro del JSON.stringify() podía
+ * tirar TypeError ("Invalid URL") con un partner_url roto, lo que
+ * mataba la llamada entera a /api/track (catch global silenciaba
+ * el evento deal_click). Ahora si el parseo falla devolvemos "" y
+ * el track sigue adelante.
+ */
+export function safeUrlHost(url: string | undefined): string {
+  if (!url) return "";
+  try {
+    return new URL(url).host;
+  } catch {
+    return "";
+  }
+}
+
 /** Lanza tracking en client-side antes de redirect al partner */
 export function trackPartnerClick(evt: TPConversionEvent): void {
   if (typeof window === "undefined") return;
@@ -49,7 +66,7 @@ export function trackPartnerClick(evt: TPConversionEvent): void {
         city_to: evt.city_to || "",
         price_eur: evt.price_eur || 0,
         source: evt.source || "",
-        partner_url_host: evt.partner_url ? new URL(evt.partner_url).host : "",
+        partner_url_host: safeUrlHost(evt.partner_url),
       },
     });
     if ("sendBeacon" in navigator) {
