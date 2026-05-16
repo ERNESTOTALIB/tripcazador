@@ -257,7 +257,52 @@ describe("Pricing landing pages — SSS217+223", () => {
     });
   });
 
-  describe("Sitemap entries (SSS217+223+234+243+244)", () => {
+  describe("PT version /pt/precos-voos-baratos (SSS246)", () => {
+    const src = readPage("src/app/pt/precos-voos-baratos/page.tsx");
+
+    it("tiene JSON-LD WebPage en portugués (inLanguage pt-PT)", () => {
+      expect(src).toContain('"@type": "WebPage"');
+      expect(src).toContain('inLanguage: "pt-PT"');
+    });
+
+    it("tiene FAQPage + BreadcrumbList", () => {
+      expect(src).toContain('"@type": "FAQPage"');
+      expect(src).toContain('"@type": "BreadcrumbList"');
+    });
+
+    it("tiene hreflang SEXTETO completo (es-ES, en-US, de-DE, fr-FR, it-IT, pt-PT)", () => {
+      expect(src).toMatch(/es-ES.*\/precios-vuelos-baratos/s);
+      expect(src).toMatch(/en-US.*\/en\/cheap-flight-prices/s);
+      expect(src).toMatch(/de-DE.*\/de\/billige-flugpreise/s);
+      expect(src).toMatch(/fr-FR.*\/fr\/prix-vols-pas-chers/s);
+      expect(src).toMatch(/it-IT.*\/it\/prezzi-voli-economici/s);
+      expect(src).toMatch(/pt-PT.*\/pt\/precos-voos-baratos/s);
+    });
+
+    it("tabla incluye nombres portugueses (Milão, Berlim, Amesterdão, Viena, Tóquio)", () => {
+      expect(src).toContain('"Milão"');
+      expect(src).toContain('"Berlim"');
+      expect(src).toContain('"Amesterdão"');
+      expect(src).toContain('"Viena"');
+      expect(src).toContain('"Tóquio"');
+    });
+
+    it("openGraph locale es pt_PT", () => {
+      expect(src).toContain('locale: "pt_PT"');
+    });
+
+    it("title incluye palabras clave SEO portuguesas (preços, voos, baratos)", () => {
+      const titleMatch = src.match(/title:\s*["']([^"']+)["']/);
+      expect(titleMatch).toBeTruthy();
+      if (titleMatch) {
+        const title = titleMatch[1].toLowerCase();
+        expect(title).toContain("preços");
+        expect(title).toMatch(/voos? baratos?/);
+      }
+    });
+  });
+
+  describe("Sitemap entries (SSS217+223+234+243+244+246)", () => {
     const src = readPage("src/app/sitemap.ts");
 
     it("incluye /precios-vuelos-baratos con priority 0.8", () => {
@@ -285,12 +330,18 @@ describe("Pricing landing pages — SSS217+223", () => {
       expect(src).toMatch(/prezzi-voli-economici[\s\S]{0,200}priority:\s*0\.7/);
     });
 
-    it("LANG_ALT_PRICING incluye los 5 idiomas + x-default", () => {
+    it("incluye /pt/precos-voos-baratos con priority 0.7 (SSS246)", () => {
+      expect(src).toContain("/pt/precos-voos-baratos");
+      expect(src).toMatch(/precos-voos-baratos[\s\S]{0,200}priority:\s*0\.7/);
+    });
+
+    it("LANG_ALT_PRICING incluye los 6 idiomas + x-default", () => {
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*es-ES/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*en-US/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*de-DE/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*fr-FR/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*it-IT/);
+      expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*pt-PT/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*x-default/);
     });
   });

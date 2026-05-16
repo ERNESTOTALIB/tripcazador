@@ -76,13 +76,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "en": `${BASE_URL}/en/destinos`,
     "x-default": `${BASE_URL}/destinos`,
   };
-  // SSS234+243+244 — pricing landings quinteto (ES/EN/DE/FR/IT)
+  // SSS234+243+244+246 — pricing landings sexteto (ES/EN/DE/FR/IT/PT)
   const LANG_ALT_PRICING = {
     "es-ES": `${BASE_URL}/precios-vuelos-baratos`,
     "en-US": `${BASE_URL}/en/cheap-flight-prices`,
     "de-DE": `${BASE_URL}/de/billige-flugpreise`,
     "fr-FR": `${BASE_URL}/fr/prix-vols-pas-chers`,
     "it-IT": `${BASE_URL}/it/prezzi-voli-economici`,
+    "pt-PT": `${BASE_URL}/pt/precos-voos-baratos`,
     "x-default": `${BASE_URL}/precios-vuelos-baratos`,
   };
 
@@ -334,6 +335,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       // SSS244 (16 may 2026): Italian version "prezzi voli economici" (Italy market)
       url: `${BASE_URL}/it/prezzi-voli-economici`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+      alternates: { languages: LANG_ALT_PRICING },
+    },
+    {
+      // SSS246 (16 may 2026): Portuguese version "preços voos baratos" (PT/BR diaspora)
+      url: `${BASE_URL}/pt/precos-voos-baratos`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7,
