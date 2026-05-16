@@ -1,6 +1,3 @@
-{"ts":"2026-05-14T11:23:25.141Z","type":"page_view","visitor":"ee0e955252b38083","meta":{"path":"/"}}
-{"ts":"2026-05-14T11:23:25.170Z","type":"landing_arrived","visitor":"ee0e955252b38083","meta":{"path":"/"}}
-{"ts":"2026-05-14T11:24:01.784Z","type":"page_view","visitor":"b6bed943e3855673","meta":{"path":"/"}}
 {"ts":"2026-05-14T11:25:28.704Z","type":"page_view","visitor":"1799426ae1699e20","meta":{"path":"/"}}
 {"ts":"2026-05-14T11:27:07.132Z","type":"page_view","visitor":"1799426ae1699e20","meta":{"path":"/"}}
 {"ts":"2026-05-14T14:45:11.903Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/precio-mes-a-mes"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-16T20:29:17.402Z","type":"landing_arrived","visitor":"7ac40508c91b68ee","meta":{"path":"/"}}
 {"ts":"2026-05-16T20:29:17.444Z","type":"page_view","visitor":"7ac40508c91b68ee","meta":{"path":"/"}}
 {"ts":"2026-05-16T20:29:21.004Z","type":"page_view","visitor":"7ac40508c91b68ee","meta":{"path":"/"}}
+{"ts":"2026-05-16T20:40:51.006Z","type":"landing_arrived","visitor":"cbd35247db788b3e","meta":{"path":"/"}}
+{"ts":"2026-05-16T20:40:51.538Z","type":"page_view","visitor":"cbd35247db788b3e","meta":{"path":"/"}}
+{"ts":"2026-05-16T20:41:07.271Z","type":"page_view","visitor":"19a7c24e73478aff","meta":{"path":"/"}}
