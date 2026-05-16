@@ -1231,6 +1231,22 @@
       "destination": "CRV",
       "price_eur": 15.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "eae74fbdf240",
+      "ts": "2026-05-16T15:52:57.141561+00:00",
+      "origin": "VLC",
+      "destination": "MLA",
+      "price_eur": 16.21,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fd0c57d026ad",
+      "ts": "2026-05-16T15:52:57.141561+00:00",
+      "origin": "KRK",
+      "destination": "ZAD",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
