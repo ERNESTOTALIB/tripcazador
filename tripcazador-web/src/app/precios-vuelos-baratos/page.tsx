@@ -28,9 +28,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${SITE_URL}/precios-vuelos-baratos`,
     // SSS223 (16 may 2026): hreflang to English version
+    // SSS234 (16 may 2026): + German
     languages: {
       "es-ES": `${SITE_URL}/precios-vuelos-baratos`,
       "en-US": `${SITE_URL}/en/cheap-flight-prices`,
+      "de-DE": `${SITE_URL}/de/billige-flugpreise`,
     },
   },
   openGraph: {
