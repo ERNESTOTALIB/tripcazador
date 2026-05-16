@@ -302,7 +302,54 @@ describe("Pricing landing pages — SSS217+223", () => {
     });
   });
 
-  describe("Sitemap entries (SSS217+223+234+243+244+246)", () => {
+  describe("NL version /nl/goedkope-vliegtickets (SSS250)", () => {
+    const src = readPage("src/app/nl/goedkope-vliegtickets/page.tsx");
+
+    it("tiene JSON-LD WebPage en holandés (inLanguage nl-NL)", () => {
+      expect(src).toContain('"@type": "WebPage"');
+      expect(src).toContain('inLanguage: "nl-NL"');
+    });
+
+    it("tiene FAQPage + BreadcrumbList", () => {
+      expect(src).toContain('"@type": "FAQPage"');
+      expect(src).toContain('"@type": "BreadcrumbList"');
+    });
+
+    it("tiene hreflang SEPTETO completo (es-ES, en-US, de-DE, fr-FR, it-IT, pt-PT, nl-NL)", () => {
+      expect(src).toMatch(/es-ES.*\/precios-vuelos-baratos/s);
+      expect(src).toMatch(/en-US.*\/en\/cheap-flight-prices/s);
+      expect(src).toMatch(/de-DE.*\/de\/billige-flugpreise/s);
+      expect(src).toMatch(/fr-FR.*\/fr\/prix-vols-pas-chers/s);
+      expect(src).toMatch(/it-IT.*\/it\/prezzi-voli-economici/s);
+      expect(src).toMatch(/pt-PT.*\/pt\/precos-voos-baratos/s);
+      expect(src).toMatch(/nl-NL.*\/nl\/goedkope-vliegtickets/s);
+    });
+
+    it("tabla incluye nombres holandeses (Lissabon, Milaan, Parijs, Londen, Berlijn, Wenen)", () => {
+      expect(src).toContain('"Lissabon"');
+      expect(src).toContain('"Milaan"');
+      expect(src).toContain('"Parijs"');
+      expect(src).toContain('"Londen"');
+      expect(src).toContain('"Berlijn"');
+      expect(src).toContain('"Wenen"');
+    });
+
+    it("openGraph locale es nl_NL", () => {
+      expect(src).toContain('locale: "nl_NL"');
+    });
+
+    it("title incluye palabras clave SEO holandesas (goedkope, vliegtickets)", () => {
+      const titleMatch = src.match(/title:\s*["']([^"']+)["']/);
+      expect(titleMatch).toBeTruthy();
+      if (titleMatch) {
+        const title = titleMatch[1].toLowerCase();
+        expect(title).toContain("goedkope");
+        expect(title).toContain("vliegtickets");
+      }
+    });
+  });
+
+  describe("Sitemap entries (SSS217+223+234+243+244+246+250)", () => {
     const src = readPage("src/app/sitemap.ts");
 
     it("incluye /precios-vuelos-baratos con priority 0.8", () => {
@@ -335,13 +382,19 @@ describe("Pricing landing pages — SSS217+223", () => {
       expect(src).toMatch(/precos-voos-baratos[\s\S]{0,200}priority:\s*0\.7/);
     });
 
-    it("LANG_ALT_PRICING incluye los 6 idiomas + x-default", () => {
+    it("incluye /nl/goedkope-vliegtickets con priority 0.7 (SSS250)", () => {
+      expect(src).toContain("/nl/goedkope-vliegtickets");
+      expect(src).toMatch(/goedkope-vliegtickets[\s\S]{0,200}priority:\s*0\.7/);
+    });
+
+    it("LANG_ALT_PRICING incluye los 7 idiomas + x-default", () => {
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*es-ES/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*en-US/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*de-DE/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*fr-FR/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*it-IT/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*pt-PT/);
+      expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*nl-NL/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*x-default/);
     });
   });

@@ -76,7 +76,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "en": `${BASE_URL}/en/destinos`,
     "x-default": `${BASE_URL}/destinos`,
   };
-  // SSS234+243+244+246 — pricing landings sexteto (ES/EN/DE/FR/IT/PT)
+  // SSS234+243+244+246+250 — pricing landings septeto (ES/EN/DE/FR/IT/PT/NL)
   const LANG_ALT_PRICING = {
     "es-ES": `${BASE_URL}/precios-vuelos-baratos`,
     "en-US": `${BASE_URL}/en/cheap-flight-prices`,
@@ -84,6 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "fr-FR": `${BASE_URL}/fr/prix-vols-pas-chers`,
     "it-IT": `${BASE_URL}/it/prezzi-voli-economici`,
     "pt-PT": `${BASE_URL}/pt/precos-voos-baratos`,
+    "nl-NL": `${BASE_URL}/nl/goedkope-vliegtickets`,
     "x-default": `${BASE_URL}/precios-vuelos-baratos`,
   };
 
@@ -343,6 +344,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       // SSS246 (16 may 2026): Portuguese version "preços voos baratos" (PT/BR diaspora)
       url: `${BASE_URL}/pt/precos-voos-baratos`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+      alternates: { languages: LANG_ALT_PRICING },
+    },
+    {
+      // SSS250 (16 may 2026): Dutch version "goedkope vliegtickets" (Netherlands market)
+      url: `${BASE_URL}/nl/goedkope-vliegtickets`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7,
