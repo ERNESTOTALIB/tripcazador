@@ -47,9 +47,9 @@ function consentGranted(): boolean {
 
 export function WebVitalsReporter(): null {
   useReportWebVitals((metric: WebVitalsMetric) => {
-    // Sólo reportar si consent + GA cargado.
-    if (typeof window === "undefined" || !window.gtag) return;
-    if (!consentGranted()) return;
+    if (typeof window === "undefined") return;
+
+    const isConsented = consentGranted();
 
     // CLS llega en unidades 0..1 (lo escalamos a 1000 entero — convención GA4).
     // El resto va en ms tal cual.
@@ -58,23 +58,29 @@ export function WebVitalsReporter(): null {
         ? Math.round(metric.value * 1000)
         : Math.round(metric.value);
 
-    window.gtag("event", metric.name, {
-      // GA4 standard event params para Web Vitals
-      event_category: "web_vitals",
-      event_label: metric.id,
-      value,
-      metric_value: metric.value,
-      metric_rating: metric.rating || "unknown",
-      metric_delta: metric.delta != null ? Math.round(metric.delta) : undefined,
-      navigation_type: metric.navigationType || "navigate",
-      // Path SIN query string para evitar leak de filtros de búsqueda.
-      page_path:
-        typeof window !== "undefined" ? window.location.pathname : undefined,
-      non_interaction: true,
-    });
+    // SSS226 (16 may 2026): split en 2 rails distintos:
+    //
+    // 1) GA4 (gtag) — REQUIERE CONSENT. Es analytics third-party Google.
+    if (window.gtag && isConsented) {
+      window.gtag("event", metric.name, {
+        event_category: "web_vitals",
+        event_label: metric.id,
+        value,
+        metric_value: metric.value,
+        metric_rating: metric.rating || "unknown",
+        metric_delta: metric.delta != null ? Math.round(metric.delta) : undefined,
+        navigation_type: metric.navigationType || "navigate",
+        page_path: window.location.pathname,
+        non_interaction: true,
+      });
+    }
 
-    // SSS64: dual-write a /api/web-vitals para ground-truth en /panel
-    // (no depende de GA4 Reporting API + service account)
+    // 2) /api/web-vitals — NO REQUIERE CONSENT. Datos técnicos no-PII
+    //    (LCP/CLS/INP/FCP/TTFB en ms + page_path + rating). Antes esto
+    //    estaba bajo el consent gate junto con gtag → para 93% de users
+    //    sin consent perdíamos la métrica que es la fuente más fiable
+    //    de perf data (no depende de AdBlocker ni Google).
+    //    Same análisis RGPD que SSS179: agregados anónimos, no profiling.
     try {
       const payload = JSON.stringify({
         name: metric.name,
