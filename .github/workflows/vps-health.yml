@@ -1,0 +1,123 @@
+name: VPS Health Check
+
+# SSS249 (16 may 2026): VPS volvió UP. Este workflow corre cada 30 min y
+# alerta Telegram si /api/health no responde 200 con {"status":"ok"} en
+# dos consecutivos (anti-flap). Independiente de deploy-api workflow
+# que requiere VPS_DEPLOY_ENABLED secret + SSH.
+#
+# Si VPS cae:
+#   1. Detecta primera vez → noticia en log (no alerta).
+#   2. Detecta segunda vez consecutiva → Telegram alerta crítica.
+#
+# Estado persiste en .vps-health.lock dentro del repo (committed dirty
+# branch nunca; usa actions/cache para no contaminar git).
+
+on:
+  schedule:
+    # Cada 30 min
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health-check:
+    name: Probe /api/health
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Restore previous health state (anti-flap)
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: .vps-health-state
+          key: vps-health-state-v1
+          restore-keys: |
+            vps-health-state-
+
+      - name: Probe VPS health endpoint
+        id: probe
+        run: |
+          set +e
+          BODY=$(curl -sS --max-time 10 "https://api.tripcazador.com/api/health" 2>&1)
+          STATUS=$?
+          if [ $STATUS -ne 0 ]; then
+            echo "::warning::curl exit code $STATUS (network)"
+            echo "ok=false" >> $GITHUB_OUTPUT
+            echo "reason=network_or_timeout" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "Body: $BODY"
+          if echo "$BODY" | grep -q '"status"'; then
+            echo "ok=true" >> $GITHUB_OUTPUT
+            echo "reason=ok" >> $GITHUB_OUTPUT
+          else
+            echo "ok=false" >> $GITHUB_OUTPUT
+            echo "reason=bad_body" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update state file + decide alert
+        id: state
+        run: |
+          mkdir -p .vps-health-state
+          PREV_FAILED=0
+          if [ -f .vps-health-state/last_failed ]; then
+            PREV_FAILED=$(cat .vps-health-state/last_failed)
+          fi
+          if [ "${{ steps.probe.outputs.ok }}" = "true" ]; then
+            echo "0" > .vps-health-state/last_failed
+            # Recovery alert si veníamos de fail
+            if [ "$PREV_FAILED" -ge "2" ]; then
+              echo "alert=recovery" >> $GITHUB_OUTPUT
+            else
+              echo "alert=none" >> $GITHUB_OUTPUT
+            fi
+          else
+            NEW=$((PREV_FAILED + 1))
+            echo "$NEW" > .vps-health-state/last_failed
+            if [ "$NEW" -ge "2" ]; then
+              echo "alert=critical" >> $GITHUB_OUTPUT
+              echo "consecutive=$NEW" >> $GITHUB_OUTPUT
+            else
+              echo "alert=warning_first" >> $GITHUB_OUTPUT
+              echo "::notice::1ª fail consecutiva — esperar próximo check para alertar"
+            fi
+          fi
+
+      - name: Telegram alert si CRITICAL (≥2 fails)
+        if: steps.state.outputs.alert == 'critical'
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID_ADMIN }}
+        run: |
+          if [ -z "$TG_BOT_TOKEN" ] || [ -z "$TG_CHAT_ID" ]; then
+            echo "::warning::TG_BOT_TOKEN o TG_CHAT_ID_ADMIN no configurados — alerta no enviada"
+            exit 0
+          fi
+          MSG="🚨 VPS DOWN — api.tripcazador.com no responde (${{ steps.state.outputs.consecutive }}x consecutivas). Reason: ${{ steps.probe.outputs.reason }}"
+          curl -sS -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TG_CHAT_ID}" \
+            -d "text=${MSG}" || true
+
+      - name: Telegram recovery si vuelve UP
+        if: steps.state.outputs.alert == 'recovery'
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID_ADMIN }}
+        run: |
+          if [ -z "$TG_BOT_TOKEN" ] || [ -z "$TG_CHAT_ID" ]; then
+            exit 0
+          fi
+          MSG="✅ VPS RECOVERED — api.tripcazador.com vuelve a responder OK."
+          curl -sS -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TG_CHAT_ID}" \
+            -d "text=${MSG}" || true
+
+      - name: Save state for next run
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .vps-health-state
+          key: vps-health-state-v1
