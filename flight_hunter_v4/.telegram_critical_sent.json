@@ -1263,6 +1263,22 @@
       "destination": "AHO",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "88f065b3223a",
+      "ts": "2026-05-16T18:56:24.853802+00:00",
+      "origin": "BGY",
+      "destination": "CRV",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "3e0a77b16a85",
+      "ts": "2026-05-16T18:56:24.853802+00:00",
+      "origin": "KRK",
+      "destination": "GDN",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
