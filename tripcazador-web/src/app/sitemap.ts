@@ -76,6 +76,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "en": `${BASE_URL}/en/destinos`,
     "x-default": `${BASE_URL}/destinos`,
   };
+  // SSS234 — pricing landings trío (ES/EN/DE)
+  const LANG_ALT_PRICING = {
+    "es-ES": `${BASE_URL}/precios-vuelos-baratos`,
+    "en-US": `${BASE_URL}/en/cheap-flight-prices`,
+    "de-DE": `${BASE_URL}/de/billige-flugpreise`,
+    "x-default": `${BASE_URL}/precios-vuelos-baratos`,
+  };
 
   const staticPages: MetadataRoute.Sitemap = [
     {
@@ -296,6 +303,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8,
+      alternates: { languages: LANG_ALT_PRICING },
     },
     {
       // SSS223 (16 may 2026): English version "cheap flight prices"
@@ -303,6 +311,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7,
+      alternates: { languages: LANG_ALT_PRICING },
+    },
+    {
+      // SSS234 (16 may 2026): German version "billige Flugpreise" (DACH market)
+      url: `${BASE_URL}/de/billige-flugpreise`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+      alternates: { languages: LANG_ALT_PRICING },
     },
     {
       url: `${BASE_URL}/embed`,
