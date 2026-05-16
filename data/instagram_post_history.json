@@ -511,5 +511,14 @@
     "city_from": "Madrid",
     "city_to": "Cagliari",
     "price_eur": 38.77
+  },
+  {
+    "timestamp": 1778912793.125397,
+    "deal_id": "ryanair_lis_rak_20260814_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 18.99
   }
 ]
