@@ -502,5 +502,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1778902583.9723794,
+    "deal_id": "ryanair_mad_cag_20260711_economy",
+    "origin": "MAD",
+    "destination": "CAG",
+    "city_from": "Madrid",
+    "city_to": "Cagliari",
+    "price_eur": 38.77
   }
 ]
