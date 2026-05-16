@@ -538,5 +538,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Belfast International",
     "price_eur": 19.8
+  },
+  {
+    "timestamp": 1778951030.6996493,
+    "deal_id": "ryanair_prg_gdn_20260826_economy",
+    "origin": "PRG",
+    "destination": "GDN",
+    "city_from": "Praga",
+    "city_to": "Gdansk",
+    "price_eur": 23.03
   }
 ]
