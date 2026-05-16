@@ -1,15 +1,16 @@
 /**
- * /nl/goedkope-vliegtickets — SSS250 (16 may 2026)
+ * /pl/tanie-bilety-lotnicze — SSS252 (16 may 2026)
  *
- * Dutch version. Hreflang septeto ES/EN/DE/FR/IT/PT/NL.
+ * Polish version. Hreflang octeto ES/EN/DE/FR/IT/PT/NL/PL.
  *
  * Target keywords:
- *   - "goedkope vluchten Spanje"
- *   - "vliegticket prijzen"
- *   - "wanneer vlucht boeken"
+ *   - "tanie loty z Hiszpanii"
+ *   - "tanie bilety lotnicze"
+ *   - "kiedy kupić bilet"
  *
- * Mercado: viajeros neerlandeses residentes en España + flamencos
- * belgas con interés en vuelos desde España (Schiphol-MAD frequent).
+ * Mercado: ~150k polacos residentes en España + ~1.2M turistas
+ * polacos anuales en España. Búsquedas SEO en polaco: alto intent +
+ * baja competencia (mercado underserved en flight comparators).
  */
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -17,12 +18,12 @@ import Link from "next/link";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Goedkope vliegtickets vanuit Spanje 2026: echte minimumprijzen voor 30 bestemmingen",
+  title: "Tanie bilety lotnicze z Hiszpanii 2026: prawdziwe minimalne ceny dla 30 kierunków",
   description:
-    "Echte prijzen voor vluchten van Madrid/Barcelona naar de 30 populairste bestemmingen. " +
-    "Goedkoopste maand, optimale boekingsdag en hoeveel je bespaart door te wachten.",
+    "Prawdziwe ceny lotów z Madrytu/Barcelony do 30 najpopularniejszych kierunków. " +
+    "Najtańszy miesiąc, optymalny dzień rezerwacji i ile oszczędzasz czekając vs rezerwując teraz.",
   alternates: {
-    canonical: `${SITE_URL}/nl/goedkope-vliegtickets`,
+    canonical: `${SITE_URL}/pl/tanie-bilety-lotnicze`,
     languages: {
       "es-ES": `${SITE_URL}/precios-vuelos-baratos`,
       "en-US": `${SITE_URL}/en/cheap-flight-prices`,
@@ -35,11 +36,11 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Goedkope vliegtickets vanuit Spanje — 30 bestemmingen",
-    description: "Wat vluchten écht kosten. Tabel met echte minimumprijzen.",
-    url: `${SITE_URL}/nl/goedkope-vliegtickets`,
+    title: "Tanie bilety lotnicze z Hiszpanii — 30 kierunków",
+    description: "Ile naprawdę kosztują loty. Tabela rzeczywistych minimalnych cen.",
+    url: `${SITE_URL}/pl/tanie-bilety-lotnicze`,
     type: "article",
-    locale: "nl_NL",
+    locale: "pl_PL",
   },
 };
 
@@ -54,61 +55,61 @@ interface PriceRow {
 }
 
 const PRICE_TABLE: PriceRow[] = [
-  { destination: "Lissabon",     iata: "LIS", minPrice: 28,  typicalPrice: 95,   cheapestMonth: "Februari", avgDuration: "1u30",  airlines: ["Ryanair", "TAP"] },
-  { destination: "Porto",        iata: "OPO", minPrice: 32,  typicalPrice: 100,  cheapestMonth: "Februari", avgDuration: "1u30",  airlines: ["Ryanair", "easyJet"] },
-  { destination: "Marrakesh",    iata: "RAK", minPrice: 30,  typicalPrice: 110,  cheapestMonth: "Maart",    avgDuration: "3u",    airlines: ["Ryanair", "Royal Air Maroc"] },
-  { destination: "Rome",         iata: "FCO", minPrice: 38,  typicalPrice: 130,  cheapestMonth: "November", avgDuration: "2u45",  airlines: ["Ryanair", "Vueling"] },
-  { destination: "Milaan",       iata: "MXP", minPrice: 40,  typicalPrice: 125,  cheapestMonth: "Januari",  avgDuration: "2u15",  airlines: ["Ryanair", "easyJet", "ITA"] },
-  { destination: "Parijs",       iata: "CDG", minPrice: 45,  typicalPrice: 140,  cheapestMonth: "Februari", avgDuration: "2u",    airlines: ["Vueling", "Iberia", "Air France"] },
-  { destination: "Londen",       iata: "LHR", minPrice: 48,  typicalPrice: 170,  cheapestMonth: "November", avgDuration: "2u30",  airlines: ["Ryanair", "easyJet", "Iberia"] },
-  { destination: "Berlijn",      iata: "BER", minPrice: 42,  typicalPrice: 145,  cheapestMonth: "Februari", avgDuration: "3u",    airlines: ["Ryanair", "easyJet"] },
-  { destination: "Amsterdam",    iata: "AMS", minPrice: 49,  typicalPrice: 155,  cheapestMonth: "Januari",  avgDuration: "2u30",  airlines: ["Ryanair", "KLM", "Vueling"] },
-  { destination: "Praag",        iata: "PRG", minPrice: 38,  typicalPrice: 125,  cheapestMonth: "Februari", avgDuration: "3u",    airlines: ["Ryanair", "Vueling"] },
-  { destination: "Boedapest",    iata: "BUD", minPrice: 42,  typicalPrice: 120,  cheapestMonth: "Maart",    avgDuration: "3u",    airlines: ["Wizz Air", "Ryanair"] },
-  { destination: "Wenen",        iata: "VIE", minPrice: 55,  typicalPrice: 155,  cheapestMonth: "Januari",  avgDuration: "3u",    airlines: ["Ryanair", "Austrian"] },
-  { destination: "Athene",       iata: "ATH", minPrice: 60,  typicalPrice: 170,  cheapestMonth: "Januari",  avgDuration: "3u30",  airlines: ["Aegean", "Ryanair"] },
-  { destination: "Istanboel",    iata: "IST", minPrice: 65,  typicalPrice: 190,  cheapestMonth: "Februari", avgDuration: "4u",    airlines: ["Pegasus", "Turkish"] },
-  { destination: "Dublin",       iata: "DUB", minPrice: 38,  typicalPrice: 130,  cheapestMonth: "Februari", avgDuration: "2u45",  airlines: ["Ryanair", "Aer Lingus"] },
-  { destination: "Reykjavik",    iata: "KEF", minPrice: 99,  typicalPrice: 280,  cheapestMonth: "Januari",  avgDuration: "4u30",  airlines: ["Iberia (Transit)", "Lufthansa"] },
-  { destination: "New York",     iata: "JFK", minPrice: 195, typicalPrice: 590,  cheapestMonth: "Januari",  avgDuration: "8u30",  airlines: ["Iberia", "Air Europa", "Delta"] },
-  { destination: "Tokio",        iata: "NRT", minPrice: 380, typicalPrice: 950,  cheapestMonth: "Januari",  avgDuration: "13u",   airlines: ["Iberia", "Air France"] },
-  { destination: "Bangkok",      iata: "BKK", minPrice: 350, typicalPrice: 820,  cheapestMonth: "Maart",    avgDuration: "13u",   airlines: ["Qatar", "Emirates", "Turkish"] },
-  { destination: "Bali",         iata: "DPS", minPrice: 490, typicalPrice: 1100, cheapestMonth: "Maart",    avgDuration: "17u",   airlines: ["Qatar", "Emirates", "Singapore"] },
-  { destination: "Dubai",        iata: "DXB", minPrice: 220, typicalPrice: 550,  cheapestMonth: "Januari",  avgDuration: "7u30",  airlines: ["Emirates", "Turkish", "Etihad"] },
+  { destination: "Lizbona",     iata: "LIS", minPrice: 28,  typicalPrice: 95,   cheapestMonth: "Luty",      avgDuration: "1g30",  airlines: ["Ryanair", "TAP"] },
+  { destination: "Porto",       iata: "OPO", minPrice: 32,  typicalPrice: 100,  cheapestMonth: "Luty",      avgDuration: "1g30",  airlines: ["Ryanair", "easyJet"] },
+  { destination: "Marrakesz",   iata: "RAK", minPrice: 30,  typicalPrice: 110,  cheapestMonth: "Marzec",    avgDuration: "3g",    airlines: ["Ryanair", "Royal Air Maroc"] },
+  { destination: "Rzym",        iata: "FCO", minPrice: 38,  typicalPrice: 130,  cheapestMonth: "Listopad",  avgDuration: "2g45",  airlines: ["Ryanair", "Vueling"] },
+  { destination: "Mediolan",    iata: "MXP", minPrice: 40,  typicalPrice: 125,  cheapestMonth: "Styczeń",   avgDuration: "2g15",  airlines: ["Ryanair", "easyJet", "ITA"] },
+  { destination: "Paryż",       iata: "CDG", minPrice: 45,  typicalPrice: 140,  cheapestMonth: "Luty",      avgDuration: "2g",    airlines: ["Vueling", "Iberia", "Air France"] },
+  { destination: "Londyn",      iata: "LHR", minPrice: 48,  typicalPrice: 170,  cheapestMonth: "Listopad",  avgDuration: "2g30",  airlines: ["Ryanair", "easyJet", "Iberia"] },
+  { destination: "Berlin",      iata: "BER", minPrice: 42,  typicalPrice: 145,  cheapestMonth: "Luty",      avgDuration: "3g",    airlines: ["Ryanair", "easyJet"] },
+  { destination: "Amsterdam",   iata: "AMS", minPrice: 49,  typicalPrice: 155,  cheapestMonth: "Styczeń",   avgDuration: "2g30",  airlines: ["Ryanair", "KLM", "Vueling"] },
+  { destination: "Praga",       iata: "PRG", minPrice: 38,  typicalPrice: 125,  cheapestMonth: "Luty",      avgDuration: "3g",    airlines: ["Ryanair", "Vueling"] },
+  { destination: "Budapeszt",   iata: "BUD", minPrice: 42,  typicalPrice: 120,  cheapestMonth: "Marzec",    avgDuration: "3g",    airlines: ["Wizz Air", "Ryanair"] },
+  { destination: "Wiedeń",      iata: "VIE", minPrice: 55,  typicalPrice: 155,  cheapestMonth: "Styczeń",   avgDuration: "3g",    airlines: ["Ryanair", "Austrian"] },
+  { destination: "Ateny",       iata: "ATH", minPrice: 60,  typicalPrice: 170,  cheapestMonth: "Styczeń",   avgDuration: "3g30",  airlines: ["Aegean", "Ryanair"] },
+  { destination: "Stambuł",     iata: "IST", minPrice: 65,  typicalPrice: 190,  cheapestMonth: "Luty",      avgDuration: "4g",    airlines: ["Pegasus", "Turkish"] },
+  { destination: "Dublin",      iata: "DUB", minPrice: 38,  typicalPrice: 130,  cheapestMonth: "Luty",      avgDuration: "2g45",  airlines: ["Ryanair", "Aer Lingus"] },
+  { destination: "Reykjavik",   iata: "KEF", minPrice: 99,  typicalPrice: 280,  cheapestMonth: "Styczeń",   avgDuration: "4g30",  airlines: ["Iberia (Transit)", "Lufthansa"] },
+  { destination: "Nowy Jork",   iata: "JFK", minPrice: 195, typicalPrice: 590,  cheapestMonth: "Styczeń",   avgDuration: "8g30",  airlines: ["Iberia", "Air Europa", "Delta"] },
+  { destination: "Tokio",       iata: "NRT", minPrice: 380, typicalPrice: 950,  cheapestMonth: "Styczeń",   avgDuration: "13g",   airlines: ["Iberia", "Air France"] },
+  { destination: "Bangkok",     iata: "BKK", minPrice: 350, typicalPrice: 820,  cheapestMonth: "Marzec",    avgDuration: "13g",   airlines: ["Qatar", "Emirates", "Turkish"] },
+  { destination: "Bali",        iata: "DPS", minPrice: 490, typicalPrice: 1100, cheapestMonth: "Marzec",    avgDuration: "17g",   airlines: ["Qatar", "Emirates", "Singapore"] },
+  { destination: "Dubaj",       iata: "DXB", minPrice: 220, typicalPrice: 550,  cheapestMonth: "Styczeń",   avgDuration: "7g30",  airlines: ["Emirates", "Turkish", "Etihad"] },
 ];
 
 const FAQS: Array<{ q: string; a: string }> = [
   {
-    q: "Wat is de beste tijd om een vlucht te kopen?",
-    a: "Voor Europese korte vluchten is 4-8 weken vooraf de sweet spot. Voor langeafstandsvluchten naar Azië/VS: 8-16 weken. Te vroeg (>6 maanden) is meestal DUURDER — luchtvaartmaatschappijen verhogen de aanvangsprijzen. Last-minute (<2 weken) stijgt met 30-60% behalve bij error fares.",
+    q: "Kiedy jest najlepszy czas na kupno biletu lotniczego?",
+    a: "Dla europejskich krótkich lotów 4-8 tygodni wcześniej to optymalny moment. Dla lotów długodystansowych do Azji/USA: 8-16 tygodni. Zbyt wcześnie (>6 miesięcy) jest zazwyczaj DROŻSZE — linie podnoszą ceny początkowe. Last minute (<2 tygodnie) rośnie o 30-60% z wyjątkiem error fares.",
   },
   {
-    q: "Welke dag van de week is het goedkoopst om te vliegen?",
-    a: "Dinsdag en woensdag zijn statistisch de goedkoopste dagen voor Europese vluchten. Zondag en vrijdag zijn het duurst. Bij langeafstand wordt het verschil kleiner.",
+    q: "Który dzień tygodnia jest najtańszy do lotu?",
+    a: "Wtorek i środa są statystycznie najtańszymi dniami dla lotów europejskich. Niedziela i piątek są najdroższe. Dla długich dystansów różnica się wyrównuje.",
   },
   {
-    q: "Welke maand is het goedkoopst om vanuit Spanje te vliegen?",
-    a: "Januari, februari en november zijn de goedkoopste maanden. Juni-augustus en december zijn het duurst. Voor specifieke bestemmingen (Thailand, Mexico) variëren de maanden — zie tabel hierboven.",
+    q: "Który miesiąc jest najtańszy do lotu z Hiszpanii?",
+    a: "Styczeń, luty i listopad to najtańsze miesiące. Czerwiec-sierpień i grudzień są najdroższe. Dla konkretnych kierunków (Tajlandia, Meksyk) miesiące się różnią — zobacz tabelę powyżej.",
   },
   {
-    q: "Zijn low-cost maatschappijen altijd goedkoper?",
-    a: "Nee. Voor vluchten van meer dan 3 uur of met ruimbagage kunnen Vueling/easyJet/Air Europa goedkoper zijn dan Ryanair na extra kosten. Vergelijk altijd de TOTALE PRIJS, niet de lokprijs.",
+    q: "Czy tanie linie zawsze są tańsze?",
+    a: "Nie. Dla lotów ponad 3 godziny lub z bagażem rejestrowanym Vueling/easyJet/Air Europa mogą być tańsze niż Ryanair po dodatkach. Zawsze porównuj CENĘ CAŁKOWITĄ, nie cenę reklamową.",
   },
   {
-    q: "Wat zijn error fares?",
-    a: "Tarieven aanzienlijk goedkoper dan normaal (-50% tot -90%) door bugs in het prijssysteem. Ze duren meestal 1-6 uur voordat ze geannuleerd worden. TripCazador detecteert ze automatisch en waarschuwt via Telegram + email.",
+    q: "Czym są error fares?",
+    a: "Taryfy znacznie tańsze niż normalnie (-50% do -90%) z powodu błędów w systemie cen. Trwają zwykle 1-6 godzin zanim zostaną anulowane. TripCazador wykrywa je automatycznie i ostrzega przez Telegram + email.",
   },
   {
-    q: "Direct bij de luchtvaartmaatschappij of via een zoekmachine boeken?",
-    a: "Bijna altijd direct bij de maatschappij: betere service bij annuleringen, geen verrassingen met vooraf geselecteerde verzekeringen. Zoekmachines zijn perfect om te VERGELIJKEN, maar boek op de website van de maatschappij.",
+    q: "Rezerwować bezpośrednio u linii lotniczej czy przez wyszukiwarkę?",
+    a: "Prawie zawsze bezpośrednio u linii: lepsza obsługa przy anulacjach, brak niespodzianek z preselekcjonowanymi ubezpieczeniami. Wyszukiwarki świetnie służą do PORÓWNAŃ, ale rezerwuj na stronie linii.",
   },
   {
-    q: "Is business class de moeite waard?",
-    a: "Alleen als: (a) Business/Economy ratio <2,5x (zeldzaam), of (b) nachtvlucht +9 uur waar liggend slapen de volgende dag verandert. Tip: probeer eerst Premium Economy — 1,4-1,7x Economy met meer ruimte.",
+    q: "Czy business class jest tego warta?",
+    a: "Tylko jeśli: (a) stosunek Business/Economy <2,5x (rzadko), lub (b) lot nocny +9 godzin gdzie leżący sen zmienia następny dzień. Tip: spróbuj najpierw Premium Economy — 1,4-1,7x Economy z więcej miejsca.",
   },
   {
-    q: "Hoe werken jullie alerts?",
-    a: "Drie kanalen: (1) Publiek Telegram-kanaal @tripcazador met TOP 1-2 kritieke deals per uur; (2) Persoonlijke bot /buscar: abonneer op bestemmingen en ontvang DM bij match; (3) Wekelijkse nieuwsbrief maandag met de Top 5. Allemaal gratis.",
+    q: "Jak działają wasze alerty?",
+    a: "Trzy kanały: (1) Publiczny kanał Telegram @tripcazador z TOP 1-2 krytycznymi dealami na godzinę; (2) Osobisty bot /buscar: zapisz się na kierunki i otrzymuj DM przy dopasowaniu; (3) Cotygodniowy newsletter w poniedziałek z Top 5. Wszystko za darmo.",
   },
 ];
 
@@ -116,10 +117,10 @@ function priceJsonLd(): object {
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Goedkope vliegtickets vanuit Spanje 2026",
+    name: "Tanie bilety lotnicze z Hiszpanii 2026",
     description: metadata.description,
-    url: `${SITE_URL}/nl/goedkope-vliegtickets`,
-    inLanguage: "nl-NL",
+    url: `${SITE_URL}/pl/tanie-bilety-lotnicze`,
+    inLanguage: "pl-PL",
     isPartOf: { "@type": "WebSite", url: SITE_URL, name: "TripCazador" },
   };
 }
@@ -141,18 +142,18 @@ function breadcrumbJsonLd(): object {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/nl` },
+      { "@type": "ListItem", position: 1, name: "Strona główna", item: `${SITE_URL}/pl` },
       {
         "@type": "ListItem",
         position: 2,
-        name: "Goedkope vliegtickets",
-        item: `${SITE_URL}/nl/goedkope-vliegtickets`,
+        name: "Tanie bilety lotnicze",
+        item: `${SITE_URL}/pl/tanie-bilety-lotnicze`,
       },
     ],
   };
 }
 
-export default function GoedkopeVliegticketsPage() {
+export default function TanieBiletyLotniczePage() {
   return (
     <>
       <script
@@ -173,37 +174,37 @@ export default function GoedkopeVliegticketsPage() {
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <nav aria-label="Breadcrumb" className="mb-6 text-xs text-gray-400">
-          <Link href="/nl" className="hover:text-amber-300">Home</Link>
+          <Link href="/pl" className="hover:text-amber-300">Strona główna</Link>
           <span className="mx-2 text-gray-600">›</span>
-          <span className="text-gray-500">Goedkope vliegtickets</span>
+          <span className="text-gray-500">Tanie bilety lotnicze</span>
         </nav>
 
         <h1 className="text-3xl sm:text-4xl font-bold text-white">
-          Echte goedkope vliegticketprijzen vanuit Spanje
+          Prawdziwe tanie bilety lotnicze z Hiszpanii
         </h1>
         <p className="mt-3 text-lg text-gray-300 max-w-3xl">
-          Wat het <em>écht</em> kost om naar de 30 populairste bestemmingen te vliegen — niet
-          de lokprijs. Echte minimumprijzen van de afgelopen 12 maanden, goedkoopste maand en
-          beschikbare maatschappijen.
+          Ile <em>naprawdę</em> kosztuje lot do 30 najpopularniejszych kierunków — nie cena
+          reklamowa. Prawdziwe minimalne ceny z ostatnich 12 miesięcy, najtańszy miesiąc
+          i dostępne linie.
         </p>
 
         <section aria-labelledby="prices-table" className="mt-10">
           <h2 id="prices-table" className="text-2xl font-bold text-white mb-4">
-            Minimumprijzen per bestemming (heen-en-terug, Economy)
+            Minimalne ceny według kierunku (w obie strony, Economy)
           </h2>
           <p className="text-sm text-gray-400 mb-4">
-            Echte prijzen gedetecteerd door onze hunter in de afgelopen 12 maanden. Data mei 2026.
+            Prawdziwe ceny wykryte przez nasz hunter w ostatnich 12 miesiącach. Dane maj 2026.
           </p>
           <div className="overflow-x-auto rounded-xl border border-gray-800">
             <table className="w-full text-sm">
               <thead className="bg-gray-900 text-gray-300">
                 <tr>
-                  <th className="px-3 py-2 text-left">Bestemming</th>
+                  <th className="px-3 py-2 text-left">Kierunek</th>
                   <th className="px-3 py-2 text-right">Min</th>
-                  <th className="px-3 py-2 text-right">Gemiddeld</th>
-                  <th className="px-3 py-2 text-left">Goedkoopste maand</th>
-                  <th className="px-3 py-2 text-left">Top maatschappijen</th>
-                  <th className="px-3 py-2 text-right">Duur</th>
+                  <th className="px-3 py-2 text-right">Średnio</th>
+                  <th className="px-3 py-2 text-left">Najtańszy miesiąc</th>
+                  <th className="px-3 py-2 text-left">Top linie</th>
+                  <th className="px-3 py-2 text-right">Czas</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
@@ -229,11 +230,11 @@ export default function GoedkopeVliegticketsPage() {
 
         <section className="mt-10 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-transparent p-6 sm:p-8">
           <h2 className="text-xl sm:text-2xl font-bold text-white">
-            Ontvang waarschuwingen wanneer er een deal verschijnt voor jouw bestemming
+            Otrzymuj alerty gdy pojawi się okazja dla Twojego kierunku
           </h2>
           <p className="mt-2 text-gray-300 text-sm max-w-2xl">
-            Abonneer op het Telegram-kanaal <strong>@tripcazador</strong> en ontvang de TOP
-            1-2 kritieke deals per uur.
+            Zapisz się na kanał Telegram <strong>@tripcazador</strong> i otrzymuj TOP 1-2
+            krytyczne okazje na godzinę.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a
@@ -242,20 +243,20 @@ export default function GoedkopeVliegticketsPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm"
             >
-              📱 Lid worden van Telegram-kanaal
+              📱 Dołącz do kanału Telegram
             </a>
             <Link
               href="/alertas"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-500/40 text-amber-300 hover:bg-amber-500/10 font-semibold text-sm"
             >
-              🔔 Persoonlijke alert maken
+              🔔 Stwórz osobisty alert
             </Link>
           </div>
         </section>
 
         <section aria-labelledby="faq" className="mt-12">
           <h2 id="faq" className="text-2xl font-bold text-white mb-4">
-            FAQ over vliegticketprijzen
+            FAQ o cenach biletów
           </h2>
           <div className="space-y-4">
             {FAQS.map((f, idx) => (
@@ -277,7 +278,7 @@ export default function GoedkopeVliegticketsPage() {
 
         <section aria-labelledby="related" className="mt-12">
           <h2 id="related" className="text-2xl font-bold text-white mb-4">
-            Andere taalversies
+            Inne wersje językowe
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             <Link
@@ -286,7 +287,7 @@ export default function GoedkopeVliegticketsPage() {
             >
               <h3 className="font-semibold text-white">🇪🇸 Versión en español</h3>
               <p className="text-sm text-gray-400 mt-1">
-                Originele Spaanse versie met dezelfde informatie.
+                Oryginalna wersja hiszpańska z tymi samymi informacjami.
               </p>
             </Link>
             <Link
@@ -323,6 +324,13 @@ export default function GoedkopeVliegticketsPage() {
             >
               <h3 className="font-semibold text-white">🇵🇹 Versão portuguesa</h3>
               <p className="text-sm text-gray-400 mt-1">Para falantes portugueses na Espanha.</p>
+            </Link>
+            <Link
+              href="/nl/goedkope-vliegtickets"
+              className="block rounded-xl border border-gray-800 hover:border-amber-500/40 bg-gray-900/40 hover:bg-gray-900/60 p-4 transition-colors"
+            >
+              <h3 className="font-semibold text-white">🇳🇱 Nederlandse versie</h3>
+              <p className="text-sm text-gray-400 mt-1">Voor Nederlandstaligen in Spanje.</p>
             </Link>
           </div>
         </section>
