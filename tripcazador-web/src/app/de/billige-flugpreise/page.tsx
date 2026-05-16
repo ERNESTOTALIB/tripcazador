@@ -29,6 +29,7 @@ export const metadata: Metadata = {
       "it-IT": `${SITE_URL}/it/prezzi-voli-economici`,
       "pt-PT": `${SITE_URL}/pt/precos-voos-baratos`,
       "nl-NL": `${SITE_URL}/nl/goedkope-vliegtickets`,
+      "pl-PL": `${SITE_URL}/pl/tanie-bilety-lotnicze`,
     },
   },
   openGraph: {

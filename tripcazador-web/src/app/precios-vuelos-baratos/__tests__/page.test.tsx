@@ -349,7 +349,56 @@ describe("Pricing landing pages — SSS217+223", () => {
     });
   });
 
-  describe("Sitemap entries (SSS217+223+234+243+244+246+250)", () => {
+  describe("PL version /pl/tanie-bilety-lotnicze (SSS252)", () => {
+    const src = readPage("src/app/pl/tanie-bilety-lotnicze/page.tsx");
+
+    it("tiene JSON-LD WebPage en polaco (inLanguage pl-PL)", () => {
+      expect(src).toContain('"@type": "WebPage"');
+      expect(src).toContain('inLanguage: "pl-PL"');
+    });
+
+    it("tiene FAQPage + BreadcrumbList", () => {
+      expect(src).toContain('"@type": "FAQPage"');
+      expect(src).toContain('"@type": "BreadcrumbList"');
+    });
+
+    it("tiene hreflang OCTETO completo (8 idiomas)", () => {
+      expect(src).toMatch(/es-ES.*\/precios-vuelos-baratos/s);
+      expect(src).toMatch(/en-US.*\/en\/cheap-flight-prices/s);
+      expect(src).toMatch(/de-DE.*\/de\/billige-flugpreise/s);
+      expect(src).toMatch(/fr-FR.*\/fr\/prix-vols-pas-chers/s);
+      expect(src).toMatch(/it-IT.*\/it\/prezzi-voli-economici/s);
+      expect(src).toMatch(/pt-PT.*\/pt\/precos-voos-baratos/s);
+      expect(src).toMatch(/nl-NL.*\/nl\/goedkope-vliegtickets/s);
+      expect(src).toMatch(/pl-PL.*\/pl\/tanie-bilety-lotnicze/s);
+    });
+
+    it("tabla incluye nombres polacos (Lizbona, Rzym, Mediolan, Paryż, Londyn, Wiedeń)", () => {
+      expect(src).toContain('"Lizbona"');
+      expect(src).toContain('"Rzym"');
+      expect(src).toContain('"Mediolan"');
+      expect(src).toContain('"Paryż"');
+      expect(src).toContain('"Londyn"');
+      expect(src).toContain('"Wiedeń"');
+    });
+
+    it("openGraph locale es pl_PL", () => {
+      expect(src).toContain('locale: "pl_PL"');
+    });
+
+    it("title incluye palabras clave SEO polacas (tanie, bilety, lotnicze)", () => {
+      const titleMatch = src.match(/title:\s*["']([^"']+)["']/);
+      expect(titleMatch).toBeTruthy();
+      if (titleMatch) {
+        const title = titleMatch[1].toLowerCase();
+        expect(title).toContain("tanie");
+        expect(title).toContain("bilety");
+        expect(title).toContain("lotnicze");
+      }
+    });
+  });
+
+  describe("Sitemap entries (SSS217+223+234+243+244+246+250+252)", () => {
     const src = readPage("src/app/sitemap.ts");
 
     it("incluye /precios-vuelos-baratos con priority 0.8", () => {
@@ -387,7 +436,12 @@ describe("Pricing landing pages — SSS217+223", () => {
       expect(src).toMatch(/goedkope-vliegtickets[\s\S]{0,200}priority:\s*0\.7/);
     });
 
-    it("LANG_ALT_PRICING incluye los 7 idiomas + x-default", () => {
+    it("incluye /pl/tanie-bilety-lotnicze con priority 0.7 (SSS252)", () => {
+      expect(src).toContain("/pl/tanie-bilety-lotnicze");
+      expect(src).toMatch(/tanie-bilety-lotnicze[\s\S]{0,200}priority:\s*0\.7/);
+    });
+
+    it("LANG_ALT_PRICING incluye los 8 idiomas + x-default", () => {
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*es-ES/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*en-US/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*de-DE/);
@@ -395,6 +449,7 @@ describe("Pricing landing pages — SSS217+223", () => {
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*it-IT/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*pt-PT/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*nl-NL/);
+      expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*pl-PL/);
       expect(src).toMatch(/LANG_ALT_PRICING[\s\S]*x-default/);
     });
   });
