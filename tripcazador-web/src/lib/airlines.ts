@@ -458,6 +458,108 @@ export const AIRLINES: Airline[] = [
     description:
       "ITA Airways es la aerolínea nacional de Italia, sucesora de la histórica Alitalia tras quiebra de 2021. En 2024 fue adquirida por Lufthansa Group, lo que está unificando pricing engines y programa frequent flyer con LH/LX/OS.\n\nPara el viajero ES, las rutas más interesantes son ES → Argentina vía FCO (MAD-FCO-EZE por €390 economy en error fare vs €850 normal) y ES → Tokio vía FCO (€480 vs €1,100). La integración con LH significa que ahora los error fares LH también se propagan a ITA — vigilar ambas en paralelo.\n\nProducto a bordo en proceso de modernización (flota A220, A330neo). Programa Volare (frequent flyer) ahora integrado con Miles & More — útil acumular si vuelas Lufthansa Group con frecuencia.",
   },
+  // SSS286 (17 may 2026): expansión a 25 aerolíneas — añade 5 más (SK/OS/EW/QF/CX).
+  {
+    code: "SK",
+    icao: "SAS",
+    name: "SAS Scandinavian",
+    category: "full-service",
+    country: "Suecia/Dinamarca/Noruega",
+    hubs: ["CPH", "ARN", "OSL"],
+    popularRoutesFromSpain: [
+      { route: "MAD-CPH", typicalPriceEur: 195, minPriceEur: 85 },
+      { route: "BCN-ARN", typicalPriceEur: 220, minPriceEur: 95 },
+      { route: "MAD-OSL", typicalPriceEur: 185, minPriceEur: 78 },
+    ],
+    keyPoints: [
+      "Hub triple Copenhague + Estocolmo + Oslo — mejor red Escandinavia",
+      "Tras restructura 2023, ahora en Star Alliance + Air France-KLM",
+      "Error fares Europa → USA/Asia vía CPH frecuentes",
+    ],
+    description:
+      "SAS Scandinavian es la aerolínea nacional sueca/danesa/noruega, con hubs en Copenhague (CPH), Estocolmo (ARN) y Oslo (OSL). Tras la restructura financiera de 2023, salió del Star Alliance y se unió a SkyTeam (Air France-KLM partnership), lo que abre nuevas oportunidades de error fares con segmentos compartidos.\n\nPara el viajero ES, SAS brilla en rutas a Escandinavia (más cómoda y puntual que Norwegian, ligeramente más cara) y especialmente en long-haul vía CPH a USA (Boston, Newark, Chicago) y Asia (Shanghai, Tokio). Error fares ES → USA vía CPH a €380-450 RT economy aparecen 3-4× al año.\n\nProducto cabina actualizado en A350 (long-haul) muy bien valorado en business. EuroBonus (frequent flyer) ahora cooperante con Flying Blue — millas transferibles.",
+  },
+  {
+    code: "OS",
+    icao: "AUA",
+    name: "Austrian Airlines",
+    category: "full-service",
+    country: "Austria",
+    hubs: ["VIE"],
+    popularRoutesFromSpain: [
+      { route: "MAD-VIE", typicalPriceEur: 175, minPriceEur: 65 },
+      { route: "BCN-VIE", typicalPriceEur: 165, minPriceEur: 58 },
+      { route: "MAD-VIE-NRT", typicalPriceEur: 950, minPriceEur: 420 },
+    ],
+    keyPoints: [
+      "Hub Viena con conexiones únicas Europa Central + Este",
+      "Lufthansa Group — error fares propagados desde LH",
+      "Programa Miles & More integrado",
+    ],
+    description:
+      "Austrian Airlines es la aerolínea nacional de Austria, parte del Lufthansa Group (con LH, LX, EW). Hub principal Viena (VIE) — el aeropuerto más conveniente para conexiones a Europa Central (Bratislava, Praga, Budapest, Liubliana) y Este (Bucarest, Sofía, Kiev, Belgrado).\n\nPara el viajero ES, Austrian es competitiva en rutas largo-radio vía VIE: Madrid-Viena-Tokio por €420 RT economy (vs €950 normal) — error fare observado 2× en 2025. También fuerte en rutas Europa Central a precios consistentes.\n\nMejor opción para combinar varios países Europa Central en un solo viaje (combinaciones triple-stopover gratis en VIE para Austrian Plus tier). Programa Miles & More compartido con todo el Lufthansa Group.",
+  },
+  {
+    code: "EW",
+    icao: "EWG",
+    name: "Eurowings",
+    category: "low-cost",
+    country: "Alemania",
+    hubs: ["DUS", "CGN", "HAM", "STR"],
+    popularRoutesFromSpain: [
+      { route: "MAD-DUS", typicalPriceEur: 145, minPriceEur: 38 },
+      { route: "BCN-CGN", typicalPriceEur: 125, minPriceEur: 32 },
+      { route: "AGP-HAM", typicalPriceEur: 165, minPriceEur: 48 },
+    ],
+    keyPoints: [
+      "Low-cost subsidiary de Lufthansa Group",
+      "Hub principal DUS + base CGN, HAM, STR",
+      "Aeropuertos primarios alemanes (no secundarios como Ryanair)",
+    ],
+    description:
+      "Eurowings es el low-cost del Lufthansa Group, operando rutas intra-europeas con base operativa en Düsseldorf (DUS), Colonia (CGN), Hamburgo (HAM) y Stuttgart (STR). Ventaja vs Ryanair: aeropuertos primarios alemanes, mejor experiencia pasajero, bolso de mano amplio incluido.\n\nPara el viajero ES, las rutas más interesantes son Madrid/Barcelona/Málaga/Palma → DUS/CGN/HAM/STR. Precios típicos €120-180 RT con error fares ocasionales a €35-50 RT. Especialmente útil para conectar destinos secundarios alemanes sin pasar por FRA o MUC.\n\nDesde la integración en Lufthansa Group, ahora forma parte de Miles & More — útil para acumular millas Lufthansa volando en low-cost. Ratio de cancelaciones bajo (mejor que Ryanair típico).",
+  },
+  {
+    code: "QF",
+    icao: "QFA",
+    name: "Qantas",
+    category: "full-service",
+    country: "Australia",
+    hubs: ["SYD", "MEL", "BNE", "PER"],
+    popularRoutesFromSpain: [
+      { route: "MAD-LHR-SYD", typicalPriceEur: 1450, minPriceEur: 680 },
+      { route: "BCN-DXB-PER", typicalPriceEur: 1380, minPriceEur: 650 },
+      { route: "MAD-SIN-SYD", typicalPriceEur: 1520, minPriceEur: 720 },
+    ],
+    keyPoints: [
+      "Aerolínea de bandera Australia con red oceanía sin igual",
+      "Project Sunrise: vuelos directos Europa-Sídney lanzamiento 2026-2027",
+      "Error fares Europa-Oceanía con escala asiática 4-5× al año",
+    ],
+    description:
+      "Qantas es la aerolínea nacional de Australia, parte de oneworld alliance. La red más densa hacia Oceanía (Sídney, Melbourne, Brisbane, Perth) + Pacífico Sur (Auckland, Wellington). Producto a bordo top-tier en business class A380.\n\nPara el viajero ES, Qantas opera vía hub asiático (Singapur, Hong Kong, Bangkok) o europeo (Londres). Error fares Europa-Sídney bajo €700 RT economy aparecen 4-5× al año, especialmente en octubre-noviembre (mejor mes para viajar a Australia).\n\nProject Sunrise (lanzamiento previsto 2026-2027) propone vuelos directos Sídney-Londres / Sídney-París sin escala — los primeros precios serán premium pero los lanzamientos suelen generar mistake fares de marketing. Vigilar dic 2026.",
+  },
+  {
+    code: "CX",
+    icao: "CPA",
+    name: "Cathay Pacific",
+    category: "luxury",
+    country: "Hong Kong",
+    hubs: ["HKG"],
+    popularRoutesFromSpain: [
+      { route: "MAD-HKG", typicalPriceEur: 680, minPriceEur: 320 },
+      { route: "BCN-HKG", typicalPriceEur: 720, minPriceEur: 340 },
+      { route: "MAD-HKG-SYD", typicalPriceEur: 1180, minPriceEur: 580 },
+      { route: "MAD-HKG-BKK", typicalPriceEur: 580, minPriceEur: 280 },
+    ],
+    keyPoints: [
+      "Hub Hong Kong conecta Europa con todo el Sudeste Asiático",
+      "Producto a bordo Skytrax 5-star — business class top-tier",
+      "Error fares Europa-Asia con stopover HKG muy frecuentes",
+    ],
+    description:
+      "Cathay Pacific es la aerolínea nacional de Hong Kong, parte de oneworld alliance. Hub único en HKG con red densa a todo Sudeste Asiático (Bangkok, Singapur, Bali, Manila, Tokio, Seúl) + Oceanía (Sídney, Melbourne, Auckland) + Norteamérica oeste (LAX, SFO, YVR, JFK).\n\nPara el viajero ES, Cathay brilla en rutas vía HKG hacia destinos exóticos asiáticos. Error fares Madrid-Hong Kong-Bangkok por €280 RT economy (vs €580 normal) aparecen 5-6× al año, especialmente noviembre-febrero. La calidad del producto a bordo (especialmente en A350) es consistente top-tier — Skytrax 5-star.\n\nPrograma Asia Miles (frequent flyer) tiene partnerships valiosos con Alaska Airlines, JAL y Qantas — útil para redenciones premium. Hong Kong Stopover Programme permite hasta 5 días en HK sin coste extra en muchos tickets transit.",
+  },
 ];
 
 export function getAirlineByCode(code: string): Airline | null {

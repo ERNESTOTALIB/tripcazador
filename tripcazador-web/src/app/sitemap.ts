@@ -159,6 +159,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/legal`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     // ppp PPP1: nuevas landing pages monetización
     { url: `${BASE_URL}/concierge`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    // SSS285 (17 may 2026): 4 tier-dedicated landings
+    { url: `${BASE_URL}/concierge/express`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/concierge/standard`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE_URL}/concierge/premium`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/concierge/pro`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     // sss SSS11: SEO landing — "agencia de viajes online" 33k búsquedas/mes
     { url: `${BASE_URL}/agencia-de-viajes`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/comparar-vuelos`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
