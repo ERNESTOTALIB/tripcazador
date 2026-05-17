@@ -20,6 +20,7 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { PriceHistoryChart } from "@/components/PriceHistoryChart";
 import { HotelCrossSell } from "@/components/HotelCrossSell";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
+import { ConciergeInlineCTA } from "@/components/ConciergeInlineCTA";
 
 // ISR: revalidar cada 5 min
 export const revalidate = 300;
@@ -423,6 +424,15 @@ export default async function DealDetailPage({
         variant="card"
         title="No te pierdas el próximo error fare"
         subtitle="Recibe alertas SMS instantáneas para CRÍTICOS como este antes de que se agoten · €9.99/mes · 7 días gratis"
+      />
+      {/* SSS281: Concierge banner — user con intent claro pero quizás
+          quiere que le hagamos TODO el plan por €19 sin pelearse con filtros. */}
+      <ConciergeInlineCTA
+        source={`deal-${deal.id}`}
+        variant="banner"
+        highlightTier="standard"
+        title={`🧳 ¿Quieres que te organice el viaje a ${deal.city_to || deal.country_to}?`}
+        subtitle={`Por €19 te entrego 5 opciones de vuelo + hotel sugerido + tips del destino en 48h. Garantía €100+ ahorro.`}
       />
 
       {/* ─────────── Deals similares ─────────── */}

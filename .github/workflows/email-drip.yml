@@ -1,0 +1,43 @@
+name: Email Drip Cron
+
+# Cron diario 10:00 UTC (= 12:00 ES) — envía emails drip pending a
+# subscribers en sus respectivos días post-signup (day1, day3, day7, day14).
+# Lifecycle email = retention.
+#
+# SSS282 (17 may 2026): antes este workflow no existía → drip-cron endpoint
+# nunca se invocaba → 0% lifecycle email. Add this workflow.
+#
+# Requiere:
+#  - DRIP_CRON_TOKEN secret GH = mismo valor que NEXT_PUBLIC_DRIP_CRON_TOKEN
+#    (en realidad DRIP_CRON_TOKEN server-side) en Vercel env.
+#  - RESEND_API_KEY ya seteado en Vercel (sin él endpoint devuelve resend_active=false).
+
+on:
+  schedule:
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger drip-cron endpoint
+        id: send
+        run: |
+          STATUS=$(curl -s -o /tmp/drip.json -w "%{http_code}" \
+            "https://tripcazador.com/api/email/drip-cron?token=${{ secrets.DRIP_CRON_TOKEN }}" \
+            --max-time 60)
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          cat /tmp/drip.json | head -c 1000
+
+      - name: Notify Telegram on failure
+        if: steps.send.outputs.status != '200' && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MSG="⚠ Email drip-cron failed HTTP ${{ steps.send.outputs.status }}\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+            -d chat_id="$TELEGRAM_CHAT_ID" \
+            -d text="$MSG"
