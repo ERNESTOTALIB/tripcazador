@@ -1391,6 +1391,22 @@
       "destination": "CAG",
       "price_eur": 18.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c84da8e2bcbd",
+      "ts": "2026-05-17T15:53:48.035897+00:00",
+      "origin": "WRO",
+      "destination": "ZAD",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "9c9883f1cbb6",
+      "ts": "2026-05-17T15:53:48.035897+00:00",
+      "origin": "NUE",
+      "destination": "ZAD",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
