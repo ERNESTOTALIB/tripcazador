@@ -10,6 +10,7 @@ import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 import { JsonLd } from "@/components/JsonLd";
 import { NewsletterABWidget } from "@/components/NewsletterABWidget";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
+import { ConciergeInlineCTA } from "@/components/ConciergeInlineCTA";
 import { RelatedPosts } from "@/components/RelatedPosts";
 import { TableOfContents } from "@/components/TableOfContents";
 import { TravelInsuranceCTA } from "@/components/TravelInsuranceCTA";
@@ -237,6 +238,14 @@ export default function BlogPostPage({ params }: { params: Params }) {
             Lector con intent claro de viaje + lleva ya scrolled 100% post = ideal
             momento para promover SMS alerts + Deep Search. */}
         <PremiumInlineCTA source={`blog-${params.slug}`} variant="card" />
+        {/* SSS281 (17 may 2026): Concierge CTA banner tras Premium card.
+            Mismo lector pero diferente angle: "no tienes tiempo, te lo busco yo"
+            target = viajeros premium que valoran tiempo > €19-99. */}
+        <ConciergeInlineCTA
+          source={`blog-${params.slug}`}
+          variant="banner"
+          highlightTier="standard"
+        />
         {/* KKK4 — Travel insurance affiliate CTA en blog footer. Lector ya
             está en intent de viaje, alta conversion. */}
         <TravelInsuranceCTA variant="compact" />

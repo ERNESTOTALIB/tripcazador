@@ -524,6 +524,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // SSS283 (17 may 2026): seasonal landing pages — high-intent SEO long-tail.
+  const SEASONAL_SLUGS = [
+    "semana-santa-2026",
+    "verano-2026",
+    "puente-diciembre-2026",
+    "puente-octubre-2026",
+    "navidad-2026",
+  ];
+  const seasonalPages: MetadataRoute.Sitemap = SEASONAL_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/vuelos-temporada/${slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
+
   // C3: precio mes a mes — 12 rutas top con calendar 12 meses cada una
   const monthlyPriceIndex = {
     url: `${BASE_URL}/precio-mes-a-mes`,
@@ -645,6 +660,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...cuandoViajarPages,
     ...regionPages,
     ...monthPages,
+    ...seasonalPages,
     monthlyPriceIndex,
     ...monthlyPriceRoutes,
     ...hotelPages,
