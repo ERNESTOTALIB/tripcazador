@@ -5,8 +5,8 @@ import { describe, it, expect } from "vitest";
 import { HOTEL_SEED, getHotelSeedFallback } from "../hotel_seed";
 
 describe("HOTEL_SEED — integridad", () => {
-  it("contiene al menos 60 hoteles", () => {
-    expect(HOTEL_SEED.length).toBeGreaterThanOrEqual(60);
+  it("contiene al menos 200 hoteles", () => {
+    expect(HOTEL_SEED.length).toBeGreaterThanOrEqual(200);
   });
 
   it("todos los hoteles tienen id distintos", () => {
