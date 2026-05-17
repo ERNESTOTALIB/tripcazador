@@ -19,6 +19,7 @@ import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 import { ShareButtons } from "@/components/ShareButtons";
 import { PriceHistoryChart } from "@/components/PriceHistoryChart";
 import { HotelCrossSell } from "@/components/HotelCrossSell";
+import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 
 // ISR: revalidar cada 5 min
 export const revalidate = 300;
@@ -412,6 +413,16 @@ export default async function DealDetailPage({
         nights={2}
         variant="card"
         locale="es"
+      />
+
+      {/* SSS280 (17 may 2026): Premium CTA en deal detail.
+          User clicó en un deal específico → máxima intent.
+          Promover Premium para próximas alertas (no la actual). */}
+      <PremiumInlineCTA
+        source={`deal-${deal.id}`}
+        variant="card"
+        title="No te pierdas el próximo error fare"
+        subtitle="Recibe alertas SMS instantáneas para CRÍTICOS como este antes de que se agoten · €9.99/mes · 7 días gratis"
       />
 
       {/* ─────────── Deals similares ─────────── */}
