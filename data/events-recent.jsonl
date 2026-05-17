@@ -1,6 +1,3 @@
-{"ts":"2026-05-14T14:50:38.131Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
-{"ts":"2026-05-14T14:51:23.634Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
-{"ts":"2026-05-14T14:51:23.693Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/"}}
 {"ts":"2026-05-14T14:51:23.902Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
 {"ts":"2026-05-14T14:51:27.141Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-14T14:51:30.280Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/favoritos"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-17T15:17:40.053Z","type":"landing_arrived","visitor":"deb4282dbc8fc036","meta":{"path":"/comparar-aerolineas/iberia-vs-vueling"}}
 {"ts":"2026-05-17T15:17:57.232Z","type":"page_view","visitor":"deb4282dbc8fc036","meta":{"path":"/comparar-aerolineas/qatar-vs-emirates"}}
 {"ts":"2026-05-17T15:17:57.258Z","type":"landing_arrived","visitor":"deb4282dbc8fc036","meta":{"path":"/comparar-aerolineas/qatar-vs-emirates"}}
+{"ts":"2026-05-17T15:24:53.443Z","type":"landing_arrived","visitor":"1889f53dc56c1b2e","meta":{"path":"/"}}
+{"ts":"2026-05-17T15:24:53.526Z","type":"page_view","visitor":"1889f53dc56c1b2e","meta":{"path":"/"}}
+{"ts":"2026-05-17T15:25:10.558Z","type":"landing_arrived","visitor":"f85e6dbb1239d31d","meta":{"path":"/"}}
