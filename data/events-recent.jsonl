@@ -1,6 +1,3 @@
-{"ts":"2026-05-14T17:37:13.147Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/deals"}}
-{"ts":"2026-05-14T17:37:16.185Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/admin"}}
-{"ts":"2026-05-14T17:37:16.829Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/admin"}}
 {"ts":"2026-05-14T17:37:20.341Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{}}
 {"ts":"2026-05-14T17:37:22.656Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/blog/tailandia-monzon-cuando-ir-vuelos-baratos"}}
 {"ts":"2026-05-14T17:37:23.135Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/blog/japon-otono-momiji-vuelos-baratos"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-17T21:49:25.182Z","type":"page_view","visitor":"33771b84570601aa","meta":{"path":"/"}}
 {"ts":"2026-05-17T21:49:27.702Z","type":"landing_arrived","visitor":"33771b84570601aa","meta":{"path":"/"}}
 {"ts":"2026-05-17T21:49:28.217Z","type":"landing_arrived","visitor":"33771b84570601aa","meta":{"path":"/"}}
+{"ts":"2026-05-17T21:49:45.099Z","type":"page_view","visitor":"f887f688e3ab244c","meta":{"path":"/"}}
+{"ts":"2026-05-17T21:49:47.318Z","type":"page_view","visitor":"f887f688e3ab244c","meta":{"path":"/"}}
+{"ts":"2026-05-17T21:49:48.615Z","type":"page_view","visitor":"f887f688e3ab244c","meta":{"path":"/"}}
