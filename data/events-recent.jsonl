@@ -1,6 +1,3 @@
-{"ts":"2026-05-14T14:47:57.173Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
-{"ts":"2026-05-14T14:47:57.832Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
-{"ts":"2026-05-14T14:47:58.995Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-14T14:48:02.295Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-14T14:48:06.685Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
 {"ts":"2026-05-14T14:48:03.959Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-17T15:07:58.720Z","type":"page_view","visitor":"0022332918f875e4","meta":{"path":"/"}}
 {"ts":"2026-05-17T15:08:00.056Z","type":"page_view","visitor":"deb4282dbc8fc036","meta":{"path":"/deals"}}
 {"ts":"2026-05-17T15:08:01.406Z","type":"page_view","visitor":"5413199275ab7aaa","meta":{"path":"/"}}
+{"ts":"2026-05-17T15:08:00.072Z","type":"landing_arrived","visitor":"deb4282dbc8fc036","meta":{"path":"/deals"}}
+{"ts":"2026-05-17T15:08:01.400Z","type":"landing_arrived","visitor":"5413199275ab7aaa","meta":{"path":"/"}}
+{"ts":"2026-05-17T15:09:23.728Z","type":"landing_arrived","visitor":"deb4282dbc8fc036","meta":{"path":"/destinos/japon"}}
