@@ -601,5 +601,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 16.99
+  },
+  {
+    "timestamp": 1779051560.2704353,
+    "deal_id": "ryanair_vlc_mla_20260827_economy",
+    "origin": "VLC",
+    "destination": "MLA",
+    "city_from": "Valencia",
+    "city_to": "Malta",
+    "price_eur": 25.33
   }
 ]
