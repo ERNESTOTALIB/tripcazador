@@ -17,6 +17,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { enrichDealLocations, hasSpainOrigin, hasEuOrigin } from "@/lib/iata_city";
+import { applyTPMarkerServerSide } from "@/lib/airline_links";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -182,7 +183,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   // y ordenar España-first → EU → resto. Anomalía SSS113-post: 87% deals
   // visibles eran origen no-España (LIS/DUB/STN). Audiencia ES espera
   // ver MAD/BCN/VLC primero. Permitimos opt-out con ?strict_es=0.
-  const enriched = deals.map((d) => enrichDealLocations(d as Parameters<typeof enrichDealLocations>[0])) as Deal[];
+  // SSS274 (17 may 2026): aplicar applyTPMarkerServerSide aquí también.
+  // El endpoint /api/deals es consumido por scripts externos + algunos
+  // fetch internos. Antes solo getDeals() de lib/api.ts aplicaba el rewrite.
+  const enriched = deals.map((d) => {
+    const enriched = enrichDealLocations(d as Parameters<typeof enrichDealLocations>[0]) as Deal;
+    return applyTPMarkerServerSide(enriched as never) as Deal;
+  }) as Deal[];
   const strictEs = params.get("strict_es") !== "0";
   if (strictEs) {
     enriched.sort((a, b) => {
