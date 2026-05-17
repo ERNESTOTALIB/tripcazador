@@ -1,5 +1,6 @@
 import { getDeals } from "@/lib/api";
 import { DealCard, DealRow } from "@/components/DealCard";
+import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { JsonLd } from "@/components/JsonLd";
 import { SectionHero } from "@/components/SectionHero";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
@@ -360,6 +361,11 @@ export default async function DealsPage({
               <DealCard key={deal.id} deal={deal} />
             ))}
           </div>
+
+          {/* SSS276 (17 may 2026): Premium CTA al pie del listing.
+              User llegó al final de la lista, momento ideal para promover
+              alertas SMS y Deep Search. */}
+          <PremiumInlineCTA source="deals-listing" variant="banner" />
 
           {/* III2 — paginación bottom */}
           {hasPagination && (

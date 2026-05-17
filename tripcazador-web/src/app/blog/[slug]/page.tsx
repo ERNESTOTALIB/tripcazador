@@ -9,6 +9,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 import { JsonLd } from "@/components/JsonLd";
 import { NewsletterABWidget } from "@/components/NewsletterABWidget";
+import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { RelatedPosts } from "@/components/RelatedPosts";
 import { TableOfContents } from "@/components/TableOfContents";
 import { TravelInsuranceCTA } from "@/components/TravelInsuranceCTA";
@@ -232,6 +233,10 @@ export default function BlogPostPage({ params }: { params: Params }) {
         <div className="mt-8">
           <NewsletterABWidget context={`blog-${params.slug}`} />
         </div>
+        {/* SSS276 (17 may 2026): Premium CTA inline antes del footer affiliate.
+            Lector con intent claro de viaje + lleva ya scrolled 100% post = ideal
+            momento para promover SMS alerts + Deep Search. */}
+        <PremiumInlineCTA source={`blog-${params.slug}`} variant="card" />
         {/* KKK4 — Travel insurance affiliate CTA en blog footer. Lector ya
             está en intent de viaje, alta conversion. */}
         <TravelInsuranceCTA variant="compact" />

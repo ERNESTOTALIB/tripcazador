@@ -12,6 +12,7 @@ import { SocialProofStrip } from "@/components/SocialProofStrip";
 import { RecentSearchesStrip } from "@/components/RecentSearchesStrip";
 import { MyFeedStrip } from "@/components/MyFeedStrip";
 import { HotelDealsStrip } from "@/components/HotelDealsStrip";
+import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import { StreakBadge } from "@/components/StreakBadge";
 import type { Metadata } from "next";
@@ -425,6 +426,11 @@ export default async function HomePage() {
       </section>
 
       <HotelDealsStrip />
+
+      {/* SSS276 (17 may 2026): Premium banner inline tras TopDeals + Hotels.
+          User ya ha visto los chollos, momento ideal para promover SMS alerts +
+          Deep Search. Banner-style (no card grande) — discreto pero presente. */}
+      <PremiumInlineCTA source="home-mid" variant="banner" />
 
       {/* Destinos populares con tarjetas visuales */}
       <section className="space-y-6">
