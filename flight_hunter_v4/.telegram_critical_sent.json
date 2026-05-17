@@ -1407,6 +1407,22 @@
       "destination": "ZAD",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "b398e3aa5b25",
+      "ts": "2026-05-17T16:51:43.035308+00:00",
+      "origin": "MRS",
+      "destination": "AGA",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7adbe415d837",
+      "ts": "2026-05-17T16:51:43.035308+00:00",
+      "origin": "LUX",
+      "destination": "MLA",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
