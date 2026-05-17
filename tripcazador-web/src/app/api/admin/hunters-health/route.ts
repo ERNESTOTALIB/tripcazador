@@ -11,9 +11,10 @@
  * Auth: requiere ADMIN_TOKEN en cookie (panel_session) o header.
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { FALLBACK_CATALOG } from "@/lib/hunter_health_data";
+import { verifyToken, COOKIE_KEY } from "@/lib/panel_auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -40,13 +41,26 @@ interface HuntersHealth {
   alerts: Array<{ severity: "info" | "warning" | "error"; message: string }>;
 }
 
-export async function GET() {
-  // Auth check
-  const ck = cookies();
-  const session = ck.get("panel_session")?.value;
-  const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
-  if (!session && !ADMIN_TOKEN) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+export async function GET(req: NextRequest) {
+  // SSS265 (17 may 2026) — SECURITY FIX:
+  // - Cookie name era "panel_session" (wrong) en lugar de "tc_panel_session"
+  //   (COOKIE_KEY constante de panel_auth.ts) → session siempre undefined.
+  // - Lógica `!session && !ADMIN_TOKEN` permitía bypass auth en cualquier
+  //   request si ADMIN_TOKEN env var estaba set en Vercel (que sí lo está
+  //   para forwarding al backend FastAPI). Resultado: cualquiera podía
+  //   GETtear el endpoint en prod.
+  // Fix: usar COOKIE_KEY + verifyToken (mismo patrón que admin/vitals).
+  // Para uso server-to-server (cron desde GH Actions), añadir Bearer ADMIN_TOKEN
+  // header — esto NO se cumple solo por tener el env var en server.
+  const ck = await cookies();
+  const session = verifyToken(ck.get(COOKIE_KEY)?.value);
+  if (!session) {
+    const auth = req.headers.get("authorization") || "";
+    const adminToken = process.env.ADMIN_TOKEN || "";
+    const provided = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+    if (!adminToken || provided !== adminToken) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
   }
 
   const templates = FALLBACK_CATALOG;

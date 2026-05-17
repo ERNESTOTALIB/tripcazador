@@ -18,6 +18,7 @@ import { cookies } from "next/headers";
 import { rankByQuality } from "@/lib/hunter_quality";
 import { diversifyDeals } from "@/lib/seed_diversifier";
 import { listPendingDrip } from "@/lib/subscribers_store";
+import { verifyToken, COOKIE_KEY } from "@/lib/panel_auth";
 
 // Helper: get all active subscriber emails (no drip filter)
 async function getActiveSubscribers(): Promise<string[]> {
@@ -36,9 +37,13 @@ export const dynamic = "force-dynamic";
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export async function POST(req: NextRequest) {
-  // Auth
-  const ck = cookies();
-  const session = ck.get("panel_session")?.value;
+  // SSS265 (17 may 2026): cookie name era "panel_session" (incorrecta) en
+  // lugar de COOKIE_KEY="tc_panel_session" → !!session siempre false. La
+  // ruta sólo funcionaba con header x-admin-token (cron). Browser-driven
+  // dispatch desde /panel/share daba 401 silenciosamente.
+  // Fix: usar COOKIE_KEY + verifyToken.
+  const ck = await cookies();
+  const session = verifyToken(ck.get(COOKIE_KEY)?.value);
   const tokenHeader = req.headers.get("x-admin-token");
   const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
   const authorized = !!session || (ADMIN_TOKEN && tokenHeader === ADMIN_TOKEN);
