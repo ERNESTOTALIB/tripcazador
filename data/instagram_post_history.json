@@ -583,5 +583,14 @@
     "city_from": "Madrid",
     "city_to": "Cagliari",
     "price_eur": 36.99
+  },
+  {
+    "timestamp": 1779025299.8612068,
+    "deal_id": "ryanair_bcn_gdn_20260903_economy",
+    "origin": "BCN",
+    "destination": "GDN",
+    "city_from": "Barcelona",
+    "city_to": "Gdansk",
+    "price_eur": 28.99
   }
 ]
