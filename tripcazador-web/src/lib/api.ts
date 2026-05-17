@@ -664,7 +664,23 @@ async function getDealsFromStatic(): Promise<DealsResponse> {
       // continuar al siguiente path
     }
   }
-  return emptyResponse;
+  // SSS: ultimate fallback — combine hotel_seed + flight_seed cuando no hay JSON estático
+  try {
+    const { getHotelSeedFallback } = await import("@/lib/hotel_seed");
+    const { getFlightSeedFallback } = await import("@/lib/flight_seed");
+    const hotelDeals = getHotelSeedFallback();
+    const flightDeals = getFlightSeedFallback();
+    const allDeals = [...hotelDeals, ...flightDeals];
+    return {
+      schema_version: "4.1",
+      generated_at: new Date().toISOString(),
+      total_deals: allDeals.length,
+      stats: emptyResponse.stats,
+      deals: allDeals,
+    };
+  } catch {
+    return emptyResponse;
+  }
 }
 
 export function formatDate(dateStr: string): string {
