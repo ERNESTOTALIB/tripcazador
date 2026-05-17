@@ -1471,6 +1471,22 @@
       "destination": "OPO",
       "price_eur": 20.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "0b576c7f44ae",
+      "ts": "2026-05-17T22:47:43.816437+00:00",
+      "origin": "VLC",
+      "destination": "MLA",
+      "price_eur": 25.33,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5bc1093327fe",
+      "ts": "2026-05-17T22:47:43.816437+00:00",
+      "origin": "AGP",
+      "destination": "AMS",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
