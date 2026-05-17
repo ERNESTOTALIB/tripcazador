@@ -332,6 +332,132 @@ export const AIRLINES: Airline[] = [
     description:
       "TAP Air Portugal opera el hub más eficiente Europa-Brasil/Latam desde Lisboa, con vuelos diarios a São Paulo, Río, Buenos Aires, Caracas. Para el viajero desde España, la combinación MAD-LIS + LIS-GRU/EZE es típicamente €100-200 más barata que IB/AF/LH directos.\n\nEl programa Stopover Lisboa permite hasta 5 noches en Lisboa sin coste extra en el ticket — ideal para combinar Brasil + Lisboa en un solo viaje. Los error fares TAP son frecuentes (12+ al año) por restructuras IT y precariedad financiera del grupo, especialmente en segments LIS-Brasil business class.",
   },
+  // SSS277 (17 may 2026): expansión a 20 aerolíneas — añade 6 nuevas con tráfico real ES.
+  {
+    code: "W6",
+    icao: "WZZ",
+    name: "Wizz Air",
+    category: "low-cost",
+    country: "Hungría",
+    hubs: ["BUD", "WAW", "KRK", "VAR", "OTP"],
+    popularRoutesFromSpain: [
+      { route: "BCN-BUD", typicalPriceEur: 95, minPriceEur: 22 },
+      { route: "MAD-WAW", typicalPriceEur: 110, minPriceEur: 28 },
+      { route: "VLC-OTP", typicalPriceEur: 88, minPriceEur: 24 },
+      { route: "BCN-KRK", typicalPriceEur: 92, minPriceEur: 25 },
+    ],
+    keyPoints: [
+      "Hub Budapest + base secundaria en KTW, KRK, OTP — mejor red Este Europa",
+      "Tarifas ultra-low pero política equipaje aún más estricta que Ryanair",
+      "Error fares en rutas ES → Hungría/Rumanía/Polonia 4-6× al año",
+    ],
+    description:
+      "Wizz Air es el low-cost dominante de Europa del Este, con base operativa en Budapest. Para el viajero ES que quiera Polonia (Cracovia, Varsovia), Hungría (Budapest), Rumanía (Bucarest), Bulgaria (Varna) o Lituania (Vilna), suele ser la opción más barata por mucho margen.\n\nLas rutas BCN/MAD/VLC hacia capitales del Este suelen oscilar entre €22 (error fare) y €110 (alta demanda). El sweet spot está en martes/miércoles + booking 6-8 semanas antes. Política equipaje muy estricta: solo bolso pequeño en tarifa básica; añadir cabina cuesta €30-50.\n\nWizz también opera rutas exóticas como BUD-DXB y BUD-MLE (Maldivas) con tarifas competitivas. Para combinaciones ES → Asia con hub Budapest, los error fares aparecen 4-6 veces al año (Madrid-Tbilisi €180 RT, BCN-Yerevan €150 RT observados en 2025-2026).",
+  },
+  {
+    code: "DY",
+    icao: "NAX",
+    name: "Norwegian",
+    category: "low-cost",
+    country: "Noruega",
+    hubs: ["OSL", "ARN", "CPH", "TRD"],
+    popularRoutesFromSpain: [
+      { route: "MAD-OSL", typicalPriceEur: 145, minPriceEur: 45 },
+      { route: "BCN-CPH", typicalPriceEur: 125, minPriceEur: 38 },
+      { route: "MAD-ARN", typicalPriceEur: 155, minPriceEur: 48 },
+    ],
+    keyPoints: [
+      "Hub Oslo + bases secundarias Copenhague/Estocolmo — mejor red Escandinavia",
+      "Tras restructura post-COVID, foco en Europa intra-regional",
+      "Error fares ES → Nórdicos 6-8 al año, especialmente en marzo/octubre",
+    ],
+    description:
+      "Norwegian es el low-cost dominante en Escandinavia tras la restructura de 2021. Operativa enfocada en Europa intra-regional, con red densa desde OSL, ARN y CPH hacia Madrid, Barcelona, Málaga, Palma, Alicante, Las Palmas y Tenerife.\n\nPara el viajero ES que quiera ver auroras boreales (Tromsø, Reikiavik vía OSL), o simplemente escapar a Estocolmo/Copenhague, Norwegian suele ser 30-40% más barato que SAS o Lufthansa. Los error fares ES → Nórdicos aparecen especialmente en marzo (post-temporada esquí) y octubre (entretiempo).\n\nA diferencia de Ryanair y Wizz, Norwegian incluye snack + drink básico incluso en tarifa Low. Aeropuertos primarios (OSL, ARN, CPH) sin recargo. Servicio más cómodo que low-cost típico europeo.",
+  },
+  {
+    code: "EK",
+    icao: "UAE",
+    name: "Emirates",
+    category: "luxury",
+    country: "Emiratos Árabes",
+    hubs: ["DXB"],
+    popularRoutesFromSpain: [
+      { route: "MAD-DXB", typicalPriceEur: 520, minPriceEur: 280 },
+      { route: "BCN-DXB", typicalPriceEur: 540, minPriceEur: 295 },
+      { route: "MAD-DXB-BKK", typicalPriceEur: 720, minPriceEur: 380 },
+      { route: "MAD-DXB-DPS", typicalPriceEur: 980, minPriceEur: 450 },
+    ],
+    keyPoints: [
+      "Hub Dubai conecta Europa-Asia/Oceanía/África en escala única",
+      "Producto a bordo top-tier (A380, cabin entertainment, comida)",
+      "Error fares Europa-Asia con stopover DXB 8-10 al año",
+    ],
+    description:
+      "Emirates es la aerolínea más reconocida del Golfo, con producto top-tier en business y first class a bordo de A380. Su hub Dubai conecta Europa con Asia (Bangkok, Bali, Tokio, Singapore), Oceanía (Sídney, Melbourne) y África (Johannesburgo, Mauricio) con escala única.\n\nPara el viajero ES, los error fares más jugosos aparecen en rutas con stopover DXB hacia Asia. MAD-DXB-BKK por €380 RT economy (vs €720 normal), MAD-DXB-DPS por €450 (vs €980): 8-10 oportunidades al año, especialmente noviembre-febrero.\n\nDubai Stopover Programme: Emirates ofrece hotel + transfer + visa gratuita por hasta 96 horas en muchos tickets transit. Forma legítima de añadir un destino al itinerario sin coste extra. Programa Skywards (Emirates miles) válido también para Qantas, JetBlue, EasyJet (limitado).",
+  },
+  {
+    code: "EY",
+    icao: "ETD",
+    name: "Etihad Airways",
+    category: "luxury",
+    country: "Emiratos Árabes",
+    hubs: ["AUH"],
+    popularRoutesFromSpain: [
+      { route: "MAD-AUH", typicalPriceEur: 480, minPriceEur: 240 },
+      { route: "BCN-AUH", typicalPriceEur: 510, minPriceEur: 260 },
+      { route: "MAD-AUH-MLE", typicalPriceEur: 780, minPriceEur: 380 },
+      { route: "MAD-AUH-SYD", typicalPriceEur: 1450, minPriceEur: 720 },
+    ],
+    keyPoints: [
+      "Hub Abu Dhabi — alternativa Premium a DXB con menos congestión",
+      "Programa Etihad Guest aliado con Air France-KLM (transferencia millas)",
+      "Error fares Australia/Asia frecuentes — pricing engine menos refinado que Emirates",
+    ],
+    description:
+      "Etihad Airways es la aerolínea nacional de Abu Dhabi y la alternativa Premium a Emirates desde el Golfo. Producto a bordo equivalente en business class (Apartment, Residence), pero menos volumen de pasajeros y hub AUH más ágil que DXB.\n\nPara el viajero ES, Etihad brilla en rutas Madrid/Barcelona-Maldivas (€380 RT economy en glitch vs €780 normal), Madrid-Sídney (€720 vs €1,450) y Madrid-Bangkok via AUH. El pricing engine de Etihad es menos refinado que el de Emirates, lo que produce error fares más frecuentes y duraderos (24-48h vs 4-8h Emirates).\n\nEtihad Guest (programa frequent flyer) tiene partnership con Air France-KLM Flying Blue — las millas se pueden transferir entre programas, útil para acumular en Europa y redimir en SkyTeam.",
+  },
+  {
+    code: "LX",
+    icao: "SWR",
+    name: "SWISS",
+    category: "full-service",
+    country: "Suiza",
+    hubs: ["ZRH", "GVA", "BSL"],
+    popularRoutesFromSpain: [
+      { route: "MAD-ZRH", typicalPriceEur: 195, minPriceEur: 78 },
+      { route: "BCN-ZRH", typicalPriceEur: 175, minPriceEur: 65 },
+      { route: "MAD-ZRH-NRT", typicalPriceEur: 980, minPriceEur: 420 },
+      { route: "MAD-ZRH-JNB", typicalPriceEur: 850, minPriceEur: 380 },
+    ],
+    keyPoints: [
+      "Hub Zúrich premium con conexiones Asia/África competitivas",
+      "Star Alliance + IAG codeshare: superficie error-fares amplia",
+      "Calidad cabina + puntualidad líderes — premium worth it para business",
+    ],
+    description:
+      "SWISS es la aerolínea de bandera suiza, integrada en Lufthansa Group y Star Alliance. Hub principal Zúrich con bases secundarias GVA + BSL. Calidad de cabina y puntualidad consistentemente top-tier en Europa.\n\nPara el viajero ES, los error fares más interesantes aparecen en rutas long-haul vía ZRH: Madrid-Zúrich-Tokio por €420 (vs €980), Madrid-Zúrich-Johannesburgo por €380 (vs €850). 4-6 oportunidades al año, especialmente febrero-marzo y septiembre.\n\nSiendo parte del grupo Lufthansa, SWISS comparte algunos error fares con LH cuando el pricing engine se desincroniza entre carriers. Importante: vigilar los segmentos LH y LX en paralelo si quieres maximizar superficie de detección.",
+  },
+  {
+    code: "AZ",
+    icao: "ITY",
+    name: "ITA Airways",
+    category: "full-service",
+    country: "Italia",
+    hubs: ["FCO", "MXP"],
+    popularRoutesFromSpain: [
+      { route: "MAD-FCO", typicalPriceEur: 145, minPriceEur: 48 },
+      { route: "BCN-FCO", typicalPriceEur: 125, minPriceEur: 42 },
+      { route: "MAD-FCO-NRT", typicalPriceEur: 1100, minPriceEur: 480 },
+      { route: "MAD-FCO-EZE", typicalPriceEur: 850, minPriceEur: 390 },
+    ],
+    keyPoints: [
+      "Sucesora de Alitalia (2021) — ahora propiedad de Lufthansa Group (2024)",
+      "Hub Roma Fiumicino con conexiones Asia/Latam competitivas",
+      "Error fares ES → Argentina vía FCO frecuentes — segmento ITA-AR a precios glitched",
+    ],
+    description:
+      "ITA Airways es la aerolínea nacional de Italia, sucesora de la histórica Alitalia tras quiebra de 2021. En 2024 fue adquirida por Lufthansa Group, lo que está unificando pricing engines y programa frequent flyer con LH/LX/OS.\n\nPara el viajero ES, las rutas más interesantes son ES → Argentina vía FCO (MAD-FCO-EZE por €390 economy en error fare vs €850 normal) y ES → Tokio vía FCO (€480 vs €1,100). La integración con LH significa que ahora los error fares LH también se propagan a ITA — vigilar ambas en paralelo.\n\nProducto a bordo en proceso de modernización (flota A220, A330neo). Programa Volare (frequent flyer) ahora integrado con Miles & More — útil acumular si vuelas Lufthansa Group con frecuencia.",
+  },
 ];
 
 export function getAirlineByCode(code: string): Airline | null {
