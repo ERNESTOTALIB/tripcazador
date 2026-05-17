@@ -556,5 +556,14 @@
     "city_from": "Sevilla",
     "city_to": "Budapest",
     "price_eur": 47.99
+  },
+  {
+    "timestamp": 1778990113.2600393,
+    "deal_id": "ryanair_stn_bfs_20260825_economy",
+    "origin": "STN",
+    "destination": "BFS",
+    "city_from": "Londres Stansted",
+    "city_to": "Belfast International",
+    "price_eur": 19.8
   }
 ]
