@@ -724,3 +724,87 @@ export function enhanceDealBookingUrl<
 
   return { ...deal, booking_url: direct };
 }
+
+/**
+ * SSS273 (17 may 2026) — REVENUE LEAK FIX
+ *
+ * Server-side TP marker rewrite para deals con aerolíneas low-cost.
+ *
+ * Antes: el rewrite a Aviasales TP marker ocurría solo en client-side
+ * `routeBookingUrl()` durante el onClick handler de DealCard. Esto perdía
+ * revenue de:
+ *  - crawlers + bots (indexan el href SSR directo a Ryanair)
+ *  - usuarios sin JS o con JS bloqueado
+ *  - clicks fast antes de hidratación React
+ *  - race conditions al mutar `e.currentTarget.href` mid-click
+ *
+ * Como `booking_router_v1` lleva `bWeight=100` y `defaultVariant=B`
+ * (SSS177), TODOS los usuarios deben ir al TP marker. Ergo podemos
+ * hacer el rewrite server-side sin perder el A/B framework: el variant=A
+ * ya no se asigna a nadie.
+ *
+ * Triggers: aerolínea en TP_PROFITABLE_CODES_SERVER (Ryanair, easyJet,
+ * Wizz, Vueling, Norwegian, Condor, TUI, Eurowings, flydubai, Pegasus)
+ * O dominio de booking_url contiene un dominio TP-profitable.
+ *
+ * Pasa-through silencioso si:
+ *  - TP_MARKER no configurado (no rewrite porque kayak no paga commission)
+ *  - airline full-service (Iberia/TAP/LH/AF/...) ya tiene tracking propio
+ *  - no hay origin/destination/date_out (no se puede construir URL)
+ */
+const TP_PROFITABLE_CODES_SERVER = new Set([
+  "FR", "RK",
+  "U2", "EC", "DS",
+  "W6", "W4", "W9",
+  "VY",
+  "DY", "D8",
+  "DE",
+  "X3",
+  "EW",
+  "FZ",
+  "PC",
+  "AY",
+]);
+
+const TP_PROFITABLE_DOMAINS_SERVER = [
+  "ryanair.com", "easyjet.com", "wizzair.com", "vueling.com",
+  "norwegian.com", "condor.com", "flytuifly.com", "eurowings.com",
+  "flydubai.com", "flypgs.com",
+];
+
+export function applyTPMarkerServerSide<
+  T extends {
+    booking_url?: string | null;
+    airline?: string | null;
+    airline_name?: string | null;
+    origin?: string | null;
+    destination?: string | null;
+    date_out?: string | null;
+    date_ret?: string | null;
+  }
+>(deal: T): T {
+  // Sin TP_MARKER no podemos generar marker URL — pasa-through.
+  if (!TP_MARKER) return deal;
+
+  const code = (deal.airline || "").toUpperCase().trim();
+  const lowerUrl = (deal.booking_url || "").toLowerCase();
+  const isProfitable =
+    TP_PROFITABLE_CODES_SERVER.has(code) ||
+    TP_PROFITABLE_DOMAINS_SERVER.some((d) => lowerUrl.includes(d));
+
+  if (!isProfitable) return deal;
+  if (!deal.origin || !deal.destination || !deal.date_out) return deal;
+
+  // Si ya apunta a aviasales, no toques (idempotent).
+  if (lowerUrl.includes("aviasales.")) return deal;
+
+  const tpUrl = travelpayoutsUrl(
+    deal.origin,
+    deal.destination,
+    deal.date_out,
+    deal.date_ret || "",
+  );
+  if (!tpUrl || tpUrl === deal.booking_url) return deal;
+
+  return { ...deal, booking_url: tpUrl };
+}
