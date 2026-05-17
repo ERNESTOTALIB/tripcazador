@@ -1455,6 +1455,22 @@
       "destination": "SUF",
       "price_eur": 22.78,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "58f51f5609e4",
+      "ts": "2026-05-17T21:49:14.403726+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 35.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a541ac8bb793",
+      "ts": "2026-05-17T21:49:14.403726+00:00",
+      "origin": "VLC",
+      "destination": "OPO",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
