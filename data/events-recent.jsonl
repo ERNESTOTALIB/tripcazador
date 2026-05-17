@@ -1,5 +1,3 @@
-{"ts":"2026-05-14T14:47:40.829Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
-{"ts":"2026-05-14T14:47:42.039Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
 {"ts":"2026-05-14T14:47:42.052Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
 {"ts":"2026-05-14T14:47:42.079Z","type":"landing_arrived","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
 {"ts":"2026-05-14T14:47:42.106Z","type":"page_view","visitor":"a3e2333ba436dfbe","meta":{"path":"/hoteles/dusit-thani-phuket"}}
@@ -998,3 +996,5 @@
 {"ts":"2026-05-17T11:01:28.941Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"seed-00de8dad60","destination":"YYZ","origin":"MAD","price":525,"classification":"OFERTA"}}
 {"ts":"2026-05-17T11:01:29.329Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"seed-003dea8f58","destination":"MVD","origin":"MAD","price":619,"classification":"OFERTA"}}
 {"ts":"2026-05-17T11:01:29.418Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"seed-00d9407418","destination":"KIX","origin":"MAD","price":745,"classification":"OFERTA"}}
+{"ts":"2026-05-17T11:06:56.259Z","type":"result_viewed","visitor":"7a935be272bc5235","meta":{"deal_id":"ryanair_mad_cag_20260914_economy","destination":"CAG","origin":"MAD","price":36.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-17T11:07:54.862Z","type":"newsletter_signup","visitor":"7a935be272bc5235","meta":{"context":"home-fold"}}
