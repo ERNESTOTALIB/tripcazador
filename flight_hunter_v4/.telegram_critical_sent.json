@@ -1423,6 +1423,22 @@
       "destination": "MLA",
       "price_eur": 20.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "082d6124ca26",
+      "ts": "2026-05-17T17:53:54.316512+00:00",
+      "origin": "OTP",
+      "destination": "ZAD",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fd8be58c09b1",
+      "ts": "2026-05-17T17:53:54.316512+00:00",
+      "origin": "KRK",
+      "destination": "RMI",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
