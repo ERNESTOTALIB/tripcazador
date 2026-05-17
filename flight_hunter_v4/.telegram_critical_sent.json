@@ -1439,22 +1439,6 @@
       "destination": "RMI",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
-    },
-    {
-      "hash": "f6f80233f47e",
-      "ts": "2026-05-17T18:59:41.651407+00:00",
-      "origin": "OTP",
-      "destination": "PFO",
-      "price_eur": 21.99,
-      "classification": "CRÍTICO"
-    },
-    {
-      "hash": "b43b92e60f0a",
-      "ts": "2026-05-17T18:59:41.651407+00:00",
-      "origin": "BGY",
-      "destination": "SUF",
-      "price_eur": 22.78,
-      "classification": "CRÍTICO"
     }
   ]
 }

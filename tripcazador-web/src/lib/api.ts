@@ -3,7 +3,7 @@
  * Conecta con el FastAPI backend en /api/deals
  */
 
-import { enhanceDealBookingUrl } from "./airline_links";
+import { enhanceDealBookingUrl, applyTPMarkerServerSide } from "./airline_links";
 import { diversifyDeals } from "./seed_diversifier";
 import { enrichDealLocations, hasEuOrigin, hasSpainOrigin } from "./iata_city";
 
@@ -134,7 +134,7 @@ export async function getDeals(params?: {
         const filtered = diversifyDeals(fresh.deals, params);
         return {
           ...fresh,
-          deals: filtered.map((d) => enrichDealLocations(enhanceDealBookingUrl(d))),
+          deals: filtered.map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d)))),
           total_deals: filtered.length,
         };
       }
@@ -160,7 +160,7 @@ export async function getDeals(params?: {
     // fallback. Sin esto /deals?classification=CRÍTICO devolvía el catálogo
     // entero ignorando el filtro del usuario.
     const diversified = diversifyDeals(rawDeals, params);
-    const deals = diversified.map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
+    const deals = diversified.map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
     const totalCount = deals.length;
     const flights = deals.filter((d) => d.type === "flight").length;
     const hotels = deals.filter((d) => d.type === "hotel").length;
@@ -200,7 +200,7 @@ export async function getDeals(params?: {
   // Backend devolvió forma DealsResponse: enhancear cada deal igualmente
   const wrapped = jsonAny as DealsResponse;
   if (wrapped?.deals && Array.isArray(wrapped.deals)) {
-    wrapped.deals = wrapped.deals.map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
+    wrapped.deals = wrapped.deals.map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
   }
   return wrapped;
 }
@@ -394,16 +394,16 @@ export async function getTopDeals(limit = 10): Promise<Deal[]> {
     });
     if (!res.ok) {
       const data = await getDealsFromStatic();
-      return data.deals.slice(0, limit).map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
+      return data.deals.slice(0, limit).map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
     }
     const arr: Deal[] = await res.json();
     // B1: reescribir google.com/travel → ryanair/easyjet/wizz/kayak directos
     // C1: diversificar si el seed devuelve un solo mes
     if (!Array.isArray(arr)) return arr;
-    return diversifyDeals(arr, { limit }).map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
+    return diversifyDeals(arr, { limit }).map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
   } catch {
     const data = await getDealsFromStatic();
-    return data.deals.slice(0, limit).map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
+    return data.deals.slice(0, limit).map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
   }
 }
 
@@ -612,7 +612,7 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
     return [];
   }
 
-  return diverse.map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
+  return diverse.map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
 }
 
 // Fallback: carga deals-latest.json (worker commit) o deals.json (legacy) desde /public.
@@ -644,7 +644,7 @@ async function getDealsFromStatic(): Promise<DealsResponse> {
 
       // Si es array plano (formato hunter): wrap a DealsResponse + diversificar
       if (Array.isArray(json)) {
-        const deals = (json as Deal[]).map((d) => enrichDealLocations(enhanceDealBookingUrl(d)));
+        const deals = (json as Deal[]).map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
         return {
           schema_version: "4.1",
           generated_at: new Date().toISOString(),
@@ -656,7 +656,7 @@ async function getDealsFromStatic(): Promise<DealsResponse> {
 
       // Si es objeto con .deals: usar tal cual + enhance + enrich location names
       if (json && typeof json === "object" && Array.isArray(json.deals)) {
-        json.deals = json.deals.map((d: Deal) => enrichDealLocations(enhanceDealBookingUrl(d)));
+        json.deals = json.deals.map((d: Deal) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
         json.total_deals = json.total_deals || json.deals.length;
         return json as DealsResponse;
       }
