@@ -14,6 +14,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import HuntersDashboard from "@/components/HuntersDashboard";
+import { verifyToken, COOKIE_KEY } from "@/lib/panel_auth";
 
 export const dynamic = "force-dynamic";
 
@@ -22,9 +23,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function HuntersPage() {
-  const ck = cookies();
-  const session = ck.get("panel_session")?.value;
+export default async function HuntersPage() {
+  // SSS265 (17 may 2026): cookie name era "panel_session" (incorrecta) en
+  // lugar de COOKIE_KEY="tc_panel_session". Resultado: pese a estar
+  // logueado en /panel, este endpoint siempre redirecciona al login.
+  // Bug funcional (no de seguridad — over-protects vs bypass).
+  const ck = await cookies();
+  const session = verifyToken(ck.get(COOKIE_KEY)?.value);
   if (!session) {
     redirect("/panel/login?next=/panel/hunters");
   }
