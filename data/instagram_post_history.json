@@ -646,5 +646,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 17.99
+  },
+  {
+    "timestamp": 1779138992.3091161,
+    "deal_id": "ryanair_bcn_gdn_20260903_economy",
+    "origin": "BCN",
+    "destination": "GDN",
+    "city_from": "Barcelona",
+    "city_to": "Gdansk",
+    "price_eur": 28.99
   }
 ]
