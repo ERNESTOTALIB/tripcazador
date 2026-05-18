@@ -66,9 +66,23 @@ export default function BaggagePage({
     ],
   };
 
+  // SSS290 (18 may 2026): FAQPage JSON-LD para Google rich snippets
+  const faqJsonLd = r.faq && r.faq.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: r.faq.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      }
+    : null;
+
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       <JsonLd data={breadcrumb} />
+      {faqJsonLd && <JsonLd data={faqJsonLd} />}
 
       <header className="space-y-4">
         <nav className="flex items-center gap-2 text-sm text-gray-500">
@@ -170,6 +184,25 @@ export default function BaggagePage({
         <h2 className="text-lg font-bold text-white mb-2">vs competencia</h2>
         <p className="text-gray-300 text-sm">{r.comparison}</p>
       </section>
+
+      {r.faq && r.faq.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-white">Preguntas frecuentes</h2>
+          <div className="space-y-3">
+            {r.faq.map((f) => (
+              <details
+                key={f.q}
+                className="bg-gray-900 border border-gray-800 rounded-2xl p-5"
+              >
+                <summary className="font-semibold text-white cursor-pointer">
+                  {f.q}
+                </summary>
+                <p className="mt-3 text-gray-300 text-sm">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
 
       <PremiumInlineCTA
         source={`equipaje-${r.slug}`}

@@ -545,7 +545,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // SSS289 (17 may 2026): /equipaje/[aerolinea] nueva vertical SEO high-intent
-  const BAGGAGE_SLUGS = ["ryanair", "vueling", "easyjet", "iberia", "wizz", "lufthansa", "air-france", "klm", "norwegian", "qatar-airways"];
+  const BAGGAGE_SLUGS = ["ryanair", "vueling", "easyjet", "iberia", "wizz", "lufthansa", "air-france", "klm", "norwegian", "qatar-airways", "tap-portugal", "turkish-airlines", "british-airways", "aer-lingus", "emirates"];
   const equipajeIndex = {
     url: `${BASE_URL}/equipaje`,
     lastModified: now,

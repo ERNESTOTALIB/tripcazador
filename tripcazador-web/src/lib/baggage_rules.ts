@@ -47,6 +47,8 @@ export interface BaggageRule {
   };
   /** Tips cazador específicos de esta aerolínea. */
   tips: string[];
+  /** FAQ JSON-LD para rich snippets Google (3 Q&A típicas). */
+  faq?: Array<{ q: string; a: string }>;
   /** Comparativa breve vs competencia. */
   comparison: string;
 }
@@ -403,6 +405,210 @@ export const BAGGAGE_RULES: BaggageRule[] = [
     ],
     comparison:
       "Qatar es la aerolínea más generosa en equipaje facturado (30kg Economy). Compara con Emirates (25kg) y Etihad (23kg).",
+  },
+  // SSS290 (18 may 2026): +5 aerolíneas — TP/TK/BA/EI/EK
+  {
+    code: "TP",
+    name: "TAP Air Portugal",
+    slug: "tap-portugal",
+    emoji: "🟢",
+    lastUpdated: "2026-05",
+    personalItem: {
+      name: "Bolso pequeño",
+      dimensions: "40 × 30 × 15 cm",
+      free: true,
+    },
+    cabin: {
+      dimensions: "55 × 40 × 20 cm",
+      weight: "8 kg",
+      feeFromEur: 0,
+      feeNote: "Incluido en tarifas Plus, Classic, Discount. €10-20 en Basic.",
+    },
+    checked: {
+      weight: "23 kg",
+      feeFromEur: 25,
+      feeNote: "€25-50 en Basic. Plus y Classic incluyen 1× 23kg.",
+    },
+    gateFine: {
+      amountEur: 0,
+      description: "TAP raramente aplica gate fees — política más flexible que low-cost.",
+    },
+    tips: [
+      "Para Brasil/Latam vía LIS, equipaje facturado se traslada automáticamente",
+      "Programa Miles&Go acumula puntos en TAP, Air Europa y Star Alliance",
+      "Stopover programme LIS hasta 5 noches sin extra — apróvechalo añadir Lisboa",
+      "Bolso cabina TAP solo 8kg (Iberia 10kg) — peso suele ser la limitación, no dimensiones",
+    ],
+    faq: [
+      { q: "¿Cuántas maletas puedo llevar gratis con TAP Portugal?", a: "Depende de la tarifa: Basic permite solo bolso pequeño (40×30×15) gratis; Plus y Classic incluyen también trolley cabina (55×40×20, 8kg) y 1 maleta facturada de 23kg gratis." },
+      { q: "¿TAP cobra por la maleta en el aeropuerto?", a: "Si compraste tarifa Basic y necesitas facturar en el aeropuerto, te cobran €40-60 por maleta (vs €25-50 online anticipado). Siempre añade equipaje online antes del check-in." },
+      { q: "¿Puedo llevar un portátil además del bolso pequeño en TAP?", a: "Sí, el portátil en su funda cuenta como complemento adicional al bolso pequeño 40×30×15, no se suma al equipaje. Política estándar en TAP Portugal." },
+    ],
+    comparison:
+      "TAP es la full-service portuguesa con stopover programme en LIS. Más generosa que low-cost pero menos que Air France/KLM (12kg cabina vs 8kg TAP).",
+  },
+  {
+    code: "TK",
+    name: "Turkish Airlines",
+    slug: "turkish-airlines",
+    emoji: "🟥",
+    lastUpdated: "2026-05",
+    personalItem: {
+      name: "Bolso pequeño",
+      dimensions: "40 × 30 × 15 cm",
+      free: true,
+    },
+    cabin: {
+      dimensions: "55 × 40 × 23 cm",
+      weight: "8 kg",
+      feeFromEur: 0,
+      feeNote: "Incluido en TODAS las tarifas Economy, Business y First — política luxury.",
+    },
+    checked: {
+      weight: "30 kg",
+      feeFromEur: 0,
+      feeNote: "Economy: 30kg incluidos. Business: 40kg. First: 50kg. Una de las más generosas del sector.",
+    },
+    gateFine: {
+      amountEur: 0,
+      description: "Turkish raramente aplica gate fees — política luxury totalmente flexible.",
+    },
+    tips: [
+      "Turkish Economy permite 30kg facturados — más generoso que Qatar (igual) y Emirates (25kg)",
+      "Hub Estambul (IST) conecta Europa-Asia/África con escala única — uno de los mejores hubs del mundo",
+      "Servicio a bordo top-tier en Economy — comida real, kit aseo, mantas en cualquier ruta >3h",
+      "Miles&Smiles programa acumula puntos y tiene partnerships con United, ANA, Air Canada (Star Alliance)",
+    ],
+    faq: [
+      { q: "¿Cuánto equipaje permite Turkish Airlines en Economy?", a: "Turkish Economy incluye 30kg facturados (¡uno de los más generosos del sector!), un trolley cabina de 55×40×23 (8kg) y un bolso pequeño 40×30×15. Todo incluido en cualquier tarifa." },
+      { q: "¿Turkish Airlines tiene gate fee si exceden dimensiones?", a: "No, Turkish raramente aplica gate fees. Su política es flexible para clientes Economy y Business. Pero excede mucho las dimensiones y te pueden facturar el bulto sin coste extra." },
+      { q: "¿Puedo combinar Turkish con Star Alliance para acumular millas?", a: "Sí, Turkish (Miles&Smiles) es socio Star Alliance. Tus vuelos suman puntos en United, Lufthansa, Air Canada, ANA y otros 25+ carriers. Útil para combinar viajes." },
+    ],
+    comparison:
+      "Turkish y Qatar empatan como aerolíneas con franquicia equipaje más generosa (30kg Economy). Ambas ofrecen servicio a bordo top-tier.",
+  },
+  {
+    code: "BA",
+    name: "British Airways",
+    slug: "british-airways",
+    emoji: "🟦",
+    lastUpdated: "2026-05",
+    personalItem: {
+      name: "Accesorio personal",
+      dimensions: "40 × 30 × 15 cm",
+      weight: "23 kg",
+      free: true,
+    },
+    cabin: {
+      dimensions: "56 × 45 × 25 cm",
+      weight: "23 kg",
+      feeFromEur: 0,
+      feeNote: "Incluido en TODAS las tarifas, incluida Basic Economy. BA permite hasta 23kg combinados en cabina.",
+    },
+    checked: {
+      weight: "23 kg",
+      feeFromEur: 0,
+      feeNote: "Incluido en tarifas Plus y Standard. €30-65 en Basic.",
+    },
+    gateFine: {
+      amountEur: 0,
+      description: "British Airways raramente aplica gate fees por exceder dimensiones ligeramente.",
+    },
+    tips: [
+      "BA permite 23kg combinados en cabina (sumando bolso pequeño + trolley) — único en Europa",
+      "Programa Avios acumula puntos en BA, Iberia, Vueling, Qatar, Aer Lingus, Cathay (oneworld)",
+      "Para vuelos LHR-Norteamérica, considera Premium Economy — sweet spot precio/comodidad",
+      "Conexiones T3/T5 LHR son largas — calcula 90min mínimo si cambias de terminal",
+    ],
+    faq: [
+      { q: "¿Cuánto pesa el equipaje gratis en British Airways?", a: "BA permite 23kg combinados en cabina (bolso pequeño + trolley) GRATIS en cualquier tarifa, incluida Basic. Es uno de los límites más generosos en Europa para vuelos económicos." },
+      { q: "¿BA cobra por la primera maleta facturada?", a: "Solo en tarifa Basic Economy (€30-65 según ruta). Tarifas Plus y Standard incluyen 1 maleta de 23kg facturada gratis. Verifica tu tarifa antes de facturar." },
+      { q: "¿Puedo acumular Avios volando con Iberia desde Madrid?", a: "Sí, BA e Iberia comparten programa Avios (oneworld). Tus vuelos Iberia, Vueling y BA suman al mismo balance. Útil para redenciones largas." },
+    ],
+    comparison:
+      "BA es la más generosa en peso cabina en Europa (23kg combinados). Iberia permite solo 10kg cabina. La diferencia es enorme si llevas equipo pesado.",
+  },
+  {
+    code: "EI",
+    name: "Aer Lingus",
+    slug: "aer-lingus",
+    emoji: "🟢",
+    lastUpdated: "2026-05",
+    personalItem: {
+      name: "Bolso pequeño",
+      dimensions: "33 × 25 × 20 cm",
+      weight: "8 kg",
+      free: true,
+    },
+    cabin: {
+      dimensions: "55 × 40 × 24 cm",
+      weight: "10 kg",
+      feeFromEur: 10,
+      feeNote: "Incluido en tarifas Plus, Smart, AerSpace. €10-20 extra en Saver.",
+    },
+    checked: {
+      weight: "20 kg",
+      feeFromEur: 22,
+      feeNote: "€22-45 según ruta. Plus incluye 1× 20kg.",
+    },
+    gateFine: {
+      amountEur: 60,
+      description: "€60 si excedes dimensiones bolso pequeño en gate. Menos punitivo que Ryanair pero estricto.",
+    },
+    tips: [
+      "Aer Lingus tiene base en DUB con red Europa + USA muy competitiva (transatlántico desde €380 RT)",
+      "Pre-clearance USA en DUB — pasas TSA en Dublín, llegas USA como vuelo doméstico",
+      "AerClub programa acumula puntos en Aer Lingus + oneworld partners",
+      "Tarifa AerSpace incluye fast track + lounge + 2 maletas — €40-60 extra sobre Smart, puede compensar largo radio",
+    ],
+    faq: [
+      { q: "¿Cuáles son las dimensiones del bolso pequeño en Aer Lingus?", a: "Aer Lingus permite gratis un bolso pequeño de 33 × 25 × 20 cm (más pequeño que la mayoría). Si tu mochila es 40L+, probablemente no entre — verifica antes." },
+      { q: "¿Aer Lingus permite trolley cabina gratis?", a: "Solo en tarifas Plus, Smart y AerSpace. En tarifa Saver el trolley cuesta €10-20 extra. Sin Saver, te tocará facturarlo o pagar el extra." },
+      { q: "¿Cómo funciona el pre-clearance USA en Dublín?", a: "Pasas inmigración/aduana USA en DUB antes de embarcar. Al llegar a USA aterrizas como vuelo doméstico — sin colas inmigración. Ahorro de tiempo enorme en conexiones." },
+    ],
+    comparison:
+      "Aer Lingus es similar a Vueling en estrictez. Su ventaja única es el pre-clearance USA en DUB (ningún otro carrier desde España lo ofrece).",
+  },
+  {
+    code: "EK",
+    name: "Emirates",
+    slug: "emirates",
+    emoji: "🟫",
+    lastUpdated: "2026-05",
+    personalItem: {
+      name: "Accesorio personal",
+      dimensions: "45 × 35 × 20 cm",
+      weight: "7 kg",
+      free: true,
+    },
+    cabin: {
+      dimensions: "55 × 38 × 20 cm",
+      weight: "7 kg",
+      feeFromEur: 0,
+      feeNote: "Incluido en TODAS las tarifas Economy, Business y First.",
+    },
+    checked: {
+      weight: "25 kg",
+      feeFromEur: 0,
+      feeNote: "Economy Special: 25kg. Economy Saver: 30kg. Business: 40kg. First: 50kg.",
+    },
+    gateFine: {
+      amountEur: 0,
+      description: "Emirates raramente aplica gate fees — política luxury flexible.",
+    },
+    tips: [
+      "Emirates Economy permite 25kg facturados (algo menos que Qatar/Turkish 30kg, pero generoso)",
+      "Producto a bordo A380 top-tier — ICE entertainment system con 5000+ films/series",
+      "Hub Dubai (DXB) conecta Europa-Asia/Oceanía/África en escala única",
+      "Dubai Stopover Programme: hotel + visa + transfer gratis hasta 96h en muchos tickets transit",
+    ],
+    faq: [
+      { q: "¿Cuánto pesa el equipaje gratis en Emirates Economy?", a: "Emirates Economy Special incluye 25kg facturados + un bolso de mano 7kg (55×38×20cm) + un accesorio personal 45×35×20. Es la franquicia menos estricta vs Ryanair/easyJet." },
+      { q: "¿El servicio Dubai Stopover de Emirates es gratis?", a: "Si tu ticket Emirates transita por DXB con escala >8 horas, puedes solicitar hotel + visa + transfer gratis hasta 4 noches. Aplica solo en muchas tarifas Business+, verifica al reservar." },
+      { q: "¿Emirates permite electrónicos en cabina sin problemas?", a: "Sí, Emirates permite portátiles y tablets en bolso de mano (7kg) sin restricción específica. Para vuelos a USA, algunos electrónicos grandes pueden requerir prueba de carga al check-in." },
+    ],
+    comparison:
+      "Emirates Economy (25kg) está justo entre Qatar/Turkish (30kg) y Etihad (23kg). Pero su producto a bordo A380 es top-tier indiscutible.",
   },
 ];
 
