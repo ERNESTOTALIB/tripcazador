@@ -1519,6 +1519,22 @@
       "destination": "CAG",
       "price_eur": 29.4,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8fe0a9bda4ba",
+      "ts": "2026-05-18T17:54:35.932649+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 31.58,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6095b4484227",
+      "ts": "2026-05-18T17:54:35.932649+00:00",
+      "origin": "DUB",
+      "destination": "BDS",
+      "price_eur": 49.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
