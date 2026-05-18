@@ -3,12 +3,13 @@
 import { Deal, formatDate, formatDuration, getCabinLabel, getClassificationColor, safeExternalUrl, safeImageUrl } from "@/lib/api";
 import { Plane, Clock, MapPin, Star, ExternalLink, CheckCircle } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 import { ShareDealInline } from "@/components/ShareDealInline";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { tcTrack, tcTrackOnce } from "@/lib/track_client";
 import { routeBookingUrl } from "@/lib/booking_url_router";
+import { getPremiumStatus } from "@/lib/premium";
 
 interface DealCardProps {
   deal: Deal;
@@ -81,6 +82,17 @@ function dealHeroImage(deal: Deal): string {
 }
 
 export function DealCard({ deal, featured = false }: DealCardProps) {
+  // SSS300 (18 may 2026): Premium feature — sin disclaimer "precio aproximado"
+  // Solo se oculta el disclaimer si el visitor tiene suscripción Premium activa.
+  // getPremiumStatus lee localStorage server-safe (devuelve free en SSR).
+  const [isPremium, setIsPremium] = useState(false);
+  useEffect(() => {
+    setIsPremium(getPremiumStatus().active);
+    const onChange = () => setIsPremium(getPremiumStatus().active);
+    window.addEventListener("tc:premium-changed", onChange);
+    return () => window.removeEventListener("tc:premium-changed", onChange);
+  }, []);
+
   const {
     headline,
     origin,
@@ -434,11 +446,15 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
                 {ctaLabel}
                 <ExternalLink size={14} />
               </a>
-              {/* Disclaimer: precios pueden variar al hacer click */}
-              <p className="mt-2 text-[11px] text-gray-500 leading-tight">
-                Precio aproximado del último escaneo. Confirma en la web de la
-                aerolínea — el precio final puede variar.
-              </p>
+              {/* Disclaimer: precios pueden variar al hacer click.
+                  SSS300 (18 may 2026): oculto para suscriptores Premium —
+                  Premium incluye "datos exactos sin disclaimer aproximado". */}
+              {!isPremium && (
+                <p className="mt-2 text-[11px] text-gray-500 leading-tight">
+                  Precio aproximado del último escaneo. Confirma en la web de la
+                  aerolínea — el precio final puede variar.
+                </p>
+              )}
             </>
           );
         })()}

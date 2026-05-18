@@ -15,7 +15,7 @@ export const revalidate = 3600;
 const FAQ = [
   {
     q: "¿Qué incluye Premium?",
-    a: "Alertas instantáneas (push + email en menos de 60 segundos vs 24h en gratis), filtros pro por aerolínea/escalas/clase exacta, sin disclaimer 'precio aproximado', soporte prioritario, exportar deals a CSV y acceso API.",
+    a: "Alertas instantáneas (push + email en menos de 60 segundos vs 24h en gratis), filtros pro por aerolínea/escalas/clase exacta, datos exactos sin disclaimer 'precio aproximado' y soporte prioritario por email en menos de 24h.",
   },
   {
     q: "¿Hay periodo de prueba?",
@@ -98,12 +98,10 @@ export default function PremiumPage() {
           <div className="text-4xl font-bold text-white mt-2">2,99€<span className="text-lg text-gray-400">/mes</span></div>
           <p className="text-xs text-gray-400 mt-1">o 24,99€/año (ahorra 2 meses)</p>
           <ul className="mt-6 space-y-3 text-sm text-white">
-            <li className="flex items-start gap-2"><span className="text-amber-400">★</span><strong>Alertas instantáneas</strong> (&lt;60s vs 24h)</li>
-            <li className="flex items-start gap-2"><span className="text-amber-400">★</span><strong>Filtros pro</strong> aerolínea/clase/escalas</li>
+            <li className="flex items-start gap-2"><span className="text-amber-400">★</span><strong>Alertas instantáneas</strong> (&lt;60s push + email vs 24h)</li>
+            <li className="flex items-start gap-2"><span className="text-amber-400">★</span><strong>Filtros pro</strong> aerolínea + clase + escalas exactas</li>
             <li className="flex items-start gap-2"><span className="text-amber-400">★</span>Sin disclaimer "precio aproximado"</li>
-            <li className="flex items-start gap-2"><span className="text-amber-400">★</span>Soporte prioritario</li>
-            <li className="flex items-start gap-2"><span className="text-amber-400">★</span>Exportar a CSV</li>
-            <li className="flex items-start gap-2"><span className="text-amber-400">★</span>API access para tu bot</li>
+            <li className="flex items-start gap-2"><span className="text-amber-400">★</span>Soporte prioritario email &lt;24h</li>
           </ul>
           <div className="mt-8">
             <PremiumUpgradeButton />
