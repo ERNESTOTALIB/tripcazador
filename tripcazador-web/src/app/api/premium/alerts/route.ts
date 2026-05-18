@@ -34,11 +34,10 @@ import {
   listAlertsByCustomer,
 } from "@/lib/price_alerts_store";
 import { trackEvent } from "@/lib/event_store";
+import { isValidStripeOwnerId } from "@/lib/stripe_id";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const CUSTOMER_ID_RE = /^cs_(test|live)_[A-Za-z0-9]{8,}$/;
 
 function isValidEmail(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s) && s.length < 254;
@@ -61,9 +60,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const customerId = String(body.customer_id || "").trim();
-  if (!customerId || !CUSTOMER_ID_RE.test(customerId)) {
+  if (!isValidStripeOwnerId(customerId)) {
     return NextResponse.json(
-      { ok: false, error: "customer_id_invalid", hint: "format cs_(test|live)_<id>" },
+      { ok: false, error: "customer_id_invalid", hint: "format cus_<id> o cs_(test|live)_<id>" },
       { status: 400 },
     );
   }
@@ -138,7 +137,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(req.url);
   const customerId = searchParams.get("customer_id") || "";
 
-  if (!customerId || !CUSTOMER_ID_RE.test(customerId)) {
+  if (!isValidStripeOwnerId(customerId)) {
     return NextResponse.json(
       { ok: false, error: "customer_id_invalid" },
       { status: 400 },

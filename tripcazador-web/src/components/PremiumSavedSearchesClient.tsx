@@ -72,7 +72,7 @@ export function PremiumSavedSearchesClient() {
   }, []);
 
   const customerId = status.customerId || "";
-  const ready = status.active && customerId.startsWith("cs_");
+  const ready = status.active && (customerId.startsWith("cus_") || customerId.startsWith("cs_"));
 
   const refresh = useCallback(async () => {
     if (!ready) return;

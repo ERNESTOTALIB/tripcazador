@@ -16,11 +16,10 @@ import {
   SAVED_SEARCH_QUOTA,
   SAVED_SEARCH_NAME_MAX,
 } from "@/lib/saved_searches_store";
+import { isValidStripeOwnerId } from "@/lib/stripe_id";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const CUSTOMER_ID_RE = /^cs_(test|live)_[A-Za-z0-9]{8,}$/;
 
 const CABIN_VALUES = ["any", "economy", "premium_economy", "business", "first"] as const;
 const STOPS_VALUES = ["any", "0", "1", "2plus"] as const;
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const customerId = String(body.customer_id || "");
-  if (!CUSTOMER_ID_RE.test(customerId)) {
+  if (!isValidStripeOwnerId(customerId)) {
     return NextResponse.json({ ok: false, error: "customer_id_invalid" }, { status: 400 });
   }
 
@@ -119,7 +118,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(req.url);
   const customerId = searchParams.get("customer_id") || "";
-  if (!CUSTOMER_ID_RE.test(customerId)) {
+  if (!isValidStripeOwnerId(customerId)) {
     return NextResponse.json({ ok: false, error: "customer_id_invalid" }, { status: 400 });
   }
   const searches = await listSavedSearches(customerId);

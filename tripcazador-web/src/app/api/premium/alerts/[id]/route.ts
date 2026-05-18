@@ -16,11 +16,11 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { deleteAlert } from "@/lib/price_alerts_store";
+import { isValidStripeOwnerId } from "@/lib/stripe_id";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const CUSTOMER_ID_RE = /^cs_(test|live)_[A-Za-z0-9]{8,}$/;
 const ALERT_ID_RE = /^pa_[A-Za-z0-9_-]{8,}$/;
 
 export async function DELETE(
@@ -34,7 +34,7 @@ export async function DELETE(
 
   const { searchParams } = new URL(req.url);
   const customerId = searchParams.get("customer_id") || "";
-  if (!customerId || !CUSTOMER_ID_RE.test(customerId)) {
+  if (!isValidStripeOwnerId(customerId)) {
     return NextResponse.json(
       { ok: false, error: "customer_id_invalid" },
       { status: 400 },

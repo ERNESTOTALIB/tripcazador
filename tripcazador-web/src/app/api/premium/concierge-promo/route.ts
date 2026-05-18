@@ -14,11 +14,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hasUsedPromoThisMonth, markPromoUsed } from "@/lib/premium_concierge_promo";
 import { trackEvent } from "@/lib/event_store";
+import { isValidStripeOwnerId } from "@/lib/stripe_id";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const CUSTOMER_ID_RE = /^cs_(test|live)_[A-Za-z0-9]{8,}$/;
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   let body: Record<string, unknown> = {};
@@ -29,7 +28,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const customerId = String(body.customer_id || "");
-  if (!CUSTOMER_ID_RE.test(customerId)) {
+  if (!isValidStripeOwnerId(customerId)) {
     return NextResponse.json({ ok: false, error: "customer_id_invalid" }, { status: 400 });
   }
 

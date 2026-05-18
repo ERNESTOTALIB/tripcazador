@@ -66,12 +66,11 @@ export function PremiumPanelClient() {
     if (!status.customerId) return;
     setPortalLoading(true);
     try {
-      // Aquí esperamos session_id (Stripe checkout), no customer. Si el
-      // customerId guardado en localStorage no es cs_ (Checkout session)
-      // sino cus_ (Stripe customer), igualmente intentamos el portal.
-      // El endpoint valida formato session_id; si no matchea devuelve 400.
+      // SSS304: el endpoint acepta customer_id o session_id. El
+      // PremiumStatus.customerId guardado en localStorage es el resultado
+      // de /api/premium/activate, que devuelve session.customer.id (cus_xxx).
       const res = await fetch(
-        `/api/premium/portal?session_id=${encodeURIComponent(status.customerId)}`,
+        `/api/premium/portal?customer_id=${encodeURIComponent(status.customerId)}`,
       );
       const data = (await res.json()) as { url?: string; error?: string };
       if (res.ok && data.url) {

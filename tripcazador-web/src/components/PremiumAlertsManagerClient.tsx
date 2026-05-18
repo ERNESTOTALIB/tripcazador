@@ -64,7 +64,7 @@ export function PremiumAlertsManagerClient() {
   }, []);
 
   const customerId = status.customerId || "";
-  const isPremiumWithCustomer = status.active && customerId.startsWith("cs_");
+  const isPremiumWithCustomer = status.active && (customerId.startsWith("cus_") || customerId.startsWith("cs_"));
 
   const fetchAlerts = useCallback(async () => {
     if (!isPremiumWithCustomer) return;
@@ -182,7 +182,7 @@ export function PremiumAlertsManagerClient() {
     );
   }
 
-  if (status.active && !customerId.startsWith("cs_")) {
+  if (status.active && !(customerId.startsWith("cus_") || customerId.startsWith("cs_"))) {
     return (
       <div className="p-6 rounded-2xl border border-rose-500/40 bg-rose-500/10">
         <h2 className="text-xl font-bold text-white">Premium sin customerId Stripe</h2>
