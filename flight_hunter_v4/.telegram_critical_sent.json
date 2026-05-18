@@ -1487,6 +1487,22 @@
       "destination": "AMS",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "16a66b2e015e",
+      "ts": "2026-05-18T11:40:05.415170+00:00",
+      "origin": "ATH",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e9a026b0ff9e",
+      "ts": "2026-05-18T11:40:05.415170+00:00",
+      "origin": "BCN",
+      "destination": "NDR",
+      "price_eur": 18.19,
+      "classification": "CRÍTICO"
     }
   ]
 }
