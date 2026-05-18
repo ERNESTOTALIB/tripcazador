@@ -124,10 +124,10 @@ export function PremiumPanelClient() {
             icon="🚨"
             title="Alertas instantáneas"
             description={PREMIUM_FEATURES.instantAlerts}
-            cta={status.active ? "Configurar mis alertas" : "Ver cómo funciona"}
-            href="/alertas"
+            cta={status.active ? "Gestionar mis alertas" : "Ver cómo funciona"}
+            href={status.active ? "/panel/premium/alertas" : "/alertas"}
             active={status.active}
-            extra="Comprobamos precios cada 5 minutos vs 1 hora en gratis."
+            extra="Premium: alertas ilimitadas, polling cada 5 min, email priority. Plan gratis: 3 max, polling hora."
           />
           {/* Filtros pro */}
           <FeatureCard
