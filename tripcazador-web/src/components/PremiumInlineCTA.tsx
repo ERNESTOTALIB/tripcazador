@@ -22,6 +22,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getPremiumStatus } from "@/lib/premium";
 import { tcTrack, tcTrackOnce } from "@/lib/track_client";
+import { getVariant } from "@/lib/ab";
 
 interface Props {
   /** Identificador del surface (home/blog/deal_card/...). Para analytics. */
@@ -41,11 +42,25 @@ export function PremiumInlineCTA({
 }: Props) {
   const [active, setActive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [copyVariant, setCopyVariant] = useState<"A" | "B">("A");
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setActive(getPremiumStatus().active);
+    // SSS294: A/B copy variant assignment client-side
+    setCopyVariant(getVariant("premium_cta_copy_v1"));
   }, []);
+
+  // SSS294: copy por variant
+  const buttonCopy = copyVariant === "B"
+    ? "Únete a Premium · €9.99/mes"
+    : (loading ? "Procesando..." : "Empezar prueba 7 días");
+  const bannerButton = copyVariant === "B"
+    ? "Únete €9.99/mes"
+    : (loading ? "..." : "Probar 7 días gratis");
+  const minimalLink = copyVariant === "B"
+    ? "Únete a Premium €9.99/mes →"
+    : "Hazte Premium €9.99/mes →";
 
   useEffect(() => {
     const node = ref.current;
@@ -74,7 +89,7 @@ export function PremiumInlineCTA({
 
   async function handleClick() {
     setLoading(true);
-    tcTrack("premium_inline_click", { source, variant });
+    tcTrack("premium_inline_click", { source, variant, copyVariant });
     try {
       const res = await fetch("/api/premium/checkout", { method: "POST" });
       if (res.ok) {
@@ -99,7 +114,7 @@ export function PremiumInlineCTA({
           disabled={loading}
           className="underline hover:text-amber-300 disabled:opacity-60"
         >
-          {title || "Hazte Premium €9.99/mes →"}
+          {title || minimalLink}
         </button>
       </div>
     );
@@ -125,7 +140,7 @@ export function PremiumInlineCTA({
           disabled={loading}
           className="px-4 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-60 text-black font-semibold text-sm rounded-lg whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
         >
-          {loading ? "..." : "Probar 7 días gratis"}
+          {bannerButton}
         </button>
       </div>
     );
@@ -153,7 +168,7 @@ export function PremiumInlineCTA({
               disabled={loading}
               className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 disabled:opacity-60 text-black font-bold text-sm rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
             >
-              {loading ? "Procesando..." : "Empezar prueba 7 días"}
+              {buttonCopy}
             </button>
             <span className="text-xs text-gray-400">
               €9.99/mes · cancela cuando quieras
