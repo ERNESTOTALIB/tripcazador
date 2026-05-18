@@ -1,6 +1,7 @@
 import { getDeals } from "@/lib/api";
 import { DealCard, DealRow } from "@/components/DealCard";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
+import { PremiumFiltersBar } from "@/components/PremiumFiltersBar";
 import { JsonLd } from "@/components/JsonLd";
 import { SectionHero } from "@/components/SectionHero";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
@@ -165,6 +166,38 @@ export default async function DealsPage({
     if (Number.isFinite(md) && md > 0) {
       scoped = scoped.filter((d) => (d.duration_min ?? 0) === 0 || (d.duration_min ?? 0) <= md);
     }
+  }
+
+  // SSS301 (18 may 2026): Premium filters pro — server-side aplicación de
+  // los params que produce PremiumFiltersBar. El gating UI es client-side
+  // (solo Premium users ven la barra), pero el filter logic vive aquí para
+  // que URLs compartibles sigan funcionando.
+  const sp = searchParams as Record<string, string | undefined>;
+  const airlinesParam = sp.airlines;
+  const cabinExact = sp.cabin_exact;
+  const stopsExact = sp.stops_exact;
+  const timeBand = sp.time;
+  if (airlinesParam) {
+    const codes = airlinesParam.split(",").filter(Boolean).map((c) => c.toUpperCase());
+    scoped = scoped.filter((d) => codes.includes((d.airline || "").toUpperCase()));
+  }
+  if (cabinExact && cabinExact !== "any") {
+    scoped = scoped.filter((d) => (d.cabin || "economy").toLowerCase() === cabinExact);
+  }
+  if (stopsExact && stopsExact !== "any") {
+    if (stopsExact === "0") scoped = scoped.filter((d) => (d.stops ?? 0) === 0);
+    else if (stopsExact === "1") scoped = scoped.filter((d) => (d.stops ?? 0) === 1);
+    else if (stopsExact === "2plus") scoped = scoped.filter((d) => (d.stops ?? 0) >= 2);
+  }
+  if (timeBand && timeBand !== "any") {
+    scoped = scoped.filter((d) => {
+      if (!d.date_out) return true;
+      const dt = new Date(d.date_out);
+      if (isNaN(dt.getTime())) return true;
+      const h = dt.getHours();
+      const band = h < 6 ? "early" : h < 12 ? "morning" : h < 18 ? "afternoon" : "evening";
+      return band === timeBand;
+    });
   }
 
   // F2: server-side sort (estable porque ISR cachea 5min)
@@ -347,6 +380,19 @@ export default async function DealsPage({
               <DealsViewToggle />
             </div>
           </div>
+
+          {/* SSS301 (18 may 2026): Premium filters bar.
+              Para suscriptores: 4 filtros pro (aerolínea/clase/escalas/horario).
+              Para free: locked teaser con CTA upgrade. */}
+          <PremiumFiltersBar
+            availableAirlines={Array.from(
+              new Map(
+                deals
+                  .filter((d) => d.airline && d.airline_name)
+                  .map((d) => [d.airline, { code: d.airline as string, name: d.airline_name as string }]),
+              ).values(),
+            )}
+          />
 
           {/* List view — visible cuando data-deals-view=list */}
           <div className="space-y-3 deals-view-list">
