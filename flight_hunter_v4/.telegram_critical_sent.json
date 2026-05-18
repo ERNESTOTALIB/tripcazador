@@ -1503,6 +1503,22 @@
       "destination": "NDR",
       "price_eur": 18.19,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "804cee6f4067",
+      "ts": "2026-05-18T15:16:32.127805+00:00",
+      "origin": "STN",
+      "destination": "MLA",
+      "price_eur": 26.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "db7e831a7e8a",
+      "ts": "2026-05-18T15:16:32.127805+00:00",
+      "origin": "STN",
+      "destination": "CAG",
+      "price_eur": 29.4,
+      "classification": "CRÍTICO"
     }
   ]
 }
