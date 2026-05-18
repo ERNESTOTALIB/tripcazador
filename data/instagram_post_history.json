@@ -619,5 +619,14 @@
     "city_from": "Barcelona",
     "city_to": "Gdansk",
     "price_eur": 28.99
+  },
+  {
+    "timestamp": 1779104919.5591493,
+    "deal_id": "ryanair_mad_cag_20260914_economy",
+    "origin": "MAD",
+    "destination": "CAG",
+    "city_from": "Madrid",
+    "city_to": "Cagliari",
+    "price_eur": 34.99
   }
 ]
