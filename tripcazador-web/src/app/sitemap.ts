@@ -544,6 +544,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  // SSS289 (17 may 2026): /equipaje/[aerolinea] nueva vertical SEO high-intent
+  const BAGGAGE_SLUGS = ["ryanair", "vueling", "easyjet", "iberia", "wizz", "lufthansa", "air-france", "klm", "norwegian", "qatar-airways"];
+  const equipajeIndex = {
+    url: `${BASE_URL}/equipaje`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  };
+  const equipajePages: MetadataRoute.Sitemap = BAGGAGE_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/equipaje/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   // C3: precio mes a mes — 12 rutas top con calendar 12 meses cada una
   const monthlyPriceIndex = {
     url: `${BASE_URL}/precio-mes-a-mes`,
@@ -666,6 +681,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...regionPages,
     ...monthPages,
     ...seasonalPages,
+    equipajeIndex,
+    ...equipajePages,
     monthlyPriceIndex,
     ...monthlyPriceRoutes,
     ...hotelPages,
