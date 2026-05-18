@@ -34,7 +34,14 @@ export type EventType =
   | "concierge_view"     // landing /concierge
   | "concierge_click_pay" // CTA Stripe pago premium
   | "premium_cta_view"   // banner premium visible en viewport
-  | "premium_cta_click"; // click en cualquier CTA premium
+  | "premium_cta_click"  // click en cualquier CTA premium
+  | "concierge_promo_claimed" // SSS303: Premium reclama consulta gratis del mes
+  | "premium_only_view"        // SSS305: free user ve un deal locked
+  | "premium_only_unlock_click" // SSS305: click en "Únete Premium" desde locked card
+  | "agencia_product_select"   // SSS305: select tipo vuelo|vuelo_hotel
+  | "agencia_buy_click"        // SSS305: click submit form pre-Stripe
+  | "agencia_refund_request"   // SSS305: cliente solicita refund garantía
+  | "agencia_refund_submitted"; // SSS305: refund OK desde el panel
 
 export interface TrackedEvent {
   ts: number;          // epoch ms

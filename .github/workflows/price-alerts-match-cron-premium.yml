@@ -1,0 +1,41 @@
+name: Price Alerts Match Cron — Premium 5min
+
+# SSS302 (18 may 2026): cron Premium-only que corre cada 5 min.
+# Solo procesa alerts con tier="premium" — el plan gratis sigue en
+# `match-cron` con cadencia hora (no añadimos aquí porque el coste
+# Vercel function invocations no se justifica para los free).
+#
+# Requiere secret PRICE_ALERT_CRON_TOKEN_PREMIUM (puede compartir
+# valor con PRICE_ALERT_CRON_TOKEN del cron gratis — el endpoint
+# acepta cualquiera de los dos).
+#
+# RESEND_PROXY_TOKEN ya seteado en Vercel para el notify-alert.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  match:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Trigger match-cron-premium endpoint
+        id: send
+        run: |
+          STATUS=$(curl -s -o /tmp/match.json -w "%{http_code}" \
+            "https://tripcazador.com/api/price-alerts/match-cron-premium?token=${{ secrets.PRICE_ALERT_CRON_TOKEN_PREMIUM }}" \
+            --max-time 60)
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          cat /tmp/match.json | head -c 1000
+
+      - name: Notify Telegram on failure
+        if: steps.send.outputs.status != '200' && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MSG="⚠ Premium price-alerts match-cron failed HTTP ${{ steps.send.outputs.status }}\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" -d "text=${MSG}" > /dev/null

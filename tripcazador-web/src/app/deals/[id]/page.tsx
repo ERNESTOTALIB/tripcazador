@@ -18,6 +18,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 import { ShareButtons } from "@/components/ShareButtons";
 import { PriceHistoryChart } from "@/components/PriceHistoryChart";
+import { PremiumPriceHistoryChart } from "@/components/PremiumPriceHistoryChart";
 import { HotelCrossSell } from "@/components/HotelCrossSell";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { ConciergeInlineCTA } from "@/components/ConciergeInlineCTA";
@@ -381,6 +382,14 @@ export default async function DealDetailPage({
 
       {/* ─────────── Historial de precios (si hay datos) ─────────── */}
       <PriceHistoryChart history={priceHistory} currentPrice={deal.price_eur} />
+
+      {/* ─────────── Premium price history 30d chart (SSS302) ─────────── */}
+      <PremiumPriceHistoryChart
+        origin={deal.origin}
+        destination={deal.destination}
+        cabin={deal.cabin || "economy"}
+        currentPrice={deal.price_eur}
+      />
 
       {/* ─────────── Mapa (si hay coordenadas) ─────────── */}
       {deal.lat && deal.lon && (

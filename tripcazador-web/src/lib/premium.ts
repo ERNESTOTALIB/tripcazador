@@ -61,6 +61,13 @@ export function setPremiumStatus(s: PremiumStatus) {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(KEY, JSON.stringify(s));
+    // SSS305: sync con cookie "tc_premium" para que SSR sepa que el visitor
+    // es Premium y pueda mostrar premium_only deals sin hidratación.
+    // Cookie no-httpOnly intencional — solo para gating UI, no auth.
+    // Lleva el customerId si existe, sino "1" como flag.
+    const cookieVal = s.active ? (s.customerId || "1") : "";
+    const maxAge = s.active ? 30 * 86400 : 0; // 30 días
+    document.cookie = `tc_premium=${encodeURIComponent(cookieVal)}; path=/; max-age=${maxAge}; SameSite=Lax`;
     window.dispatchEvent(new CustomEvent("tc:premium-changed", { detail: s }));
   } catch {
     /* quota exceeded */
@@ -96,6 +103,8 @@ export function activateReferralBonus(): PremiumStatus {
 export function cancelPremium() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(KEY);
+  // SSS305: limpiar también la cookie tc_premium para que SSR vuelva a free
+  document.cookie = "tc_premium=; path=/; max-age=0; SameSite=Lax";
   window.dispatchEvent(
     new CustomEvent("tc:premium-changed", {
       detail: { active: false, tier: "free", source: "manual" },

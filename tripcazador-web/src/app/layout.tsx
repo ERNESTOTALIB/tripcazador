@@ -390,6 +390,7 @@ export default function RootLayout({
                 <h3 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Herramientas</h3>
                 <ul className="space-y-2 text-gray-400">
                   <li><a href="/planificador" className="hover:text-amber-400 font-semibold">Planificador IA ✨</a></li>
+                  <li><a href="/agencia" className="hover:text-amber-400 font-semibold">Agencia 9,99€/19,99€ 🛫</a></li>
                   <li><a href="/como-viajar" className="hover:text-amber-400">Cómo viajar 🧰</a></li>
                   <li><a href="/alertas" className="hover:text-amber-400">Alertas de precio 🔔</a></li>
                   <li><a href="/favoritos" className="hover:text-amber-400">Tus favoritos</a></li>

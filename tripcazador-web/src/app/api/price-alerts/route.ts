@@ -16,7 +16,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createAlert } from "@/lib/price_alerts_store";
+import { createAlert, QuotaExceededError, FREE_TIER_ALERT_QUOTA } from "@/lib/price_alerts_store";
 import { trackEvent } from "@/lib/event_store";
 
 export const runtime = "nodejs";
@@ -102,15 +102,36 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: "destination_invalid" }, { status: 400 });
   }
 
-  const alert = await createAlert({
-    email,
-    origin,
-    destination,
-    max_price: maxPrice,
-    cabin,
-    date_min: dateMin,
-    date_max: dateMax,
-  });
+  let alert;
+  try {
+    alert = await createAlert({
+      email,
+      origin,
+      destination,
+      max_price: maxPrice,
+      cabin,
+      date_min: dateMin,
+      date_max: dateMax,
+      // SSS302: este endpoint público SIEMPRE crea alertas tier="free".
+      // Premium debe usar /api/premium/alerts con customerId validado.
+      tier: "free",
+    });
+  } catch (err) {
+    if (err instanceof QuotaExceededError) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "quota_exceeded",
+          limit: FREE_TIER_ALERT_QUOTA,
+          current: err.currentCount,
+          upgrade_url: "/premium?utm_source=alert_quota",
+          message: `Plan gratis máximo ${FREE_TIER_ALERT_QUOTA} alertas. Hazte Premium para ilimitadas.`,
+        },
+        { status: 402 },
+      );
+    }
+    return NextResponse.json({ ok: false, error: "create_failed" }, { status: 500 });
+  }
 
   try {
     trackEvent({
@@ -122,11 +143,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         destination: destination || "any",
         max_price: maxPrice,
         cabin: cabin || "any",
+        tier: "free",
       },
     });
   } catch {
     /* no-op */
   }
 
-  return NextResponse.json({ ok: true, id: alert.id }, { status: 201 });
+  return NextResponse.json({ ok: true, id: alert.id, tier: alert.tier }, { status: 201 });
 }

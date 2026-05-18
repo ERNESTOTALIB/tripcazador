@@ -64,9 +64,15 @@ describe("createAlert", () => {
   });
 
   it("genera IDs únicos en llamadas consecutivas", async () => {
+    // SSS302: tier="premium" para saltar el free-quota de 3 alertas/email.
     const ids = new Set<string>();
     for (let i = 0; i < 20; i++) {
-      const a = await createAlert({ email: "x@y.com", max_price: i });
+      const a = await createAlert({
+        email: "x@y.com",
+        max_price: i + 1,
+        tier: "premium",
+        customerId: "cs_live_unique_test",
+      });
       ids.add(a.id);
     }
     expect(ids.size).toBe(20);

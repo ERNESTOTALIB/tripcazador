@@ -117,6 +117,7 @@ export function SiteHeader() {
                 { href: "/deals", label: "Vuelos" },
                 { href: "/hoteles", label: "Hoteles" },
                 { href: "/destinos", label: "Destinos" },
+                { href: "/agencia", label: "Agencia" },
                 { href: "/blog", label: "Blog" },
                 { href: "/premium", label: "Premium" },
               ].map((item) => (
