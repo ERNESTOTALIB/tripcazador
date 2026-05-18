@@ -89,7 +89,7 @@ export function AgenciaLandingClient() {
         </p>
       </header>
 
-      {/* Productos toggle */}
+      {/* Productos toggle (form rápido) + links a landings dedicated */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <button
           type="button"
@@ -108,6 +108,13 @@ export function AgenciaLandingClient() {
           <p className="text-xs text-gray-400 mt-2">
             3 mejores opciones de vuelo · &lt;24h · mejor precio garantizado
           </p>
+          <Link
+            href="/agencia/vuelo"
+            className="inline-block mt-3 text-[11px] text-amber-400 hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Ver detalles Vuelo solo →
+          </Link>
         </button>
         <button
           type="button"
@@ -115,17 +122,27 @@ export function AgenciaLandingClient() {
             setTipo("vuelo_hotel");
             tcTrack("agencia_product_select", { tipo: "vuelo_hotel" });
           }}
-          className={`p-6 rounded-2xl border-2 text-left transition ${
+          className={`p-6 rounded-2xl border-2 text-left transition relative ${
             tipo === "vuelo_hotel"
               ? "border-amber-500 bg-amber-500/10"
               : "border-gray-800 bg-gray-900 hover:border-gray-700"
           }`}
         >
+          <span className="absolute top-2 right-2 px-2 py-0.5 bg-amber-500 text-black text-[10px] font-bold rounded-full uppercase">
+            Popular
+          </span>
           <div className="text-2xl mb-1">🛫🏨 Vuelo + Hotel</div>
           <div className="text-3xl font-bold">19,99 €</div>
           <p className="text-xs text-gray-400 mt-2">
             Paquete completo vuelo + hotel · &lt;24h · mejor precio garantizado
           </p>
+          <Link
+            href="/agencia/vuelo-hotel"
+            className="inline-block mt-3 text-[11px] text-amber-400 hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Ver detalles Vuelo + Hotel →
+          </Link>
         </button>
       </section>
 
