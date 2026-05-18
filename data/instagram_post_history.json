@@ -628,5 +628,14 @@
     "city_from": "Madrid",
     "city_to": "Cagliari",
     "price_eur": 34.99
+  },
+  {
+    "timestamp": 1779118974.3341687,
+    "deal_id": "ryanair_ams_agp_20260818_economy",
+    "origin": "AMS",
+    "destination": "AGP",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Malaga",
+    "price_eur": 38.91
   }
 ]
