@@ -1551,6 +1551,22 @@
       "destination": "BOJ",
       "price_eur": 64.59,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6757c46babc3",
+      "ts": "2026-05-18T21:06:01.168327+00:00",
+      "origin": "STN",
+      "destination": "CHQ",
+      "price_eur": 33.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "9cead921804a",
+      "ts": "2026-05-18T21:06:01.168327+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 33.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
