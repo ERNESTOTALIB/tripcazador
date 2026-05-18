@@ -85,6 +85,19 @@ export const EXPERIMENTS: Record<string, Experiment> = {
     bWeight: 50,
     defaultVariant: "A", // forma actual (form embed) hasta validar B
   },
+  // SSS294 (18 may 2026): PremiumInlineCTA copy variant test.
+  // A = "Empezar prueba 7 días" (existing, focus on free trial)
+  // B = "Únete a Premium · €9.99/mes" (focus on commitment + clear price)
+  // Hipótesis: copy B convierte mejor en surfaces high-intent (deal detail,
+  // post-content) porque el visitor ya está caliente — el precio claro reduce
+  // fricción cognitiva ("ok, sé qué cuesta") vs ambigüedad "prueba" (¿después
+  // qué?). Validar via premium_inline_click event rate per variant.
+  premium_cta_copy_v1: {
+    id: "premium_cta_copy_v1",
+    name: "PremiumInlineCTA copy (prueba 7d vs €9.99/mes claro)",
+    bWeight: 50,
+    defaultVariant: "A", // copy actual hasta validar B
+  },
 };
 
 const VISITOR_KEY = "cv_visitor_id";
