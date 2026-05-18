@@ -26,11 +26,11 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: "¿Cuánto cuesta?",
-    a: "Las alertas son 100% gratuitas. No hay versión premium, no hay límite (hasta 10 alertas por hora desde la misma IP, pero más que suficiente para uso normal).",
+    a: "Las alertas son 100% gratuitas. Hasta 10 alertas por hora desde la misma IP (suficiente para uso normal). Si quieres recibir avisos en menos de 60 segundos cuando aparezca un chollo (vs hasta 24h en el plan gratis) + filtrar por aerolínea/clase/escalas exactas, hay un plan Premium opcional de 2,99 €/mes.",
   },
   {
     q: "¿Cuánto tarda en avisarme?",
-    a: "Comprobamos precios cada hora. Cuando hay un match, recibes el email en menos de 5 minutos.",
+    a: "Gratis: comprobamos precios cada hora y recibes email en menos de 5 minutos del match. Premium: comprobamos cada 5 minutos + push notification instantánea + email en menos de 60 segundos.",
   },
   {
     q: "¿Mi email lo veré spameado?",

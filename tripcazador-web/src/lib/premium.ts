@@ -17,14 +17,25 @@ export interface PremiumStatus {
   customerId?: string;
 }
 
+// SSS300 (18 may 2026): catálogo Premium hardened a 4 features SOLO suscriptores.
+// Eliminados exportCsv + apiAccess (no priorizados, generaban expectativa
+// no entregada). Premium €2.99/mes ahora promete exactamente lo siguiente
+// y todo gating activo en `isPremium()` server+client side.
 export const PREMIUM_FEATURES = {
   instantAlerts: "Alertas instantáneas (push + email <60s vs 24h)",
   proFilters: "Filtros pro (+ aerolínea + clase + escalas exactas)",
   noDisclaimer: 'Sin disclaimer "precio aproximado"',
-  prioritySupport: "Soporte prioritario por email",
-  exportCsv: "Exportar deals a CSV",
-  apiAccess: "API access para integrar en tu app/bot",
+  prioritySupport: "Soporte prioritario por email <24h",
 } as const;
+
+/**
+ * SSS300: gating helper centralizado. Usar SIEMPRE este check para
+ * acceso Premium-only — nunca `getPremiumStatus().active` directo en UI
+ * porque queremos auditoría única punto de control.
+ */
+export function isPremium(): boolean {
+  return getPremiumStatus().active;
+}
 
 export const PREMIUM_PRICE_EUR = 2.99;
 export const PREMIUM_TRIAL_DAYS = 7;
