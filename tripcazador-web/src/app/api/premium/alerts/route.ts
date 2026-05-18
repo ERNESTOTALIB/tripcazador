@@ -72,6 +72,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const maxPrice = Number(body.max_price);
   const origin = body.origin ? String(body.origin).toUpperCase() : undefined;
   const destination = body.destination ? String(body.destination).toUpperCase() : undefined;
+  // SSS303: multi-origin Premium-only (BCN OR MAD OR VLC) — cap 5
+  const originsIn = Array.isArray(body.origins) ? body.origins : null;
+  const origins: string[] | undefined = originsIn
+    ? originsIn
+        .map((o) => String(o).toUpperCase())
+        .filter((o) => /^[A-Z]{3}$/.test(o))
+        .slice(0, 5)
+    : undefined;
   const cabinIn = String(body.cabin || "");
   const cabin = isCabin(cabinIn) ? cabinIn : undefined;
   const dateMin = body.date_min ? String(body.date_min) : undefined;
@@ -94,6 +102,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     email,
     origin,
     destination,
+    origins,
     max_price: maxPrice,
     cabin,
     date_min: dateMin,

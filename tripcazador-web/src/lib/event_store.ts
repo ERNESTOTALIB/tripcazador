@@ -34,7 +34,8 @@ export type EventType =
   | "concierge_view"     // landing /concierge
   | "concierge_click_pay" // CTA Stripe pago premium
   | "premium_cta_view"   // banner premium visible en viewport
-  | "premium_cta_click"; // click en cualquier CTA premium
+  | "premium_cta_click"  // click en cualquier CTA premium
+  | "concierge_promo_claimed"; // SSS303: Premium reclama consulta gratis del mes
 
 export interface TrackedEvent {
   ts: number;          // epoch ms

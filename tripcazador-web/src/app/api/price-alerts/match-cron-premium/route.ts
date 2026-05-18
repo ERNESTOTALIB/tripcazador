@@ -66,7 +66,12 @@ async function fetchDeals(): Promise<DealLite[]> {
 
 export function dealMatchesAlert(deal: DealLite, alert: PriceAlert): boolean {
   if (!deal.price_eur || deal.price_eur > alert.max_price) return false;
-  if (alert.origin && deal.origin !== alert.origin) return false;
+  // SSS303: origins[] (Premium) prevalece sobre origin
+  if (alert.origins && alert.origins.length > 0) {
+    if (!deal.origin || !alert.origins.includes(deal.origin)) return false;
+  } else if (alert.origin && deal.origin !== alert.origin) {
+    return false;
+  }
   if (alert.destination && deal.destination !== alert.destination) return false;
   if (alert.cabin && deal.cabin !== alert.cabin) return false;
   if (alert.date_min && deal.date_out && deal.date_out < alert.date_min) return false;

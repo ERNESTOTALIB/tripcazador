@@ -25,6 +25,12 @@ export interface PriceAlert {
   email: string;
   origin?: string;
   destination?: string;
+  /**
+   * SSS303 (Premium-only): permite múltiples orígenes ("BCN" OR "MAD" OR "VLC").
+   * Si está definido y no vacío, `origin` se ignora en el matching.
+   * Free tier no puede usarlo (validado en route).
+   */
+  origins?: string[];
   max_price: number;
   cabin?: "economy" | "business" | "first";
   date_min?: string; // YYYY-MM-DD
@@ -78,6 +84,7 @@ export async function createAlert(input: {
   email: string;
   origin?: string;
   destination?: string;
+  origins?: string[]; // SSS303 Premium-only
   max_price: number;
   cabin?: "economy" | "business" | "first";
   date_min?: string;
@@ -96,11 +103,24 @@ export async function createAlert(input: {
     }
   }
 
+  // origins (Premium-only): valida IATA + dedup + cap a 5
+  const origins =
+    tier === "premium" && Array.isArray(input.origins) && input.origins.length > 0
+      ? Array.from(
+          new Set(
+            input.origins
+              .map((o) => String(o).toUpperCase())
+              .filter((o) => /^[A-Z]{3}$/.test(o)),
+          ),
+        ).slice(0, 5)
+      : undefined;
+
   const alert: PriceAlert = {
     id: genId(),
     email: normalizedEmail,
     origin: input.origin?.toUpperCase().slice(0, 3),
     destination: input.destination?.toUpperCase().slice(0, 3),
+    origins,
     max_price: input.max_price,
     cabin: input.cabin,
     date_min: input.date_min,
