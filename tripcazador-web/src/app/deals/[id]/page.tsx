@@ -19,6 +19,7 @@ import { ExpiryCountdown } from "@/components/ExpiryCountdown";
 import { ShareButtons } from "@/components/ShareButtons";
 import { PriceHistoryChart } from "@/components/PriceHistoryChart";
 import { PremiumPriceHistoryChart } from "@/components/PremiumPriceHistoryChart";
+import { PremiumPricePredictorCard } from "@/components/PremiumPricePredictorCard";
 import { HotelCrossSell } from "@/components/HotelCrossSell";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { ConciergeInlineCTA } from "@/components/ConciergeInlineCTA";
@@ -389,6 +390,15 @@ export default async function DealDetailPage({
         destination={deal.destination}
         cabin={deal.cabin || "economy"}
         currentPrice={deal.price_eur}
+      />
+
+      {/* ─────────── Premium price predictor "compra ya vs espera" (SSS313) ─────────── */}
+      <PremiumPricePredictorCard
+        origin={deal.origin}
+        destination={deal.destination}
+        cabin={deal.cabin || "economy"}
+        currentPrice={deal.price_eur}
+        dateOut={deal.date_out || null}
       />
 
       {/* ─────────── Mapa (si hay coordenadas) ─────────── */}

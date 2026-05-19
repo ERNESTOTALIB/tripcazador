@@ -44,6 +44,22 @@ jobs:
         with:
           node-version: "20"
 
+      # SSS313 anti-regresión: build local FIRST con npm.
+      # SSS312 fix descubrió que route.ts custom exports (scoreDeal, etc)
+      # rompen el type-check de Next pero el workflow seguía con success
+      # porque vercel CLI tenía `continue-on-error: true`. Resultado:
+      # deploys silenciosamente sirven el último build válido y nuevas
+      # pages devuelven 404. Build local fail-fast cierra ese loop.
+      - name: 🛡 Build sanity check (anti-regresión SSS313)
+        working-directory: tripcazador-web
+        run: |
+          npm install --legacy-peer-deps --no-audit --no-fund
+          npm run build
+          # Verificar que rutas clave existen en .next/server/app
+          test -d .next/server/app/agencia || (echo "❌ /agencia NO compilada" && exit 1)
+          test -d .next/server/app/panel/premium || (echo "❌ /panel/premium NO compilada" && exit 1)
+          echo "✅ Build sanity OK — agencia + panel/premium compiladas"
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
@@ -94,8 +110,18 @@ jobs:
 
       - name: Smoke test new deploy
         run: |
-          # Espera 20s a que el alias se propague, luego verifica home
+          # SSS313: ampliado vs SSS7 inicial — testea rutas Premium SSS301+
+          # para detectar rotos catastróficos sin tener que ir a PROD.
           sleep 20
           curl -fsS --max-time 15 https://tripcazador.com/ | grep -q TripCazador || (echo "home failed" && exit 1)
           curl -fsS --max-time 15 https://tripcazador.com/calculadora | grep -q -i calculadora || (echo "calc failed" && exit 1)
-          echo "smoke OK"
+          # Premium + Agencia (SSS301-310) — solo verifica HTTP 200, no contenido
+          for path in /agencia /agencia/vuelo /agencia/vuelo-hotel /panel/premium /panel/premium/alertas /panel/premium/busquedas /panel/agencia /premium; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://tripcazador.com$path")
+            if [ "$STATUS" != "200" ]; then
+              echo "❌ Smoke FAIL $path → HTTP $STATUS"
+              exit 1
+            fi
+            echo "✅ $path → 200"
+          done
+          echo "smoke OK (8 critical routes Premium + Agencia)"
