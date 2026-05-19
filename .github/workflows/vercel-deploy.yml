@@ -116,7 +116,7 @@ jobs:
           curl -fsS --max-time 15 https://tripcazador.com/ | grep -q TripCazador || (echo "home failed" && exit 1)
           curl -fsS --max-time 15 https://tripcazador.com/calculadora | grep -q -i calculadora || (echo "calc failed" && exit 1)
           # Premium + Agencia (SSS301-310) — solo verifica HTTP 200, no contenido
-          for path in /agencia /agencia/vuelo /agencia/vuelo-hotel /panel/premium /panel/premium/alertas /panel/premium/busquedas /panel/premium/watchlist /panel/premium/digest /panel/premium/secret /panel/premium/hotel-watchlist /panel/premium/trip-planner /panel/agencia /premium; do
+          for path in /agencia /agencia/vuelo /agencia/vuelo-hotel /panel/premium /panel/premium/alertas /panel/premium/busquedas /panel/premium/watchlist /panel/premium/digest /panel/premium/secret /panel/premium/hotel-watchlist /panel/premium/trip-planner /panel/agencia /premium /concierge/mis-pedidos; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://tripcazador.com$path")
             if [ "$STATUS" != "200" ]; then
               echo "❌ Smoke FAIL $path → HTTP $STATUS"
@@ -124,4 +124,4 @@ jobs:
             fi
             echo "✅ $path → 200"
           done
-          echo "smoke OK (13 critical routes Premium + Agencia + Watchlist + Digest + Secret + Hotel + TripPlanner)"
+          echo "smoke OK (14 critical routes Premium + Agencia + Watchlist + Digest + Secret + Hotel + TripPlanner + Concierge portal)"

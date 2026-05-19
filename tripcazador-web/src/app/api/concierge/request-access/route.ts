@@ -1,0 +1,127 @@
+/**
+ * /api/concierge/request-access — SSS328 (19 may 2026)
+ *
+ * Magic-link: user introduce email → si tiene pedidos Concierge,
+ * enviamos un email con un link tokenizado a /concierge/mis-pedidos.
+ *
+ * POST { email } → 200 { ok: true, sent: boolean }
+ *
+ * Privacy: SIEMPRE devolvemos 200 ok (no revelamos si el email tiene
+ * cuenta o no). Solo enviamos email si hay pedidos. Defensa contra
+ * enumeración.
+ *
+ * Rate limit: cap simple a 5 req/email/hora (in-memory). Si llegamos
+ * a abuso real, hardenizar con KV.
+ */
+
+import { NextRequest, NextResponse } from "next/server";
+import { hasOrdersForEmail } from "@/lib/concierge_orders_fetch";
+import {
+  issueConciergeAccessToken,
+  CONCIERGE_ACCESS_TTL_SEC,
+} from "@/lib/concierge_access_token";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const SITE_URL = "https://tripcazador.com";
+const RESEND_FROM =
+  process.env.RESEND_FROM || "TripCazador Concierge <alertas@tripcazador.com>";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Rate limit: 5 req por email / hora
+const rateLimit: Map<string, number[]> = new Map();
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
+
+function isRateLimited(email: string, now: number = Date.now()): boolean {
+  const hits = rateLimit.get(email) || [];
+  const fresh = hits.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  if (fresh.length >= RATE_LIMIT_MAX) return true;
+  fresh.push(now);
+  rateLimit.set(email, fresh);
+  return false;
+}
+
+async function sendMagicLink(email: string, token: string): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY || "";
+  if (!apiKey) {
+    console.log(`[concierge/request-access] dormido email=${email} (RESEND_API_KEY no set)`);
+    return false;
+  }
+  const link = `${SITE_URL}/concierge/mis-pedidos?token=${encodeURIComponent(token)}`;
+  const ttlDays = Math.round(CONCIERGE_ACCESS_TTL_SEC / 86400);
+  const html = `<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><title>Tus pedidos Concierge</title></head>
+<body style="margin:0;padding:0;background:#fafafa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111;">
+  <table cellpadding="0" cellspacing="0" style="width:100%;padding:20px 0;"><tr><td align="center">
+    <table cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:14px;padding:24px;">
+      <tr><td>
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#b45309;font-weight:700;">TripCazador · Concierge</div>
+        <h1 style="margin:6px 0 6px 0;font-size:22px;color:#111;">🧳 Tu portal de pedidos</h1>
+        <p style="font-size:14px;color:#555;margin:0 0 20px 0;">
+          Hemos detectado un pedido Concierge con este email. Pulsa el botón para ver el estado actual y descargar tu plan cuando esté listo.
+        </p>
+        <div style="text-align:center;margin:24px 0;">
+          <a href="${link}" style="display:inline-block;background:#f59e0b;color:#000;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;">
+            Ver mis pedidos
+          </a>
+        </div>
+        <p style="font-size:12px;color:#888;margin:20px 0 0 0;">
+          El link expira en ${ttlDays} días. Si no pediste acceso a tu portal, ignora este email — nadie podrá entrar sin tu email + el link.
+        </p>
+      </td></tr>
+    </table>
+  </td></tr></table>
+</body></html>`;
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: RESEND_FROM,
+        to: email,
+        subject: "🧳 Tu portal de pedidos Concierge — TripCazador",
+        html,
+        tags: [{ name: "category", value: "concierge_magic_link" }],
+      }),
+    });
+    return res.ok;
+  } catch (err) {
+    console.error("[concierge/request-access] resend fail:", err);
+    return false;
+  }
+}
+
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  let body: Record<string, unknown> = {};
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
+  }
+
+  const email = String(body.email || "").trim().toLowerCase();
+  if (!EMAIL_RE.test(email)) {
+    return NextResponse.json({ ok: false, error: "email_invalid" }, { status: 400 });
+  }
+
+  if (isRateLimited(email)) {
+    // Devolvemos 200 igualmente para no revelar info (anti-enum)
+    return NextResponse.json({ ok: true, sent: false, rate_limited: true });
+  }
+
+  // Solo enviamos si hay pedidos. Pero respondemos siempre 200 ok
+  // para no revelar si la cuenta existe.
+  const hasOrders = await hasOrdersForEmail(email);
+  let sent = false;
+  if (hasOrders) {
+    const token = issueConciergeAccessToken(email);
+    sent = await sendMagicLink(email, token);
+  }
+
+  return NextResponse.json({ ok: true, sent });
+}

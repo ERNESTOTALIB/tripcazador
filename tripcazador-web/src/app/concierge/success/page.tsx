@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Check, Clock, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Pago confirmado · Concierge €19 — TripCazador",
-  description: "Tu pedido de búsqueda concierge ha sido recibido. Recibirás 3 opciones de vuelo + hotel en 24-48 horas por email.",
+  title: "Pago confirmado · Concierge — TripCazador",
+  description: "Tu pedido de búsqueda concierge ha sido recibido. Recibirás 5 opciones de vuelo + hotel en menos de 24 horas por email.",
   robots: { index: false, follow: false },
 };
 
@@ -47,18 +47,18 @@ export default function ConciergeSuccessPage({
           <div className="flex gap-3">
             <Clock size={20} className="text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-white">En las próximas 24-48 horas</h3>
+              <h3 className="font-semibold text-white">En las próximas 24 horas</h3>
               <p className="text-sm text-gray-400">
-                Aplicamos error fares, codeshare arbitrage y secret deals para tu ruta y fechas.
+                Aplicamos error fares, codeshare arbitrage y secret deals para tu ruta y fechas. Tier Premium €49 (72h) y Pro €99 (5 días) tienen ventanas distintas.
               </p>
             </div>
           </div>
           <div className="flex gap-3">
             <Mail size={20} className="text-cyan-400 shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-white">Recibes 3 opciones por email</h3>
+              <h3 className="font-semibold text-white">Recibes 5 opciones por email</h3>
               <p className="text-sm text-gray-400">
-                Con precios reales, links directos a la aerolínea y al hotel. Reservas tú con tu propia tarjeta.
+                Vuelo + hotel sugerido con precios reales, links directos a la aerolínea y a Booking. Reservas tú con tu propia tarjeta.
               </p>
             </div>
           </div>
@@ -82,6 +82,23 @@ export default function ConciergeSuccessPage({
           </a>{" "}
           mencionando tu pedido {orderId && <span className="font-mono">{orderId}</span>}.
         </p>
+      </div>
+
+      {/* SSS328: portal cliente — track status sin esperar al email */}
+      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5">
+        <h3 className="font-semibold text-white text-base">
+          📋 Sigue el estado de tu pedido
+        </h3>
+        <p className="text-sm text-gray-400 mt-1">
+          Entra a tu portal de pedidos cuando quieras (pending / en curso / entregado).
+          Pediremos tu email + te mandaremos un link de acceso seguro.
+        </p>
+        <Link
+          href="/concierge/mis-pedidos"
+          className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition-colors"
+        >
+          Ir a mi portal de pedidos →
+        </Link>
       </div>
 
       <div className="text-center">

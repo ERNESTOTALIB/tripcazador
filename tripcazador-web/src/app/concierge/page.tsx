@@ -96,7 +96,13 @@ export default function ConciergePage() {
         <div className="flex items-center justify-center gap-6 text-sm text-gray-400 flex-wrap">
           <span className="flex items-center gap-2"><Clock size={14} className="text-amber-400" />24h-5d según tier</span>
           <span className="flex items-center gap-2"><Shield size={14} className="text-emerald-400" />Reembolso si encuentras mejor (Standard+)</span>
-          <span className="flex items-center gap-2"><Mail size={14} className="text-cyan-400" />Entrega por email + PDF</span>
+          <span className="flex items-center gap-2"><Mail size={14} className="text-cyan-400" />Entrega por email + portal cliente</span>
+        </div>
+        <div className="mt-2 text-xs text-gray-500">
+          ¿Ya hiciste un pedido?{" "}
+          <a href="/concierge/mis-pedidos" className="text-amber-400 hover:underline">
+            Ver el estado en tu portal →
+          </a>
         </div>
       </section>
 
