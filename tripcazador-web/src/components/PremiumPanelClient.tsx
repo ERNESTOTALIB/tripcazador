@@ -286,7 +286,7 @@ export function PremiumPanelClient() {
 
       {/* 5 features (4 originales + Watchlist SSS314) */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-white">Tus 5 ventajas Premium</h2>
+        <h2 className="text-xl font-bold text-white">Tus 6 ventajas Premium</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FeatureCard
             icon="🚨"
@@ -337,6 +337,16 @@ export function PremiumPanelClient() {
             href={status.active ? "/panel/premium/watchlist" : "/deals"}
             active={status.active}
             extra="Pulsa &quot;👀 Vigilar este deal&quot; en cualquier deal y elige el threshold (5-30%). Cron diario checkea el precio."
+          />
+          {/* SSS316: Digest semanal personalizado */}
+          <FeatureCard
+            icon="📨"
+            title="Digest semanal Premium"
+            description="Top 5 deals personalizados según tus alertas + búsquedas guardadas, también por email cada domingo 9am."
+            cta={status.active ? "Ver mi digest" : "Cómo funciona"}
+            href={status.active ? "/panel/premium/digest" : "/premium"}
+            active={status.active}
+            extra="Algoritmo personaliza scoring por tus criterios. Empty state si no tienes alertas → te sugiere los chollos top."
           />
         </div>
       </section>

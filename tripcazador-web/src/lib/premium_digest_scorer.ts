@@ -21,6 +21,10 @@ export interface DealLite {
   price_eur?: number;
   cabin?: string;
   airline?: string;
+  /** SSS316: nombre amigable de la aerolínea para el email digest */
+  airline_name?: string;
+  /** SSS316: title-line del deal para el email digest */
+  headline?: string;
   date_out?: string;
   date_ret?: string;
   savings_pct?: number;
