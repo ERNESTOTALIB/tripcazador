@@ -24,6 +24,7 @@ import {
   markTriggered,
   type PriceAlert,
 } from "@/lib/price_alerts_store";
+import { dealMatchesAlert, type DealForAlertMatch } from "@/lib/deal_alert_matcher";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,19 +38,8 @@ function constantTimeEq(a: string, b: string): boolean {
   return m === 0;
 }
 
-interface DealLite {
-  id?: string;
-  origin?: string;
-  destination?: string;
-  price_eur?: number;
-  cabin?: string;
-  date_out?: string;
-  date_ret?: string;
-  airline_name?: string;
-  headline?: string;
-  booking_url?: string;
-  savings_pct?: number;
-}
+// Local alias para retro-compat con el resto del archivo
+type DealLite = DealForAlertMatch;
 
 async function fetchDeals(): Promise<DealLite[]> {
   try {
@@ -62,21 +52,6 @@ async function fetchDeals(): Promise<DealLite[]> {
     /* no-op */
   }
   return [];
-}
-
-export function dealMatchesAlert(deal: DealLite, alert: PriceAlert): boolean {
-  if (!deal.price_eur || deal.price_eur > alert.max_price) return false;
-  // SSS303: origins[] (Premium) prevalece sobre origin
-  if (alert.origins && alert.origins.length > 0) {
-    if (!deal.origin || !alert.origins.includes(deal.origin)) return false;
-  } else if (alert.origin && deal.origin !== alert.origin) {
-    return false;
-  }
-  if (alert.destination && deal.destination !== alert.destination) return false;
-  if (alert.cabin && deal.cabin !== alert.cabin) return false;
-  if (alert.date_min && deal.date_out && deal.date_out < alert.date_min) return false;
-  if (alert.date_max && deal.date_out && deal.date_out > alert.date_max) return false;
-  return true;
 }
 
 async function sendPremiumNotify(alert: PriceAlert, deal: DealLite): Promise<boolean> {

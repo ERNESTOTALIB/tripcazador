@@ -3,7 +3,8 @@
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import { GET, scoreDeal } from "../route";
+import { GET } from "../route";
+import { scoreDeal } from "@/lib/premium_digest_scorer";
 import { createAlert, _clearStore as clearAlerts } from "@/lib/price_alerts_store";
 import { createSavedSearch, _clearStore as clearSearches } from "@/lib/saved_searches_store";
 

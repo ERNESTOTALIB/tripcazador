@@ -5,7 +5,7 @@
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import { createAlert, _clearStore } from "../price_alerts_store";
-import { dealMatchesAlert } from "../../app/api/price-alerts/match-cron-premium/route";
+import { dealMatchesAlert } from "../deal_alert_matcher";
 
 describe("multi-origin alerts SSS303", () => {
   beforeEach(() => _clearStore());

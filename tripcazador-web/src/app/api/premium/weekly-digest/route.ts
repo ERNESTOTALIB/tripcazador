@@ -1,51 +1,29 @@
 /**
- * /api/premium/weekly-digest — SSS304 (18 may 2026)
+ * /api/premium/weekly-digest — SSS304 / fix SSS312 (19 may 2026)
  *
  * Premium-only personalized weekly digest: top 5 deals que matchean
  * las búsquedas guardadas del customer + sus alertas activas.
  *
  * GET ?customer_id=cus_xxx → 200 { digest_week, top_deals[], reasoning }
  *
- * Lógica:
- *  1. Lee búsquedas guardadas del customer (saved_searches_store).
- *  2. Lee alertas activas (price_alerts_store).
- *  3. Fetch /api/deals.
- *  4. Por cada deal calcula match_score:
- *     - +5 si está en max_price de alguna alerta activa
- *     - +3 si origin/destination matchea alguna saved_search
- *     - +1 si cabin coincide con alguna saved_search business/first
- *  5. Devuelve top 5 deals por score, con `why_matched` explicación.
- *
- * Esto es la "vista personalizada" de Premium: free ve los mismos deals
- * que todo el mundo, Premium ve "tus deals" basados en preferencias.
- *
- * Cache: no cache (resultado depende del store del user).
+ * SSS312 FIX: scoreDeal() movido a `lib/premium_digest_scorer.ts`
+ * porque Next.js no permite exports custom desde route.ts (solo HTTP
+ * methods + runtime/dynamic). Tener `export function scoreDeal` aquí
+ * rompía el build de Vercel silenciosamente — workflow reportaba success
+ * pero el deployment final servía el último build válido sin pages
+ * SSS301-310.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { isValidStripeOwnerId } from "@/lib/stripe_id";
 import { listAlertsByCustomer } from "@/lib/price_alerts_store";
 import { listSavedSearches } from "@/lib/saved_searches_store";
+import { scoreDeal, type DealLite } from "@/lib/premium_digest_scorer";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const SITE_URL = "https://tripcazador.com";
-
-interface DealLite {
-  id?: string;
-  origin?: string;
-  destination?: string;
-  city_from?: string;
-  city_to?: string;
-  price_eur?: number;
-  cabin?: string;
-  airline?: string;
-  date_out?: string;
-  date_ret?: string;
-  savings_pct?: number;
-  booking_url?: string;
-}
 
 async function fetchDeals(): Promise<DealLite[]> {
   try {
@@ -58,56 +36,6 @@ async function fetchDeals(): Promise<DealLite[]> {
     /* no-op */
   }
   return [];
-}
-
-export interface PersonalizedDeal extends DealLite {
-  match_score: number;
-  why_matched: string[];
-}
-
-export function scoreDeal(
-  deal: DealLite,
-  alerts: Array<{ origin?: string; destination?: string; max_price: number; cabin?: string; origins?: string[] }>,
-  searches: Array<{ origin?: string; destination?: string; airlines: string[]; cabin: string; max_price?: number }>,
-): PersonalizedDeal {
-  let score = 0;
-  const reasons: string[] = [];
-
-  // Alerts match: precio bajo cap + ruta
-  for (const a of alerts) {
-    if (deal.price_eur && deal.price_eur <= a.max_price) {
-      const originsMatch =
-        a.origins && a.origins.length > 0
-          ? Boolean(deal.origin && a.origins.includes(deal.origin))
-          : !a.origin || deal.origin === a.origin;
-      const destMatch = !a.destination || deal.destination === a.destination;
-      const cabinMatch = !a.cabin || deal.cabin === a.cabin;
-      if (originsMatch && destMatch && cabinMatch) {
-        score += 5;
-        reasons.push(`matchea tu alerta ≤${a.max_price}€`);
-        break; // 1 alerta basta para puntuar
-      }
-    }
-  }
-
-  // Saved searches match: ruta + cabin + airline
-  for (const s of searches) {
-    let hit = false;
-    if (s.origin && deal.origin === s.origin) { score += 3; reasons.push(`origen ${s.origin}`); hit = true; }
-    if (s.destination && deal.destination === s.destination) { score += 3; reasons.push(`destino ${s.destination}`); hit = true; }
-    if (s.airlines.length && deal.airline && s.airlines.includes(deal.airline)) { score += 2; reasons.push(`aerolínea ${deal.airline}`); hit = true; }
-    if (s.cabin !== "any" && deal.cabin === s.cabin) { score += 1; reasons.push(`clase ${s.cabin}`); hit = true; }
-    if (typeof s.max_price === "number" && deal.price_eur && deal.price_eur <= s.max_price) {
-      score += 2; reasons.push(`≤${s.max_price}€ guardado`); hit = true;
-    }
-    if (hit) break;
-  }
-
-  return {
-    ...deal,
-    match_score: score,
-    why_matched: reasons,
-  };
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
@@ -134,7 +62,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     });
   }
 
-  // Si el user no tiene alertas ni searches, devuelve top 5 por savings
   if (activeAlerts.length === 0 && searches.length === 0) {
     const top5 = deals
       .filter((d) => d.price_eur && d.price_eur > 0)

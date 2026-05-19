@@ -7,7 +7,7 @@
  * separadas (no compartimos código entre routes).
  */
 import { describe, it, expect } from "vitest";
-import { dealMatchesAlert } from "../route";
+import { dealMatchesAlert } from "@/lib/deal_alert_matcher";
 
 const SAMPLE_ALERT_PREMIUM = {
   id: "pa_test",
