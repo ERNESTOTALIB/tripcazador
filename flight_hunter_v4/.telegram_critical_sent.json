@@ -1647,6 +1647,22 @@
       "destination": "AHO",
       "price_eur": 40.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e125c3b24a45",
+      "ts": "2026-05-19T20:29:05.188139+00:00",
+      "origin": "IST",
+      "destination": "NAV",
+      "price_eur": 55.2,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5a5fea3d99ef",
+      "ts": "2026-05-19T20:29:05.188139+00:00",
+      "origin": "BCN",
+      "destination": "AHO",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
