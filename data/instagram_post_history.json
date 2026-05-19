@@ -655,5 +655,14 @@
     "city_from": "Barcelona",
     "city_to": "Gdansk",
     "price_eur": 28.99
+  },
+  {
+    "timestamp": 1779163266.9010825,
+    "deal_id": "ryanair_ams_agp_20260818_economy",
+    "origin": "AMS",
+    "destination": "AGP",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Malaga",
+    "price_eur": 38.91
   }
 ]
