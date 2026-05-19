@@ -1583,6 +1583,22 @@
       "destination": "CPH",
       "price_eur": 35.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "89033cdf177a",
+      "ts": "2026-05-19T10:57:35.737648+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 32.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "1610c7b2790e",
+      "ts": "2026-05-19T10:57:35.737648+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 38.48,
+      "classification": "CRÍTICO"
     }
   ]
 }
