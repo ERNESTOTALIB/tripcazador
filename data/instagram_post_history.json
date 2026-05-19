@@ -664,5 +664,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Malaga",
     "price_eur": 38.91
+  },
+  {
+    "timestamp": 1779189970.5921457,
+    "deal_id": "ryanair_lis_rak_20260814_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 17.99
   }
 ]
