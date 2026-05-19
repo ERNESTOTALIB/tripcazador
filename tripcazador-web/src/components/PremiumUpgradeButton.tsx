@@ -14,6 +14,7 @@
 import { useEffect, useRef, useState } from "react";
 import { activateTrial, getPremiumStatus, type PremiumStatus } from "@/lib/premium";
 import { tcTrack, tcTrackOnce } from "@/lib/track_client";
+import { capturePendingReferralFromUrl } from "@/lib/referral_client";
 
 export function PremiumUpgradeButton() {
   const [status, setStatus] = useState<PremiumStatus>({
@@ -26,6 +27,10 @@ export function PremiumUpgradeButton() {
 
   useEffect(() => {
     setStatus(getPremiumStatus());
+    // SSS321: capturar pending referral (?ref=&r=) si llegamos vía link
+    // de referido. Persiste en localStorage para que el redeem post-checkout
+    // sepa quién refirió.
+    capturePendingReferralFromUrl();
     function onChange(e: Event) {
       setStatus((e as CustomEvent).detail);
     }

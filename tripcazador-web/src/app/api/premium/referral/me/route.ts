@@ -41,7 +41,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   return NextResponse.json({
     ok: true,
     code,
-    share_url: `${SITE_URL}/premium?ref=${encodeURIComponent(code)}`,
+    // SSS321: incluir referrer customerId (r=) en el share_url para que
+    // el flujo de redeem post-checkout sepa quién refirió. El customerId
+    // ya es no-secret (cookie tc_premium lo expone para gating UI).
+    share_url: `${SITE_URL}/premium?ref=${encodeURIComponent(code)}&r=${encodeURIComponent(customerId)}`,
     referrals_count: refs.length,
     rewarded_count: rewarded,
     cap: REFERRAL_CAP_PER_CUSTOMER,

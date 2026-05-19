@@ -20,6 +20,7 @@ import { tcTrack } from "@/lib/track_client";
 import { PremiumROIWidget } from "@/components/PremiumROIWidget";
 import { PremiumOnboardingWizard } from "@/components/PremiumOnboardingWizard";
 import { PremiumReferralWidget } from "@/components/PremiumReferralWidget";
+import { tryRedeemPendingReferral } from "@/lib/referral_client";
 
 const SUPPORT_EMAIL = "contacto@tripcazador.com";
 
@@ -49,6 +50,16 @@ export function PremiumPanelClient() {
     window.addEventListener("tc:premium-changed", onChange);
     return () => window.removeEventListener("tc:premium-changed", onChange);
   }, []);
+
+  // SSS321: tras montar y tener customerId Premium, intentar redeem
+  // de cualquier pending referral (capturado en /premium landing).
+  // Es idempotente — si no hay pending o ya se intentó, no-op.
+  useEffect(() => {
+    if (!mounted || !status.active || !status.customerId) return;
+    tryRedeemPendingReferral(status.customerId).catch(() => {
+      /* best effort — los errores ya se manejan internamente */
+    });
+  }, [mounted, status.active, status.customerId]);
 
   // Fetch stats si Premium con customerId
   useEffect(() => {

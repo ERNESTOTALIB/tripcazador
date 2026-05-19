@@ -8,6 +8,7 @@ import {
   redeemReferral,
   listReferralsByReferrer,
   listReferralsByReferred,
+  markReferralRewarded,
   ReferralError,
   REFERRAL_CAP_PER_CUSTOMER,
   _clearStore,
@@ -139,6 +140,34 @@ describe("redeemReferral SSS320", () => {
         code,
       }),
     ).rejects.toThrow(/cap_reached/);
+  });
+
+  it("markReferralRewarded SSS321: setea rewarded_at + idempotente", async () => {
+    const code = deriveCodeFromCustomer(REFERRER);
+    const ref = await redeemReferral({
+      referrer_customer_id: REFERRER,
+      referred_customer_id: REFERRED,
+      code,
+    });
+    expect(ref.rewarded_at).toBeNull();
+
+    const ok1 = await markReferralRewarded(ref.id);
+    expect(ok1).toBe(true);
+    const after = await listReferralsByReferrer(REFERRER);
+    const ts = after[0].rewarded_at;
+    expect(ts).toBeTypeOf("number");
+
+    // Idempotente
+    await new Promise((r) => setTimeout(r, 5));
+    const ok2 = await markReferralRewarded(ref.id);
+    expect(ok2).toBe(true);
+    const after2 = await listReferralsByReferrer(REFERRER);
+    expect(after2[0].rewarded_at).toBe(ts);
+  });
+
+  it("markReferralRewarded SSS321: false si id no existe", async () => {
+    const ok = await markReferralRewarded("rf_doesnotexist");
+    expect(ok).toBe(false);
   });
 
   it("list filtra por referrer y por referred", async () => {

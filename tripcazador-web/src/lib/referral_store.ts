@@ -171,6 +171,22 @@ export async function listReferralsByReferrer(customerId: string): Promise<Refer
   );
 }
 
+/**
+ * Marca un referral como recompensado (ops aplicó el coupon Stripe).
+ * Es idempotente: si ya estaba rewarded devolvemos true sin escribir.
+ * Devuelve false si el id no existe.
+ */
+export async function markReferralRewarded(id: string): Promise<boolean> {
+  const r = await remote("POST", `/referrals/${id}/rewarded`, {});
+  if (r && r.ok) return true;
+  const entry = memoryStore.get(id);
+  if (!entry) return false;
+  if (entry.rewarded_at === null) {
+    entry.rewarded_at = Date.now();
+  }
+  return true;
+}
+
 export async function listReferralsByReferred(customerId: string): Promise<Referral[]> {
   if (!customerId) return [];
   const r = await remote("GET", `/referrals/by-referred/${encodeURIComponent(customerId)}`);

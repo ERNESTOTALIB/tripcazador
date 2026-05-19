@@ -28,6 +28,8 @@ describe("GET /api/premium/referral/me SSS320", () => {
     expect(d.code).toMatch(/^TC-[0-9A-Z]{8}$/);
     expect(d.share_url).toContain(d.code);
     expect(d.share_url).toContain("/premium?ref=");
+    // SSS321: share_url debe incluir referrer customerId
+    expect(d.share_url).toContain(`r=${encodeURIComponent(CUSTOMER)}`);
     expect(d.referrals_count).toBe(0);
     expect(d.rewarded_count).toBe(0);
     expect(d.cap_remaining).toBe(d.cap);
