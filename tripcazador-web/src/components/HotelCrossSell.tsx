@@ -22,6 +22,7 @@
 
 import { Bed, ExternalLink } from "lucide-react";
 import { tcTrack } from "@/lib/track_client";
+import { WatchThisHotelButton } from "@/components/WatchThisHotelButton";
 
 const TP_MARKER = process.env.NEXT_PUBLIC_BOOKING_AID || "714734";
 
@@ -190,8 +191,27 @@ export function HotelCrossSell({
             {t.cta}
             <ExternalLink size={12} />
           </a>
+          {/* SSS323: Premium hotel watch — solo en card variant, ES locale */}
+          {locale === "es" && (iata || cityClean) && (
+            <WatchThisHotelButton
+              city={(iata || cityClean).toUpperCase().slice(0, 4)}
+              cityName={cityClean}
+              defaultDateIn={dateOut}
+              defaultDateOut={
+                dateOut ? addDaysIso(dateOut, nights || 2) : undefined
+              }
+              defaultPpn={price}
+            />
+          )}
         </div>
       </div>
     </aside>
   );
+}
+
+function addDaysIso(iso: string, days: number): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
 }

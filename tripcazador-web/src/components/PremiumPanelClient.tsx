@@ -320,7 +320,7 @@ export function PremiumPanelClient() {
 
       {/* 5 features (4 originales + Watchlist SSS314) */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-white">Tus 7 ventajas Premium</h2>
+        <h2 className="text-xl font-bold text-white">Tus 8 ventajas Premium</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FeatureCard
             icon="🚨"
@@ -391,6 +391,16 @@ export function PremiumPanelClient() {
             href={status.active ? "/panel/premium/secret" : "/premium"}
             active={status.active}
             extra="Hunter detecta error fares → durante 24h SOLO Premium los puede reservar. Después pasan a /deals público. Reserva rápido."
+          />
+          {/* SSS323: Hotel watch vertical paralela */}
+          <FeatureCard
+            icon="🏨"
+            title="Hotel watch · alerta si baja"
+            description="Vigila hoteles concretos: te avisamos si el precio/noche baja el % que decidas. Vertical paralela al watch de vuelos."
+            cta={status.active ? "Mis hotel watches" : "Cómo funciona"}
+            href={status.active ? "/panel/premium/hotel-watchlist" : "/premium"}
+            active={status.active}
+            extra="Desde cualquier landing con cross-sell de Booking pulsa &quot;👀 Vigilar precio&quot;, elige fechas + threshold y cron diario checkea."
           />
         </div>
       </section>
