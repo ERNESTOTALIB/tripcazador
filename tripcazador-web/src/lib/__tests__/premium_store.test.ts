@@ -15,6 +15,8 @@ import {
   upsertPremium,
   deactivateByCustomerId,
   getPremiumByEmail,
+  markCancelScheduled,
+  clearCancelScheduled,
   type PremiumStateEntry,
 } from "../premium_store";
 
@@ -149,6 +151,46 @@ describe("getPremiumByEmail — only returns active", () => {
 
     const u2 = getPremiumByEmail("u2@example.com");
     expect(u2?.customer_id).toBe("cus_2");
+  });
+});
+
+describe("markCancelScheduled + clearCancelScheduled SSS324", () => {
+  it("markCancelScheduled setea cancel_at en entry existente", () => {
+    upsertPremium(entry("schedcancel@example.com", "cus_sc1"));
+    const cancelAt = Date.now() + 15 * 86_400_000;
+    markCancelScheduled("cus_sc1", cancelAt);
+    const g = globalThis as unknown as {
+      __tc_premium_store: { entries: PremiumStateEntry[] };
+    };
+    const raw = g.__tc_premium_store.entries.find((e) => e.customer_id === "cus_sc1");
+    expect(raw?.cancel_at).toBe(cancelAt);
+    expect(raw?.active).toBe(true); // sigue activo hasta cancel_at
+  });
+
+  it("markCancelScheduled no-op si customer no existe (no throw)", () => {
+    expect(() => markCancelScheduled("cus_phantom01", Date.now())).not.toThrow();
+  });
+
+  it("clearCancelScheduled elimina cancel_at (user reactivó)", () => {
+    upsertPremium({
+      ...entry("reactiv@example.com", "cus_r1"),
+      cancel_at: Date.now() + 86_400_000,
+    });
+    clearCancelScheduled("cus_r1");
+    const g = globalThis as unknown as {
+      __tc_premium_store: { entries: PremiumStateEntry[] };
+    };
+    const raw = g.__tc_premium_store.entries.find((e) => e.customer_id === "cus_r1");
+    expect(raw?.cancel_at).toBeUndefined();
+  });
+
+  it("clearCancelScheduled no-op si cancel_at ya no estaba", () => {
+    upsertPremium(entry("normal@example.com", "cus_n1"));
+    expect(() => clearCancelScheduled("cus_n1")).not.toThrow();
+  });
+
+  it("clearCancelScheduled no-op si customer no existe", () => {
+    expect(() => clearCancelScheduled("cus_ghost99")).not.toThrow();
   });
 });
 

@@ -23,8 +23,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   redeemReferral,
+  markReferralRewarded,
   ReferralError,
 } from "@/lib/referral_store";
+import { tryApplyReferralCoupon } from "@/lib/stripe_coupon_applier";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,7 +49,38 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       referred_customer_id: referred,
       code,
     });
-    return NextResponse.json({ ok: true, referral: entry }, { status: 201 });
+
+    // SSS324: tras registrar la pareja, intentar aplicar coupon Stripe a
+    // ambas subs. Si funciona, marcar rewarded_at automáticamente.
+    // No bloquea el redeem si Stripe falla — el redeem ya se hizo,
+    // ops puede aplicar el coupon manual via mark-rewarded admin.
+    let coupon: Awaited<ReturnType<typeof tryApplyReferralCoupon>> | null = null;
+    try {
+      coupon = await tryApplyReferralCoupon({
+        customerIds: [referrer, referred],
+      });
+      if (coupon.attempted && coupon.applied > 0) {
+        await markReferralRewarded(entry.id);
+      }
+    } catch (couponErr) {
+      console.error("[referral/redeem] coupon apply error:", couponErr);
+    }
+
+    return NextResponse.json(
+      {
+        ok: true,
+        referral: entry,
+        coupon: coupon
+          ? {
+              attempted: coupon.attempted,
+              applied: coupon.applied,
+              skipped: coupon.skipped,
+              // errors NO expuestos al cliente (pueden incluir info Stripe sensible)
+            }
+          : { attempted: false, applied: 0, skipped: 0 },
+      },
+      { status: 201 },
+    );
   } catch (e) {
     if (e instanceof ReferralError) {
       // 409 para conflictos lógicos (ya usado, self, cap), 400 para invalidación

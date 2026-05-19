@@ -20,6 +20,21 @@ function postReq(body: unknown): NextRequest {
 describe("POST /api/premium/referral/redeem SSS320", () => {
   beforeEach(() => _clearStore());
 
+  it("201 incluye campo coupon SSS324", async () => {
+    const code = deriveCodeFromCustomer(REFERRER);
+    const res = await POST(
+      postReq({
+        referrer_customer_id: REFERRER,
+        referred_customer_id: REFERRED,
+        code,
+      }),
+    );
+    expect(res.status).toBe(201);
+    const d = await res.json();
+    expect(d.coupon).toBeDefined();
+    expect(d.coupon.attempted).toBe(false); // sin envs Stripe → no se intentó
+  });
+
   it("201 crea referral con datos válidos", async () => {
     const code = deriveCodeFromCustomer(REFERRER);
     const res = await POST(

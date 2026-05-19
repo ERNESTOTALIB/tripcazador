@@ -20,6 +20,10 @@ export interface PremiumStateEntry {
   expires_at?: number;
   source: "stripe";
   updated_at: number;
+  /** SSS324: marca cuando el user pulsó "cancelar" en Stripe portal — sub
+   *  sigue activa hasta cancel_at, después se llamará al webhook
+   *  subscription.deleted. Útil para winback "antes de que te vayas". */
+  cancel_at?: number;
 }
 
 const store: { entries: PremiumStateEntry[] } = (
@@ -44,6 +48,44 @@ export function deactivateByCustomerId(customerId: string): void {
   if (idx >= 0) {
     store.entries[idx] = { ...store.entries[idx], active: false, updated_at: Date.now() };
   }
+}
+
+/**
+ * SSS324: marca el customer como "cancelará al final del periodo" sin
+ * desactivarlo todavía. El user sigue siendo Premium hasta cancel_at.
+ * Cuando llegue el momento Stripe emitirá subscription.deleted y el
+ * webhook llamará deactivateByCustomerId.
+ */
+export function markCancelScheduled(customerId: string, cancelAt: number | undefined): void {
+  const idx = store.entries.findIndex((e) => e.customer_id === customerId);
+  if (idx >= 0) {
+    store.entries[idx] = {
+      ...store.entries[idx],
+      cancel_at: cancelAt,
+      updated_at: Date.now(),
+    };
+  }
+}
+
+/**
+ * SSS324: cuando el user reactiva la sub via portal Stripe
+ * (cancel_at_period_end=false), limpiamos cancel_at del store local.
+ */
+export function clearCancelScheduled(customerId: string): void {
+  const idx = store.entries.findIndex((e) => e.customer_id === customerId);
+  if (idx >= 0) {
+    const entry = store.entries[idx];
+    if (entry.cancel_at !== undefined) {
+      const updated = { ...entry, updated_at: Date.now() } as PremiumStateEntry;
+      delete updated.cancel_at;
+      store.entries[idx] = updated;
+    }
+  }
+}
+
+/** Test-only helper. */
+export function _clearStore(): void {
+  store.entries.length = 0;
 }
 
 export function getPremiumByEmail(email: string): PremiumStateEntry | null {

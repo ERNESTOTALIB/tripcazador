@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { upsertPremium, deactivateByCustomerId } from "@/lib/premium_store";
+import {
+  upsertPremium,
+  deactivateByCustomerId,
+  markCancelScheduled,
+  clearCancelScheduled,
+} from "@/lib/premium_store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -67,6 +72,10 @@ interface StripeEventPayload {
       subscription?: string;
       current_period_end?: number;
       metadata?: Record<string, string>;
+      // SSS324: campos de subscription.updated
+      cancel_at_period_end?: boolean;
+      cancel_at?: number; // seconds epoch
+      status?: string;
     };
   };
 }
@@ -113,6 +122,19 @@ export async function POST(req: NextRequest) {
     const customerId = String(obj?.customer || "");
     if (customerId) {
       deactivateByCustomerId(customerId);
+    }
+  } else if (event.type === "customer.subscription.updated") {
+    // SSS324: capturar el "cancel scheduled" para mostrar warning en panel
+    // y poder enviar email "antes de que te vayas" antes de la expiración.
+    // El sub ID en este evento es obj.id (no obj.subscription).
+    const customerId = String(obj?.customer || "");
+    if (customerId) {
+      if (obj?.cancel_at_period_end === true && obj?.cancel_at) {
+        markCancelScheduled(customerId, obj.cancel_at * 1000);
+      } else if (obj?.cancel_at_period_end === false) {
+        // User reactivó la sub
+        clearCancelScheduled(customerId);
+      }
     }
   }
 

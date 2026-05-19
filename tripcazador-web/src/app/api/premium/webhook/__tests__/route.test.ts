@@ -196,6 +196,101 @@ describe("/api/premium/webhook — happy path events", () => {
   });
 });
 
+describe("/api/premium/webhook — SSS324 subscription.updated", () => {
+  it("200 + marca cancel scheduled cuando cancel_at_period_end=true", async () => {
+    // Limpiar store antes
+    const storeMod = await import("@/lib/premium_store");
+    storeMod._clearStore?.();
+    storeMod.upsertPremium({
+      email: "tocancel@example.com",
+      customer_id: "cus_ToCancel001",
+      subscription_id: "sub_X",
+      active: true,
+      expires_at: Date.now() + 30 * 86400000,
+      source: "stripe",
+      updated_at: Date.now(),
+    });
+
+    const POST = await importPost();
+    const cancelAtSec = Math.floor(Date.now() / 1000) + 15 * 86400;
+    const body = makeEvent("customer.subscription.updated", {
+      id: "sub_X",
+      customer: "cus_ToCancel001",
+      cancel_at_period_end: true,
+      cancel_at: cancelAtSec,
+    });
+    const ts = Math.floor(Date.now() / 1000);
+    const sig = signEvent(body, ts, WEBHOOK_SECRET);
+    const req = buildReq(body, sig);
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+
+    const g = globalThis as unknown as {
+      __tc_premium_store: {
+        entries: Array<{
+          customer_id: string;
+          cancel_at?: number;
+          active: boolean;
+        }>;
+      };
+    };
+    const raw = g.__tc_premium_store.entries.find(
+      (e) => e.customer_id === "cus_ToCancel001",
+    );
+    expect(raw?.cancel_at).toBe(cancelAtSec * 1000);
+    expect(raw?.active).toBe(true);
+  });
+
+  it("200 + clear cancel scheduled cuando cancel_at_period_end=false (reactivó)", async () => {
+    const storeMod = await import("@/lib/premium_store");
+    storeMod._clearStore?.();
+    storeMod.upsertPremium({
+      email: "reactivated@example.com",
+      customer_id: "cus_React001",
+      subscription_id: "sub_R",
+      active: true,
+      expires_at: Date.now() + 30 * 86400000,
+      cancel_at: Date.now() + 86400000,
+      source: "stripe",
+      updated_at: Date.now(),
+    });
+
+    const POST = await importPost();
+    const body = makeEvent("customer.subscription.updated", {
+      id: "sub_R",
+      customer: "cus_React001",
+      cancel_at_period_end: false,
+    });
+    const ts = Math.floor(Date.now() / 1000);
+    const sig = signEvent(body, ts, WEBHOOK_SECRET);
+    const req = buildReq(body, sig);
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+
+    const g = globalThis as unknown as {
+      __tc_premium_store: { entries: Array<{ customer_id: string; cancel_at?: number }> };
+    };
+    const raw = g.__tc_premium_store.entries.find(
+      (e) => e.customer_id === "cus_React001",
+    );
+    expect(raw?.cancel_at).toBeUndefined();
+  });
+
+  it("200 sin tocar state cuando subscription.updated sin cancel info", async () => {
+    const POST = await importPost();
+    const body = makeEvent("customer.subscription.updated", {
+      id: "sub_noChange",
+      customer: "cus_NoChange01",
+      // sin cancel_at_period_end
+    });
+    const ts = Math.floor(Date.now() / 1000);
+    const sig = signEvent(body, ts, WEBHOOK_SECRET);
+    const req = buildReq(body, sig);
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  });
+});
+
 describe("/api/premium/webhook — JSON validation tras signature", () => {
   it("400 si body es JSON inválido pero signature válida", async () => {
     const POST = await importPost();
