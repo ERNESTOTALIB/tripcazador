@@ -324,6 +324,16 @@ export function PremiumPanelClient() {
             external
             onClick={() => tcTrack("premium_support_click", { customerId: status.customerId || "" })}
           />
+          {/* SSS314: Watchlist — vigilar deals específicos */}
+          <FeatureCard
+            icon="👀"
+            title="Watch deals · alerta si baja"
+            description="Vigila deals concretos: te avisamos por email cuando el precio baje el % que tú decidas."
+            cta={status.active ? "Mis watches" : "Cómo funciona"}
+            href={status.active ? "/panel/premium/watchlist" : "/deals"}
+            active={status.active}
+            extra="Pulsa &quot;👀 Vigilar este deal&quot; en cualquier deal y elige el threshold (5-30%). Cron diario checkea el precio."
+          />
         </div>
       </section>
 

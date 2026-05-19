@@ -20,6 +20,7 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { PriceHistoryChart } from "@/components/PriceHistoryChart";
 import { PremiumPriceHistoryChart } from "@/components/PremiumPriceHistoryChart";
 import { PremiumPricePredictorCard } from "@/components/PremiumPricePredictorCard";
+import { WatchThisDealButton } from "@/components/WatchThisDealButton";
 import { HotelCrossSell } from "@/components/HotelCrossSell";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { ConciergeInlineCTA } from "@/components/ConciergeInlineCTA";
@@ -399,6 +400,18 @@ export default async function DealDetailPage({
         cabin={deal.cabin || "economy"}
         currentPrice={deal.price_eur}
         dateOut={deal.date_out || null}
+      />
+
+      {/* ─────────── Watch this deal button (SSS314) — Premium ─────────── */}
+      <WatchThisDealButton
+        dealId={deal.id}
+        origin={deal.origin}
+        destination={deal.destination}
+        priceEur={deal.price_eur}
+        headline={deal.headline}
+        airlineName={deal.airline_name || deal.airline}
+        dateOut={deal.date_out || null}
+        dateRet={deal.date_ret || null}
       />
 
       {/* ─────────── Mapa (si hay coordenadas) ─────────── */}
