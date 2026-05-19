@@ -464,7 +464,7 @@ export default async function DealDetailPage({
         variant="banner"
         highlightTier="standard"
         title={`🧳 ¿Quieres que te organice el viaje a ${deal.city_to || deal.country_to}?`}
-        subtitle={`Por €19 te entrego 5 opciones de vuelo + hotel sugerido + tips del destino en 48h. Garantía €100+ ahorro.`}
+        subtitle={`Por €19 te entrego 5 opciones de vuelo + hotel sugerido + tips del destino en 24h. Si encuentras una opción mejor en otra plataforma, te devolvemos los €19.`}
       />
 
       {/* ─────────── Deals similares ─────────── */}

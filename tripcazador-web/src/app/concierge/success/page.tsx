@@ -65,9 +65,9 @@ export default function ConciergeSuccessPage({
           <div className="flex gap-3">
             <Check size={20} className="text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-white">Garantía €100+ ahorro</h3>
+              <h3 className="font-semibold text-white">Garantía &quot;opción mejor&quot;</h3>
               <p className="text-sm text-gray-400">
-                Si las 3 opciones no ahorran al menos €100 vs Skyscanner/Kayak/Expedia, te devolvemos los €19. Sin preguntas.
+                Si encuentras una opción mejor en otra plataforma (Skyscanner / Kayak / Expedia / Google Flights) en las 72h tras la entrega, te devolvemos los €19. Manda captura a soporte.
               </p>
             </div>
           </div>

@@ -101,7 +101,7 @@ export function ConciergeInlineCTA({
           </div>
           <div className="text-xs text-gray-300 mt-1">
             {subtitle ||
-              `Servicio Concierge: te entrego ${tier.name === "Standard" ? "5 opciones + hotel sugerido" : "el plan completo"} en ${tier.hours}h. Garantía €100+ ahorro o reembolso.`}
+              `Servicio Concierge: te entrego ${tier.name === "Standard" ? "5 opciones + hotel sugerido" : "el plan completo"} en ${tier.hours}h. Si encuentras una opción mejor en otra plataforma, te devolvemos los €${tier.price}.`}
           </div>
         </div>
         <button
@@ -128,7 +128,7 @@ export function ConciergeInlineCTA({
           </h3>
           <p className="text-sm text-gray-300 mt-1">
             {subtitle ||
-              `Servicio Concierge ${tier.name}: 5 opciones rankeadas + hotel sugerido + tips del destino, entregado en ${tier.hours}h por email. Garantía €100+ de ahorro o reembolso.`}
+              `Servicio Concierge ${tier.name}: 5 opciones rankeadas + hotel sugerido + tips del destino, entregado en ${tier.hours}h por email. Si encuentras una opción mejor en otra plataforma, te devolvemos los €${tier.price}.`}
           </p>
           <div className="mt-4 flex items-center gap-3 flex-wrap">
             <button

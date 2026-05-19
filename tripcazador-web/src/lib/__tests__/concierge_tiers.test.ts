@@ -201,8 +201,16 @@ describe("revenue invariants (precio matriz)", () => {
 
   it("delivery_label coherente con delivery_hours", () => {
     expect(CONCIERGE_TIERS.express.delivery_label).toContain("24");
-    expect(CONCIERGE_TIERS.standard.delivery_label).toContain("48");
+    // SSS327: standard bajó de 48h → 24h (match velocidad express con mejor servicio)
+    expect(CONCIERGE_TIERS.standard.delivery_label).toContain("24");
+    expect(CONCIERGE_TIERS.standard.delivery_hours).toBe(24);
     expect(CONCIERGE_TIERS.premium.delivery_label).toContain("72");
     expect(CONCIERGE_TIERS.pro.delivery_hours).toBe(120);
+  });
+
+  it("SSS327 standard guarantee menciona 'opción mejor'", () => {
+    const bullets = CONCIERGE_TIERS.standard.bullets.join(" ").toLowerCase();
+    expect(bullets).toContain("opción mejor");
+    expect(bullets).toContain("devolvemos");
   });
 });

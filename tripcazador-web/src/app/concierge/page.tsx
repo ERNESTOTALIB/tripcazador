@@ -8,7 +8,7 @@ import { CONCIERGE_TIER_IDS, CONCIERGE_TIERS } from "@/lib/concierge_tiers";
 export const metadata: Metadata = {
   title: "Agencia online TripCazador — 4 niveles desde €9 hasta €99",
   description:
-    "Agencia de viajes online personalizada en 4 niveles: Express (€9·24h), Standard (€19·48h), Premium (€49·72h) y Pro (€99·5d). Búsqueda manual, error fares, multi-ruta y soporte WhatsApp.",
+    "Agencia de viajes online personalizada en 4 niveles: Express (€9·24h), Standard (€19·24h con garantía 'opción mejor'), Premium (€49·72h) y Pro (€99·5d). Búsqueda manual, error fares, multi-ruta y soporte WhatsApp.",
   alternates: { canonical: "/concierge" },
 };
 
@@ -29,7 +29,7 @@ const FEATURE_MATRIX: Array<{
   { feature: "Nº opciones entregadas", express: "3", standard: "5", premium: "5+", pro: "10+" },
   { feature: "Error fares + codeshare arbitrage", express: false, standard: true, premium: true, pro: true },
   { feature: "Tips destino (zona, transporte)", express: false, standard: true, premium: true, pro: true },
-  { feature: "Garantía €100+ ahorro", express: false, standard: true, premium: true, pro: true },
+  { feature: "Garantía 'opción mejor' (reembolso si encuentras algo mejor)", express: false, standard: true, premium: true, pro: true },
   { feature: "Hotel sugerido", express: false, standard: "Top 3", premium: "Reservable", pro: "Reservado" },
   { feature: "Multi-ruta (open-jaw, stopover)", express: false, standard: false, premium: true, pro: true },
   { feature: "Asesoría visados / seguros", express: false, standard: false, premium: true, pro: true },
@@ -37,7 +37,7 @@ const FEATURE_MATRIX: Array<{
   { feature: "Actividades / tours coordinados", express: false, standard: false, premium: false, pro: true },
   { feature: "Itinerario PDF día-a-día", express: false, standard: false, premium: false, pro: true },
   { feature: "Soporte WhatsApp post-entrega", express: false, standard: false, premium: false, pro: "7 días" },
-  { feature: "Tiempo de entrega", express: "24h", standard: "48h", premium: "72h", pro: "5 días" },
+  { feature: "Tiempo de entrega", express: "24h", standard: "24h", premium: "72h", pro: "5 días" },
 ];
 
 export default function ConciergePage() {
@@ -95,7 +95,7 @@ export default function ConciergePage() {
         </p>
         <div className="flex items-center justify-center gap-6 text-sm text-gray-400 flex-wrap">
           <span className="flex items-center gap-2"><Clock size={14} className="text-amber-400" />24h-5d según tier</span>
-          <span className="flex items-center gap-2"><Shield size={14} className="text-emerald-400" />Garantía €100+ ahorro (Standard+)</span>
+          <span className="flex items-center gap-2"><Shield size={14} className="text-emerald-400" />Reembolso si encuentras mejor (Standard+)</span>
           <span className="flex items-center gap-2"><Mail size={14} className="text-cyan-400" />Entrega por email + PDF</span>
         </div>
       </section>

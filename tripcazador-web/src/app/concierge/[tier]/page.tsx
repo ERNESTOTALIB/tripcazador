@@ -51,7 +51,7 @@ const TIER_CONTENT: Record<string, TierContent> = {
     ],
   },
   standard: {
-    hero: "El plan sweet-spot: 5 opciones rankeadas + hotel sugerido + tips destino en 48h. Garantía €100+ ahorro o reembolso completo.",
+    hero: "El plan sweet-spot: 5 opciones rankeadas vuelo + hotel sugerido + tips destino en 24h. Si encuentras una opción mejor en otra plataforma, te devolvemos los €19.",
     whoFor: [
       "Vas a viajar de verdad — no solo curioseas precios",
       "Valoras tiempo > €19 (sweet-spot precio/calidad)",
@@ -65,12 +65,12 @@ const TIER_CONTENT: Record<string, TierContent> = {
     process: [
       { step: 1, title: "Pago seguro €19", description: "Stripe Checkout — único cargo, sin suscripción" },
       { step: 2, title: "Formulario de viaje", description: "Origen, destino, fechas, presupuesto, viajeros, hotel star preference" },
-      { step: 3, title: "Cazador trabaja 48h", description: "Búsqueda manual error fares + codeshare arbitrage + hotel Booking" },
+      { step: 3, title: "Cazador trabaja en <24h", description: "Búsqueda manual error fares + codeshare arbitrage + hotel Booking" },
       { step: 4, title: "Email con plan completo", description: "5 opciones vuelo + 3 hoteles + tips zona/transporte/packing" },
     ],
-    guarantee: "Si nuestro plan no te ahorra al menos €100 sobre el booking que harías por tu cuenta (con captura de tu búsqueda como prueba), te devolvemos los €19 sin preguntas. Garantía Standard.",
+    guarantee: "Si nuestro plan no te convence porque encuentras una opción mejor en otra plataforma (Skyscanner, Kayak, Google Flights…) en las 72h siguientes a la entrega, te devolvemos los €19 sin preguntas. Garantía 'opción mejor'.",
     faq: [
-      { q: "¿Qué pasa si encuentro mejor precio por mi cuenta?", a: "Si tu captura demuestra que ofreciste menos de €100 de ahorro vs nuestro plan, te devolvemos el pago." },
+      { q: "¿Qué cuenta como 'opción mejor'?", a: "Mismo origen/destino/fechas/cabina con coste total más bajo (vuelo + hotel si aplicable). Manda captura de la otra plataforma a soporte@tripcazador.com y procesamos el reembolso en 48h." },
       { q: "¿Funciona para vuelos internacionales largos?", a: "Sí, Standard funciona para cualquier ruta. Pero para destinos exóticos / multi-país nuestro Premium €49 es más adecuado." },
       { q: "¿Reservas vosotros el hotel?", a: "En Standard te sugerimos 3 opciones rankeadas — tú reservas con tu cuenta Booking. En Premium (€49) ya viene reservable con mejor precio verificado." },
     ],
