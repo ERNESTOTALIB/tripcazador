@@ -61,6 +61,21 @@ export function PremiumPanelClient() {
     });
   }, [mounted, status.active, status.customerId]);
 
+  // SSS322: heartbeat anti-churn — registra last_seen al abrir el panel.
+  // El cron winback diario usa este timestamp para detectar Premium
+  // inactivos >14d y enviar email re-engagement. Fire-and-forget.
+  useEffect(() => {
+    if (!mounted || !status.active || !status.customerId) return;
+    fetch("/api/premium/heartbeat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ customer_id: status.customerId }),
+      keepalive: true,
+    }).catch(() => {
+      /* best effort — no afecta UX */
+    });
+  }, [mounted, status.active, status.customerId]);
+
   // Fetch stats si Premium con customerId
   useEffect(() => {
     if (!status.active || !status.customerId) return;
