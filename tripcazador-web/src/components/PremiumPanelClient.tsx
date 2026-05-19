@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getPremiumStatus, PREMIUM_FEATURES, type PremiumStatus } from "@/lib/premium";
 import { tcTrack } from "@/lib/track_client";
+import { PremiumROIWidget } from "@/components/PremiumROIWidget";
 
 const SUPPORT_EMAIL = "contacto@tripcazador.com";
 
@@ -280,9 +281,12 @@ export function PremiumPanelClient() {
         </section>
       )}
 
-      {/* 4 features */}
+      {/* SSS315: ROI dashboard "Has ahorrado X€" — pieza clave retención */}
+      {status.active && <PremiumROIWidget />}
+
+      {/* 5 features (4 originales + Watchlist SSS314) */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-white">Tus 4 ventajas Premium</h2>
+        <h2 className="text-xl font-bold text-white">Tus 5 ventajas Premium</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FeatureCard
             icon="🚨"

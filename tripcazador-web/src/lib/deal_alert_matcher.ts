@@ -10,6 +10,8 @@
 import type { PriceAlert } from "@/lib/price_alerts_store";
 
 export interface DealForAlertMatch {
+  /** SSS315: id opcional para tracking en savings_log */
+  id?: string;
   origin?: string;
   destination?: string;
   price_eur?: number;

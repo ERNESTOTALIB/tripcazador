@@ -25,6 +25,7 @@ import {
   type PriceAlert,
 } from "@/lib/price_alerts_store";
 import { dealMatchesAlert, type DealForAlertMatch } from "@/lib/deal_alert_matcher";
+import { logSavings } from "@/lib/savings_log_store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -133,6 +134,23 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     if (ok) {
       await markTriggered(alert.id);
       sent += 1;
+      // SSS315: registrar savings = max_price - price (cap a >=0). El user
+      // se ahorró respecto a su techo declarado, que es la mejor proxy de
+      // valor que tenemos sin tener su precio histórico personal.
+      if (alert.customerId && best.price_eur !== undefined) {
+        const savings = Math.max(0, alert.max_price - best.price_eur);
+        if (savings > 0) {
+          await logSavings({
+            customerId: alert.customerId,
+            email: alert.email,
+            deal_id: best.id ?? `${best.origin}-${best.destination}`,
+            origin: best.origin,
+            destination: best.destination,
+            savings_eur: savings,
+            source: "alert",
+          });
+        }
+      }
     }
   }
 

@@ -23,6 +23,7 @@ import {
   type WatchlistEntry,
 } from "@/lib/watchlist_store";
 import { pickCurrentPrice, type DealLite } from "@/lib/watchlist_observation";
+import { logSavings } from "@/lib/savings_log_store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -140,6 +141,20 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       if (ok) {
         await markWatchTriggered(watch.id, observation.price);
         sent += 1;
+        // SSS315: savings = price_when_added - observed (siempre > 0
+        // porque shouldTrigger ya verificó drop >= threshold)
+        const savings = watch.price_when_added - observation.price;
+        if (savings > 0) {
+          await logSavings({
+            customerId: watch.customerId,
+            email: watch.email,
+            deal_id: watch.deal_id,
+            origin: watch.origin,
+            destination: watch.destination,
+            savings_eur: savings,
+            source: "watch",
+          });
+        }
       }
     }
   }
