@@ -19,6 +19,7 @@ import { getPremiumStatus, PREMIUM_FEATURES, type PremiumStatus } from "@/lib/pr
 import { tcTrack } from "@/lib/track_client";
 import { PremiumROIWidget } from "@/components/PremiumROIWidget";
 import { PremiumOnboardingWizard } from "@/components/PremiumOnboardingWizard";
+import { PremiumReferralWidget } from "@/components/PremiumReferralWidget";
 
 const SUPPORT_EMAIL = "contacto@tripcazador.com";
 
@@ -287,6 +288,9 @@ export function PremiumPanelClient() {
 
       {/* SSS315: ROI dashboard "Has ahorrado X€" — pieza clave retención */}
       {status.active && <PremiumROIWidget />}
+
+      {/* SSS320: Referral 1 mes gratis */}
+      {status.active && <PremiumReferralWidget />}
 
       {/* 5 features (4 originales + Watchlist SSS314) */}
       <section className="space-y-4">
