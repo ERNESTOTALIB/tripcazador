@@ -1631,6 +1631,22 @@
       "destination": "KRK",
       "price_eur": 17.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "cb778cf439fd",
+      "ts": "2026-05-19T18:56:58.842573+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 31.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ed4bbbe88e3b",
+      "ts": "2026-05-19T18:56:58.842573+00:00",
+      "origin": "MAD",
+      "destination": "AHO",
+      "price_eur": 40.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
