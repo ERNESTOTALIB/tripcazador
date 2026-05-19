@@ -1599,6 +1599,22 @@
       "destination": "TGD",
       "price_eur": 38.48,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "78b3a4c6163a",
+      "ts": "2026-05-19T13:55:10.287564+00:00",
+      "origin": "DUB",
+      "destination": "BDS",
+      "price_eur": 48.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c83db534f1e8",
+      "ts": "2026-05-19T13:55:10.287564+00:00",
+      "origin": "DUB",
+      "destination": "BOJ",
+      "price_eur": 63.69,
+      "classification": "CRÍTICO"
     }
   ]
 }
