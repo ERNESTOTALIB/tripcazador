@@ -691,5 +691,14 @@
     "city_from": "Barcelona",
     "city_to": "Alghero",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1779225858.6288652,
+    "deal_id": "ryanair_stn_bfs_20260825_economy",
+    "origin": "STN",
+    "destination": "BFS",
+    "city_from": "Londres Stansted",
+    "city_to": "Belfast International",
+    "price_eur": 19.87
   }
 ]
