@@ -44,6 +44,41 @@ export async function tryApplyReferralCoupon(
   }
 
   const stripe = new Stripe(secretKey, { apiVersion: "2025-02-24.acacia" });
+
+  // SSS329 M1: validar la SHAPE del coupon ANTES de aplicarlo, para
+  // que un misconfig en Dashboard no cause descuentos catastróficos
+  // (e.g. duration:forever + percent_off:100 → Premium gratis para
+  // siempre cada vez que se redime).
+  // Reglas: solo aceptamos duration "once" o "repeating" con
+  // duration_in_months ≤ 3. percent_off ≤ 100 (cap obvio). amount_off
+  // ≤ 50€ (=5000 cents) para evitar coupons grandes.
+  try {
+    const coupon = await stripe.coupons.retrieve(couponId);
+    if (coupon.duration === "forever") {
+      console.error(`[stripe_coupon_applier] REJECTED coupon ${couponId}: duration=forever (peligroso)`);
+      return { attempted: true, applied: 0, skipped: input.customerIds.length, errors: ["coupon_duration_forever_rejected"] };
+    }
+    if (coupon.duration === "repeating" && (coupon.duration_in_months ?? 0) > 3) {
+      console.error(`[stripe_coupon_applier] REJECTED coupon ${couponId}: duration_in_months=${coupon.duration_in_months} > 3`);
+      return { attempted: true, applied: 0, skipped: input.customerIds.length, errors: ["coupon_duration_too_long_rejected"] };
+    }
+    if (typeof coupon.percent_off === "number" && coupon.percent_off > 100) {
+      // No debería pasar (Stripe cap), pero defensa
+      return { attempted: true, applied: 0, skipped: input.customerIds.length, errors: ["coupon_percent_off_invalid"] };
+    }
+    if (typeof coupon.amount_off === "number" && coupon.amount_off > 5000) {
+      console.error(`[stripe_coupon_applier] REJECTED coupon ${couponId}: amount_off=${coupon.amount_off} > 5000 cents`);
+      return { attempted: true, applied: 0, skipped: input.customerIds.length, errors: ["coupon_amount_off_too_high_rejected"] };
+    }
+    if (!coupon.valid) {
+      return { attempted: true, applied: 0, skipped: input.customerIds.length, errors: ["coupon_not_valid"] };
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[stripe_coupon_applier] retrieve fail: ${msg}`);
+    return { attempted: true, applied: 0, skipped: input.customerIds.length, errors: [`retrieve_failed: ${msg.slice(0, 80)}`] };
+  }
+
   let applied = 0;
   let skipped = 0;
   const errors: string[] = [];

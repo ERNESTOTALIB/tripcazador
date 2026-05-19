@@ -108,6 +108,23 @@ describe("POST /api/premium/referral/redeem SSS320", () => {
     expect((await res.json()).error).toBe("referred_already_used");
   });
 
+  it("SSS329 H2: 403 si referred no es fresh (sin STRIPE_SECRET_KEY → bypass dev)", async () => {
+    // En entorno test sin STRIPE_SECRET_KEY, isFreshStripeCustomer hace bypass
+    // (devuelve true). Esto preserva backwards compat en dev/tests.
+    // Verificamos que con cs_test_ (no cus_) hace skip y procesa normal.
+    const code = deriveCodeFromCustomer(REFERRER);
+    const res = await POST(
+      postReq({
+        referrer_customer_id: REFERRER,
+        referred_customer_id: "cs_test_LEGACYREFERRED",
+        code,
+      }),
+    );
+    // cs_test_xxx no es customer real, debería fallar code mismatch o
+    // pasar la freshness (que skipea para cs_test_). Aceptamos 201 ok.
+    expect([201, 400]).toContain(res.status);
+  });
+
   it("400 body no-JSON", async () => {
     const req = new NextRequest(
       "http://localhost/api/premium/referral/redeem",

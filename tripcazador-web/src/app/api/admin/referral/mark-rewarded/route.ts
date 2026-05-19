@@ -15,6 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import crypto from "crypto";
 import { markReferralRewarded } from "@/lib/referral_store";
 import { COOKIE_KEY, verifyToken } from "@/lib/panel_auth";
 
@@ -34,7 +35,16 @@ async function isAuthed(req: NextRequest): Promise<boolean> {
   const adminToken = process.env.ADMIN_TOKEN || "";
   const provided = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   if (!adminToken) return false; // si no hay env, no permitir bearer
-  return provided === adminToken;
+  // SSS329 M4: constant-time compare para evitar timing oracle
+  if (provided.length !== adminToken.length) return false;
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(provided, "utf8"),
+      Buffer.from(adminToken, "utf8"),
+    );
+  } catch {
+    return false;
+  }
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {

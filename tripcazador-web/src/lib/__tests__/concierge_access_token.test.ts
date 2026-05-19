@@ -59,10 +59,30 @@ describe("ConciergeAccessToken SSS328", () => {
     ).toBeNull();
   });
 
-  it("rechaza token expirado (>7d)", () => {
+  it("rechaza token expirado (>TTL)", () => {
     const token = issueConciergeAccessToken("user@example.com");
     const futureNow = Date.now() + (CONCIERGE_ACCESS_TTL_SEC + 60) * 1000;
     expect(verifyConciergeAccessToken(token, futureNow)).toBeNull();
+  });
+
+  it("SSS329 M3: TTL ahora es 3 días (reducido de 7d)", () => {
+    expect(CONCIERGE_ACCESS_TTL_SEC).toBe(3 * 24 * 60 * 60);
+  });
+
+  it("SSS329: tamper en payload (cambiar email) invalida sig", () => {
+    const tokenA = issueConciergeAccessToken("alice@example.com");
+    const tokenB = issueConciergeAccessToken("bob@example.com");
+    // Mezclar payload de A con sig de B → invalid
+    const [emailA, tsA] = tokenA.split(":");
+    const sigB = tokenB.split(":")[2];
+    const tampered = `${emailA}:${tsA}:${sigB}`;
+    expect(verifyConciergeAccessToken(tampered)).toBeNull();
+  });
+
+  it("SSS329: token con sig length wrong → null", () => {
+    const t = issueConciergeAccessToken("user@example.com");
+    const truncated = t.slice(0, t.length - 10);
+    expect(verifyConciergeAccessToken(truncated)).toBeNull();
   });
 
   it("acepta token a punto de expirar pero válido", () => {

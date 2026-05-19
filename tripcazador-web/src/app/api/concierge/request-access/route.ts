@@ -109,19 +109,24 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: "email_invalid" }, { status: 400 });
   }
 
-  if (isRateLimited(email)) {
-    // Devolvemos 200 igualmente para no revelar info (anti-enum)
-    return NextResponse.json({ ok: true, sent: false, rate_limited: true });
+  // SSS329 H1: SIEMPRE devolvemos la MISMA shape para evitar email enumeration.
+  // No exponemos `sent`, `rate_limited`, ni nada que revele si la cuenta existe.
+  // El envío del email es fire-and-forget para que el timing tampoco varíe.
+  const limited = isRateLimited(email);
+  if (!limited) {
+    // No esperamos al hasOrders + sendMagicLink — disparamos asíncrono
+    // (sin await) para mantener timing estable.
+    void (async () => {
+      try {
+        const hasOrders = await hasOrdersForEmail(email);
+        if (hasOrders) {
+          const token = issueConciergeAccessToken(email);
+          await sendMagicLink(email, token);
+        }
+      } catch {
+        /* swallow — la respuesta ya se envió */
+      }
+    })();
   }
-
-  // Solo enviamos si hay pedidos. Pero respondemos siempre 200 ok
-  // para no revelar si la cuenta existe.
-  const hasOrders = await hasOrdersForEmail(email);
-  let sent = false;
-  if (hasOrders) {
-    const token = issueConciergeAccessToken(email);
-    sent = await sendMagicLink(email, token);
-  }
-
-  return NextResponse.json({ ok: true, sent });
+  return NextResponse.json({ ok: true });
 }

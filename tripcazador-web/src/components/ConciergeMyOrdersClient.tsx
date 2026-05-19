@@ -51,7 +51,7 @@ export function ConciergeMyOrdersClient({ initialToken }: { initialToken: string
   const [loading, setLoading] = useState(false);
   const [requesting, setRequesting] = useState(false);
   const [requestState, setRequestState] = useState<
-    "idle" | "sent" | "rate_limited" | "error"
+    "idle" | "submitted" | "error"
   >("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -105,14 +105,13 @@ export function ConciergeMyOrdersClient({ initialToken }: { initialToken: string
       });
       const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
-        sent?: boolean;
-        rate_limited?: boolean;
       };
       if (!res.ok || !data.ok) {
         setRequestState("error");
         return;
       }
-      setRequestState(data.rate_limited ? "rate_limited" : "sent");
+      // SSS329 H1: shape unificada → mensaje neutral (no revela si existe)
+      setRequestState("submitted");
     } catch {
       setRequestState("error");
     } finally {
@@ -163,16 +162,11 @@ export function ConciergeMyOrdersClient({ initialToken }: { initialToken: string
             {requesting ? "Enviando…" : "📧 Enviar link de acceso"}
           </button>
 
-          {requestState === "sent" && (
+          {requestState === "submitted" && (
             <p className="text-xs text-emerald-300 mt-2">
               ✅ Si tienes algún pedido con este email, te hemos enviado un
-              link. Revisa tu inbox (y spam) — caduca en 7 días.
-            </p>
-          )}
-          {requestState === "rate_limited" && (
-            <p className="text-xs text-amber-300 mt-2">
-              Has pedido varios links recientemente. Vuelve en una hora si
-              no recibes el email.
+              link. Revisa tu inbox (y spam) — caduca en 7 días. Si no llega
+              en 10 minutos, escríbenos a soporte.
             </p>
           )}
           {requestState === "error" && (

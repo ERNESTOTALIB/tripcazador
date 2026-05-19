@@ -55,32 +55,40 @@ export function deactivateByCustomerId(customerId: string): void {
  * desactivarlo todavía. El user sigue siendo Premium hasta cancel_at.
  * Cuando llegue el momento Stripe emitirá subscription.deleted y el
  * webhook llamará deactivateByCustomerId.
+ *
+ * SSS329 M2: devuelve boolean indicando si modificó algo. El webhook
+ * usa esto para distinguir customers known/unknown y evitar mutar
+ * subscriptions ajenas si la Stripe key se reusa con otro producto.
  */
-export function markCancelScheduled(customerId: string, cancelAt: number | undefined): void {
+export function markCancelScheduled(customerId: string, cancelAt: number | undefined): boolean {
   const idx = store.entries.findIndex((e) => e.customer_id === customerId);
-  if (idx >= 0) {
-    store.entries[idx] = {
-      ...store.entries[idx],
-      cancel_at: cancelAt,
-      updated_at: Date.now(),
-    };
-  }
+  if (idx < 0) return false;
+  store.entries[idx] = {
+    ...store.entries[idx],
+    cancel_at: cancelAt,
+    updated_at: Date.now(),
+  };
+  return true;
 }
 
 /**
  * SSS324: cuando el user reactiva la sub via portal Stripe
  * (cancel_at_period_end=false), limpiamos cancel_at del store local.
+ *
+ * SSS329 M2: solo limpia si previamente había cancel_at programado.
+ * Esto evita race conditions con eventos subscription.updated benignos
+ * (price change, payment method change) que no son reactivaciones reales.
+ * Devuelve true si efectivamente limpió un cancel programado.
  */
-export function clearCancelScheduled(customerId: string): void {
+export function clearCancelScheduled(customerId: string): boolean {
   const idx = store.entries.findIndex((e) => e.customer_id === customerId);
-  if (idx >= 0) {
-    const entry = store.entries[idx];
-    if (entry.cancel_at !== undefined) {
-      const updated = { ...entry, updated_at: Date.now() } as PremiumStateEntry;
-      delete updated.cancel_at;
-      store.entries[idx] = updated;
-    }
-  }
+  if (idx < 0) return false;
+  const entry = store.entries[idx];
+  if (entry.cancel_at === undefined) return false;
+  const updated = { ...entry, updated_at: Date.now() } as PremiumStateEntry;
+  delete updated.cancel_at;
+  store.entries[idx] = updated;
+  return true;
 }
 
 /** Test-only helper. */

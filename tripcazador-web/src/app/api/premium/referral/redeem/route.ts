@@ -21,12 +21,43 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
 import {
   redeemReferral,
   markReferralRewarded,
   ReferralError,
 } from "@/lib/referral_store";
 import { tryApplyReferralCoupon } from "@/lib/stripe_coupon_applier";
+
+// SSS329 H2: freshness check para evitar que un atacante pre-emption
+// un referral usando arbitrary customerIds estables. Solo aceptamos
+// referred_customer_id si el customer fue creado en Stripe en los
+// últimos N minutos (= viene de un checkout reciente).
+const FRESH_CUSTOMER_WINDOW_SEC = 30 * 60; // 30 min
+
+async function isFreshStripeCustomer(customerId: string): Promise<boolean> {
+  const secretKey = process.env.STRIPE_SECRET_KEY || "";
+  // Si no hay Stripe key, no podemos verificar — bypass por backwards
+  // compat (los tests + dev sin Stripe siguen funcionando). En PROD
+  // siempre estará seteado.
+  if (!secretKey) return true;
+  if (!/^cus_[A-Za-z0-9]{8,}$/.test(customerId)) return false;
+  try {
+    const stripe = new Stripe(secretKey, { apiVersion: "2025-02-24.acacia" });
+    const customer = await stripe.customers.retrieve(customerId);
+    if (typeof customer === "string") return false;
+    // Stripe type narrowing: Customer | DeletedCustomer. DeletedCustomer
+    // tiene { id, object: 'customer', deleted: true } sin created.
+    if ("deleted" in customer && customer.deleted) return false;
+    const createdSec = (customer as Stripe.Customer).created;
+    if (typeof createdSec !== "number") return false;
+    const ageSec = Math.floor(Date.now() / 1000) - createdSec;
+    return ageSec >= 0 && ageSec <= FRESH_CUSTOMER_WINDOW_SEC;
+  } catch {
+    // Si Stripe falla, fail-closed (rechazar) para no permitir abuso
+    return false;
+  }
+}
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,6 +73,21 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const referrer = String(body.referrer_customer_id || "");
   const referred = String(body.referred_customer_id || "");
   const code = String(body.code || "");
+
+  // SSS329 H2: validar que referred es un customer FRESH (creado <30min)
+  // antes de redimir. Esto evita que un atacante pre-emption arbitrary
+  // customerIds estables (cus_xxx no es completamente opaco —
+  // expuesto en cookie tc_premium SSS305, en logs/analytics, etc).
+  // Solo skip si referred no parece Stripe customer (cs_test_xxx legacy).
+  if (referred.startsWith("cus_")) {
+    const fresh = await isFreshStripeCustomer(referred);
+    if (!fresh) {
+      return NextResponse.json(
+        { ok: false, error: "referred_not_fresh" },
+        { status: 403 },
+      );
+    }
+  }
 
   try {
     const entry = await redeemReferral({

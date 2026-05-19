@@ -21,7 +21,9 @@
 import crypto from "crypto";
 
 const SECRET = process.env.PANEL_SECRET || "tc-panel-default-secret-change-in-prod";
-const TOKEN_TTL_SEC = 7 * 24 * 60 * 60;
+// SSS329 M3: reducido de 7d → 3d para limitar la ventana de exposición
+// si el token-en-URL leak via referer / browser history / shared screen.
+const TOKEN_TTL_SEC = 3 * 24 * 60 * 60;
 
 function hmac(payload: string): string {
   return crypto.createHmac("sha256", SECRET).update(payload).digest("hex");

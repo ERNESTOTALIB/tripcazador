@@ -50,7 +50,10 @@ describe("POST /api/concierge/request-access SSS328", () => {
     expect(res.status).toBe(400);
   });
 
-  it("200 ok=true sent=false si email no tiene pedidos (privacy)", async () => {
+  // SSS329 H1: la response SIEMPRE es {ok:true} sin "sent" field para
+  // evitar email enumeration. Comprobamos shape uniforme.
+
+  it("200 con shape uniforme {ok:true} sin sent — email no existe", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async () =>
@@ -63,11 +66,12 @@ describe("POST /api/concierge/request-access SSS328", () => {
     const res = await POST(postReq({ email: "no-orders@example.com" }));
     expect(res.status).toBe(200);
     const d = await res.json();
-    expect(d.ok).toBe(true);
-    expect(d.sent).toBe(false);
+    expect(d).toEqual({ ok: true });
+    expect(d.sent).toBeUndefined();
+    expect(d.rate_limited).toBeUndefined();
   });
 
-  it("200 sent=false si tiene pedidos pero RESEND_API_KEY missing", async () => {
+  it("200 misma shape exacta cuando email SI tiene orders (anti-enum)", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async () =>
@@ -94,8 +98,7 @@ describe("POST /api/concierge/request-access SSS328", () => {
     const res = await POST(postReq({ email: "user@example.com" }));
     expect(res.status).toBe(200);
     const d = await res.json();
-    expect(d.ok).toBe(true);
-    expect(d.sent).toBe(false); // RESEND key no set
+    expect(d).toEqual({ ok: true }); // misma shape exacta
   });
 
   // Rate limit difícil de testear sin fugar estado entre tests
