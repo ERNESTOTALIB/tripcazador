@@ -20,6 +20,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { getPremiumStatus, type PremiumStatus } from "@/lib/premium";
 import { tcTrack } from "@/lib/track_client";
+import { NLAlertWidget } from "@/components/NLAlertWidget";
 
 interface AlertItem {
   id: string;
@@ -213,9 +214,18 @@ export function PremiumAlertsManagerClient() {
         </p>
       </header>
 
-      {/* Form crear */}
+      {/* SSS319: NL alert widget — escribir alerta en español natural */}
+      <NLAlertWidget
+        customerId={customerId}
+        defaultEmail={email}
+        onCreated={() => {
+          fetchAlerts();
+        }}
+      />
+
+      {/* Form crear (tradicional) */}
       <section className="p-5 rounded-2xl border border-gray-800 bg-gray-900">
-        <h2 className="text-lg font-bold mb-3">Nueva alerta</h2>
+        <h2 className="text-lg font-bold mb-3">O usa el formulario tradicional</h2>
         <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <input
             type="email"
