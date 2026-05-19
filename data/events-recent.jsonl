@@ -1,6 +1,3 @@
-{"ts":"2026-05-14T18:08:40.139Z","type":"landing_arrived","visitor":"ad5b5b879a17e4b5","meta":{"path":"/"}}
-{"ts":"2026-05-14T18:08:42.796Z","type":"page_view","visitor":"ad5b5b879a17e4b5","meta":{"path":"/"}}
-{"ts":"2026-05-14T18:08:42.845Z","type":"landing_arrived","visitor":"ad5b5b879a17e4b5","meta":{"path":"/"}}
 {"ts":"2026-05-14T18:22:28.388Z","type":"landing_arrived","visitor":"b7e38577105a228f","meta":{"path":"/"}}
 {"ts":"2026-05-14T18:22:30.844Z","type":"landing_arrived","visitor":"b7e38577105a228f","meta":{"path":"/"}}
 {"ts":"2026-05-14T18:22:30.884Z","type":"page_view","visitor":"b7e38577105a228f","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-19T20:32:45.097Z","type":"landing_arrived","visitor":"0735208ef0b6a021","meta":{"path":"/","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-19T20:34:05.034Z","type":"page_view","visitor":"d70137c02f7f3ec5","meta":{"path":"/"}}
 {"ts":"2026-05-19T20:37:21.395Z","type":"favorite_added","visitor":"d70137c02f7f3ec5","meta":{"deal_id":"seed-00bc632c1c","destination":"JFK","origin":"MUC","price":339}}
+{"ts":"2026-05-19T20:44:13.525Z","type":"page_view","visitor":"d70137c02f7f3ec5","meta":{"path":"/deals"}}
+{"ts":"2026-05-19T20:44:51.211Z","type":"page_view","visitor":"d70137c02f7f3ec5","meta":{"path":"/deals"}}
+{"ts":"2026-05-19T20:45:53.836Z","type":"page_view","visitor":"d70137c02f7f3ec5","meta":{"path":"/deals"}}
