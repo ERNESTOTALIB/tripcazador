@@ -320,7 +320,7 @@ export function PremiumPanelClient() {
 
       {/* 5 features (4 originales + Watchlist SSS314) */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-white">Tus 8 ventajas Premium</h2>
+        <h2 className="text-xl font-bold text-white">Tus 9 ventajas Premium</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FeatureCard
             icon="🚨"
@@ -401,6 +401,16 @@ export function PremiumPanelClient() {
             href={status.active ? "/panel/premium/hotel-watchlist" : "/premium"}
             active={status.active}
             extra="Desde cualquier landing con cross-sell de Booking pulsa &quot;👀 Vigilar precio&quot;, elige fechas + threshold y cron diario checkea."
+          />
+          {/* SSS325: Trip planner combo vuelo + hotel */}
+          <FeatureCard
+            icon="✈️🏨"
+            title="Trip planner combo"
+            description="Indica destino + mes + noches y combinamos vuelo + hotel mid-tier para que veas el coste total con un click."
+            cta={status.active ? "Planear viaje" : "Cómo funciona"}
+            href={status.active ? "/panel/premium/trip-planner" : "/premium"}
+            active={status.active}
+            extra="Usa nuestros deals reales + síntesis hotel para top 3 combos por coste total. Más útil que comparar manualmente."
           />
         </div>
       </section>
