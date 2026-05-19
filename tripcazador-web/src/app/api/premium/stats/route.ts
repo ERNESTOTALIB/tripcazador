@@ -18,6 +18,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { listAlertsByCustomer } from "@/lib/price_alerts_store";
 import { listSavedSearches } from "@/lib/saved_searches_store";
+import { listWatchesByCustomer } from "@/lib/watchlist_store";
 import { isValidStripeOwnerId } from "@/lib/stripe_id";
 
 export const runtime = "nodejs";
@@ -30,10 +31,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: "customer_id_invalid" }, { status: 400 });
   }
 
-  const [alerts, searches] = await Promise.all([
+  const [alerts, searches, watches] = await Promise.all([
     listAlertsByCustomer(customerId),
     listSavedSearches(customerId),
+    listWatchesByCustomer(customerId),
   ]);
+  const watchesActive = watches.filter((w) => w.active && !w.triggered_at).length;
+  const watchesTriggered = watches.filter((w) => w.triggered_at).length;
 
   const alertsActive = alerts.filter((a) => a.active && !a.triggered_at).length;
   const alertsTriggered = alerts.filter((a) => a.triggered_at).length;
@@ -62,6 +66,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     },
     saved_searches: {
       count: searches.length,
+    },
+    watchlist: {
+      active: watchesActive,
+      triggered: watchesTriggered,
+      total: watches.length,
     },
     savings: {
       estimated_eur: estimatedSavingsEur,

@@ -6,6 +6,7 @@ import { NextRequest } from "next/server";
 import { GET } from "../route";
 import { createAlert, markTriggered, _clearStore as clearAlerts } from "@/lib/price_alerts_store";
 import { createSavedSearch, _clearStore as clearSearches } from "@/lib/saved_searches_store";
+import { createWatch, _clearStore as clearWatches } from "@/lib/watchlist_store";
 
 function req(qs = ""): NextRequest {
   return new NextRequest(`http://localhost/api/premium/stats${qs}`);
@@ -15,6 +16,7 @@ describe("GET /api/premium/stats SSS303", () => {
   beforeEach(() => {
     clearAlerts();
     clearSearches();
+    clearWatches();
   });
 
   it("400 customer_id missing", async () => {
@@ -80,6 +82,39 @@ describe("GET /api/premium/stats SSS303", () => {
     const data = await res.json();
     expect(data.concierge_promo.available).toBe(true);
     expect(data.concierge_promo.month).toMatch(/^\d{4}-\d{2}$/);
+  });
+
+  it("watchlist counted (SSS317)", async () => {
+    const customer = "cs_live_watch01XX";
+    await createWatch({
+      customerId: customer,
+      email: "x@y.com",
+      deal_id: "deal_1",
+      origin: "BCN",
+      destination: "JFK",
+      price_when_added: 400,
+    });
+    await createWatch({
+      customerId: customer,
+      email: "x@y.com",
+      deal_id: "deal_2",
+      origin: "BCN",
+      destination: "LAX",
+      price_when_added: 600,
+    });
+    const res = await GET(req(`?customer_id=${customer}`));
+    const data = await res.json();
+    expect(data.watchlist.active).toBe(2);
+    expect(data.watchlist.total).toBe(2);
+    expect(data.watchlist.triggered).toBe(0);
+  });
+
+  it("watchlist field presente aunque vacío (SSS317)", async () => {
+    const res = await GET(req("?customer_id=cs_live_nowatchY1"));
+    const data = await res.json();
+    expect(data.watchlist).toBeDefined();
+    expect(data.watchlist.active).toBe(0);
+    expect(data.watchlist.total).toBe(0);
   });
 
   it("aislamiento por customer", async () => {

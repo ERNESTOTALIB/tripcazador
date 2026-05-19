@@ -18,6 +18,7 @@ import Link from "next/link";
 import { getPremiumStatus, PREMIUM_FEATURES, type PremiumStatus } from "@/lib/premium";
 import { tcTrack } from "@/lib/track_client";
 import { PremiumROIWidget } from "@/components/PremiumROIWidget";
+import { PremiumOnboardingWizard } from "@/components/PremiumOnboardingWizard";
 
 const SUPPORT_EMAIL = "contacto@tripcazador.com";
 
@@ -280,6 +281,9 @@ export function PremiumPanelClient() {
           </div>
         </section>
       )}
+
+      {/* SSS317: Onboarding wizard 3 pasos para nuevos Premium */}
+      {status.active && <PremiumOnboardingWizard />}
 
       {/* SSS315: ROI dashboard "Has ahorrado X€" — pieza clave retención */}
       {status.active && <PremiumROIWidget />}
