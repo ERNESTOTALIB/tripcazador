@@ -41,12 +41,20 @@ interface RecentEntry {
   ts: number;
 }
 
+interface Percentile {
+  ok: boolean;
+  percentile: number;
+  total_customers: number;
+  label: string;
+}
+
 export function PremiumROIWidget() {
   const [mounted, setMounted] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [customerId, setCustomerId] = useState<string | null>(null);
   const [summary, setSummary] = useState<SavingsSummary | null>(null);
   const [recent, setRecent] = useState<RecentEntry[]>([]);
+  const [percentile, setPercentile] = useState<Percentile | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -77,6 +85,15 @@ export function PremiumROIWidget() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+
+    // SSS326: percentile social proof — fetch en paralelo (no bloquea ROI)
+    fetch(`/api/premium/percentile?customer_id=${encodeURIComponent(customerId)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: Percentile | null) => {
+        if (cancelled || !d || !d.ok) return;
+        setPercentile(d);
+      })
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -151,6 +168,13 @@ export function PremiumROIWidget() {
         {summary.count} {summary.count === 1 ? "alerta disparada" : "alertas disparadas"}{" "}
         · promedio {summary.avg_per_trigger_eur}€ por trigger
       </div>
+
+      {/* SSS326: percentile social proof badge */}
+      {percentile && percentile.total_customers >= 5 && (
+        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 text-xs text-emerald-200">
+          <span>{percentile.label}</span>
+        </div>
+      )}
 
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Stat label="Últimos 30 días" value={`${summary.last_30d_eur}€`} sub={`${summary.last_30d_count} triggers`} />

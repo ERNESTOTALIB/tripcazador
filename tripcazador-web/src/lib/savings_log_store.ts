@@ -101,6 +101,27 @@ export async function logSavings(input: LogSavingsInput): Promise<SavingsEntry |
   return entry;
 }
 
+/**
+ * SSS326: agrega total_eur por customerId (across all entries del store).
+ * Útil para calcular percentile de cualquier user vs el resto. NO expone
+ * customerIds individuales — solo cantidades para ranking.
+ *
+ * Devuelve un array de totales ordenado ascendente (para binary search).
+ */
+export async function aggregateTotalsAcrossCustomers(): Promise<number[]> {
+  const r = await remote("GET", "/savings/totals-aggregated");
+  if (r && r.ok) {
+    const data = (await r.json().catch(() => null)) as { totals?: number[] } | null;
+    if (data && Array.isArray(data.totals)) return [...data.totals].sort((a, b) => a - b);
+  }
+  // Fallback in-memory: agregamos por customerId
+  const byCustomer = new Map<string, number>();
+  for (const e of Array.from(memoryStore.values())) {
+    byCustomer.set(e.customerId, (byCustomer.get(e.customerId) || 0) + e.savings_eur);
+  }
+  return Array.from(byCustomer.values()).sort((a, b) => a - b);
+}
+
 export async function listSavingsByCustomer(customerId: string): Promise<SavingsEntry[]> {
   if (!customerId) return [];
   const r = await remote("GET", `/savings/by-customer/${encodeURIComponent(customerId)}`);

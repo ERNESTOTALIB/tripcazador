@@ -5,6 +5,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   logSavings,
   listSavingsByCustomer,
+  aggregateTotalsAcrossCustomers,
   summarize,
   _clearStore,
   type SavingsEntry,
@@ -80,6 +81,25 @@ describe("savings_log_store SSS315 logSavings", () => {
     const aOnly = await listSavingsByCustomer("cus_A");
     expect(aOnly.length).toBe(1);
     expect(aOnly[0].savings_eur).toBe(50);
+  });
+});
+
+describe("aggregateTotalsAcrossCustomers SSS326", () => {
+  beforeEach(() => _clearStore());
+
+  it("agrupa por customerId, devuelve totales ordenados asc", async () => {
+    await logSavings({ customerId: "cus_A", email: "a@x.com", deal_id: "d1", savings_eur: 50, source: "alert" });
+    await logSavings({ customerId: "cus_A", email: "a@x.com", deal_id: "d2", savings_eur: 30, source: "watch" });
+    await logSavings({ customerId: "cus_B", email: "b@x.com", deal_id: "d3", savings_eur: 100, source: "alert" });
+    await logSavings({ customerId: "cus_C", email: "c@x.com", deal_id: "d4", savings_eur: 20, source: "alert" });
+
+    const totals = await aggregateTotalsAcrossCustomers();
+    // 3 customers: A=80, B=100, C=20 → ordenado [20, 80, 100]
+    expect(totals).toEqual([20, 80, 100]);
+  });
+
+  it("vacío devuelve []", async () => {
+    expect(await aggregateTotalsAcrossCustomers()).toEqual([]);
   });
 });
 
