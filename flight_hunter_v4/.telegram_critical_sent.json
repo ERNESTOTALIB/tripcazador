@@ -1615,6 +1615,22 @@
       "destination": "BOJ",
       "price_eur": 63.69,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f8109425ac49",
+      "ts": "2026-05-19T16:48:01.704176+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "0268d71e35ad",
+      "ts": "2026-05-19T16:48:01.704176+00:00",
+      "origin": "PRG",
+      "destination": "KRK",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
