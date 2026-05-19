@@ -290,7 +290,7 @@ export function PremiumPanelClient() {
 
       {/* 5 features (4 originales + Watchlist SSS314) */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-white">Tus 6 ventajas Premium</h2>
+        <h2 className="text-xl font-bold text-white">Tus 7 ventajas Premium</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FeatureCard
             icon="🚨"
@@ -351,6 +351,16 @@ export function PremiumPanelClient() {
             href={status.active ? "/panel/premium/digest" : "/premium"}
             active={status.active}
             extra="Algoritmo personaliza scoring por tus criterios. Empty state si no tienes alertas → te sugiere los chollos top."
+          />
+          {/* SSS318: Secret deals 24h Premium-only */}
+          <FeatureCard
+            icon="🔥"
+            title="Secret deals 24h"
+            description="Error fares y CRÍTICOS aparecen aquí 24h antes de salir al listado público. Solo Premium."
+            cta={status.active ? "Ver secret deals" : "Cómo funciona"}
+            href={status.active ? "/panel/premium/secret" : "/premium"}
+            active={status.active}
+            extra="Hunter detecta error fares → durante 24h SOLO Premium los puede reservar. Después pasan a /deals público. Reserva rápido."
           />
         </div>
       </section>

@@ -18,6 +18,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { enrichDealLocations, hasSpainOrigin, hasEuOrigin } from "@/lib/iata_city";
 import { applyTPMarkerServerSide } from "@/lib/airline_links";
+import { filterOutSecret } from "@/lib/secret_deals";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -206,9 +207,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     });
   }
 
+  // SSS318: filtrar "secret deals" Premium-only (classification CRÍTICO/ERROR
+  // con found_at < 24h ago). El público nunca los ve aquí — Premium los lee
+  // de /api/premium/secret-deals.
+  const publicFiltered = filterOutSecret(enriched);
+
   // SSS84: aplicar conversión de moneda si ?currency=USD/GBP/...
   const currency = (params.get("currency") || params.get("c") || "EUR").toUpperCase();
-  const converted = applyCurrency(enriched, currency);
+  const converted = applyCurrency(publicFiltered, currency);
 
   // Aplicar limit final
   const limited = converted.slice(0, limit);
