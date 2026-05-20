@@ -1711,6 +1711,22 @@
       "destination": "AHO",
       "price_eur": 27.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5e6180bb800e",
+      "ts": "2026-05-20T16:49:16.011126+00:00",
+      "origin": "ATH",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a97e7d0f21bc",
+      "ts": "2026-05-20T16:49:16.011126+00:00",
+      "origin": "WAW",
+      "destination": "PFO",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
