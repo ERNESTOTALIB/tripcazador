@@ -680,7 +680,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const isSweet = m.num === city.sweetSpot;
       const isPeak = PROGRAMMATIC_PEAK_MONTHS.has(m.num);
       return {
-        url: `${BASE_URL}/vuelos-baratos/${city.slug}/${m.slug}`,
+        url: `${BASE_URL}/vuelos-baratos/${m.slug}/${city.slug}`,
         lastModified: evergreen,
         changeFrequency: "weekly" as const,
         priority: isSweet ? 0.75 : isPeak ? 0.7 : 0.6,
