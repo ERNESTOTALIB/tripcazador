@@ -22,6 +22,7 @@ import { PremiumPriceHistoryChart } from "@/components/PremiumPriceHistoryChart"
 import { PremiumPricePredictorCard } from "@/components/PremiumPricePredictorCard";
 import { WatchThisDealButton } from "@/components/WatchThisDealButton";
 import { HotelCrossSell } from "@/components/HotelCrossSell";
+import { AffiliateCrossSell } from "@/components/AffiliateCrossSell";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { ConciergeInlineCTA } from "@/components/ConciergeInlineCTA";
 
@@ -437,6 +438,17 @@ export default async function DealDetailPage({
           </div>
         </section>
       )}
+
+      {/* ─────────── SSS336 Affiliate cross-sells (Heymondo + Holafly + GYG + Parclick) ─────────── */}
+      <AffiliateCrossSell
+        origin={deal.origin}
+        destination={deal.destination}
+        cityTo={deal.city_to}
+        countryTo={deal.country_to}
+        dateOut={deal.date_out || undefined}
+        dateRet={deal.date_ret || undefined}
+        nights={deal.nights || 7}
+      />
 
       {/* ─────────── YYY02 Hotel cross-sell ─────────── */}
       <HotelCrossSell

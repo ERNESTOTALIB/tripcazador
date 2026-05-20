@@ -37,8 +37,13 @@ export function isPremium(): boolean {
   return getPremiumStatus().active;
 }
 
-export const PREMIUM_PRICE_EUR = 2.99;
-export const PREMIUM_TRIAL_DAYS = 7;
+export const PREMIUM_PRICE_EUR = 9.99;
+// SSS335: nuevo tier anual €99/año = ahorro €20 vs 12×9.99
+export const PREMIUM_ANNUAL_PRICE_EUR = 99;
+export const PREMIUM_ANNUAL_SAVINGS_EUR = Math.round((12 * 9.99 - 99) * 100) / 100;
+export const PREMIUM_TRIAL_DAYS = 14;
+// SSS335: Gift one-off — pago único €9.99, regalo de 1 mes Premium
+export const PREMIUM_GIFT_PRICE_EUR = 9.99;
 
 export function getPremiumStatus(): PremiumStatus {
   if (typeof window === "undefined") {

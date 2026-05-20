@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/JsonLd";
 import { SectionHero } from "@/components/SectionHero";
 import { PremiumUpgradeButton } from "@/components/PremiumUpgradeButton";
+import { PremiumPricingToggle } from "@/components/PremiumPricingToggle";
 
 export const metadata: Metadata = {
   title: "TripCazador Premium — Alertas instantáneas y filtros pro",
@@ -104,9 +105,10 @@ export default function PremiumPage() {
             <li className="flex items-start gap-2"><span className="text-amber-400">★</span>Soporte prioritario email &lt;24h</li>
           </ul>
           <div className="mt-8">
-            <PremiumUpgradeButton />
+            {/* SSS335: nuevo toggle Mensual/Anual con €99/año (-17%) */}
+            <PremiumPricingToggle />
           </div>
-          <p className="text-xs text-gray-500 mt-3 text-center">7 días gratis · Cancela en 1 clic</p>
+          <p className="text-xs text-gray-500 mt-3 text-center">14 días gratis · Cancela en 1 clic · <a href="/premium/regalo" className="text-amber-400 hover:underline">🎁 Regalar Premium</a></p>
         </div>
       </section>
 

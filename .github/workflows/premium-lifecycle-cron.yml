@@ -1,0 +1,43 @@
+name: Premium Lifecycle Cron — daily
+
+# SSS340 (20 may 2026): cron diario que dispara emails lifecycle Premium:
+#   - milestone (100€/250€/500€/1000€ ahorrados)
+#   - anniversary (cada 365 días desde signup)
+#   - annual upsell (a los 180 días mensual)
+#   - onboarding D+1, D+3, D+7, D+14
+#
+# Reusa PRICE_ALERT_CRON_TOKEN_PREMIUM como secret (mismo trust boundary
+# que el resto de crons Premium).
+#
+# Cadencia: 07:30 UTC (≈09:30 Madrid). Antes que el watchlist-cron (08:15)
+# para que el milestone llegue temprano y se "premie" al user antes que
+# las alertas regulares lleguen.
+
+on:
+  schedule:
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+
+jobs:
+  lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger lifecycle-cron endpoint
+        id: send
+        run: |
+          STATUS=$(curl -s -o /tmp/lifecycle.json -w "%{http_code}" \
+            "https://tripcazador.com/api/premium/lifecycle-cron?token=${{ secrets.PRICE_ALERT_CRON_TOKEN_PREMIUM }}" \
+            --max-time 120)
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          cat /tmp/lifecycle.json | head -c 2000
+
+      - name: Notify Telegram on failure
+        if: steps.send.outputs.status != '200' && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MSG="⚠ Premium lifecycle-cron failed HTTP ${{ steps.send.outputs.status }}\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" -d "text=${MSG}" > /dev/null

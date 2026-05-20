@@ -14,6 +14,7 @@ import { MONTHS } from "@/lib/months";
 import { MONTHLY_ROUTES } from "@/lib/monthly_prices";
 import { getHotelEntries } from "@/lib/hotel_seed";
 import { PARTNERS } from "@/lib/travel_partners";
+import { SEO_CITIES, SEO_ORIGINS, MONTHS_ES } from "@/lib/programmatic_seo";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -668,6 +669,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
+  // SSS338 (20 may 2026) — programmatic SEO landings
+  //  - /vuelos-baratos/[ciudad]/[mes]: 48 ciudades × 12 meses = 576 URLs
+  //  - /precio-vuelo/[origen]/[destino]: 6 orígenes × 48 destinos = 288 URLs
+  // Priority dinámico: sweet spot mes = 0.75, peak mes (jul/ago/dic) = 0.7,
+  // resto = 0.6 — Google prioriza las URLs con priority alto en crawl budget.
+  const PROGRAMMATIC_PEAK_MONTHS = new Set([7, 8, 12]);
+  const vuelosBaratosPages: MetadataRoute.Sitemap = SEO_CITIES.flatMap((city) =>
+    MONTHS_ES.map((m) => {
+      const isSweet = m.num === city.sweetSpot;
+      const isPeak = PROGRAMMATIC_PEAK_MONTHS.has(m.num);
+      return {
+        url: `${BASE_URL}/vuelos-baratos/${city.slug}/${m.slug}`,
+        lastModified: evergreen,
+        changeFrequency: "weekly" as const,
+        priority: isSweet ? 0.75 : isPeak ? 0.7 : 0.6,
+      };
+    }),
+  );
+  const precioVueloPages: MetadataRoute.Sitemap = SEO_ORIGINS.flatMap((o) =>
+    SEO_CITIES.map((c) => ({
+      url: `${BASE_URL}/precio-vuelo/${o.slug}/${c.slug}`,
+      lastModified: evergreen,
+      changeFrequency: "weekly" as const,
+      // Priority por región — short-haul europa = 0.65, long-haul america/asia = 0.55
+      priority: c.region === "europa" ? 0.65 : 0.55,
+    })),
+  );
+
   return [
     ...staticPages,
     ...destinoPages,
@@ -695,5 +724,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...i18nDachDestPages,
     ...feedPages,
     ...dealPages,
+    ...vuelosBaratosPages,
+    ...precioVueloPages,
   ];
 }

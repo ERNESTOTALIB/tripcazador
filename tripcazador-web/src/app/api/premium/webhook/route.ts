@@ -105,6 +105,35 @@ export async function POST(req: NextRequest) {
     const email = String(obj?.customer_email || obj?.metadata?.email || "");
     const customerId = String(obj?.customer || "");
     const subId = obj?.subscription ? String(obj.subscription) : undefined;
+    // SSS335: si es gift one-off, activamos Premium 30d para el recipient
+    const cycle = obj?.metadata?.cycle;
+    const giftRecipient = obj?.metadata?.gift_recipient;
+    if (cycle === "gift" && giftRecipient) {
+      // Para gift: customerId del comprador irrelevante. Activamos
+      // Premium en premium_store con el email destinatario y un
+      // pseudo-customer_id derivado (no recurrente).
+      const giftCustomerId = `gift_${(obj?.id || "").slice(0, 28)}`;
+      upsertPremium({
+        email: String(giftRecipient).trim().toLowerCase(),
+        customer_id: giftCustomerId,
+        active: true,
+        expires_at: Date.now() + 30 * 86400_000,
+        source: "stripe",
+        updated_at: Date.now(),
+      });
+      void sendOwnerNotify({
+        kind: "premium_signup",
+        customer_email: String(giftRecipient),
+        summary: `🎁 Premium GIFT activado · destinatario ${giftRecipient}`,
+        details: {
+          tipo: "gift one-off €9.99",
+          comprador_email: email || "(no facilitado)",
+          destinatario: String(giftRecipient),
+          expira: new Date(Date.now() + 30 * 86400_000).toISOString().slice(0, 10),
+        },
+      }).catch(() => {});
+      return NextResponse.json({ received: true, type: event.type, gift: true });
+    }
     if (email && customerId) {
       upsertPremium({
         email: email.toLowerCase(),

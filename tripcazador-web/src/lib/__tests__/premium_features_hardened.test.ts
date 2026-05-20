@@ -52,9 +52,9 @@ describe("PREMIUM_FEATURES catalog SSS300", () => {
   });
 });
 
-describe("PREMIUM_PRICE_EUR (legacy €2.99 sigue activo)", () => {
-  it("es €2.99 — legacy price del que Saleh es suscriptor", () => {
-    expect(PREMIUM_PRICE_EUR).toBe(2.99);
+describe("PREMIUM_PRICE_EUR (SSS335: actualizado a €9.99/mes)", () => {
+  it("es €9.99 — precio canon mensual post-SSS335", () => {
+    expect(PREMIUM_PRICE_EUR).toBe(9.99);
   });
 });
 

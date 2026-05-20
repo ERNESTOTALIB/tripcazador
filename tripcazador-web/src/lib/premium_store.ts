@@ -99,3 +99,11 @@ export function _clearStore(): void {
 export function getPremiumByEmail(email: string): PremiumStateEntry | null {
   return store.entries.find((e) => e.email === email && e.active) ?? null;
 }
+
+/**
+ * SSS340: lista todos los Premium activos — usado por crons de lifecycle
+ * (milestone, anniversary, annual upsell). Devuelve snapshot inmutable.
+ */
+export function listActivePremium(): PremiumStateEntry[] {
+  return store.entries.filter((e) => e.active).map((e) => ({ ...e }));
+}
