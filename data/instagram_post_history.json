@@ -709,5 +709,14 @@
     "city_from": "Praga",
     "city_to": "Gdansk",
     "price_eur": 28.54
+  },
+  {
+    "timestamp": 1779274620.7566612,
+    "deal_id": "ryanair_lis_rak_20260814_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 16.99
   }
 ]
