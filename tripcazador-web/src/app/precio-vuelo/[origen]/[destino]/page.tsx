@@ -31,6 +31,7 @@ import { getDeals } from "@/lib/api";
 import { DealCard } from "@/components/DealCard";
 import { JsonLd } from "@/components/JsonLd";
 import { AffiliateCrossSell } from "@/components/AffiliateCrossSell";
+import { AdSenseSlot } from "@/components/AdSenseSlot";
 
 export const revalidate = 3600; // ISR 1h
 
@@ -289,6 +290,9 @@ export default async function PrecioVueloLanding({
         cityTo={city.display}
         countryTo={city.country}
       />
+
+      {/* SSS358 — AdSense en 288 precio-vuelo landings */}
+      <AdSenseSlot variant="banner" format="horizontal" />
 
       {/* FAQ */}
       <section>

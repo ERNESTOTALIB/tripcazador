@@ -26,6 +26,7 @@ import { getDeals } from "@/lib/api";
 import { DealCard } from "@/components/DealCard";
 import { JsonLd } from "@/components/JsonLd";
 import { AffiliateCrossSell } from "@/components/AffiliateCrossSell";
+import { AdSenseSlot } from "@/components/AdSenseSlot";
 
 export const revalidate = 3600; // ISR 1h
 
@@ -180,6 +181,9 @@ export default async function VuelosBaratosLanding({
         cityTo={city.display}
         countryTo={city.country}
       />
+
+      {/* SSS358 — AdSense banner entre afiliados y FAQ. 576 landings × ads */}
+      <AdSenseSlot variant="banner" format="horizontal" />
 
       <section>
         <h2 className="text-2xl font-bold text-white mb-4">Preguntas frecuentes</h2>
