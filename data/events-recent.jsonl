@@ -1,6 +1,3 @@
-{"ts":"2026-05-15T18:21:29.298Z","type":"page_view","visitor":"cdb87df987c4d6fd","meta":{"path":"/"}}
-{"ts":"2026-05-15T18:21:33.904Z","type":"result_viewed","visitor":"11b77b7d70937a8a","meta":{"deal_id":"ryanair_mad_cag_20260910_economy","destination":"CAG","origin":"MAD","price":51.99,"classification":"CRÍTICO"}}
-{"ts":"2026-05-15T18:22:30.228Z","type":"page_view","visitor":"cdb87df987c4d6fd","meta":{"path":"/deals"}}
 {"ts":"2026-05-15T18:42:02.336Z","type":"deal_click","visitor":"449579bc7f05e9de","meta":{"deal_id":"final207_1778870521","destination":"DPL","price":1,"smoke":true}}
 {"ts":"2026-05-15T18:42:16.131Z","type":"page_view","visitor":"dc4f49bdbdc7276f","meta":{"path":"/"}}
 {"ts":"2026-05-15T18:42:16.149Z","type":"landing_arrived","visitor":"dc4f49bdbdc7276f","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-20T15:04:43.545Z","type":"search_submitted","visitor":"fcb408e6acece04c","meta":{"origin":"HOU","destination":"CIA","date_out":"2026-06-17","one_way":true,"airline_code":"any"}}
 {"ts":"2026-05-20T15:06:15.076Z","type":"landing_arrived","visitor":"c3fcdd165cf5b8a8","meta":{"path":"/en","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-20T15:06:15.107Z","type":"page_view","visitor":"c3fcdd165cf5b8a8","meta":{"path":"/en"}}
+{"ts":"2026-05-20T15:07:03.285Z","type":"result_viewed","visitor":"c3fcdd165cf5b8a8","meta":{"deal_id":"seed-00bef3e637","destination":"SYD","origin":"MAD","price":2495,"classification":"CRÍTICO"}}
+{"ts":"2026-05-20T15:07:06.757Z","type":"result_viewed","visitor":"c3fcdd165cf5b8a8","meta":{"deal_id":"seed-00e0cf188c","destination":"FCO","origin":"BCN","price":29,"classification":"OFERTA"}}
+{"ts":"2026-05-20T15:07:16.757Z","type":"result_viewed","visitor":"c3fcdd165cf5b8a8","meta":{"deal_id":"seed-0012f2bae8","destination":"JFK","origin":"DUB","price":199,"classification":"ANOMALÍA"}}
