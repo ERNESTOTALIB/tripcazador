@@ -10,6 +10,7 @@ import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 import { JsonLd } from "@/components/JsonLd";
 import { NewsletterABWidget } from "@/components/NewsletterABWidget";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
+import { AdSenseSlot } from "@/components/AdSenseSlot";
 import { ConciergeInlineCTA } from "@/components/ConciergeInlineCTA";
 import { RelatedPosts } from "@/components/RelatedPosts";
 import { TableOfContents } from "@/components/TableOfContents";
@@ -231,6 +232,10 @@ export default function BlogPostPage({ params }: { params: Params }) {
             B = NewsletterRibbon CTA banner → /alertas
             Hipótesis: ribbon convierte mejor mid-blog. Validar tras N exposures
             via newsletter_signup vs newsletter_ribbon_click event rate. */}
+        {/* SSS358 — AdSense inline post-content. Lector con engagement
+            alto (lee el blog full) = posición premium para display ads.
+            Consent gated por defecto en el componente. */}
+        <AdSenseSlot variant="inline" format="auto" />
         <div className="mt-8">
           <NewsletterABWidget context={`blog-${params.slug}`} />
         </div>
