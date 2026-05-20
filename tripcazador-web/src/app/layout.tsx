@@ -16,6 +16,7 @@ import { MobileNavBar } from "@/components/MobileNavBar";
 import { FavoritePushNudge } from "@/components/FavoritePushNudge";
 import { ReferralNudge } from "@/components/ReferralNudge";
 import { SocialProofToast } from "@/components/SocialProofToast";
+import { ExitIntentModal } from "@/components/ExitIntentModal";
 import "./globals.css";
 
 // Inter — subset latin solo (no cyrillic/greek/vietnamese), display=swap para
@@ -467,6 +468,8 @@ export default function RootLayout({
         <ReferralNudge />
         {/* F3 — Social proof toast con eventos anonimizados (consent-aware) */}
         <SocialProofToast />
+        {/* SSS339 — Exit-intent capture email después de 15s engagement */}
+        <ExitIntentModal />
       </body>
     </html>
   );
