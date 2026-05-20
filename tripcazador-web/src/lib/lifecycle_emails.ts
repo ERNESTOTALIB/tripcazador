@@ -141,7 +141,7 @@ export function annualUpsellEmail(opts: { email: string; monthsActive: number })
 
 // ---------- onboarding Premium 4-step drip ----------
 
-export function onboardingPremiumD1(opts: { email: string }): EmailContent {
+export function onboardingPremiumD1(_opts: { email: string }): EmailContent {
   const subject = "Tu primera caza Premium: 3 cosas en 5 minutos";
   const html = emailShell({
     preheader: "Activa alertas, configura origen, prueba filtros pro",
@@ -160,7 +160,7 @@ export function onboardingPremiumD1(opts: { email: string }): EmailContent {
   return { subject, html, text };
 }
 
-export function onboardingPremiumD3(opts: { email: string }): EmailContent {
+export function onboardingPremiumD3(_opts: { email: string }): EmailContent {
   const subject = "Truco Premium: el filtro que más usa Ernesto";
   const html = emailShell({
     preheader: "Filtro nights:5-8 captura 80% de los chollos largo recorrido",
@@ -181,7 +181,7 @@ export function onboardingPremiumD3(opts: { email: string }): EmailContent {
   return { subject, html, text };
 }
 
-export function onboardingPremiumD7(opts: { email: string }): EmailContent {
+export function onboardingPremiumD7(_opts: { email: string }): EmailContent {
   const subject = "Ya llevas 1 semana · 3 secret deals esperándote";
   const html = emailShell({
     preheader: "Secret deals Premium-only · 24h ventana exclusiva",
@@ -196,7 +196,7 @@ export function onboardingPremiumD7(opts: { email: string }): EmailContent {
   return { subject, html, text };
 }
 
-export function onboardingPremiumD14(opts: { email: string }): EmailContent {
+export function onboardingPremiumD14(_opts: { email: string }): EmailContent {
   const subject = "¿Te ha gustado? Regala 1 mes a un amigo (gratis para ti)";
   const html = emailShell({
     preheader: "Referidos · 1 mes gratis cuando un amigo se suscribe",
