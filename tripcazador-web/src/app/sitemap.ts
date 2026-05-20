@@ -289,6 +289,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
+      // SSS359 — /sponsor para captación B2B sponsorships
+      url: `${BASE_URL}/sponsor`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.55,
+    },
+    {
       url: `${BASE_URL}/comparar`,
       lastModified: now,
       changeFrequency: "weekly",
