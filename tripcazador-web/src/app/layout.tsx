@@ -344,7 +344,7 @@ export default function RootLayout({
              — destinos populares, herramientas, contenido. SEO + UX boost. */}
         <footer className="border-t border-gray-800 mt-12 sm:mt-20 pb-[max(2rem,env(safe-area-inset-bottom))]">
           <div className="max-w-7xl mx-auto px-4 py-10">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 text-sm">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 text-sm">
               {/* Brand */}
               <div className="col-span-2 sm:col-span-3 lg:col-span-2">
                 <a href="/" className="inline-flex items-center gap-2 mb-3">
@@ -377,12 +377,25 @@ export default function RootLayout({
               <div>
                 <h3 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Destinos</h3>
                 <ul className="space-y-2 text-gray-400">
-                  <li><a href="/deals?destination=NRT" className="hover:text-amber-400">Tokio</a></li>
-                  <li><a href="/deals?destination=BKK" className="hover:text-amber-400">Bangkok</a></li>
-                  <li><a href="/deals?destination=DPS" className="hover:text-amber-400">Bali</a></li>
-                  <li><a href="/deals?destination=DXB" className="hover:text-amber-400">Dubái</a></li>
-                  <li><a href="/deals?destination=JFK" className="hover:text-amber-400">Nueva York</a></li>
+                  <li><a href="/precio-vuelo/madrid/tokio" className="hover:text-amber-400">Tokio</a></li>
+                  <li><a href="/precio-vuelo/madrid/bangkok" className="hover:text-amber-400">Bangkok</a></li>
+                  <li><a href="/precio-vuelo/madrid/bali" className="hover:text-amber-400">Bali</a></li>
+                  <li><a href="/precio-vuelo/madrid/dubai" className="hover:text-amber-400">Dubái</a></li>
+                  <li><a href="/precio-vuelo/madrid/nueva-york" className="hover:text-amber-400">Nueva York</a></li>
                   <li><a href="/destinos" className="hover:text-amber-400 font-semibold">Ver todos →</a></li>
+                </ul>
+              </div>
+
+              {/* SSS349 — Precio mes/ciudad para crawlers */}
+              <div className="hidden lg:block">
+                <h3 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Por mes</h3>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="/vuelos-baratos/noviembre/lisboa" className="hover:text-amber-400">Lisboa noviembre</a></li>
+                  <li><a href="/vuelos-baratos/enero/tokio" className="hover:text-amber-400">Tokio enero</a></li>
+                  <li><a href="/vuelos-baratos/mayo/bangkok" className="hover:text-amber-400">Bangkok mayo</a></li>
+                  <li><a href="/vuelos-baratos/febrero/marrakech" className="hover:text-amber-400">Marrakech febrero</a></li>
+                  <li><a href="/vuelos-baratos/septiembre/nueva-york" className="hover:text-amber-400">NYC septiembre</a></li>
+                  <li><a href="/black-friday" className="hover:text-amber-400 font-semibold">Black Friday 2026 🎯</a></li>
                 </ul>
               </div>
 

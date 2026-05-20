@@ -8,6 +8,7 @@ import { MONTHS } from "@/lib/months";
 import { AIRLINE_COMPARISONS } from "@/lib/airline_comparisons";
 import { NEIGHBORHOOD_COMPARISONS } from "@/lib/neighborhood_comparisons";
 import { getHotelEntries } from "@/lib/hotel_seed";
+import { SEO_CITIES, SEO_ORIGINS, MONTHS_ES } from "@/lib/programmatic_seo";
 
 /**
  * IndexNow ping — abr-2026k
@@ -202,6 +203,20 @@ export async function GET(req: NextRequest) {
     )
       .filter(Boolean)
       .map((slug) => `https://${HOST}/hoteles/ciudad/${slug}`),
+    // SSS348 (20 may 2026) — programmatic SEO landings: 576 vuelos-baratos
+    // + 288 precio-vuelo + páginas hub recientes.
+    `https://${HOST}/black-friday`,
+    `https://${HOST}/premium/regalo`,
+    ...SEO_CITIES.flatMap((city) =>
+      MONTHS_ES.map(
+        (m) => `https://${HOST}/vuelos-baratos/${m.slug}/${city.slug}`,
+      ),
+    ),
+    ...SEO_ORIGINS.flatMap((o) =>
+      SEO_CITIES.map(
+        (c) => `https://${HOST}/precio-vuelo/${o.slug}/${c.slug}`,
+      ),
+    ),
   ];
 
   const body = {
