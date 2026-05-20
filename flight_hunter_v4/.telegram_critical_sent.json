@@ -1759,6 +1759,22 @@
       "destination": "BDS",
       "price_eur": 45.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "1864d2ae626a",
+      "ts": "2026-05-20T23:07:49.337847+00:00",
+      "origin": "STN",
+      "destination": "PFO",
+      "price_eur": 53.84,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "b57c7e1900de",
+      "ts": "2026-05-20T23:07:49.337847+00:00",
+      "origin": "IST",
+      "destination": "NAV",
+      "price_eur": 54.28,
+      "classification": "CRÍTICO"
     }
   ]
 }
