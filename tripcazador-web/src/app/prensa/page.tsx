@@ -153,33 +153,61 @@ export default function PrensaPage() {
 
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-white">Logo y assets</h2>
+        {/* SSS350 — wired a /brand/ assets generados en SSS343 */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <a
-            href="/android-chrome-512x512.png"
+            href="/brand/tripcazador-logo.svg"
             download
             className="bg-gray-900/40 border border-gray-800 hover:border-amber-500/40 rounded-xl p-4 text-center transition-colors"
           >
             <p className="text-amber-400 text-3xl mb-2">🎯</p>
-            <p className="text-sm text-white font-semibold">Logo PNG 512×512</p>
-            <p className="text-xs text-gray-500">Para web/redes</p>
+            <p className="text-sm text-white font-semibold">Logo horizontal SVG</p>
+            <p className="text-xs text-gray-500">Vectorial · transparente · 2000×500</p>
           </a>
           <a
-            href="/android-chrome-192x192.png"
+            href="/brand/tripcazador-logo.png"
+            download
+            className="bg-gray-900/40 border border-gray-800 hover:border-amber-500/40 rounded-xl p-4 text-center transition-colors"
+          >
+            <p className="text-amber-400 text-3xl mb-2">🖼️</p>
+            <p className="text-sm text-white font-semibold">Logo horizontal PNG</p>
+            <p className="text-xs text-gray-500">2000×500 · transparente</p>
+          </a>
+          <a
+            href="/brand/tripcazador-logo-mark.svg"
+            download
+            className="bg-gray-900/40 border border-gray-800 hover:border-amber-500/40 rounded-xl p-4 text-center transition-colors"
+          >
+            <p className="text-amber-400 text-3xl mb-2">⭐</p>
+            <p className="text-sm text-white font-semibold">Símbolo SVG</p>
+            <p className="text-xs text-gray-500">Cuadrado · 512×512</p>
+          </a>
+          <a
+            href="/brand/tripcazador-logo-mark-1024.png"
             download
             className="bg-gray-900/40 border border-gray-800 hover:border-amber-500/40 rounded-xl p-4 text-center transition-colors"
           >
             <p className="text-amber-400 text-3xl mb-2">📱</p>
-            <p className="text-sm text-white font-semibold">Logo PNG 192×192</p>
-            <p className="text-xs text-gray-500">Para mobile</p>
+            <p className="text-sm text-white font-semibold">Símbolo PNG 1024</p>
+            <p className="text-xs text-gray-500">Para mobile / app stores</p>
+          </a>
+          <a
+            href="/brand/tripcazador-color-palette.pdf"
+            download
+            className="bg-gray-900/40 border border-gray-800 hover:border-amber-500/40 rounded-xl p-4 text-center transition-colors"
+          >
+            <p className="text-amber-400 text-3xl mb-2">🎨</p>
+            <p className="text-sm text-white font-semibold">Paleta colores PDF</p>
+            <p className="text-xs text-gray-500">12 colores + tipografía</p>
           </a>
           <a
             href="/og-default.png"
             download
             className="bg-gray-900/40 border border-gray-800 hover:border-amber-500/40 rounded-xl p-4 text-center transition-colors"
           >
-            <p className="text-amber-400 text-3xl mb-2">🖼️</p>
+            <p className="text-amber-400 text-3xl mb-2">🌐</p>
             <p className="text-sm text-white font-semibold">OG image 1200×630</p>
-            <p className="text-xs text-gray-500">Para artículos</p>
+            <p className="text-xs text-gray-500">Para artículos web</p>
           </a>
         </div>
         <p className="text-xs text-gray-500">
