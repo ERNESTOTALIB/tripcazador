@@ -57,7 +57,11 @@ jobs:
         # cualquier 404 en una dynamic route (ej. /destinos/bali si no
         # genera estática) hacía fallar todo. Movido a EXTENDED.
         run: |
-          npx playwright test --project=chromium \
+          # SSS330: --retries=2 para mitigar flakiness CI Playwright
+          # (timeouts ocasionales en next start + cold lambda). Local
+          # los tests pasan sin retries. Si un spec realmente regresa
+          # después de 2 retries, sigue fallando.
+          npx playwright test --project=chromium --retries=2 \
             home.spec.ts \
             seo.spec.ts \
             navigation.spec.ts \
