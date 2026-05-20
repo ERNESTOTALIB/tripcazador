@@ -54,7 +54,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `/vuelos-baratos/${params.ciudad}/${params.mes}` },
+    alternates: { canonical: `/vuelos-baratos/${params.mes}/${params.ciudad}` },
     openGraph: { title, description, type: "article" },
   };
 }
@@ -120,8 +120,8 @@ export default async function VuelosBaratosLanding({
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Inicio", item: "https://tripcazador.com/" },
       { "@type": "ListItem", position: 2, name: "Vuelos baratos", item: "https://tripcazador.com/vuelos-baratos" },
-      { "@type": "ListItem", position: 3, name: city.display, item: `https://tripcazador.com/vuelos-baratos/${city.slug}` },
-      { "@type": "ListItem", position: 4, name: `${month.display} ${targetYear}`, item: `https://tripcazador.com/vuelos-baratos/${city.slug}/${month.slug}` },
+      { "@type": "ListItem", position: 3, name: month.display, item: `https://tripcazador.com/vuelos-baratos/${month.slug}` },
+      { "@type": "ListItem", position: 4, name: `${city.display} en ${month.display} ${targetYear}`, item: `https://tripcazador.com/vuelos-baratos/${month.slug}/${city.slug}` },
     ],
   };
 
