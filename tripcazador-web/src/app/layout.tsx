@@ -428,6 +428,10 @@ export default function RootLayout({
                   <li><a href="/regalo" className="hover:text-amber-400">Regalar 🎁</a></li>
                   <li><a href="/creators" className="hover:text-amber-400">Creators (8% comm)</a></li>
                   <li><a href="/aerolineas" className="hover:text-amber-400">Aerolíneas</a></li>
+                  {/* SSS365 — wire nuevas verticales */}
+                  <li><a href="/business" className="hover:text-amber-400">Para empresas 💼</a></li>
+                  <li><a href="/api-docs" className="hover:text-amber-400">API developers</a></li>
+                  <li><a href="/sponsor" className="hover:text-amber-400">Patrocinios</a></li>
                 </ul>
               </div>
             </div>
