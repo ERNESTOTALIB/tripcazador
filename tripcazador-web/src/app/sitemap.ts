@@ -295,6 +295,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.55,
     },
+    // SSS365 — wire nuevas landings post-MEGA
+    {
+      url: `${BASE_URL}/business`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7, // alto — B2B revenue target
+    },
+    {
+      url: `${BASE_URL}/api-docs`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
     {
       url: `${BASE_URL}/comparar`,
       lastModified: now,

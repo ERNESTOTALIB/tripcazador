@@ -11,6 +11,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { NewsletterABWidget } from "@/components/NewsletterABWidget";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { AdSenseSlot } from "@/components/AdSenseSlot";
+import { WhatsAppOptInWidget } from "@/components/WhatsAppOptInWidget";
 import { ConciergeInlineCTA } from "@/components/ConciergeInlineCTA";
 import { RelatedPosts } from "@/components/RelatedPosts";
 import { TableOfContents } from "@/components/TableOfContents";
@@ -236,6 +237,9 @@ export default function BlogPostPage({ params }: { params: Params }) {
             alto (lee el blog full) = posición premium para display ads.
             Consent gated por defecto en el componente. */}
         <AdSenseSlot variant="inline" format="auto" />
+        {/* SSS365 — WhatsApp opt-in widget post-AdSense. Captura nueva
+            audiencia que NO usa email/Telegram. Free tier Meta 1000 conv/mo. */}
+        <WhatsAppOptInWidget variant="inline" source={`blog-${params.slug}`} />
         <div className="mt-8">
           <NewsletterABWidget context={`blog-${params.slug}`} />
         </div>
