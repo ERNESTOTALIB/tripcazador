@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="TripCazador">
+  <title>TripCazador</title>
+  <rect width="512" height="512" rx="80" fill="#030712"/>
+  <!-- Diana centrada -->
+  <g transform="translate(106, 106)">
+    <circle cx="150" cy="150" r="148" fill="none" stroke="#f59e0b" stroke-width="8"/>
+    <circle cx="150" cy="150" r="108" fill="none" stroke="#f59e0b" stroke-width="7" opacity="0.7"/>
+    <circle cx="150" cy="150" r="68" fill="none" stroke="#f59e0b" stroke-width="6" opacity="0.5"/>
+    <circle cx="150" cy="150" r="32" fill="#f59e0b"/>
+    <line x1="150" y1="0" x2="150" y2="50" stroke="#f59e0b" stroke-width="6"/>
+    <line x1="150" y1="250" x2="150" y2="300" stroke="#f59e0b" stroke-width="6"/>
+    <line x1="0" y1="150" x2="50" y2="150" stroke="#f59e0b" stroke-width="6"/>
+    <line x1="250" y1="150" x2="300" y2="150" stroke="#f59e0b" stroke-width="6"/>
+    <path d="M150 124 L165 168 L195 184 L165 180 L162 208 L156 215 L150 220 L144 215 L138 208 L135 180 L105 184 L135 168 Z" fill="#030712"/>
+  </g>
+</svg>
