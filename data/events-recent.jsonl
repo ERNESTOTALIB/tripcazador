@@ -1,6 +1,3 @@
-{"ts":"2026-05-16T08:46:44.279Z","type":"landing_arrived","visitor":"39fdb23e074411a7","meta":{"path":"/"}}
-{"ts":"2026-05-16T08:46:45.249Z","type":"result_viewed","visitor":"220c957a07c74913","meta":{"deal_id":"ryanair_agp_rak_20260630_economy","destination":"RAK","origin":"AGP","price":14.99,"classification":"CRÍTICO"}}
-{"ts":"2026-05-16T08:46:49.468Z","type":"page_view","visitor":"220c957a07c74913","meta":{"path":"/"}}
 {"ts":"2026-05-16T08:46:49.919Z","type":"page_view","visitor":"39fdb23e074411a7","meta":{"path":"/"}}
 {"ts":"2026-05-16T08:46:49.935Z","type":"landing_arrived","visitor":"39fdb23e074411a7","meta":{"path":"/"}}
 {"ts":"2026-05-16T08:46:51.220Z","type":"landing_arrived","visitor":"39fdb23e074411a7","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-20T21:20:50.755Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:20:58.426Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:21:10.938Z","type":"page_view","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
+{"ts":"2026-05-20T21:20:54.400Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
+{"ts":"2026-05-20T21:20:58.413Z","type":"landing_arrived","visitor":"b90119eb388cca26","meta":{"path":"/"}}
+{"ts":"2026-05-20T21:21:12.689Z","type":"page_view","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
