@@ -68,10 +68,18 @@ export function ExitIntentModal() {
     setSubmitting(true);
     tcTrack("exit_intent_submit", { email_domain: email.split("@")[1] || "" });
     try {
-      const res = await fetch("/api/newsletter/subscribe", {
+      const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, source: "exit_intent" }),
+        // SSS351 anomaly fix: el endpoint correcto es /api/subscribe (no
+        // /api/newsletter/subscribe) y requiere consent:true para no
+        // devolver 400 consent_required.
+        body: JSON.stringify({
+          email,
+          source: "exit_intent",
+          consent: true,
+          locale: "es",
+        }),
       });
       if (res.ok) {
         setSubmitted(true);
