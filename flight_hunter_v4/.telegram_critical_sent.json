@@ -1727,6 +1727,22 @@
       "destination": "PFO",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5e9a78cd43be",
+      "ts": "2026-05-20T19:19:08.355751+00:00",
+      "origin": "WAW",
+      "destination": "PFO",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "24be60201128",
+      "ts": "2026-05-20T19:19:08.355751+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 36.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
