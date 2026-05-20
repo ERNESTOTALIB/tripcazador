@@ -132,9 +132,22 @@ export function ConciergeMyOrdersClient({ initialToken }: { initialToken: string
           </p>
         </header>
 
+        {/* SSS333: bloque informativo "cómo funciona" para reducir confusión */}
+        <div className="rounded-2xl border border-gray-800 bg-gray-900 p-5">
+          <h2 className="text-sm font-semibold text-gray-200 mb-2">
+            🔐 Cómo funciona el acceso
+          </h2>
+          <ol className="text-xs text-gray-400 space-y-1 list-decimal pl-5">
+            <li>Introduces el email con el que pagaste un pedido Concierge</li>
+            <li>Te enviamos un link de un solo uso (válido 3 días)</li>
+            <li>Al hacer click, abres tu portal sin contraseñas</li>
+            <li>Verás estado, fechas y plan completo cuando esté entregado</li>
+          </ol>
+        </div>
+
         {error === "link_expired" && (
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-            Tu link de acceso ha caducado (válido 7 días). Pide uno nuevo
+            Tu link de acceso ha caducado (válido 3 días). Pide uno nuevo
             con tu email.
           </div>
         )}
@@ -187,6 +200,47 @@ export function ConciergeMyOrdersClient({ initialToken }: { initialToken: string
           </Link>{" "}
           desde €9.
         </div>
+
+        {/* SSS333: FAQ portal */}
+        <details className="rounded-xl border border-gray-800 bg-gray-900">
+          <summary className="cursor-pointer text-sm font-semibold text-gray-200 p-4 hover:bg-gray-800/50">
+            Preguntas frecuentes
+          </summary>
+          <div className="px-4 pb-4 space-y-3 text-xs text-gray-400">
+            <div>
+              <strong className="text-gray-200">No recibo el link.</strong>{" "}
+              Revisa la carpeta de spam/promociones. Si en 10 minutos no
+              llega, escríbenos a{" "}
+              <a href="mailto:contacto@tripcazador.com" className="text-amber-400 underline">
+                contacto@tripcazador.com
+              </a>{" "}
+              y verificamos manualmente.
+            </div>
+            <div>
+              <strong className="text-gray-200">Mi link no funciona.</strong>{" "}
+              El link caduca a los 3 días. Vuelve a pedir uno desde este
+              formulario.
+            </div>
+            <div>
+              <strong className="text-gray-200">¿Por qué no veo mis pedidos?</strong>{" "}
+              Solo aparecen pedidos pagados con ESE email. Si pagaste con
+              otra dirección, prueba con la que recibió la confirmación
+              Stripe.
+            </div>
+            <div>
+              <strong className="text-gray-200">¿Cómo cancelo un pedido?</strong>{" "}
+              Si aún no hemos empezado a procesarlo (status &quot;Pendiente&quot;),
+              escribe a soporte y te reembolsamos íntegro. Una vez
+              entregado, aplica la garantía &quot;opción mejor&quot;.
+            </div>
+            <div>
+              <strong className="text-gray-200">¿Mi plan llega aquí o por email?</strong>{" "}
+              Ambos. Cuando esté listo recibes un email con todo, y desde
+              aquí también puedes verlo (status &quot;Entregado&quot; → expandir
+              &quot;Ver mi plan completo&quot;).
+            </div>
+          </div>
+        </details>
       </div>
     );
   }
@@ -235,9 +289,16 @@ export function ConciergeMyOrdersClient({ initialToken }: { initialToken: string
       )}
 
       <div className="text-xs text-gray-500 text-center pt-4">
-        <Link href="/concierge/mis-pedidos" className="text-gray-400 hover:text-amber-400">
-          Cerrar sesión / Cambiar email
-        </Link>
+        <button
+          type="button"
+          onClick={async () => {
+            await fetch("/api/concierge/logout", { method: "POST" });
+            window.location.href = "/concierge/mis-pedidos";
+          }}
+          className="text-gray-400 hover:text-amber-400 underline"
+        >
+          Cerrar sesión
+        </button>
       </div>
     </div>
   );

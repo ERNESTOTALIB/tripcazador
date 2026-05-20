@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { CONCIERGE_TIERS, isValidTier, type ConciergeTier } from "@/lib/concierge_tiers";
+import { sendOwnerNotify } from "@/lib/owner_notify";
 
 /**
  * /api/concierge/webhook — fase sss SSS10 (May 2026, tiered)
@@ -200,6 +201,27 @@ export async function POST(req: Request) {
         `💳 Pagado: *${amountTotalEur}€* (${tierDef.delivery_label})\n` +
         `🆔 ${orderPayload.order_id}`;
       await notifyTelegram(tgMsg);
+
+      // SSS331: notify owner por email con prefix [TRIPCAZADOR] para
+      // auto-filtrado a carpeta. Fire-and-forget — si Resend falla no
+      // bloquea el webhook (Stripe ya recibió 200).
+      void sendOwnerNotify({
+        kind: "concierge_order",
+        customer_email: orderPayload.email,
+        summary: `Nuevo Concierge ${tierDef.name} · ${orderPayload.origin}→${orderPayload.destination} · ${amountTotalEur}€`,
+        details: {
+          tier: tierDef.name,
+          order_id: orderPayload.order_id,
+          route: `${orderPayload.origin} → ${orderPayload.destination}`,
+          fechas: `${orderPayload.date_from}${orderPayload.date_to ? ` → ${orderPayload.date_to}` : ""} (±${orderPayload.flex_days}d)`,
+          viajeros: orderPayload.travelers,
+          estrellas_hotel: `${orderPayload.hotel_stars}★`,
+          presupuesto: `${orderPayload.budget}€`,
+          pagado: `${amountTotalEur}€`,
+          entrega: tierDef.delivery_label,
+          stripe_session: orderPayload.stripe_session_id.slice(0, 32) + "…",
+        },
+      }).catch(() => {});
     }
   }
 

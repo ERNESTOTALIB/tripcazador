@@ -6,6 +6,7 @@ import {
   markCancelScheduled,
   clearCancelScheduled,
 } from "@/lib/premium_store";
+import { sendOwnerNotify } from "@/lib/owner_notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -114,6 +115,20 @@ export async function POST(req: NextRequest) {
         source: "stripe",
         updated_at: Date.now(),
       });
+      // SSS331: notify owner por email con prefix [TRIPCAZADOR] (fire-and-forget)
+      void sendOwnerNotify({
+        kind: "premium_signup",
+        customer_email: email,
+        summary: `Nueva alta Premium · ${email}`,
+        details: {
+          customer_id: customerId,
+          subscription_id: subId || "—",
+          period_end: obj?.current_period_end
+            ? new Date(obj.current_period_end * 1000).toISOString().slice(0, 19)
+            : "30d default",
+          stripe_session: (obj?.id || "").slice(0, 32) + "…",
+        },
+      }).catch(() => {});
     }
   } else if (
     event.type === "customer.subscription.deleted" ||
@@ -122,6 +137,18 @@ export async function POST(req: NextRequest) {
     const customerId = String(obj?.customer || "");
     if (customerId) {
       deactivateByCustomerId(customerId);
+      // SSS331: notify owner del cancel/payment fail (visibilidad ops)
+      void sendOwnerNotify({
+        kind: "premium_cancel",
+        summary:
+          event.type === "customer.subscription.deleted"
+            ? `Premium cancelado · ${customerId.slice(0, 16)}…`
+            : `Payment failed Premium · ${customerId.slice(0, 16)}…`,
+        details: {
+          event: event.type,
+          customer_id: customerId,
+        },
+      }).catch(() => {});
     }
   } else if (event.type === "customer.subscription.updated") {
     // SSS324: capturar el "cancel scheduled" para mostrar warning en panel

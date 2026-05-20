@@ -2,6 +2,13 @@
  * /api/concierge/my-orders route.test.ts — SSS328
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
+// SSS332: my-orders ahora lee cookie via next/headers. Mock para tests.
+const mockCookieGet = vi.fn();
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(async () => ({ get: mockCookieGet })),
+}));
+
 import { NextRequest } from "next/server";
 import { GET } from "../route";
 import { issueConciergeAccessToken } from "@/lib/concierge_access_token";
@@ -19,6 +26,8 @@ describe("GET /api/concierge/my-orders SSS328", () => {
     process.env.PANEL_SECRET = "test_secret_xxx";
     process.env.NEXT_PUBLIC_API_URL = "https://api.example.com";
     process.env.ADMIN_TOKEN = "test_admin";
+    mockCookieGet.mockReset();
+    mockCookieGet.mockReturnValue(undefined); // sin cookie por default
   });
   afterEach(() => {
     if (ORIG_SECRET === undefined) delete process.env.PANEL_SECRET;
@@ -30,9 +39,63 @@ describe("GET /api/concierge/my-orders SSS328", () => {
     vi.restoreAllMocks();
   });
 
-  it("401 sin token", async () => {
+  it("401 sin token (ni cookie ni query)", async () => {
     const res = await GET(getReq(""));
     expect(res.status).toBe(401);
+  });
+
+  it("SSS332: 200 con token en cookie httpOnly (preferido)", async () => {
+    const cookieToken = issueConciergeAccessToken("user@example.com");
+    mockCookieGet.mockReturnValue({ value: cookieToken });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(JSON.stringify({ orders: [] }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      ),
+    );
+    const res = await GET(getReq("")); // sin ?token=
+    expect(res.status).toBe(200);
+    const d = await res.json();
+    expect(d.ok).toBe(true);
+    expect(d.email).toBe("user@example.com");
+  });
+
+  it("SSS332: cookie preferida sobre query token (defense)", async () => {
+    const cookieToken = issueConciergeAccessToken("cookie@example.com");
+    const queryToken = issueConciergeAccessToken("query@example.com");
+    mockCookieGet.mockReturnValue({ value: cookieToken });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(JSON.stringify({ orders: [] }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      ),
+    );
+    const res = await GET(getReq(`?token=${encodeURIComponent(queryToken)}`));
+    const d = await res.json();
+    expect(d.email).toBe("cookie@example.com"); // cookie wins
+  });
+
+  it("SSS332: response incluye X-Frame-Options DENY + CSP frame-ancestors none", async () => {
+    const cookieToken = issueConciergeAccessToken("x@y.com");
+    mockCookieGet.mockReturnValue({ value: cookieToken });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(JSON.stringify({ orders: [] }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      ),
+    );
+    const res = await GET(getReq(""));
+    expect(res.headers.get("X-Frame-Options")).toBe("DENY");
+    expect(res.headers.get("Content-Security-Policy")).toBe("frame-ancestors 'none'");
   });
 
   it("401 token inválido", async () => {

@@ -29,18 +29,35 @@ const RESEND_FROM =
   process.env.RESEND_FROM || "TripCazador Concierge <alertas@tripcazador.com>";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Rate limit: 5 req por email / hora
-const rateLimit: Map<string, number[]> = new Map();
+// Rate limit: 5 req por email / hora + 20 req por IP / hora (SSS332).
+// El IP cap protege contra atacante que itera muchos emails distintos
+// desde la misma fuente.
+const rateLimitEmail: Map<string, number[]> = new Map();
+const rateLimitIp: Map<string, number[]> = new Map();
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
-const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_MAX_EMAIL = 5;
+const RATE_LIMIT_MAX_IP = 20;
 
-function isRateLimited(email: string, now: number = Date.now()): boolean {
-  const hits = rateLimit.get(email) || [];
+function checkAndIncrement(
+  map: Map<string, number[]>,
+  key: string,
+  max: number,
+  now: number,
+): boolean {
+  const hits = map.get(key) || [];
   const fresh = hits.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  if (fresh.length >= RATE_LIMIT_MAX) return true;
+  if (fresh.length >= max) return true;
   fresh.push(now);
-  rateLimit.set(email, fresh);
+  map.set(key, fresh);
   return false;
+}
+
+function isRateLimited(email: string, ip: string, now: number = Date.now()): boolean {
+  const emailLimited = checkAndIncrement(rateLimitEmail, email, RATE_LIMIT_MAX_EMAIL, now);
+  const ipLimited = ip
+    ? checkAndIncrement(rateLimitIp, ip, RATE_LIMIT_MAX_IP, now)
+    : false;
+  return emailLimited || ipLimited;
 }
 
 async function sendMagicLink(email: string, token: string): Promise<boolean> {
@@ -112,7 +129,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // SSS329 H1: SIEMPRE devolvemos la MISMA shape para evitar email enumeration.
   // No exponemos `sent`, `rate_limited`, ni nada que revele si la cuenta existe.
   // El envío del email es fire-and-forget para que el timing tampoco varíe.
-  const limited = isRateLimited(email);
+  // SSS332: rate limit dual por email + por IP. La IP viene del header
+  // x-forwarded-for (Vercel) o x-real-ip (alternativo). Cap 20/IP/h.
+  const fwd = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "";
+  const ip = fwd.split(",")[0].trim();
+  const limited = isRateLimited(email, ip);
   if (!limited) {
     // No esperamos al hasOrders + sendMagicLink — disparamos asíncrono
     // (sin await) para mantener timing estable.
