@@ -79,10 +79,52 @@ export default function BaggagePage({
       }
     : null;
 
+  // SSS409 — HowTo schema "Cómo equipar para vuelo {aerolínea}"
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: `Cómo cumplir con las normas de equipaje ${r.name}`,
+    description: `Guía paso a paso para no pagar extras por equipaje en ${r.name}: dimensiones, peso, equipaje de mano vs facturado.`,
+    totalTime: "PT10M",
+    step: [
+      {
+        "@type": "HowToStep",
+        position: 1,
+        name: "Verifica las dimensiones máximas",
+        text: `${r.name} acepta equipaje de cabina de hasta ${r.cabin?.dimensions || "55×40×20 cm"} y ${r.cabin?.weight || "10 kg"} de peso. Mide tu maleta antes de salir.`,
+      },
+      {
+        "@type": "HowToStep",
+        position: 2,
+        name: "Pesa el equipaje en casa",
+        text: `Usa una báscula de viaje (~€10). ${r.name} cobra extras por exceso de peso en mostrador (€30-80 por kg adicional).`,
+      },
+      {
+        "@type": "HowToStep",
+        position: 3,
+        name: "Líquidos en bolsa transparente",
+        text: "Bolsa zip-lock de 1L máximo, líquidos hasta 100ml por envase. Aplicable a todos los vuelos en UE.",
+      },
+      {
+        "@type": "HowToStep",
+        position: 4,
+        name: "Imprime tarjeta de embarque",
+        text: `Si vuelas con ${r.name} low-cost (Ryanair, Wizz, easyJet), check-in online gratuito + imprime la tarjeta. En el aeropuerto te cobran €25-55.`,
+      },
+      {
+        "@type": "HowToStep",
+        position: 5,
+        name: "Equipaje extra: añádelo online",
+        text: `Si necesitas maleta facturada, añádela en el sitio web ${r.name} antes del vuelo — siempre más barato que en el aeropuerto (~50% diferencia).`,
+      },
+    ],
+  };
+
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       <JsonLd data={breadcrumb} />
       {faqJsonLd && <JsonLd data={faqJsonLd} />}
+      <JsonLd data={howToJsonLd} />
 
       <header className="space-y-4">
         <nav className="flex items-center gap-2 text-sm text-gray-500">
