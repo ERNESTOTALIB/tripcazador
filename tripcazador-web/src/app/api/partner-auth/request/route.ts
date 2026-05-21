@@ -10,7 +10,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
-import { getPartnerByCode } from "@/lib/agency_partner";
+import { getPartnerByCode, hydratePartnersFromKV } from "@/lib/agency_partner";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -98,6 +98,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: "rate_limited_ip" }, { status: 429 });
   }
 
+  await hydratePartnersFromKV();
   const partner = getPartnerByCode(refCode);
   // Privacy: respondemos ok:true incluso si partner no existe o email no
   // matchea — para no revelar qué ref_codes están activos vs no.

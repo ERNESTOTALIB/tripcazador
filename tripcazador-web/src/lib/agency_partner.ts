@@ -1,7 +1,11 @@
 import crypto from "node:crypto";
+import { createKV } from "./kv_store";
+
+const kv = createKV("agency_partners");
+const PARTNERS_KV_KEY = "all";
 
 /**
- * agency_partner.ts — SSS375 (21 may 2026)
+ * agency_partner.ts — SSS375 + SSS392 (21 may 2026)
  *
  * Programa B2B "TripCazador Partners" — agencias de viajes y bloggers
  * de nicho que revenden Premium/Concierge a sus customers. Revshare via
@@ -116,6 +120,40 @@ export interface RegisterPartnerInput {
   niche?: string;
 }
 
+/**
+ * SSS392 — sync KV snapshot helper. Fire-and-forget background write
+ * que serializa todo el store actual. Llamado después de cada mutación.
+ */
+function persistToKV(): void {
+  const snapshot = Array.from(store.byCode.values());
+  void kv.set(PARTNERS_KV_KEY, snapshot).catch(() => {
+    /* silenciado: in-mem es la fuente de verdad runtime */
+  });
+}
+
+/**
+ * SSS392 — hidrata in-mem desde KV. Idempotente (no sobrescribe si
+ * hay datos en memoria). `force=true` re-hidrata para refresh manual.
+ */
+export async function hydratePartnersFromKV(force = false): Promise<number> {
+  if (!force && store.byCode.size > 0) return store.byCode.size;
+  try {
+    const remote = await kv.get<AgencyPartner[]>(PARTNERS_KV_KEY);
+    if (Array.isArray(remote)) {
+      store.byCode.clear();
+      store.bySlug.clear();
+      for (const p of remote) {
+        store.byCode.set(p.ref_code, p);
+        store.bySlug.set(p.slug, p);
+      }
+      return remote.length;
+    }
+  } catch {
+    // ignorar
+  }
+  return 0;
+}
+
 export function registerPartner(input: RegisterPartnerInput): AgencyPartner {
   let slug = slugify(input.company_name);
   if (!slug) slug = `agency-${Date.now().toString(36)}`;
@@ -143,6 +181,7 @@ export function registerPartner(input: RegisterPartnerInput): AgencyPartner {
   };
   store.byCode.set(partner.ref_code, partner);
   store.bySlug.set(partner.slug, partner);
+  persistToKV();
   return partner;
 }
 
@@ -169,6 +208,7 @@ export function recordReferralConversion(
     Math.round((partner.total_revenue_eur + evt.amount_eur) * 100) / 100;
   partner.total_payout_eur =
     Math.round((partner.total_payout_eur + payout) * 100) / 100;
+  persistToKV();
   return { ok: true, payout_eur: payout };
 }
 
@@ -177,6 +217,7 @@ export function approvePartner(ref_code: string): boolean {
   if (!p) return false;
   p.status = "active";
   p.approved_at = Date.now();
+  persistToKV();
   return true;
 }
 
@@ -184,6 +225,7 @@ export function rejectPartner(ref_code: string): boolean {
   const p = store.byCode.get(ref_code);
   if (!p) return false;
   p.status = "rejected";
+  persistToKV();
   return true;
 }
 
@@ -196,4 +238,5 @@ export function listPartners(filter?: { status?: PartnerStatus }): AgencyPartner
 export function __resetForTests(): void {
   store.byCode.clear();
   store.bySlug.clear();
+  void kv.del(PARTNERS_KV_KEY).catch(() => {});
 }

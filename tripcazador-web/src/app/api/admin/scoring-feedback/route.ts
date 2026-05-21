@@ -16,6 +16,7 @@ import { verifyToken, COOKIE_KEY } from "@/lib/panel_auth";
 import {
   recordOutcome,
   lookupRouteHistory,
+  hydrateOutcomesFromKV,
   type DealOutcome,
 } from "@/lib/deal_scoring_v3";
 
@@ -73,6 +74,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
+  // SSS391 — hidrata KV antes de stats lookup para asegurar consistencia
+  // post-cold-container.
+  await hydrateOutcomesFromKV();
   recordOutcome(dealId, routeKey, outcome);
   const stats = lookupRouteHistory(routeKey);
   return NextResponse.json({ ok: true, stats });
@@ -87,6 +91,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   if (!routeKey) {
     return NextResponse.json({ ok: false, error: "missing_route_key" }, { status: 400 });
   }
+  await hydrateOutcomesFromKV();
   const stats = lookupRouteHistory(routeKey.toUpperCase());
   return NextResponse.json({ ok: true, stats });
 }
