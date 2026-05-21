@@ -754,5 +754,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1779363057.32369,
+    "deal_id": "ryanair_bcn_aho_20260709_economy",
+    "origin": "BCN",
+    "destination": "AHO",
+    "city_from": "Barcelona",
+    "city_to": "Alghero",
+    "price_eur": 14.99
   }
 ]
