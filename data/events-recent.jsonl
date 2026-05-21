@@ -1,6 +1,3 @@
-{"ts":"2026-05-16T14:24:20.568Z","type":"landing_arrived","visitor":"eee95b88254d22ee","meta":{"path":"/"}}
-{"ts":"2026-05-16T14:24:20.596Z","type":"page_view","visitor":"eee95b88254d22ee","meta":{"path":"/"}}
-{"ts":"2026-05-16T14:24:38.568Z","type":"page_view","visitor":"2104225ac584618b","meta":{"path":"/"}}
 {"ts":"2026-05-16T14:24:39.392Z","type":"page_view","visitor":"2104225ac584618b","meta":{"path":"/"}}
 {"ts":"2026-05-16T14:24:42.078Z","type":"landing_arrived","visitor":"2104225ac584618b","meta":{"path":"/"}}
 {"ts":"2026-05-16T15:08:24.237Z","type":"page_view","visitor":"5f00ea8d428d2cd2","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-21T10:37:13.564Z","type":"landing_arrived","visitor":"c8cf43439ec676ed","meta":{"path":"/"}}
 {"ts":"2026-05-21T10:37:13.587Z","type":"page_view","visitor":"c8cf43439ec676ed","meta":{"path":"/"}}
 {"ts":"2026-05-21T10:37:14.114Z","type":"landing_arrived","visitor":"c08152cd96c80faa","meta":{"path":"/"}}
+{"ts":"2026-05-21T10:37:14.741Z","type":"result_viewed","visitor":"4885db7f4d7b8b74","meta":{"deal_id":"ryanair_bcn_rak_20260822_economy","destination":"RAK","origin":"BCN","price":24.23,"classification":"CRÍTICO"}}
+{"ts":"2026-05-21T10:37:14.763Z","type":"result_viewed","visitor":"4885db7f4d7b8b74","meta":{"deal_id":"ryanair_bcn_aho_20260709_economy","destination":"AHO","origin":"BCN","price":14.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-21T10:37:16.013Z","type":"page_view","visitor":"4885db7f4d7b8b74","meta":{"path":"/"}}
