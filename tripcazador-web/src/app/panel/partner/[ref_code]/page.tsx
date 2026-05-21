@@ -20,7 +20,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import crypto from "node:crypto";
-import { getPartnerByCode } from "@/lib/agency_partner";
+import { getPartnerByCode, hydratePartnersFromKV } from "@/lib/agency_partner";
 import Link from "next/link";
 
 const AUTH_SECRET =
@@ -66,7 +66,8 @@ function formatEur(n: number): string {
   }).format(n);
 }
 
-export default function PartnerDashboardPage({ params }: PageProps) {
+export default async function PartnerDashboardPage({ params }: PageProps) {
+  await hydratePartnersFromKV();
   const partner = getPartnerByCode(params.ref_code);
   if (!partner) notFound();
 

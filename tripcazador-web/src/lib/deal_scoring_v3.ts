@@ -1,5 +1,5 @@
 /**
- * deal_scoring_v3.ts — SSS374 (21 may 2026)
+ * deal_scoring_v3.ts — SSS374 + SSS391 (21 may 2026)
  *
  * Wrapper sobre `deal_scoring_v2` que añade aprendizaje supervisado ligero
  * basado en feedback histórico:
@@ -14,10 +14,17 @@
  *       · si poca data histórica (<3 outcomes) → sin ajuste
  *
  * Store en memoria con globalThis (persist warm container Vercel).
- * Cuando tengamos persistencia real, swap a Postgres/Redis transparently.
+ * SSS391 — write-through KV: recordOutcome escribe en background a KV
+ * (Upstash/Vercel KV o in-mem fallback). Reads usan in-memory (rápido).
+ * Callers críticos pueden `await hydrateOutcomesFromKV()` antes de
+ * lookups para asegurar consistencia cross-deploy.
  */
 
+import { createKV } from "./kv_store";
 import { scoreDealV2, type ScoringResult } from "./deal_scoring_v2";
+
+const kv = createKV("scoring_v3");
+const OUTCOMES_KV_KEY = "outcomes";
 
 export type DealOutcome = "booked" | "expired_no_takers" | "false_positive" | "regular_sale";
 
@@ -54,6 +61,39 @@ export function recordOutcome(
   if (store.outcomes.length > 5000) {
     store.outcomes = store.outcomes.slice(-5000);
   }
+  // SSS391 fire-and-forget KV write-through. No await porque la API
+  // pública sigue siendo sync. Si KV falla, mantenemos la copia in-mem
+  // (siguiente deploy puede perder el último batch pero no rompe nada).
+  void kv.set(OUTCOMES_KV_KEY, store.outcomes).catch(() => {
+    /* silenciado: in-mem es la fuente de verdad runtime */
+  });
+}
+
+/**
+ * SSS391 — hidrata in-mem outcomes desde KV. Idempotente.
+ *
+ * Callers críticos (admin scoring page, auto-feedback cron) deben await
+ * esto antes de lookups para asegurar que la memoria refleja el último
+ * snapshot persistido. Sin esto, un cold container empieza con outcomes
+ * vacíos hasta que llegue el primer recordOutcome.
+ *
+ * Returns: número de outcomes cargados (0 si nada / KV vacío / error).
+ */
+export async function hydrateOutcomesFromKV(force = false): Promise<number> {
+  if (!force && store.outcomes.length > 0) {
+    // Ya hidratado en este container — skip
+    return store.outcomes.length;
+  }
+  try {
+    const remote = await kv.get<OutcomeRecord[]>(OUTCOMES_KV_KEY);
+    if (Array.isArray(remote)) {
+      store.outcomes = remote;
+      return remote.length;
+    }
+  } catch {
+    // ignorar
+  }
+  return 0;
 }
 
 export interface RouteHistoryStats {
@@ -247,9 +287,10 @@ export function scoreDealV3(deal: DealInputV3): ScoringResultV3 {
   };
 }
 
-/** Test-only helper para limpiar store */
+/** Test-only helper para limpiar store + KV in-mem. */
 export function __resetForTests(): void {
   store.outcomes = [];
+  void kv.del(OUTCOMES_KV_KEY).catch(() => {});
 }
 
 export const __test__ = {

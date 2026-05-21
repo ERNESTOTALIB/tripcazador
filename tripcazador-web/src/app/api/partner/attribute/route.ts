@@ -15,7 +15,7 @@ import {
   buildCookieSetHeader,
   isValidRefCode,
 } from "@/lib/partner_attribution";
-import { getPartnerByCode } from "@/lib/agency_partner";
+import { getPartnerByCode, hydratePartnersFromKV } from "@/lib/agency_partner";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (!isValidRefCode(ref)) {
     return NextResponse.json({ ok: false, error: "invalid_format" }, { status: 400 });
   }
+  await hydratePartnersFromKV();
   const partner = getPartnerByCode(ref);
   if (!partner) {
     return NextResponse.json({ ok: false, error: "unknown" }, { status: 404 });
@@ -59,6 +60,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   if (!ref || !isValidRefCode(ref)) {
     return NextResponse.json({ ok: true, ref: null });
   }
+  await hydratePartnersFromKV();
   const partner = getPartnerByCode(ref);
   if (!partner || partner.status !== "active") {
     return NextResponse.json({ ok: true, ref: null });
