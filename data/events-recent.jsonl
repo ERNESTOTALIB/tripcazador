@@ -1,6 +1,3 @@
-{"ts":"2026-05-16T22:12:53.301Z","type":"landing_arrived","visitor":"d2a079a09c82b182","meta":{"path":"/"}}
-{"ts":"2026-05-16T22:12:54.157Z","type":"page_view","visitor":"d2a079a09c82b182","meta":{"path":"/"}}
-{"ts":"2026-05-17T03:55:03.178Z","type":"page_view","visitor":"07793289d72f1404","meta":{"path":"/"}}
 {"ts":"2026-05-17T03:55:03.242Z","type":"landing_arrived","visitor":"07793289d72f1404","meta":{"path":"/","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-17T03:55:04.105Z","type":"page_view","visitor":"07793289d72f1404","meta":{"path":"/deals"}}
 {"ts":"2026-05-17T06:59:38.943Z","type":"result_viewed","visitor":"81df721774c8ee12","meta":{"deal_id":"ryanair_mad_ace_20260914_economy","destination":"ACE","origin":"MAD","price":35.56,"classification":"CRÍTICO"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-21T21:41:27.551Z","type":"page_view","visitor":"e364db85e0569e45","meta":{"path":"/"}}
 {"ts":"2026-05-21T21:41:31.391Z","type":"landing_arrived","visitor":"e364db85e0569e45","meta":{"path":"/"}}
 {"ts":"2026-05-21T21:41:34.895Z","type":"landing_arrived","visitor":"e364db85e0569e45","meta":{"path":"/"}}
+{"ts":"2026-05-21T21:49:02.022Z","type":"page_view","visitor":"c307ff75449ec2f3","meta":{"path":"/"}}
+{"ts":"2026-05-21T21:49:07.368Z","type":"page_view","visitor":"c307ff75449ec2f3","meta":{"path":"/"}}
+{"ts":"2026-05-21T21:49:08.928Z","type":"landing_arrived","visitor":"c307ff75449ec2f3","meta":{"path":"/"}}
