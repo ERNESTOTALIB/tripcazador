@@ -7,6 +7,7 @@ import { SectionHero } from "@/components/SectionHero";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { DealsViewToggle } from "@/components/DealsViewToggle";
 import { DealsFilterDrawer } from "@/components/DealsFilterDrawer";
+import { LiveDealsCounter } from "@/components/LiveDealsCounter";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -235,6 +236,9 @@ export default async function DealsPage({
         }
         subtitle="Filtra por región, cabina o precio. Lista completa en tiempo real."
       />
+
+      {/* SSS403 — LiveDealsCounter: métricas reales del motor + social proof */}
+      <LiveDealsCounter variant="banner" />
 
       {/* Filtros */}
       <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">

@@ -12,6 +12,7 @@
 
 import type { Metadata } from "next";
 import { PartnerApplyForm } from "@/components/PartnerApplyForm";
+import { LiveDealsCounter } from "@/components/LiveDealsCounter";
 
 export const metadata: Metadata = {
   title: "Partners — Programa de afiliados para agencias y creadores | TripCazador",
@@ -41,6 +42,11 @@ export default function AgencyPartnerPage() {
           TripCazador Premium y Concierge.
         </p>
       </div>
+
+      {/* SSS404 — métricas reales del motor para que partner vea el "producto" */}
+      <section className="mb-10">
+        <LiveDealsCounter variant="banner" />
+      </section>
 
       <section className="grid md:grid-cols-2 gap-4 mb-10">
         <div className="rounded-2xl border border-gray-700 bg-gray-900/50 p-5">

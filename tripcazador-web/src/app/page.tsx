@@ -247,6 +247,23 @@ const HOME_FAQ: Array<{ q: string; a: string }> = [
     q: "¿Con qué frecuencia se actualizan los deals?",
     a: "El motor rastrea en paralelo cada 6 horas (cuatro ciclos al día). Los error fares más críticos se publican en Telegram en menos de 60 segundos desde la detección, antes de que las aerolíneas corrijan el precio.",
   },
+  // SSS401 — preguntas adicionales rich-snippet SEO
+  {
+    q: "¿Cómo funciona Premium TripCazador?",
+    a: "Premium (€9.99/mes o €99/año) desbloquea alertas instantáneas push + email, filtros pro (cabina, max precio, dirección de viaje), Premium-only secret deals 24h antes que canal público, predictor de precio para los próximos 30 días, dashboard ROI 'Has ahorrado X€', referral 1 mes gratis por amigo. Cancela cuando quieras desde el portal Stripe.",
+  },
+  {
+    q: "¿Qué es Concierge TripCazador?",
+    a: "Concierge es nuestra agencia humana premium: tú nos das destino + fechas + presupuesto, nosotros buscamos las 3 mejores opciones y te las enviamos en 24h. Tarifas: €19 Standard, €49 Premium (incluye hoteles), €99 Pro (incluye gestión completa). Garantía: si encuentras opción mejor por tu cuenta, te devolvemos el dinero.",
+  },
+  {
+    q: "¿Cuánto se puede ahorrar con TripCazador?",
+    a: "En promedio nuestros usuarios Premium ahorran €450/año en vuelos. El descuento medio de un error fare detectado es 55% sobre el precio normal. Casos extremos: 80-90% de descuento (vuelos a Asia por €299 en lugar de €1500-2000).",
+  },
+  {
+    q: "¿Cuándo es el mejor momento para reservar un vuelo barato?",
+    a: "Para Europa: 6-8 semanas antes para nacionales, 10-12 semanas para internacionales. Para long-haul (Asia, América): 3-4 meses antes. Para error fares: en cuanto los detectes — son volátiles y duran de 30 minutos a 6 horas. Los martes y miércoles suelen tener mejores precios.",
+  },
 ];
 
 /**

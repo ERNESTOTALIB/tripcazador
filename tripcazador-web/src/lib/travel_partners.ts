@@ -305,6 +305,77 @@ export const PARTNERS: TravelPartner[] = [
     ctaLabel: "Cotizar seguro Heymondo",
     commissionNote: "$25-60 por venta",
   },
+  // SSS402 — partners adicionales
+  {
+    slug: "parclick",
+    name: "Parclick",
+    category: "transporte",
+    emoji: "🅿️",
+    shortDescription: "Reserva parking aeropuerto hasta 70% más barato que pagar en el día.",
+    longDescription:
+      "Parclick es el comparador de parkings de aeropuerto líder en España. Compara precios entre Long Stay, Express, valet, descubierto y cubierto. Reserva online con cancelación gratis hasta 24h antes. Ahorro real vs. tarifa día: 50-70% en Madrid Barajas, Barcelona El Prat, Málaga, Valencia, Bilbao, Sevilla y resto de aeropuertos ES.",
+    useCase: [
+      "Vuelos de pocas horas (escapadas): mejor precio que taxi i/v",
+      "Vuelos largos (vacaciones): siempre más barato que parking oficial",
+      "Coche compartido: deja el coche en aeropuerto, no en estación",
+    ],
+    tips: [
+      "Reserva con 7+ días de antelación (mejores precios)",
+      "Cancelación gratis hasta 24h antes — flexibilidad para cambios de planes",
+      "Filtra por 'cubierto' si dejas el coche más de 5 días (protege chapa+pintura)",
+    ],
+    pros: [
+      "Comparador real (no monopolio)",
+      "Cancelación gratis 24h",
+      "Servicio en español + atención cliente fluida",
+    ],
+    cons: [
+      "Aeropuertos pequeños tienen menos opciones",
+      "Algunos parkings off-airport requieren shuttle (sumar 10-15 min)",
+    ],
+    affiliateUrl: () => {
+      const ref = env("NEXT_PUBLIC_PARCLICK_REF");
+      const base = "https://parclick.es/";
+      return `${base}?utm_source=tripcazador${ref ? `&affiliate=${ref}` : ""}`;
+    },
+    ctaLabel: "Ver parking aeropuerto",
+    commissionNote: "5-8% comisión",
+  },
+  {
+    slug: "welcome-pickups",
+    name: "Welcome Pickups",
+    category: "transporte",
+    emoji: "🚖",
+    shortDescription: "Transfer aeropuerto privado precio fijo, sin sorpresas.",
+    longDescription:
+      "Welcome Pickups es transfer privado puerta-a-puerta desde aeropuerto. Precio fijo (no surge pricing como Uber), conductor profesional, espera 60 min en llegadas, asistencia equipaje. Disponible en 100+ ciudades worldwide. Para grupos 3+ pax suele ser más barato que metro/taxi y mucho menos estrés tras vuelo largo.",
+    useCase: [
+      "Llegada tarde noche (transporte público limitado)",
+      "Familia con niños + equipaje (taxi múltiple complicado)",
+      "Primera vez en ciudad (conductor explica rutas + recomendaciones)",
+    ],
+    tips: [
+      "Reserva ANTES del vuelo (precio sube last-minute)",
+      "Para 1-2 pax: a veces Metro/Aerobús es 5x más barato",
+      "Para 3-4+ pax: casi siempre más barato que taxi normal",
+    ],
+    pros: [
+      "Precio fijo, no surge pricing",
+      "Conductor habla inglés/español",
+      "Espera 60 min gratuita en llegada",
+    ],
+    cons: [
+      "1-2 pax sale más caro que transporte público",
+      "Algunas ciudades sin cobertura (Asia rural, Latam pequeñas)",
+    ],
+    affiliateUrl: () => {
+      const ref = env("NEXT_PUBLIC_WELCOME_REF");
+      const base = "https://www.welcomepickups.com/";
+      return `${base}?utm_source=tripcazador${ref ? `&aff=${ref}` : ""}`;
+    },
+    ctaLabel: "Reservar transfer aeropuerto",
+    commissionNote: "8-12% comisión",
+  },
 ];
 
 export const PARTNERS_BY_SLUG = Object.fromEntries(PARTNERS.map((p) => [p.slug, p]));
