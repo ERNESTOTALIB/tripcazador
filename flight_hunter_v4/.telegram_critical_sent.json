@@ -1807,6 +1807,22 @@
       "destination": "TGD",
       "price_eur": 35.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "05d57bc015da",
+      "ts": "2026-05-21T17:28:08.435370+00:00",
+      "origin": "STN",
+      "destination": "PFO",
+      "price_eur": 54.68,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "18cac6f44a3b",
+      "ts": "2026-05-21T17:28:08.435370+00:00",
+      "origin": "DUB",
+      "destination": "BOJ",
+      "price_eur": 57.84,
+      "classification": "CRÍTICO"
     }
   ]
 }
