@@ -199,6 +199,97 @@ export function webPageSchema(opts: {
   };
 }
 
+// ──────────────────────────────────────────────────────────────
+// SSS398 — HowTo schema (Google rich result eligible)
+
+export interface HowToStep {
+  name: string;
+  text: string;
+  /** Posición 1-based (Google requirement) */
+  position?: number;
+  /** Tiempo estimado paso (ISO 8601 duration, ej. "PT5M") */
+  totalTime?: string;
+}
+
+export interface HowToSchemaInput {
+  name: string;
+  description: string;
+  /** Tiempo total ISO 8601 (ej. "PT15M") */
+  totalTime?: string;
+  /** Coste estimado, opcional */
+  estimatedCost?: { currency: string; value: number };
+  steps: HowToStep[];
+}
+
+export function howToSchema(input: HowToSchemaInput): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: input.name,
+    description: input.description,
+    totalTime: input.totalTime,
+    estimatedCost: input.estimatedCost
+      ? {
+          "@type": "MonetaryAmount",
+          currency: input.estimatedCost.currency,
+          value: input.estimatedCost.value,
+        }
+      : undefined,
+    step: input.steps.map((s, i) => ({
+      "@type": "HowToStep",
+      position: s.position ?? i + 1,
+      name: s.name,
+      text: s.text,
+      totalTime: s.totalTime,
+    })),
+  };
+}
+
+// ──────────────────────────────────────────────────────────────
+// SSS398 — Article schema (para blog posts)
+
+export interface ArticleSchemaInput {
+  headline: string;
+  description: string;
+  url: string;
+  datePublished: string; // ISO 8601
+  dateModified?: string;
+  authorName?: string;
+  imageUrl?: string;
+  /** Section name (e.g. "Travel Tips") */
+  articleSection?: string;
+  wordCount?: number;
+}
+
+export function articleSchema(input: ArticleSchemaInput): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: input.headline.slice(0, 110), // Google limit 110 chars
+    description: input.description,
+    url: input.url,
+    datePublished: input.datePublished,
+    dateModified: input.dateModified ?? input.datePublished,
+    author: {
+      "@type": "Organization",
+      name: input.authorName || "TripCazador",
+      url: "https://tripcazador.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "TripCazador",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://tripcazador.com/brand/logo.png",
+      },
+    },
+    image: input.imageUrl,
+    articleSection: input.articleSection,
+    wordCount: input.wordCount,
+    inLanguage: "es-ES",
+  };
+}
+
 /**
  * Limpieza: drops undefined keys recursivamente — Google a veces se queja
  * de "missing required field" si hay nulls.

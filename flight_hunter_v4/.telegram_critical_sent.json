@@ -1839,6 +1839,22 @@
       "destination": "VAN",
       "price_eur": 101.2,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2a1cc49fccc2",
+      "ts": "2026-05-21T21:23:16.741600+00:00",
+      "origin": "STN",
+      "destination": "CHQ",
+      "price_eur": 32.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "9f8311d7d2b3",
+      "ts": "2026-05-21T21:23:16.741600+00:00",
+      "origin": "ATH",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
