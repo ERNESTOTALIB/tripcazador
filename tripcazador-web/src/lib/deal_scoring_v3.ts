@@ -67,10 +67,18 @@ export interface RouteHistoryStats {
 
 export function lookupRouteHistory(route_key: string): RouteHistoryStats {
   const subset = store.outcomes.filter((o) => o.route_key === route_key);
+  return aggregateStats(subset, route_key, 3); // ruta exacta: n>=3
+}
+
+function aggregateStats(
+  subset: OutcomeRecord[],
+  label: string,
+  threshold: number,
+): RouteHistoryStats {
   const total = subset.length;
   if (total === 0) {
     return {
-      route_key,
+      route_key: label,
       total_samples: 0,
       booking_rate: 0,
       expired_rate: 0,
@@ -82,13 +90,33 @@ export function lookupRouteHistory(route_key: string): RouteHistoryStats {
   const expired = subset.filter((o) => o.outcome === "expired_no_takers").length;
   const fp = subset.filter((o) => o.outcome === "false_positive").length;
   return {
-    route_key,
+    route_key: label,
     total_samples: total,
     booking_rate: booked / total,
     expired_rate: expired / total,
     false_positive_rate: fp / total,
-    is_significant: total >= 3,
+    is_significant: total >= threshold,
   };
+}
+
+/**
+ * SSS379 cross-route learning: agregado por aerolínea o por destino.
+ * Útil cuando la ruta exacta no tiene suficientes muestras.
+ */
+export function lookupAirlineHistory(airline_code: string): RouteHistoryStats {
+  const code = airline_code.toUpperCase();
+  const subset = store.outcomes.filter((o) => o.route_key.endsWith(`-${code}`));
+  return aggregateStats(subset, `*-*-${code}`, 5); // agregado broad: n>=5
+}
+
+export function lookupDestinationHistory(destination: string): RouteHistoryStats {
+  const dst = destination.toUpperCase();
+  // route_key format: ORIGIN-DEST-AIRLINE
+  const subset = store.outcomes.filter((o) => {
+    const parts = o.route_key.split("-");
+    return parts.length === 3 && parts[1] === dst;
+  });
+  return aggregateStats(subset, `*-${dst}-*`, 5);
 }
 
 export interface ScoringResultV3 extends ScoringResult {
@@ -139,7 +167,10 @@ export function scoreDealV3(deal: DealInputV3): ScoringResultV3 {
   let adjustment = 0;
   const v3Reason: string[] = [];
 
-  if (stats.is_significant) {
+  // route_key requiere >=3 samples; aquí redefinimos un is_significant
+  // específico para esa granularidad fina.
+  const routeSignif = stats.total_samples >= 3;
+  if (routeSignif) {
     if (stats.booking_rate > 0.4) {
       adjustment += 10;
       v3Reason.push(
@@ -158,10 +189,41 @@ export function scoreDealV3(deal: DealInputV3): ScoringResultV3 {
         `Ruta histórica: ${Math.round(stats.expired_rate * 100)}% expiran sin reserva`,
       );
     }
-  } else if (stats.total_samples > 0) {
-    v3Reason.push(
-      `Data histórica insuficiente (${stats.total_samples} muestra/s) — sin ajuste`,
-    );
+  } else {
+    // SSS379 fallback: si ruta exacta sin suficientes muestras, usar
+    // agregados por aerolínea + destino con peso menor (boost ±5).
+    if (stats.total_samples > 0) {
+      v3Reason.push(
+        `Data exacta insuficiente (${stats.total_samples}) — buscando agregados`,
+      );
+    }
+    if (deal.airline_code) {
+      const airlineStats = lookupAirlineHistory(deal.airline_code);
+      if (airlineStats.is_significant) {
+        if (airlineStats.booking_rate > 0.4) {
+          adjustment += 5;
+          v3Reason.push(
+            `Aerolínea ${deal.airline_code} histórica: ${Math.round(airlineStats.booking_rate * 100)}% booking (n=${airlineStats.total_samples})`,
+          );
+        } else if (airlineStats.false_positive_rate > 0.4) {
+          adjustment -= 8;
+          v3Reason.push(
+            `Aerolínea ${deal.airline_code} histórica: ${Math.round(airlineStats.false_positive_rate * 100)}% FP (n=${airlineStats.total_samples})`,
+          );
+        }
+      }
+    }
+    if (deal.destination) {
+      const destStats = lookupDestinationHistory(deal.destination);
+      if (destStats.is_significant) {
+        if (destStats.booking_rate > 0.4) {
+          adjustment += 3;
+          v3Reason.push(
+            `Destino ${deal.destination} histórico: ${Math.round(destStats.booking_rate * 100)}% booking (n=${destStats.total_samples})`,
+          );
+        }
+      }
+    }
   }
 
   const adjusted = Math.max(0, Math.min(100, v2.confidence_score + adjustment));
