@@ -1,6 +1,3 @@
-{"ts":"2026-05-16T13:41:39.564Z","type":"page_view","visitor":"1e4362c45392edcb","meta":{"path":"/"}}
-{"ts":"2026-05-16T13:41:39.900Z","type":"landing_arrived","visitor":"1e4362c45392edcb","meta":{"path":"/"}}
-{"ts":"2026-05-16T13:41:40.023Z","type":"page_view","visitor":"1e4362c45392edcb","meta":{"path":"/"}}
 {"ts":"2026-05-16T13:41:42.741Z","type":"page_view","visitor":"1e4362c45392edcb","meta":{"path":"/"}}
 {"ts":"2026-05-16T13:41:45.429Z","type":"landing_arrived","visitor":"1e4362c45392edcb","meta":{"path":"/"}}
 {"ts":"2026-05-16T13:41:46.044Z","type":"landing_arrived","visitor":"1e4362c45392edcb","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-21T08:34:57.765Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"ryanair_bcn_aho_20260709_economy","destination":"AHO","origin":"BCN","price":14.99,"classification":"CRÍTICO"}}
 {"ts":"2026-05-21T08:34:58.076Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"ryanair_bcn_bud_20260912_economy","destination":"BUD","origin":"BCN","price":36.99,"classification":"CRÍTICO"}}
 {"ts":"2026-05-21T08:34:58.092Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"ryanair_mad_cag_20260914_economy","destination":"CAG","origin":"MAD","price":36.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-21T08:42:19.218Z","type":"page_view","visitor":"76ae3de9999febee","meta":{"path":"/"}}
+{"ts":"2026-05-21T08:42:19.469Z","type":"landing_arrived","visitor":"76ae3de9999febee","meta":{"path":"/","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-21T09:38:05.660Z","type":"landing_arrived","visitor":"88a50b13cb3344e3","meta":{"path":"/"}}
