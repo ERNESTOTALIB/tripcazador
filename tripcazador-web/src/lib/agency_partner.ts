@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 /**
  * agency_partner.ts — SSS375 (21 may 2026)
  *
@@ -83,10 +85,15 @@ export function calculatePayout(evt: CommissionEvent): number {
 }
 
 function generateRefCode(): string {
+  // SSS382 hardening: 8 chars cryptographically random (32^8 ≈ 10^12 combos —
+  // infeasible to brute-force vs old 4 chars que era enumerable en ~5min con
+  // 1M req. crypto.randomBytes vs Math.random porque exponemos stats agregadas
+  // en /panel/partner/[ref_code] y el ref_code es de facto un bearer token.
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = crypto.randomBytes(8);
   let out = "TC-AGY-";
-  for (let i = 0; i < 4; i++) {
-    out += chars[Math.floor(Math.random() * chars.length)];
+  for (let i = 0; i < 8; i++) {
+    out += chars[bytes[i] % chars.length];
   }
   return out;
 }
