@@ -15,6 +15,7 @@ import { MONTHLY_ROUTES } from "@/lib/monthly_prices";
 import { getHotelEntries } from "@/lib/hotel_seed";
 import { PARTNERS } from "@/lib/travel_partners";
 import { SEO_CITIES, SEO_ORIGINS, MONTHS_ES } from "@/lib/programmatic_seo";
+import { getAllCreatorHandles } from "@/lib/creators_seed";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -49,6 +50,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ? new Date(process.env.VERCEL_GIT_COMMIT_DATE)
     : new Date(); // fallback dev
   const now = buildTimestamp;
+  // SSS383 — handles activos para sitemap creator/[handle]
+  const creatorsHandles = getAllCreatorHandles();
   // Páginas que sí cambian en cada deploy (deals, home con featured)
   const hot = buildTimestamp;
   // Páginas evergreen — bump sólo cuando se editen manualmente. Por ahora
@@ -459,6 +462,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.5,
     },
+    // SSS383 — añadir rutas nuevas SSS372-376 al sitemap
+    {
+      url: `${BASE_URL}/partners/agencia`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7, // B2B revshare landing
+    },
+    {
+      url: `${BASE_URL}/premium/hotline`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${BASE_URL}/creators`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    ...creatorsHandles.map<MetadataRoute.Sitemap[number]>((h) => ({
+      url: `${BASE_URL}/creator/${h}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    })),
     {
       url: `${BASE_URL}/regiones`,
       lastModified: now,

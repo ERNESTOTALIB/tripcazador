@@ -1,4 +1,4 @@
-# TripCazador robots.txt — actualizado abr-2026q
+# TripCazador robots.txt — actualizado may-2026 (SSS383)
 # Política: indexar todo el contenido público, prohibir endpoints API privados y admin.
 
 User-agent: *
@@ -13,6 +13,11 @@ Disallow: /api/price-alerts
 Disallow: /api/indexnow
 Disallow: /api/metrics
 Disallow: /favoritos
+# SSS383: paneles privados auth-only — bloquea /panel/* del crawler
+Disallow: /panel/
+# Magic-link landing endpoints — no exponer paths privados a indexación
+Disallow: /concierge/pedido/
+Disallow: /m/login
 Disallow: /*?*  # Evita indexar páginas con query strings (filtros, sort)
 
 # Crawl-delay para crawlers educados (Google/Bing ignoran, otros respetan).

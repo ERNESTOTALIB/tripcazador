@@ -5,18 +5,45 @@
  *  - sus stats (referrals, revenue generado, payout pendiente)
  *  - URL de referido con utm
  *  - materiales (banners, copy)
- *  - link a /api/agency-partner/stats (futuro: descarga CSV)
  *
- * AUTH model:
- *   El ref_code es público (URL) — para impedir leak de stats, el dashboard
- *   muestra sólo info no-sensible. Stats agregadas, no individual customer.
- *   En iteración posterior añadir auth via magic-link al contact_email.
+ * AUTH model — SSS383 hardening:
+ *   El ref_code es público (URL), por eso por sí solo NO autoriza ver datos
+ *   financieros. Para ver revenue + payout owed el partner debe haber
+ *   completado magic-link auth (cookie `tc_partner_auth_{ref_code}` ==
+ *   HMAC(ref_code|secret), set por /api/partner-auth/verify).
+ *   Sin cookie: solo se ve referrals totales + UTM links. NO €€€.
+ *   Esta separación protege contra enumeración del ref_code (que es
+ *   compartido públicamente en links de referido) leaking finanzas.
  */
 
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import crypto from "node:crypto";
 import { getPartnerByCode } from "@/lib/agency_partner";
 import Link from "next/link";
+
+const AUTH_SECRET =
+  process.env.PANEL_SECRET || "tc-panel-default-secret-change-in-prod";
+
+function buildAuthCookieName(ref: string): string {
+  return `tc_partner_auth_${ref}`;
+}
+
+function expectedAuthValue(ref: string): string {
+  return crypto.createHmac("sha256", AUTH_SECRET).update(`partner|${ref}`).digest("hex");
+}
+
+function isPartnerAuthed(ref: string): boolean {
+  const c = cookies().get(buildAuthCookieName(ref))?.value;
+  if (!c) return false;
+  try {
+    const exp = expectedAuthValue(ref);
+    return crypto.timingSafeEqual(Buffer.from(c, "hex"), Buffer.from(exp, "hex"));
+  } catch {
+    return false;
+  }
+}
 
 interface PageProps {
   params: { ref_code: string };
@@ -42,6 +69,8 @@ function formatEur(n: number): string {
 export default function PartnerDashboardPage({ params }: PageProps) {
   const partner = getPartnerByCode(params.ref_code);
   if (!partner) notFound();
+
+  const authed = isPartnerAuthed(params.ref_code);
 
   const referralUrlPremium = `https://tripcazador.com/premium?ref=${partner.ref_code}&utm_source=partner&utm_medium=referral&utm_campaign=${partner.slug}`;
   const referralUrlConcierge = `https://tripcazador.com/concierge?ref=${partner.ref_code}&utm_source=partner&utm_medium=referral&utm_campaign=${partner.slug}`;
@@ -98,6 +127,19 @@ export default function PartnerDashboardPage({ params }: PageProps) {
         </div>
       )}
 
+      {!authed && (
+        <div className="mb-6 rounded-xl bg-blue-500/10 border border-blue-500/30 p-4">
+          <p className="text-sm text-blue-200">
+            🔒 Para ver tus stats financieras (revenue + payout), confirma tu
+            email vía magic-link. Te enviamos el enlace a{" "}
+            <code className="text-amber-300">{partner.contact_email}</code> escribiendo a{" "}
+            <a href="mailto:partners@tripcazador.com?subject=Acceso panel partner"
+               className="underline">partners@tripcazador.com</a>{" "}
+            (lanzamiento del auto-self-service en breve).
+          </p>
+        </div>
+      )}
+
       <section className="grid md:grid-cols-3 gap-4 mb-8">
         <div className="rounded-xl bg-gray-900/50 border border-gray-700 p-5">
           <p className="text-xs text-gray-400 uppercase font-bold">Referrals total</p>
@@ -106,16 +148,16 @@ export default function PartnerDashboardPage({ params }: PageProps) {
         <div className="rounded-xl bg-gray-900/50 border border-gray-700 p-5">
           <p className="text-xs text-gray-400 uppercase font-bold">Revenue generado</p>
           <p className="text-3xl font-bold text-white mt-1">
-            {formatEur(partner.total_revenue_eur)}
+            {authed ? formatEur(partner.total_revenue_eur) : "•••€"}
           </p>
         </div>
         <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-5">
           <p className="text-xs text-amber-300 uppercase font-bold">Tu payout</p>
           <p className="text-3xl font-bold text-amber-300 mt-1">
-            {formatEur(partner.total_payout_eur)}
+            {authed ? formatEur(partner.total_payout_eur) : "•••€"}
           </p>
           <p className="text-[10px] text-amber-400 mt-1">
-            Mínimo €25 para próximo payout
+            {authed ? "Mínimo €25 para próximo payout" : "Confirma email para ver"}
           </p>
         </div>
       </section>
