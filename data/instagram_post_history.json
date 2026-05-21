@@ -781,5 +781,14 @@
     "city_from": "Lisboa",
     "city_to": "Madeira Funchal",
     "price_eur": 37.99
+  },
+  {
+    "timestamp": 1779399600.5008264,
+    "deal_id": "ryanair_waw_pmi_20260705_economy",
+    "origin": "WAW",
+    "destination": "PMI",
+    "city_from": "Varsovia",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 29.99
   }
 ]
