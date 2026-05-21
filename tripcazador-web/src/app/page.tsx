@@ -491,6 +491,33 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* SSS387 — Banner B2B partners: agencias + creators + bloggers travel.
+          Revshare 15-25%. Mid-page para no canibalizar Premium CTA pero
+          captar travel professionals que visitan home. */}
+      <section className="panel p-6 sm:p-10 bg-gradient-to-br from-purple-500/10 to-amber-500/10 border-purple-500/30">
+        <div className="grid md:grid-cols-[1fr_auto] gap-6 items-center">
+          <div>
+            <span className="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wide mb-2">
+              Para profesionales del viaje
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">
+              ¿Agencia, blogger o creator?
+            </h2>
+            <p className="mt-2 text-gray-300 max-w-2xl">
+              Únete al programa <strong className="text-amber-300">TripCazador Partners</strong>:
+              gana hasta 25% de comisión revendiendo Premium y Concierge a tu audiencia.
+              Cookie de atribución 30 días, payouts mensuales SEPA/Wise.
+            </p>
+          </div>
+          <a
+            href="/partners/agencia"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 min-h-[44px] bg-purple-500 hover:bg-purple-400 text-white font-bold rounded-xl transition-colors whitespace-nowrap"
+          >
+            Ver programa →
+          </a>
+        </div>
+      </section>
+
       {/* FAQ — visible en DOM para alinear con schema.org FAQPage (Google exige
           que las preguntas existan en la página, no sólo en el JSON-LD).
           Cada <details> expande sin JS; primera respuesta abierta por defecto. */}

@@ -25,6 +25,7 @@ import { HotelCrossSell } from "@/components/HotelCrossSell";
 import { AffiliateCrossSell } from "@/components/AffiliateCrossSell";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { ConciergeInlineCTA } from "@/components/ConciergeInlineCTA";
+import { CurrencyConverter } from "@/components/CurrencyConverter";
 
 // ISR: revalidar cada 5 min
 export const revalidate = 300;
@@ -272,6 +273,13 @@ export default async function DealDetailPage({
                     ` · ahorras ~${Math.round(deal.savings_eur)}€`}
                 </div>
               )}
+              <div className="mt-2">
+                <CurrencyConverter
+                  amountEur={deal.price_eur}
+                  destinationIata={deal.destination}
+                  variant="inline"
+                />
+              </div>
             </div>
 
             <a

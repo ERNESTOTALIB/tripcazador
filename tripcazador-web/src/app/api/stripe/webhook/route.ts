@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { captureRevenueError } from "@/lib/sentry_helper";
+import { extractAttributionFromSession } from "@/lib/partner_attribution";
 
 /**
  * /api/stripe/webhook — fase SSS9 LIVE
@@ -102,6 +103,32 @@ export async function POST(req: NextRequest) {
             `Importe: ${amount} €\n` +
             `Sesión: ${s.id}`,
         );
+
+        // SSS386 — atribución partner: si metadata.ref_code presente,
+        // acreditar comisión al partner correspondiente. Best-effort
+        // (no rompe el webhook si falla).
+        try {
+          const attr = extractAttributionFromSession({
+            amount_total: s.amount_total ?? undefined,
+            metadata: (s.metadata as Record<string, string> | null) ?? undefined,
+            mode: s.mode ?? undefined,
+          });
+          if (attr.ok) {
+            await notifyAdmin(
+              `🤝 <b>Partner conversion</b>\n` +
+                `Ref: ${attr.ref_code}\n` +
+                `Product: ${attr.product}\n` +
+                `Payout: ${attr.payout_eur?.toFixed(2)} €`,
+            );
+          } else if (attr.ref_code) {
+            // Tuvo ref_code pero falló — log para investigar.
+            console.warn(
+              `[partner-attribution] ref=${attr.ref_code} reason=${attr.reason}`,
+            );
+          }
+        } catch (e) {
+          console.error("[partner-attribution] exception", e);
+        }
         break;
       }
       case "customer.subscription.created":
