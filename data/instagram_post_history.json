@@ -772,5 +772,14 @@
     "city_from": "Madrid",
     "city_to": "Cagliari",
     "price_eur": 36.99
+  },
+  {
+    "timestamp": 1779386636.2350657,
+    "deal_id": "ryanair_lis_fnc_20260912_economy",
+    "origin": "LIS",
+    "destination": "FNC",
+    "city_from": "Lisboa",
+    "city_to": "Madeira Funchal",
+    "price_eur": 37.99
   }
 ]
