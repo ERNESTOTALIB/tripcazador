@@ -36,9 +36,44 @@ export interface SavingsEntry {
   ts: number;
 }
 
+import { createKV } from "./kv_store";
+
 const memoryStore: Map<string, SavingsEntry> = new Map();
 const REMOTE_URL = process.env.SAVINGS_LOG_STORE_URL || "";
 const REMOTE_TOKEN = process.env.SAVINGS_LOG_STORE_TOKEN || "";
+
+// SSS396 — KV write-through como fallback adicional cuando REMOTE_URL
+// no está configurado. Ordering precedencia: REMOTE > KV > in-mem.
+const kv = createKV("savings_log");
+const ALL_KV_KEY = "all_entries";
+let kvHydrated = false;
+
+async function persistToKV(entry: SavingsEntry): Promise<void> {
+  try {
+    const all = (await kv.get<SavingsEntry[]>(ALL_KV_KEY)) || [];
+    all.push(entry);
+    // Cap a 10000 entries — más allá no escala bien para single-key
+    const capped = all.length > 10000 ? all.slice(-10000) : all;
+    await kv.set(ALL_KV_KEY, capped);
+  } catch {
+    /* in-mem es backup */
+  }
+}
+
+async function hydrateFromKVIfNeeded(): Promise<void> {
+  if (kvHydrated) return;
+  kvHydrated = true; // optimistic guard
+  try {
+    const remote = await kv.get<SavingsEntry[]>(ALL_KV_KEY);
+    if (Array.isArray(remote)) {
+      for (const e of remote) {
+        if (!memoryStore.has(e.id)) memoryStore.set(e.id, e);
+      }
+    }
+  } catch {
+    kvHydrated = false; // permitir retry siguiente call
+  }
+}
 
 function genId(): string {
   return `sv_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
@@ -98,6 +133,8 @@ export async function logSavings(input: LogSavingsInput): Promise<SavingsEntry |
     return ((await r.json().catch(() => entry)) as SavingsEntry) || entry;
   }
   memoryStore.set(entry.id, entry);
+  // SSS396 — KV write-through best-effort
+  void persistToKV(entry).catch(() => {});
   return entry;
 }
 
@@ -128,6 +165,8 @@ export async function listSavingsByCustomer(customerId: string): Promise<Savings
   if (r && r.ok) {
     return (await r.json().catch(() => [])) as SavingsEntry[];
   }
+  // SSS396 — KV hidrata cold container antes de filter
+  await hydrateFromKVIfNeeded();
   return Array.from(memoryStore.values()).filter((s) => s.customerId === customerId);
 }
 
@@ -211,4 +250,6 @@ function round2(n: number): number {
 
 export function _clearStore(): void {
   memoryStore.clear();
+  kvHydrated = false;
+  void kv.del(ALL_KV_KEY).catch(() => {});
 }

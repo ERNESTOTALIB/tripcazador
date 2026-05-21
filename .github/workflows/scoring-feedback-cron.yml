@@ -1,0 +1,55 @@
+name: Scoring Auto-Feedback Cron
+
+# Cron diario 09:00 UTC (= 11:00 ES) — invoca /api/scoring/auto-feedback-cron
+# que infiere outcomes para deal_scoring_v3 desde event_store (clicks +
+# booking_redirects). Idempotente vía KV processed_deals.
+#
+# Sin esta workflow el endpoint existe pero nunca se ejecuta. Con esto el
+# ML v3 aprende automáticamente cada día sin intervención manual del admin.
+#
+# Requiere:
+#  - PRICE_ALERT_CRON_TOKEN_PREMIUM secret GH = mismo valor que en Vercel.
+#  - (Opcional) UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN en Vercel
+#    para que los outcomes persistan cross-deploy. Sin Upstash funciona
+#    in-memory (los outcomes se pierden al deploy, pero el endpoint sigue OK).
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run (sin grabar)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger auto-feedback cron
+        id: send
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            DRY="&dry=1"
+          fi
+          STATUS=$(curl -s -o /tmp/feedback.json -w "%{http_code}" \
+            "https://tripcazador.com/api/scoring/auto-feedback-cron?token=${{ secrets.PRICE_ALERT_CRON_TOKEN_PREMIUM }}${DRY}" \
+            --max-time 60)
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          echo "---Response body---"
+          cat /tmp/feedback.json | head -c 2000
+
+      - name: Notify Telegram on failure
+        if: steps.send.outputs.status != '200' && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MSG="⚠ Scoring feedback cron failed HTTP ${{ steps.send.outputs.status }}\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+            -d chat_id="$TELEGRAM_CHAT_ID" \
+            -d text="$MSG"

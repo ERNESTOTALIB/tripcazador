@@ -185,6 +185,26 @@ className="w-full px-3 py-2 rounded-lg bg-black/40 border border-gray-700 text-x
         </div>
       </section>
 
+      {/* SSS400 — Embed widget para que partners integren en sus blogs */}
+      <section className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-5 mb-8">
+        <h2 className="text-lg font-bold text-white mb-2">📦 Widget embed para tu blog</h2>
+        <p className="text-sm text-gray-300 mb-3">
+          Copia este iframe y pégalo en cualquier sección de tu blog. Mostrará 3
+          chollos en vivo + tu código de atribución automáticamente. 4 temas
+          disponibles (dark/light/brand-amber/brand-purple).
+        </p>
+        <textarea
+          readOnly
+          rows={3}
+          value={`<iframe src="https://tripcazador.com/embed/deals?ref=${partner.ref_code}&theme=dark&limit=3" width="100%" height="380" frameborder="0" style="border:0;border-radius:12px"></iframe>`}
+          className="w-full px-3 py-2 rounded-lg bg-black/40 border border-gray-700 text-xs text-gray-200 font-mono"
+        />
+        <p className="text-[10px] text-gray-500 mt-2">
+          Cambia <code className="text-amber-300">theme=light</code> o{" "}
+          <code className="text-amber-300">limit=6</code> para personalizar.
+        </p>
+      </section>
+
       <section className="rounded-xl border border-gray-700 bg-gray-900/40 p-5 mb-8">
         <h2 className="text-lg font-bold text-white mb-3">📊 Comisiones</h2>
         <ul className="space-y-1.5 text-sm text-gray-300">
