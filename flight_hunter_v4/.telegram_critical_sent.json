@@ -1823,6 +1823,22 @@
       "destination": "BOJ",
       "price_eur": 57.84,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "395dbb74b218",
+      "ts": "2026-05-21T19:46:24.380573+00:00",
+      "origin": "STN",
+      "destination": "RHO",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8b2bb7d31b12",
+      "ts": "2026-05-21T19:46:24.380573+00:00",
+      "origin": "IST",
+      "destination": "VAN",
+      "price_eur": 101.2,
+      "classification": "CRÍTICO"
     }
   ]
 }
