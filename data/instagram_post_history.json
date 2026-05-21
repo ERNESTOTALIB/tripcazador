@@ -763,5 +763,14 @@
     "city_from": "Barcelona",
     "city_to": "Alghero",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1779377939.8090718,
+    "deal_id": "ryanair_mad_cag_20260914_economy",
+    "origin": "MAD",
+    "destination": "CAG",
+    "city_from": "Madrid",
+    "city_to": "Cagliari",
+    "price_eur": 36.99
   }
 ]
