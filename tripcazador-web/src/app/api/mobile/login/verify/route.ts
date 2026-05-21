@@ -17,6 +17,33 @@ export const dynamic = "force-dynamic";
 
 const SECRET = process.env.PANEL_SECRET || "tc-panel-default-secret-change-in-prod";
 
+// SSS383 anti-replay: persistimos nonces consumidos. El magic-link sólo debe
+// canjearse 1 vez. Sin esto un atacante que observe el link (email forward,
+// lock-screen preview, log scrape) puede generar múltiples sesiones 90d
+// antes de que expire el link (15 min). globalThis persiste cross-request en
+// container Vercel warm; cuando el container muere los nonces se pierden —
+// aceptable porque expiración del link 15min los hace inválidos igualmente.
+const usedNonces: Map<string, number> = (
+  globalThis as unknown as { __tc_mlogin_nonces?: Map<string, number> }
+).__tc_mlogin_nonces ?? new Map();
+(globalThis as unknown as { __tc_mlogin_nonces: Map<string, number> }).__tc_mlogin_nonces =
+  usedNonces;
+
+function markNonceUsed(nonce: string): void {
+  const now = Date.now();
+  // Cleanup oportunista para no bloat memory
+  if (usedNonces.size > 5000) {
+    Array.from(usedNonces.entries()).forEach(([k, ts]) => {
+      if (now - ts > 24 * 3600_000) usedNonces.delete(k);
+    });
+  }
+  usedNonces.set(nonce, now);
+}
+
+function isNonceUsed(nonce: string): boolean {
+  return usedNonces.has(nonce);
+}
+
 function verifyToken(token: string): { ok: boolean; email?: string; platform?: string; reason?: string } {
   let decoded: string;
   try {
@@ -37,11 +64,21 @@ function verifyToken(token: string): { ok: boolean; email?: string; platform?: s
   }
   if (!eqSafe) return { ok: false, reason: "invalid_signature" };
 
-  const [email, platform, expStr] = payload.split("|");
+  // SSS368 token format: email|platform|exp|nonce (4 parts)
+  const segments = payload.split("|");
+  const [email, platform, expStr, nonce] = segments;
   const exp = parseInt(expStr, 10);
   if (!Number.isFinite(exp) || Date.now() > exp) {
     return { ok: false, reason: "expired" };
   }
+  if (!nonce) {
+    // Token sin nonce — formato viejo, rechazar por seguridad
+    return { ok: false, reason: "invalid_structure" };
+  }
+  if (isNonceUsed(nonce)) {
+    return { ok: false, reason: "nonce_replay" };
+  }
+  markNonceUsed(nonce);
   return { ok: true, email, platform };
 }
 

@@ -125,7 +125,7 @@ const CABIN_WORDS: Record<string, "economy" | "business" | "first"> = {
 
 const IATA_RE = /\b([A-Z]{3})\b/g;
 // Precio: "500€", "bajo 500", "máximo 500", "max 500"
-const PRICE_RE = /(?:bajo|menos\s+de|máximo|maximo|max|hasta|less\s+than|under)?\s*([0-9]{2,4})\s*(?:€|eur|euros)?/i;
+const _PRICE_RE = /(?:bajo|menos\s+de|máximo|maximo|max|hasta|less\s+than|under)?\s*([0-9]{2,4})\s*(?:€|eur|euros)?/i;
 const PRICE_WITH_KEYWORD_RE = /(?:bajo|menos\s+de|máximo|maximo|max|hasta|under|less\s+than)\s+([0-9]{2,4})/i;
 
 // ──────────────────────────────────────────────────────────────

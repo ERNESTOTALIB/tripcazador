@@ -204,7 +204,7 @@ export default function SearchBar({
           "No encontramos chollos para esa ruta concreta. Prueba a quitar destino, ampliar fechas, o explora todos los chollos activos abajo.",
         );
       }
-    } catch (err) {
+    } catch (_err) {
       setError("No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.");
       setResults([]);
     } finally {

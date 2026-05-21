@@ -19,7 +19,7 @@
  */
 import { useEffect, useState } from "react";
 
-const KEY = "tc_push_prompt_v1";
+const _KEY = "tc_push_prompt_v1";
 const VAPID_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
 
 function urlBase64ToUint8Array(base64String: string): BufferSource {

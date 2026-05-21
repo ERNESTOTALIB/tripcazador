@@ -13,6 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "node:crypto";
 import {
   verifyWebhookChallenge,
   parseWebhookPayload,
@@ -26,6 +27,33 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const APP_SECRET = process.env.WHATSAPP_APP_SECRET || "";
+
+/**
+ * SSS383 HMAC verification — Meta firma cada POST con
+ * X-Hub-Signature-256: sha256=<hex(HMAC_SHA256(APP_SECRET, raw_body))>
+ *
+ * Sin WHATSAPP_APP_SECRET configurado, el webhook acepta sin verificar (modo
+ * dev). En prod operator DEBE set WHATSAPP_APP_SECRET o cualquiera puede
+ * forjar mensajes hacia el endpoint.
+ */
+function verifyMetaSignature(rawBody: string, signatureHeader: string | null): boolean {
+  if (!APP_SECRET) return true; // dev mode — sin secret, accept
+  if (!signatureHeader) return false;
+  const expected =
+    "sha256=" +
+    crypto.createHmac("sha256", APP_SECRET).update(rawBody).digest("hex");
+  if (signatureHeader.length !== expected.length) return false;
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(signatureHeader),
+      Buffer.from(expected),
+    );
+  } catch {
+    return false;
+  }
+}
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const url = new URL(req.url);
@@ -45,11 +73,19 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  // TODO: verificar X-Hub-Signature-256 HMAC con WHATSAPP_APP_SECRET
-  // (Meta exige esto para mensajes producción)
+  // SSS383 — leer raw body para verificar HMAC antes de parsear JSON
+  const rawBody = await req.text();
+  const sig = req.headers.get("x-hub-signature-256");
+  if (!verifyMetaSignature(rawBody, sig)) {
+    return NextResponse.json(
+      { ok: false, error: "invalid_signature" },
+      { status: 401 },
+    );
+  }
+
   let body: unknown = null;
   try {
-    body = await req.json();
+    body = rawBody ? JSON.parse(rawBody) : null;
   } catch {
     return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
   }
