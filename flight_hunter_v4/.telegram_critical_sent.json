@@ -1855,6 +1855,22 @@
       "destination": "MLA",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "220ff4faa30a",
+      "ts": "2026-05-21T22:59:14.963423+00:00",
+      "origin": "DUB",
+      "destination": "CCF",
+      "price_eur": 27.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7729c14fe70b",
+      "ts": "2026-05-21T22:59:14.963423+00:00",
+      "origin": "DUB",
+      "destination": "BOJ",
+      "price_eur": 62.79,
+      "classification": "CRÍTICO"
     }
   ]
 }
