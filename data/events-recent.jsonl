@@ -1,6 +1,3 @@
-{"ts":"2026-05-16T10:50:51.311Z","type":"page_view","visitor":"a9938655c01d047d","meta":{"path":"/deals"}}
-{"ts":"2026-05-16T10:51:06.805Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"ryanair_bcn_rak_20260629_economy","destination":"RAK","origin":"BCN","price":19.99,"classification":"CRÍTICO"}}
-{"ts":"2026-05-16T10:51:07.252Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"ryanair_bcn_bud_20260826_economy","destination":"BUD","origin":"BCN","price":37.99,"classification":"CRÍTICO"}}
 {"ts":"2026-05-16T10:54:05.523Z","type":"premium_cta_view","visitor":"a9938655c01d047d","meta":{"source":"/premium"}}
 {"ts":"2026-05-16T10:54:15.425Z","type":"premium_cta_click","visitor":"a9938655c01d047d","meta":{"source":"/premium","tier":"free"}}
 {"ts":"2026-05-16T11:19:04.147Z","type":"landing_arrived","visitor":"cda24ca2f3961fec","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-21T02:11:23.822Z","type":"page_view","visitor":"23a48941399ba64a","meta":{"path":"/deals"}}
 {"ts":"2026-05-21T02:16:21.797Z","type":"page_view","visitor":"23a48941399ba64a","meta":{"path":"/deals"}}
 {"ts":"2026-05-21T02:16:42.668Z","type":"page_view","visitor":"23a48941399ba64a","meta":{"path":"/deals"}}
+{"ts":"2026-05-21T03:50:46.957Z","type":"scroll_75","visitor":"4d9054b92da3ce83","meta":{"path":"/deals"}}
+{"ts":"2026-05-21T03:54:20.221Z","type":"landing_arrived","visitor":"e988b369f59dc7ba","meta":{"path":"/deals"}}
+{"ts":"2026-05-21T03:54:20.272Z","type":"page_view","visitor":"64378d9579f82ba9","meta":{"path":"/deals"}}
