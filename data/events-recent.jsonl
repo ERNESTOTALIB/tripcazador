@@ -1,6 +1,3 @@
-{"ts":"2026-05-17T03:55:03.242Z","type":"landing_arrived","visitor":"07793289d72f1404","meta":{"path":"/","utm_source":"chatgpt.com"}}
-{"ts":"2026-05-17T03:55:04.105Z","type":"page_view","visitor":"07793289d72f1404","meta":{"path":"/deals"}}
-{"ts":"2026-05-17T06:59:38.943Z","type":"result_viewed","visitor":"81df721774c8ee12","meta":{"deal_id":"ryanair_mad_ace_20260914_economy","destination":"ACE","origin":"MAD","price":35.56,"classification":"CRÍTICO"}}
 {"ts":"2026-05-17T06:59:43.510Z","type":"result_viewed","visitor":"81df721774c8ee12","meta":{"deal_id":"ryanair_bcn_cph_20260902_economy","destination":"CPH","origin":"BCN","price":35.99,"classification":"ERROR"}}
 {"ts":"2026-05-17T06:59:43.543Z","type":"result_viewed","visitor":"81df721774c8ee12","meta":{"deal_id":"ryanair_mad_krk_20260910_economy","destination":"KRK","origin":"MAD","price":45.99,"classification":"ERROR"}}
 {"ts":"2026-05-17T08:20:00.879Z","type":"page_view","visitor":"2cd245fc747d2b46","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-21T21:49:02.022Z","type":"page_view","visitor":"c307ff75449ec2f3","meta":{"path":"/"}}
 {"ts":"2026-05-21T21:49:07.368Z","type":"page_view","visitor":"c307ff75449ec2f3","meta":{"path":"/"}}
 {"ts":"2026-05-21T21:49:08.928Z","type":"landing_arrived","visitor":"c307ff75449ec2f3","meta":{"path":"/"}}
+{"ts":"2026-05-21T21:49:02.417Z","type":"page_view","visitor":"c307ff75449ec2f3","meta":{"path":"/"}}
+{"ts":"2026-05-21T21:49:07.379Z","type":"landing_arrived","visitor":"c307ff75449ec2f3","meta":{"path":"/"}}
+{"ts":"2026-05-21T21:49:11.810Z","type":"page_view","visitor":"c307ff75449ec2f3","meta":{"path":"/"}}
