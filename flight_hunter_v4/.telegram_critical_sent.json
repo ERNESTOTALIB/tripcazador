@@ -1791,6 +1791,22 @@
       "destination": "BFS",
       "price_eur": 18.72,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "337a0e78000e",
+      "ts": "2026-05-21T14:51:48.859684+00:00",
+      "origin": "BUD",
+      "destination": "BOJ",
+      "price_eur": 22.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "391e95ce0c7c",
+      "ts": "2026-05-21T14:51:48.859684+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 35.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
