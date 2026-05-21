@@ -1775,6 +1775,22 @@
       "destination": "NAV",
       "price_eur": 54.28,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "579c39599356",
+      "ts": "2026-05-21T11:16:32.927145+00:00",
+      "origin": "BCN",
+      "destination": "NDR",
+      "price_eur": 17.49,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "351b312ddd47",
+      "ts": "2026-05-21T11:16:32.927145+00:00",
+      "origin": "STN",
+      "destination": "BFS",
+      "price_eur": 18.72,
+      "classification": "CRÍTICO"
     }
   ]
 }
