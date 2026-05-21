@@ -53,6 +53,7 @@ export function TripPlannerClient() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GeneratedItinerary | null>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `result` triggers re-read after generation
   const triesUsed = useMemo(() => (typeof window !== "undefined" ? readDailyTries() : 0), [result]);
   const isPremium = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -96,7 +97,7 @@ export function TripPlannerClient() {
       } catch {
         // ignore
       }
-    } catch (e) {
+    } catch (_e) {
       setError("Error de red — vuelve a intentarlo");
     } finally {
       setLoading(false);

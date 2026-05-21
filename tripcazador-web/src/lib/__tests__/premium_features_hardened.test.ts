@@ -6,7 +6,7 @@
  * 2 no vuelvan al catálogo accidentalmente generando expectativas falsas.
  */
 import { describe, it, expect } from "vitest";
-import { PREMIUM_FEATURES, PREMIUM_PRICE_EUR, isPremium, getPremiumStatus } from "../premium";
+import { PREMIUM_FEATURES, PREMIUM_PRICE_EUR, isPremium } from "../premium";
 
 describe("PREMIUM_FEATURES catalog SSS300", () => {
   it("contiene exactamente 4 features (no más, no menos)", () => {

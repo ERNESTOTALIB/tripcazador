@@ -11,7 +11,7 @@
  * - unique_visitors set deduplica
  * - estimatedCommission heurística
  */
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   trackEvent,
   getRecentEvents,
