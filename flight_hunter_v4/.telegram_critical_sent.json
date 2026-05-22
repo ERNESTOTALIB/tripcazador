@@ -1919,6 +1919,22 @@
       "destination": "BDS",
       "price_eur": 43.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "0b475f83969f",
+      "ts": "2026-05-22T18:50:40.688993+00:00",
+      "origin": "ATH",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "656a11d17632",
+      "ts": "2026-05-22T18:50:40.688993+00:00",
+      "origin": "BCN",
+      "destination": "GDN",
+      "price_eur": 27.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
