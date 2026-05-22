@@ -790,5 +790,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1779422751.156524,
+    "deal_id": "ryanair_stn_rho_20260708_economy",
+    "origin": "STN",
+    "destination": "RHO",
+    "city_from": "Londres Stansted",
+    "city_to": "Rhodes",
+    "price_eur": 29.99
   }
 ]
