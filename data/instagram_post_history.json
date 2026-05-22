@@ -808,5 +808,14 @@
     "city_from": "Lisboa",
     "city_to": "Vienna",
     "price_eur": 73.05
+  },
+  {
+    "timestamp": 1779461337.010593,
+    "deal_id": "ryanair_bcn_bru_20260710_economy",
+    "origin": "BCN",
+    "destination": "BRU",
+    "city_from": "Barcelona",
+    "city_to": "Brussels",
+    "price_eur": 29.99
   }
 ]
