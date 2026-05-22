@@ -1,6 +1,3 @@
-{"ts":"2026-05-17T11:08:09.089Z","type":"result_viewed","visitor":"7a935be272bc5235","meta":{"deal_id":"ryanair_mad_ace_20260911_economy","destination":"ACE","origin":"MAD","price":38.56,"classification":"CRÍTICO"}}
-{"ts":"2026-05-17T11:18:41.616Z","type":"premium_cta_click","visitor":"a9938655c01d047d","meta":{"source":"/premium","tier":"free"}}
-{"ts":"2026-05-17T11:29:24.804Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"seed-00bdf1d1ff","destination":"SEA","origin":"MAD","price":489,"classification":"OFERTA"}}
 {"ts":"2026-05-17T11:29:24.845Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"seed-003065e963","destination":"TLV","origin":"MAD","price":195,"classification":"OFERTA"}}
 {"ts":"2026-05-17T11:29:25.318Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"seed-008bd02e00","destination":"VTE","origin":"MAD","price":685,"classification":"OFERTA"}}
 {"ts":"2026-05-17T12:41:25.857Z","type":"page_view","visitor":"4b251aab583ee4d8","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-22T10:22:46.662Z","type":"page_view","visitor":"998c3d0a1dc0fcd2","meta":{"path":"/"}}
 {"ts":"2026-05-22T10:22:46.985Z","type":"landing_arrived","visitor":"8d38e61d127b1876","meta":{"path":"/"}}
 {"ts":"2026-05-22T10:22:48.817Z","type":"result_viewed","visitor":"998c3d0a1dc0fcd2","meta":{"deal_id":"ryanair_bcn_ndr_20260826_economy","destination":"NDR","origin":"BCN","price":17.49,"classification":"CRÍTICO"}}
+{"ts":"2026-05-22T10:22:50.070Z","type":"landing_arrived","visitor":"e36ad72ccb0225d3","meta":{"path":"/"}}
+{"ts":"2026-05-22T10:22:51.173Z","type":"page_view","visitor":"998c3d0a1dc0fcd2","meta":{"path":"/"}}
+{"ts":"2026-05-22T10:22:51.207Z","type":"landing_arrived","visitor":"998c3d0a1dc0fcd2","meta":{"path":"/"}}
