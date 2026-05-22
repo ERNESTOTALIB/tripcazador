@@ -638,7 +638,10 @@ async function getDealsFromStatic(): Promise<DealsResponse> {
   for (const path of ["/deals-latest.json", "/deals.json"]) {
     try {
       const url = typeof window === "undefined" ? `${SITE_URL}${path}` : path;
-      const res = await fetch(url, { cache: "no-store", next: { revalidate: 300 } });
+      // SSS415: NO mezclar `cache: "no-store"` + `next.revalidate` — son
+      // contradictorios y Next.js emite warning al elegir uno de los dos.
+      // Mantenemos ISR 300s (deals-latest.json actualiza ~hourly via worker).
+      const res = await fetch(url, { next: { revalidate: 300 } });
       if (!res.ok) continue;
       const json = await res.json();
 
