@@ -826,5 +826,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Chania",
     "price_eur": 26.99
+  },
+  {
+    "timestamp": 1779484593.0947685,
+    "deal_id": "ryanair_dub_bds_20260824_economy",
+    "origin": "DUB",
+    "destination": "BDS",
+    "city_from": "Dubl\u00edn",
+    "city_to": "Brindisi",
+    "price_eur": 43.99
   }
 ]
