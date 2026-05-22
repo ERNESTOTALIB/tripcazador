@@ -1935,6 +1935,22 @@
       "destination": "GDN",
       "price_eur": 27.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "93f5f658701b",
+      "ts": "2026-05-22T20:29:40.763603+00:00",
+      "origin": "STN",
+      "destination": "CHQ",
+      "price_eur": 26.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d97389b1233a",
+      "ts": "2026-05-22T20:29:40.763603+00:00",
+      "origin": "STN",
+      "destination": "CFU",
+      "price_eur": 32.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
