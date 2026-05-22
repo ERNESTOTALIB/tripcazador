@@ -799,5 +799,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Rhodes",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1779447316.8451717,
+    "deal_id": "ryanair_lis_vie_20260915_economy",
+    "origin": "LIS",
+    "destination": "VIE",
+    "city_from": "Lisboa",
+    "city_to": "Vienna",
+    "price_eur": 73.05
   }
 ]
