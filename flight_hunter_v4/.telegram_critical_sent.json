@@ -1967,6 +1967,22 @@
       "destination": "CHQ",
       "price_eur": 25.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6d37a187af77",
+      "ts": "2026-05-23T09:45:59.157712+00:00",
+      "origin": "BCN",
+      "destination": "AHO",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fb7c42fd6203",
+      "ts": "2026-05-23T09:45:59.157712+00:00",
+      "origin": "BCN",
+      "destination": "TNG",
+      "price_eur": 19.9,
+      "classification": "CRÍTICO"
     }
   ]
 }
