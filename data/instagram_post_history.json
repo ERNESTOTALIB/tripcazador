@@ -871,5 +871,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Athens",
     "price_eur": 35.99
+  },
+  {
+    "timestamp": 1779555975.7752297,
+    "deal_id": "ryanair_prg_bcn_20260917_economy",
+    "origin": "PRG",
+    "destination": "BCN",
+    "city_from": "Praga",
+    "city_to": "Barcelona",
+    "price_eur": 41.99
   }
 ]
