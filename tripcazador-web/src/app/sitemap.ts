@@ -19,6 +19,7 @@ import { getAllCreatorHandles } from "@/lib/creators_seed";
 // SSS418: nuevos verticales /seguro-viaje/[destino], /esim/[destino], /visados/[destino]
 import { DESTINO_SLUGS as DESTINO_CATALOG_SLUGS } from "@/lib/destinos_catalog";
 import { AIRPORTS_ES_IATAS } from "@/lib/airports_es_catalog";
+import { GLOSARIO_SLUGS } from "@/lib/glosario_landings";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -227,6 +228,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.7,
+  }));
+
+  // SSS422: vertical /glosario/[term] — 15 guías ampliadas con FAQ JSON-LD
+  const glosarioTermPages: MetadataRoute.Sitemap = GLOSARIO_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/glosario/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
   }));
 
   // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
@@ -789,6 +798,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...visadoDestinoPages,
     // SSS421: vertical /aeropuertos 15 hubs ES
     ...aeropuertoPages,
+    // SSS422: 15 guías ampliadas glosario
+    ...glosarioTermPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
