@@ -30,6 +30,7 @@ import { CODIGOS_PAIS_ISOS } from "@/lib/codigos_pais_catalog";
 import { AIRPORTS_WORLD_IATAS } from "@/lib/airports_world_catalog";
 import { FLAG_CARRIERS_ISOS } from "@/lib/flag_carriers_catalog";
 import { DIVISAS_CODES } from "@/lib/divisas_catalog";
+import { TASA_TURISTICA_SLUGS } from "@/lib/tasa_turistica_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -228,6 +229,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/tarjetas-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS457: hub /divisas — 8 currency landings
     { url: `${BASE_URL}/divisas`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    // SSS459: hub /tasa-turistica + 12 ciudades
+    { url: `${BASE_URL}/tasa-turistica`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS460: /vuelo-cancelado guía EU 261/2004
+    { url: `${BASE_URL}/vuelo-cancelado`, lastModified: now, changeFrequency: "yearly", priority: 0.75 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -368,6 +373,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${BASE_URL}/divisas/${code}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
+    priority: 0.65,
+  }));
+
+  // SSS459: vertical /tasa-turistica/[ciudad] — 12 ciudades
+  const tasaTuristicaPages: MetadataRoute.Sitemap = TASA_TURISTICA_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/tasa-turistica/${slug}`,
+    lastModified: now,
+    changeFrequency: "yearly" as const,
     priority: 0.65,
   }));
 
@@ -955,6 +968,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...flagCarriersPages,
     // SSS457: 8 currency landings
     ...divisasPages,
+    // SSS459: 12 tasa turística landings
+    ...tasaTuristicaPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
