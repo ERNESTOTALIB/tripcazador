@@ -423,6 +423,31 @@ export default async function DealDetailPage({
         dateRet={deal.date_ret || null}
       />
 
+      {/* ─────────── Add to calendar (SSS419) ─────────── */}
+      {deal.date_out && (
+        <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-200">
+                📅 Añadir al calendario
+              </h3>
+              <p className="text-xs text-gray-500">
+                Descarga el archivo .ics para Apple Calendar, Google Calendar u Outlook.
+                {deal.date_ret ? " Incluye ida + vuelta." : ""}
+              </p>
+            </div>
+            <a
+              href={`/api/calendar/${encodeURIComponent(deal.id)}`}
+              download
+              className="inline-flex items-center gap-2 rounded-lg bg-amber-500/20 px-4 py-2 text-sm font-semibold text-amber-300 ring-1 ring-amber-500/40 transition-colors hover:bg-amber-500/30 hover:text-amber-200"
+            >
+              <span aria-hidden>📅</span>
+              <span>Descargar .ics</span>
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* ─────────── Mapa (si hay coordenadas) ─────────── */}
       {deal.lat && deal.lon && (
         <section className="rounded-2xl overflow-hidden border border-gray-800">
