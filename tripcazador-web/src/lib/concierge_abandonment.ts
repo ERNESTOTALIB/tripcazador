@@ -18,6 +18,13 @@ const COOKIE_MAX_AGE_S = 24 * 3600; // 24h
 /** Tras MIN_RECOVERY_DELAY_S de abrir concierge, podemos mostrar el banner. */
 const MIN_RECOVERY_DELAY_S = 5 * 60; // 5 min
 
+/**
+ * FIX-SEC-3: Whitelist de tiers válidos. La cookie es client-controlled
+ * (sin firma), así que cualquier valor de `tier` debe validarse antes de
+ * interpolarlo en URLs / paths. Tier no whitelisted => fallback a /concierge.
+ */
+const ALLOWED_TIERS = new Set(["express", "standard", "premium", "pro"]);
+
 export interface AbandonmentState {
   /** ms epoch cuando user abrió primero /concierge. */
   openedAt: number;
@@ -46,7 +53,10 @@ export function markConciergeOpened(tier?: string): void {
 
 export function clearConciergeAbandonment(): void {
   if (!isBrowser()) return;
-  document.cookie = `${COOKIE_NAME}=; Max-Age=0; Path=/; SameSite=Lax`;
+  // FIX-SEC-4: Secure flag para HTTPS. SameSite=Lax + Secure incluso en
+  // clear path (defensive — algunos browsers requieren Secure para borrar
+  // cookies previamente Secure).
+  document.cookie = `${COOKIE_NAME}=; Max-Age=0; Path=/; SameSite=Lax; Secure`;
 }
 
 /**
@@ -80,7 +90,9 @@ function readAbandonmentRaw(): AbandonmentState | null {
 function writeCookie(state: AbandonmentState): void {
   if (!isBrowser()) return;
   const value = encodeURIComponent(JSON.stringify(state));
-  document.cookie = `${COOKIE_NAME}=${value}; Max-Age=${COOKIE_MAX_AGE_S}; Path=/; SameSite=Lax`;
+  // FIX-SEC-4: Secure flag — PROD es HTTPS. Cookie no debe enviarse en
+  // contextos no-seguros / downgrade attacks.
+  document.cookie = `${COOKIE_NAME}=${value}; Max-Age=${COOKIE_MAX_AGE_S}; Path=/; SameSite=Lax; Secure`;
 }
 
 /** Coupon Stripe pre-creado con -10% para recovery. */
@@ -88,7 +100,9 @@ export const RECOVERY_COUPON_CODE = "TC10";
 
 /** Permite construir la URL deep-link al tier abandonado. */
 export function buildRecoveryUrl(state: AbandonmentState): string {
-  if (state.tier) {
+  // FIX-SEC-3: la cookie es client-tamperable. NUNCA interpolar state.tier
+  // directamente en path — debe estar en whitelist o caer a fallback.
+  if (state.tier && ALLOWED_TIERS.has(state.tier)) {
     return `/concierge/${state.tier}?from=abandonment&coupon=${RECOVERY_COUPON_CODE}`;
   }
   return `/concierge?from=abandonment&coupon=${RECOVERY_COUPON_CODE}`;

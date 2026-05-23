@@ -96,6 +96,32 @@ describe("concierge_abandonment", () => {
     expect(url).toBe("/concierge?from=abandonment&coupon=TC10");
   });
 
+  it("FIX-SEC-3: tier no-whitelisted cae a fallback (path injection defense)", async () => {
+    const m = await import("@/lib/concierge_abandonment");
+    // Tier malicioso intentando path traversal
+    const url = m.buildRecoveryUrl({
+      openedAt: Date.now(),
+      tier: "../../checkout-redirect?to=evil.com",
+    });
+    expect(url).toBe("/concierge?from=abandonment&coupon=TC10");
+    expect(url).not.toContain("evil.com");
+    expect(url).not.toContain("..");
+  });
+
+  it("FIX-SEC-3: tier vacío string también cae a fallback", async () => {
+    const m = await import("@/lib/concierge_abandonment");
+    const url = m.buildRecoveryUrl({ openedAt: Date.now(), tier: "" });
+    expect(url).toBe("/concierge?from=abandonment&coupon=TC10");
+  });
+
+  it("FIX-SEC-3: los 4 tiers válidos sí se aceptan", async () => {
+    const m = await import("@/lib/concierge_abandonment");
+    for (const t of ["express", "standard", "premium", "pro"]) {
+      const url = m.buildRecoveryUrl({ openedAt: Date.now(), tier: t });
+      expect(url).toContain(`/concierge/${t}`);
+    }
+  });
+
   it("preserva openedAt si se vuelve a marcar dentro de ventana", async () => {
     const m = await import("@/lib/concierge_abandonment");
     const baseNow = Date.now();

@@ -13,6 +13,7 @@
  * para entender churn — no para retargeting.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { createHmac } from "node:crypto";
 import { unsubscribe } from "@/lib/subscribers_store";
 import { trackEvent } from "@/lib/event_store";
 
@@ -79,11 +80,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   return NextResponse.json({ ok: true });
 }
 
-/** Hash determinista corto del email para distinguir uniqueness sin almacenar PII. */
+/**
+ * FIX-SEC-2: Hash HMAC-SHA256 con secret env-based. El hash polinomial
+ * anterior (32-bit, no salt) era trivialmente reversible — un atacante
+ * con dump de event_store podía enumerar emails comunes para des-
+ * anonimizar suscriptores + razones de baja (GDPR Art 4(5) failure).
+ *
+ * Con HMAC keyed con UNSUBSCRIBE_HASH_KEY, el hash no es reversible sin
+ * el secret. Si la env var no está set, devolvemos string vacío (no
+ * persistimos pseudo-identificador débil — falla privacidad-safe).
+ */
 function hashEmail(email: string): string {
-  let h = 0;
-  for (let i = 0; i < email.length; i++) {
-    h = ((h << 5) - h + email.charCodeAt(i)) | 0;
-  }
-  return Math.abs(h).toString(36).slice(0, 8);
+  const key = process.env.UNSUBSCRIBE_HASH_KEY || "";
+  if (!key) return "";
+  return createHmac("sha256", key).update(email).digest("hex").slice(0, 16);
 }

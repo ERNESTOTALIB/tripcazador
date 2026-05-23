@@ -111,11 +111,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       { headers: corsHeaders() },
     );
   } catch (e) {
+    // FIX-SEC-1: NO devolver e.message al cliente (info disclosure vía CORS abierto).
+    // Logueamos server-side para Sentry/console y respondemos genérico.
+    console.error("[api/widgets/deals] internal error:", e);
     return NextResponse.json(
       {
         deals: [],
         error: "internal",
-        message: e instanceof Error ? e.message : String(e),
       },
       { status: 500, headers: corsHeaders() },
     );
