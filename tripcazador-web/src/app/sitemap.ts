@@ -206,6 +206,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/eventos-españa`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS440: hub /conferencias — 8 tech/business
     { url: `${BASE_URL}/conferencias`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS441: /partner-badges — generador SVG badges + embed code
+    { url: `${BASE_URL}/partner-badges`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
