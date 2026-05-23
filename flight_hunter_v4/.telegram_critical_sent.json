@@ -2015,6 +2015,22 @@
       "destination": "RAK",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "01ac974af717",
+      "ts": "2026-05-23T14:55:54.949641+00:00",
+      "origin": "PSA",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "54a54db8e89e",
+      "ts": "2026-05-23T14:55:54.949641+00:00",
+      "origin": "BGY",
+      "destination": "SJJ",
+      "price_eur": 15.49,
+      "classification": "CRÍTICO"
     }
   ]
 }
