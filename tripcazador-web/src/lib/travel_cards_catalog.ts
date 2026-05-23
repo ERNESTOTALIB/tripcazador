@@ -212,5 +212,6 @@ export const TRAVEL_CARDS_CATALOG: TravelCardEntry[] = [
 export const TRAVEL_CARDS_BY_SLUG: Record<string, TravelCardEntry> = Object.fromEntries(
   TRAVEL_CARDS_CATALOG.map((c) => [c.slug, c]),
 );
-
-export const TRAVEL_CARDS_SLUGS = TRAVEL_CARDS_CATALOG.map((c) => c.slug);
+// SSS456: TRAVEL_CARDS_SLUGS removed — was unused (single static /tarjetas-viaje
+// page, no [slug] subroute). Si en futuro se añade /tarjetas-viaje/[slug],
+// reañadir export.

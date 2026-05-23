@@ -19,6 +19,8 @@ import {
 // destinoSlug en escapadas catalog (oporto, edimburgo, dublin, bruselas)
 // no están en DESTINOS_CATALOG. Validamos antes de renderizar el link.
 import { DESTINO_SLUGS } from "@/lib/destinos_catalog";
+// SSS455: usar helper centralizado en lugar de re-implementar Breadcrumb
+import { breadcrumbSchema } from "@/lib/schema_helpers";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -57,15 +59,12 @@ export default function EscapadaPage({ params }: { params: { slug: string } }) {
 
   const otherEscapadas = ESCAPADAS_CATALOG.filter((x) => x.slug !== e.slug).slice(0, 5);
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Escapadas", item: `${SITE_URL}/escapadas` },
-      { "@type": "ListItem", position: 3, name: e.name, item: `${SITE_URL}/escapadas/${e.slug}` },
-    ],
-  };
+  // SSS455: helper centralizado (era ~7 líneas duplicadas en ~15 pages)
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: "Inicio", url: "/" },
+    { name: "Escapadas", url: "/escapadas" },
+    { name: e.name, url: `/escapadas/${e.slug}` },
+  ]);
 
   const tripJsonLd = {
     "@context": "https://schema.org",

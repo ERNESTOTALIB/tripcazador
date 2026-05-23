@@ -20,18 +20,26 @@ export interface BagSize {
 
 export interface FitResult {
   airline: BaggageRule;
+  /** Encaja como personal item gratis (bolso pequeño 1 bulto). */
   personalItem: { fits: boolean; reason: string };
-  cabinFree: { fits: boolean; reason: string };
+  /** Encaja como cabin (trolley). Paga fee si feeFromEur > 0. */
   cabinPaid: { fits: boolean; reason: string; feeFromEur: number };
 }
 
-/** Parses "55 × 40 × 20 cm" or "55x40x20cm" into [L, W, H] in cm. */
+/** Parses "55 × 40 × 20 cm" or "55x40x20cm" into [L, W, H] in cm.
+ *  SSS456: accepts decimals (`.` or `,`) — e.g. "55.5 × 40 × 20.3 cm". */
 export function parseDimensions(input: string): [number, number, number] | null {
   // Reemplaza × y ✕ por x
   const normalized = input.replace(/[×✕]/g, "x");
-  const match = normalized.match(/(\d+)\s*x\s*(\d+)\s*x\s*(\d+)/i);
+  const match = normalized.match(
+    /(\d+(?:[.,]\d+)?)\s*x\s*(\d+(?:[.,]\d+)?)\s*x\s*(\d+(?:[.,]\d+)?)/i,
+  );
   if (!match) return null;
-  return [parseInt(match[1], 10), parseInt(match[2], 10), parseInt(match[3], 10)];
+  return [
+    parseFloat(match[1].replace(",", ".")),
+    parseFloat(match[2].replace(",", ".")),
+    parseFloat(match[3].replace(",", ".")),
+  ];
 }
 
 /** Parses "10 kg" or "10kg" into kg number. */
@@ -75,15 +83,11 @@ export function checkAirlineFit(bag: BagSize, rule: BaggageRule): FitResult {
   const cabinWeightOk = bagFitsWeight(bag, rule.cabin.weight);
   const cabinFits = cabinDimsOk && cabinWeightOk;
 
-  // CabinFree = entra en personal item gratis
-  const cabinFree = {
-    fits: personalFits,
-    reason: personalFits
-      ? `Encaja como personal item (${rule.personalItem.dimensions}, sin peso límite habitualmente)`
-      : !personalDimsOk
-        ? `Dimensiones exceden ${rule.personalItem.dimensions}`
-        : `Peso excede ${rule.personalItem.weight}`,
-  };
+  const personalReason = personalFits
+    ? `Encaja como personal item (${rule.personalItem.dimensions}, sin peso límite habitualmente)`
+    : !personalDimsOk
+      ? `Dimensiones exceden ${rule.personalItem.dimensions}`
+      : `Peso excede ${rule.personalItem.weight}`;
 
   // CabinPaid = entra en cabin trolley (paga fee si la aerolínea cobra)
   const cabinPaid = {
@@ -98,11 +102,7 @@ export function checkAirlineFit(bag: BagSize, rule: BaggageRule): FitResult {
 
   return {
     airline: rule,
-    personalItem: {
-      fits: personalFits,
-      reason: cabinFree.reason,
-    },
-    cabinFree,
+    personalItem: { fits: personalFits, reason: personalReason },
     cabinPaid,
   };
 }

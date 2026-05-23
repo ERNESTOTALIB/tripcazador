@@ -74,7 +74,7 @@ describe("baggage_dimensions", () => {
     const bag: BagSize = { length: 40, width: 20, height: 25, weightKg: 5 };
     const result = checkAirlineFit(bag, ryanair);
     expect(result.personalItem.fits).toBe(true);
-    expect(result.cabinFree.fits).toBe(true); // personal item = free
+    // SSS456: cabinFree removed (was duplicate of personalItem)
     expect(result.cabinPaid.fits).toBe(true);
   });
 

@@ -29,6 +29,7 @@ import { CONFERENCIAS_SLUGS } from "@/lib/conferencias_catalog";
 import { CODIGOS_PAIS_ISOS } from "@/lib/codigos_pais_catalog";
 import { AIRPORTS_WORLD_IATAS } from "@/lib/airports_world_catalog";
 import { FLAG_CARRIERS_ISOS } from "@/lib/flag_carriers_catalog";
+import { DIVISAS_CODES } from "@/lib/divisas_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -225,6 +226,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/maleta-perdida`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
     // SSS452: /tarjetas-viaje — comparativa 6 tarjetas top
     { url: `${BASE_URL}/tarjetas-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS457: hub /divisas — 8 currency landings
+    { url: `${BASE_URL}/divisas`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -357,6 +360,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${BASE_URL}/aerolineas-bandera/${iso}`,
     lastModified: now,
     changeFrequency: "yearly" as const,
+    priority: 0.65,
+  }));
+
+  // SSS457: vertical /divisas/[code] — 8 currency landings
+  const divisasPages: MetadataRoute.Sitemap = DIVISAS_CODES.map((code) => ({
+    url: `${BASE_URL}/divisas/${code}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
     priority: 0.65,
   }));
 
@@ -942,6 +953,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...aeropuertosMundoPages,
     // SSS449: 20 flag carriers
     ...flagCarriersPages,
+    // SSS457: 8 currency landings
+    ...divisasPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
