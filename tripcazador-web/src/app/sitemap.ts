@@ -27,6 +27,7 @@ import { ESCAPADAS_SLUGS } from "@/lib/escapadas_catalog";
 import { EVENTOS_ES_SLUGS } from "@/lib/eventos_es_catalog";
 import { CONFERENCIAS_SLUGS } from "@/lib/conferencias_catalog";
 import { CODIGOS_PAIS_ISOS } from "@/lib/codigos_pais_catalog";
+import { AIRPORTS_WORLD_IATAS } from "@/lib/airports_world_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -211,6 +212,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/partner-badges`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     // SSS444: hub /codigos-pais — 15 países lookup
     { url: `${BASE_URL}/codigos-pais`, lastModified: now, changeFrequency: "yearly", priority: 0.65 },
+    // SSS445: hub /aeropuertos-mundo — 20 hubs internacionales
+    { url: `${BASE_URL}/aeropuertos-mundo`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -327,6 +330,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "yearly" as const,
     priority: 0.6,
+  }));
+
+  // SSS445: vertical /aeropuertos-mundo/[iata] — 20 hubs internacionales
+  const aeropuertosMundoPages: MetadataRoute.Sitemap = AIRPORTS_WORLD_IATAS.map((iata) => ({
+    url: `${BASE_URL}/aeropuertos-mundo/${iata.toLowerCase()}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
   }));
 
   // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
@@ -907,6 +918,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...conferenciasPages,
     // SSS444: 15 países códigos lookup
     ...codigosPaisPages,
+    // SSS445: 20 hubs internacionales
+    ...aeropuertosMundoPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
