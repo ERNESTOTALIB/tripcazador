@@ -18,6 +18,7 @@ import { ReferralNudge } from "@/components/ReferralNudge";
 import { SocialProofToast } from "@/components/SocialProofToast";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { ConciergeAbandonmentBanner } from "@/components/ConciergeAbandonmentBanner";
+import { PWARegister } from "@/components/PWARegister";
 import "./globals.css";
 
 // Inter — subset latin solo (no cyrillic/greek/vietnamese), display=swap para
@@ -490,6 +491,8 @@ export default function RootLayout({
         <ExitIntentModal />
         {/* SSS423 — Concierge cart abandonment recovery banner (24h TTL) */}
         <ConciergeAbandonmentBanner />
+        {/* SSS425 — PWA SW register (dormant si NEXT_PUBLIC_PWA_ENABLED!=1) */}
+        <PWARegister />
       </body>
     </html>
   );
