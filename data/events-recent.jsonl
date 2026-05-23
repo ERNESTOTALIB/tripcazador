@@ -1,6 +1,3 @@
-{"ts":"2026-05-17T15:11:24.993Z","type":"page_view","visitor":"deb4282dbc8fc036","meta":{"path":"/destinos/paris"}}
-{"ts":"2026-05-17T15:11:30.183Z","type":"result_viewed","visitor":"deb4282dbc8fc036","meta":{"deal_id":"seed-002c02d08c","destination":"CDG","origin":"SVQ","price":59,"classification":"OFERTA"}}
-{"ts":"2026-05-17T15:13:46.754Z","type":"page_view","visitor":"deb4282dbc8fc036","meta":{"path":"/vuelos/madrid-lisboa"}}
 {"ts":"2026-05-17T15:13:57.098Z","type":"landing_arrived","visitor":"deb4282dbc8fc036","meta":{"path":"/vuelos/madrid-lisboa"}}
 {"ts":"2026-05-17T15:13:57.191Z","type":"result_viewed","visitor":"deb4282dbc8fc036","meta":{"deal_id":"seed-00db0f305c","destination":"LIS","origin":"MAD","price":78,"classification":"OFERTA"}}
 {"ts":"2026-05-17T15:14:04.101Z","type":"page_view","visitor":"deb4282dbc8fc036","meta":{"path":"/vuelos/madrid-lisboa"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-23T09:01:06.079Z","type":"landing_arrived","visitor":"3c9f5a68520129f8","meta":{"path":"/"}}
 {"ts":"2026-05-23T09:01:09.998Z","type":"result_viewed","visitor":"d416c53db1bcd019","meta":{"deal_id":"ryanair_bcn_cph_20260902_economy","destination":"CPH","origin":"BCN","price":35.99,"classification":"CRÍTICO"}}
 {"ts":"2026-05-23T09:01:10.019Z","type":"page_view","visitor":"623a90f1f3c9a7e8","meta":{"path":"/"}}
+{"ts":"2026-05-23T09:01:11.568Z","type":"page_view","visitor":"193f2faa639f4374","meta":{"path":"/"}}
+{"ts":"2026-05-23T09:01:12.030Z","type":"page_view","visitor":"d416c53db1bcd019","meta":{"path":"/"}}
+{"ts":"2026-05-23T09:01:12.205Z","type":"page_view","visitor":"3c9f5a68520129f8","meta":{"path":"/"}}
