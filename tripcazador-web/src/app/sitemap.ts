@@ -221,6 +221,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/aerolineas-bandera`, lastModified: now, changeFrequency: "yearly", priority: 0.65 },
     // SSS450: /equipaje-medidor — herramienta interactiva
     { url: `${BASE_URL}/equipaje-medidor`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS451: /maleta-perdida — guía completa reclamación
+    { url: `${BASE_URL}/maleta-perdida`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
