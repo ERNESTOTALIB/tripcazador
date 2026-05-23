@@ -96,7 +96,10 @@ export const EVENTOS_ES_CATALOG: EventoEsEntry[] = [
     slug: "carnaval-tenerife",
     name: "Carnaval de Santa Cruz de Tenerife",
     city: "Santa Cruz de Tenerife",
-    iata: "TFN",
+    // FIX-SEO-2: TFN (Tenerife Norte) no está en catalog ES. Mantenemos
+    // TFS (Tenerife Sur) que SÍ está y sirve igual para llegar al Carnaval
+    // (bus TITSA conecta directo en 50 min).
+    iata: "TFS",
     emoji: "🎭",
     dates: "Febrero o marzo (2 semanas) — fecha cambia con Cuaresma",
     summary:

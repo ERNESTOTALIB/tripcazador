@@ -314,6 +314,77 @@ export const AIRPORTS_WORLD: AirportWorldEntry[] = [
     hubAirline: "Aerolíneas Argentinas",
     spanishConnection: "Iberia / Air Europa MAD-EZE diario directo",
   },
+  // SSS445-EXT: añadidos para cubrir IATAs referenciadas por conferencias_catalog
+  {
+    iata: "LIS",
+    city: "Lisboa",
+    country: "Portugal",
+    countryIso: "pt",
+    emoji: "🇵🇹",
+    formalName: "Humberto Delgado",
+    paxMillions: 33.6,
+    terminals: 2,
+    transitTip:
+      "T1 (vuelos no-Schengen + intercontinentales), T2 (low-cost). Aerobús €4 al centro 25 min, Metro Vermelha hasta São Sebastião 25 min.",
+    hubAirline: "TAP Air Portugal",
+    spanishConnection: "TAP MAD-LIS / BCN-LIS varias frecuencias diarias",
+  },
+  {
+    iata: "LAS",
+    city: "Las Vegas",
+    country: "EE.UU.",
+    countryIso: "us",
+    emoji: "🇺🇸",
+    formalName: "Harry Reid International",
+    paxMillions: 57.6,
+    terminals: 2,
+    transitTip:
+      "T1 (D/E gates — domésticos) y T3 (internacional + algunas domésticas). Conectados por shuttle gratuito. Centrico al Strip — 5 min taxi.",
+    hubAirline: "Southwest",
+    spanishConnection: "Conexión vía MIA, JFK (Iberia/AA) o LHR (BA)",
+  },
+  {
+    iata: "HEL",
+    city: "Helsinki",
+    country: "Finlandia",
+    countryIso: "fi",
+    emoji: "🇫🇮",
+    formalName: "Helsinki-Vantaa",
+    paxMillions: 19.5,
+    terminals: 1,
+    transitTip:
+      "Terminal único moderno con sauna gratis. Tren Ringrata €4,40 al centro en 30 min, cada 10 min.",
+    hubAirline: "Finnair",
+    spanishConnection: "Finnair MAD-HEL + BCN-HEL directo todo el año",
+  },
+  {
+    iata: "SFO",
+    city: "San Francisco",
+    country: "EE.UU.",
+    countryIso: "us",
+    emoji: "🇺🇸",
+    formalName: "San Francisco International",
+    paxMillions: 50.4,
+    terminals: 4,
+    transitTip:
+      "T1 (Southwest/Alaska), T2 (American/Delta), T3 (United), International Terminal. AirTrain conecta todos. BART al centro 30 min $10.",
+    hubAirline: "United / Alaska",
+    spanishConnection: "Iberia MAD-SFO directo (5x/semana) + Air Europa MAD-SFO temporada",
+  },
+  {
+    iata: "SJC",
+    city: "San José (Silicon Valley)",
+    country: "EE.UU.",
+    countryIso: "us",
+    emoji: "🇺🇸",
+    formalName: "Norman Y. Mineta San José International",
+    paxMillions: 12.9,
+    terminals: 2,
+    transitTip:
+      "Más cerca Mountain View / Palo Alto que SFO (15-30 min vs 1h). Útil para Google I/O y eventos Silicon Valley. VTA bus al centro.",
+    hubAirline: "Alaska / Southwest",
+    spanishConnection: "Conexión vía LAX (Iberia) o SFO + transfer corto",
+  },
 ];
 
 export const AIRPORTS_WORLD_BY_IATA: Record<string, AirportWorldEntry> = Object.fromEntries(

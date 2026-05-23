@@ -205,8 +205,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/escapadas`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS436: hub /preparar-viaje — checklist pre-trip
     { url: `${BASE_URL}/preparar-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    // SSS439: hub /eventos-españa — 8 eventos top
-    { url: `${BASE_URL}/eventos-españa`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS439: hub /eventos-españa — 8 eventos top (FIX-SEO-4: encodeURI ñ)
+    { url: encodeURI(`${BASE_URL}/eventos-españa`), lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS440: hub /conferencias — 8 tech/business
     { url: `${BASE_URL}/conferencias`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS441: /partner-badges — generador SVG badges + embed code
@@ -320,8 +320,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // SSS439: vertical /eventos-españa/[slug] — 8 eventos top
+  // FIX-SEO-4: encodeURI para no emitir raw ñ en sitemap XML (RFC 3986).
   const eventosEsPages: MetadataRoute.Sitemap = EVENTOS_ES_SLUGS.map((slug) => ({
-    url: `${BASE_URL}/eventos-españa/${slug}`,
+    url: encodeURI(`${BASE_URL}/eventos-españa/${slug}`),
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.7,

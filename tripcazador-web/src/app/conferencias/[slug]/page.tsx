@@ -12,6 +12,10 @@ import {
   CONFERENCIAS_SLUGS,
   getConferencia,
 } from "@/lib/conferencias_catalog";
+// FIX-SEO-1: routes /aeropuertos/[iata] (ES only) y /aeropuertos-mundo/[iata]
+// son distintos catálogos. Detectar y rutear correctamente para evitar 404.
+import { AIRPORTS_ES_IATAS } from "@/lib/airports_es_catalog";
+import { AIRPORTS_WORLD_IATAS } from "@/lib/airports_world_catalog";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -71,6 +75,14 @@ export default function ConferenciaPage({ params }: { params: { slug: string } }
     },
     organizer: { "@type": "Organization", name: c.name, url: c.officialUrl },
   };
+
+  // FIX-SEO-1: rutar al catálogo correcto. ES → /aeropuertos, otros → /aeropuertos-mundo.
+  // Si el IATA tampoco está en world catalog, no renderizamos link (mejor que 404).
+  const aeropuertoHref = AIRPORTS_ES_IATAS.includes(c.iata)
+    ? `/aeropuertos/${c.iata.toLowerCase()}`
+    : AIRPORTS_WORLD_IATAS.includes(c.iata)
+      ? `/aeropuertos-mundo/${c.iata.toLowerCase()}`
+      : null;
 
   return (
     <main className="container mx-auto max-w-3xl px-4 py-8">
@@ -150,14 +162,16 @@ export default function ConferenciaPage({ params }: { params: { slug: string } }
       </section>
 
       <section className="mb-8 grid gap-3 sm:grid-cols-3">
-        <Link
-          href={`/aeropuertos/${c.iata.toLowerCase()}`}
-          className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 text-center transition-colors hover:border-amber-500/50"
-        >
-          <div className="text-2xl">✈️</div>
-          <div className="mt-1 text-sm font-bold text-white">Aeropuerto {c.iata}</div>
-          <div className="text-xs text-slate-400">Transporte + servicios</div>
-        </Link>
+        {aeropuertoHref && (
+          <Link
+            href={aeropuertoHref}
+            className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 text-center transition-colors hover:border-amber-500/50"
+          >
+            <div className="text-2xl">✈️</div>
+            <div className="mt-1 text-sm font-bold text-white">Aeropuerto {c.iata}</div>
+            <div className="text-xs text-slate-400">Transporte + servicios</div>
+          </Link>
+        )}
         <Link
           href="/deals"
           className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-center transition-colors hover:border-amber-500/70"

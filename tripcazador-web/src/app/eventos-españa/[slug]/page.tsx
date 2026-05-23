@@ -13,6 +13,11 @@ import {
   EVENTOS_ES_SLUGS,
   getEventoEs,
 } from "@/lib/eventos_es_catalog";
+// FIX-CQ-3 + FIX-SEO-2: Validate destinoSlug y IATA antes de generar
+// cross-links — varios destinoSlug (madrid/sevilla/valencia) NO están en
+// DESTINOS_CATALOG, y IATA PNA/TFN NO están en AIRPORTS_ES_CATALOG.
+import { DESTINO_SLUGS } from "@/lib/destinos_catalog";
+import { AIRPORTS_ES_IATAS } from "@/lib/airports_es_catalog";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -151,15 +156,20 @@ export default function EventoEsPage({ params }: { params: { slug: string } }) {
       )}
 
       <section className="mb-8 grid gap-3 sm:grid-cols-3">
-        <Link
-          href={`/aeropuertos/${e.iata.toLowerCase()}`}
-          className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 text-center transition-colors hover:border-amber-500/50"
-        >
-          <div className="text-2xl">✈️</div>
-          <div className="mt-1 text-sm font-bold text-white">Aeropuerto {e.iata}</div>
-          <div className="text-xs text-slate-400">Transporte + aerolíneas</div>
-        </Link>
-        {e.destinoSlug && (
+        {/* FIX-SEO-2: solo link a /aeropuertos/X si IATA en catálogo ES.
+            Antes PNA y TFN generaban 404. */}
+        {AIRPORTS_ES_IATAS.includes(e.iata) && (
+          <Link
+            href={`/aeropuertos/${e.iata.toLowerCase()}`}
+            className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 text-center transition-colors hover:border-amber-500/50"
+          >
+            <div className="text-2xl">✈️</div>
+            <div className="mt-1 text-sm font-bold text-white">Aeropuerto {e.iata}</div>
+            <div className="text-xs text-slate-400">Transporte + aerolíneas</div>
+          </Link>
+        )}
+        {/* FIX-CQ-3: solo link si destinoSlug está en DESTINOS_CATALOG. */}
+        {e.destinoSlug && DESTINO_SLUGS.includes(e.destinoSlug) && (
           <Link
             href={`/preparar-viaje/${e.destinoSlug}`}
             className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 text-center transition-colors hover:border-amber-500/50"

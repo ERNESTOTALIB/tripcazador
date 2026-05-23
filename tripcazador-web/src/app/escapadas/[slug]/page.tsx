@@ -15,6 +15,10 @@ import {
   ESCAPADAS_CATALOG,
   getEscapada,
 } from "@/lib/escapadas_catalog";
+// FIX-CQ-2: /destinos/[slug] tiene dynamicParams=false; algunos
+// destinoSlug en escapadas catalog (oporto, edimburgo, dublin, bruselas)
+// no están en DESTINOS_CATALOG. Validamos antes de renderizar el link.
+import { DESTINO_SLUGS } from "@/lib/destinos_catalog";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -205,7 +209,7 @@ export default function EscapadaPage({ params }: { params: { slug: string } }) {
           <div className="mt-2 text-sm font-bold text-white">Chollos detectados</div>
           <div className="text-xs text-amber-300">Vuelos a {e.name}</div>
         </Link>
-        {e.destinoSlug && (
+        {e.destinoSlug && DESTINO_SLUGS.includes(e.destinoSlug) && (
           <Link
             href={`/destinos/${e.destinoSlug}`}
             className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 text-center transition-colors hover:border-amber-500/50"

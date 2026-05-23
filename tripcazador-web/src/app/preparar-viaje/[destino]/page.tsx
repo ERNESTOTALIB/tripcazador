@@ -14,6 +14,9 @@ import {
   DESTINO_SLUGS,
   getDestino,
 } from "@/lib/destinos_catalog";
+// FIX-CQ-1: /escapadas/[slug] tiene dynamicParams=false con solo 12 slugs.
+// Importamos ESCAPADAS_SLUGS para guard del link y evitar 404 garantizado.
+import { ESCAPADAS_SLUGS } from "@/lib/escapadas_catalog";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -226,14 +229,18 @@ export default function PrepararViajeDestinoPage({
       </section>
 
       <section className="mb-6 grid gap-3 sm:grid-cols-2">
-        <Link
-          href={`/escapadas/${d.slug}`}
-          className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 transition-colors hover:border-amber-500/50"
-        >
-          <div className="text-2xl">🎒</div>
-          <div className="mt-1 text-sm font-bold text-white">Escapada {d.name}</div>
-          <div className="text-xs text-slate-400">Itinerario 2-3 días</div>
-        </Link>
+        {/* FIX-CQ-1: solo link a escapada si el slug existe en ESCAPADAS_SLUGS
+            (12 destinos). Antes generábamos 404 para ~25 destinos. */}
+        {ESCAPADAS_SLUGS.includes(d.slug) && (
+          <Link
+            href={`/escapadas/${d.slug}`}
+            className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 transition-colors hover:border-amber-500/50"
+          >
+            <div className="text-2xl">🎒</div>
+            <div className="mt-1 text-sm font-bold text-white">Escapada {d.name}</div>
+            <div className="text-xs text-slate-400">Itinerario 2-3 días</div>
+          </Link>
+        )}
         <Link
           href="/equipaje"
           className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 transition-colors hover:border-amber-500/50"

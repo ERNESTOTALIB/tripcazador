@@ -252,7 +252,7 @@ export const CHECK_IN_RULES: CheckInRule[] = [
   {
     code: "W6",
     name: "Wizz Air",
-    slug: "wizz-air",
+    slug: "wizz",
     emoji: "🟪",
     lastUpdated: "2026-05",
     online: {
@@ -692,7 +692,7 @@ export const CHECK_IN_RULES: CheckInRule[] = [
   {
     code: "TP",
     name: "TAP Air Portugal",
-    slug: "tap-air-portugal",
+    slug: "tap-portugal",
     emoji: "🇵🇹",
     lastUpdated: "2026-05",
     online: {
