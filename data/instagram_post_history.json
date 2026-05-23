@@ -862,5 +862,14 @@
     "city_from": "Varsovia",
     "city_to": "Paphos",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1779544028.7368624,
+    "deal_id": "ryanair_stn_ath_20260920_economy",
+    "origin": "STN",
+    "destination": "ATH",
+    "city_from": "Londres Stansted",
+    "city_to": "Athens",
+    "price_eur": 35.99
   }
 ]
