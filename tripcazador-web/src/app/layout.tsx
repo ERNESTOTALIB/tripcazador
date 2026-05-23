@@ -84,6 +84,8 @@ export const metadata: Metadata = {
     },
     types: {
       "application/rss+xml": [{ url: "/rss.xml", title: "TripCazador Blog RSS" }],
+      // SSS442: JSON Feed 1.1 spec — aggregators modernos (NetNewsWire, Inoreader)
+      "application/feed+json": [{ url: "/feed.json", title: "TripCazador Blog JSON Feed" }],
     },
   },
   manifest: "/site.webmanifest",
