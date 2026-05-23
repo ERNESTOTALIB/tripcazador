@@ -214,6 +214,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/codigos-pais`, lastModified: now, changeFrequency: "yearly", priority: 0.65 },
     // SSS445: hub /aeropuertos-mundo — 20 hubs internacionales
     { url: `${BASE_URL}/aeropuertos-mundo`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS447: /changelog — release notes públicas
+    { url: `${BASE_URL}/changelog`, lastModified: now, changeFrequency: "weekly", priority: 0.55 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
