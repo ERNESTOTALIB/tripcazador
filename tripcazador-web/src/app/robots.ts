@@ -14,7 +14,10 @@ export default function robots(): MetadataRoute.Robots {
           "/panel/",
           // Magic-link verify endpoints (no leakear via crawl)
           "/concierge/pedido/",
-          "/m/login",
+          // SSS417: /m/login dropped — la ruta UI ya no existe (404 en
+          // PROD desde SSS370+). Mantenerla aquí filtraba un path
+          // inexistente desde robots y confundía auditorías. Si vuelve
+          // a montarse mobile login UI, restaurar este disallow.
         ],
       },
     ],
