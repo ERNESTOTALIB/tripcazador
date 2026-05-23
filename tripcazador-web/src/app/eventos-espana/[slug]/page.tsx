@@ -1,5 +1,5 @@
 /**
- * /eventos-españa/[slug] — SSS439 (23 may 2026)
+ * /eventos-espana/[slug] — SSS439 (23 may 2026)
  *
  * Landing por evento top. Fechas + por qué + tips + zona + caveats.
  *
@@ -39,11 +39,11 @@ export async function generateMetadata({
   return {
     title,
     description: e.summary,
-    alternates: { canonical: `${SITE_URL}/eventos-españa/${e.slug}` },
+    alternates: { canonical: `${SITE_URL}/eventos-espana/${e.slug}` },
     openGraph: {
       title,
       description: e.summary,
-      url: `${SITE_URL}/eventos-españa/${e.slug}`,
+      url: `${SITE_URL}/eventos-espana/${e.slug}`,
       type: "article",
     },
   };
@@ -60,8 +60,8 @@ export default function EventoEsPage({ params }: { params: { slug: string } }) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Eventos España", item: `${SITE_URL}/eventos-españa` },
-      { "@type": "ListItem", position: 3, name: e.name, item: `${SITE_URL}/eventos-españa/${e.slug}` },
+      { "@type": "ListItem", position: 2, name: "Eventos España", item: `${SITE_URL}/eventos-espana` },
+      { "@type": "ListItem", position: 3, name: e.name, item: `${SITE_URL}/eventos-espana/${e.slug}` },
     ],
   };
 
@@ -94,7 +94,7 @@ export default function EventoEsPage({ params }: { params: { slug: string } }) {
       <nav className="mb-4 text-sm text-slate-400">
         <Link href="/" className="hover:text-amber-400">Inicio</Link>
         <span className="mx-2">/</span>
-        <Link href="/eventos-españa" className="hover:text-amber-400">Eventos España</Link>
+        <Link href="/eventos-espana" className="hover:text-amber-400">Eventos España</Link>
         <span className="mx-2">/</span>
         <span className="text-slate-200">{e.name}</span>
       </nav>
@@ -196,7 +196,7 @@ export default function EventoEsPage({ params }: { params: { slug: string } }) {
             {others.map((o) => (
               <Link
                 key={o.slug}
-                href={`/eventos-españa/${o.slug}`}
+                href={`/eventos-espana/${o.slug}`}
                 className="rounded-full border border-slate-700 bg-slate-900/60 px-3 py-1 text-xs text-slate-300 transition-colors hover:border-amber-500/50 hover:text-amber-300"
               >
                 {o.emoji} {o.name}

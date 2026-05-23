@@ -1,7 +1,7 @@
 /**
- * /eventos-españa — SSS439 (23 may 2026)
+ * /eventos-espana — SSS439 (23 may 2026)
  *
- * Hub vertical /eventos-españa/[slug]. Lista 8 eventos top con datos
+ * Hub vertical /eventos-espana/[slug]. Lista 8 eventos top con datos
  * prácticos para viajeros.
  *
  * SEO: "eventos espana 2026", "fechas san fermines", "feria abril
@@ -17,11 +17,11 @@ export const metadata: Metadata = {
   title: "8 eventos top de España: fechas, alojamiento y tips | TripCazador",
   description:
     "San Fermines, Feria de Abril, Fallas, Carnaval Tenerife, La Tomatina, Semana Santa Sevilla, Cap Roig y Año Nuevo. Fechas + dónde dormir + tips prácticos.",
-  alternates: { canonical: `${SITE_URL}/eventos-españa` },
+  alternates: { canonical: `${SITE_URL}/eventos-espana` },
   openGraph: {
     title: "8 eventos top de España",
     description: "Fechas, alojamiento y tips prácticos.",
-    url: `${SITE_URL}/eventos-españa`,
+    url: `${SITE_URL}/eventos-espana`,
     type: "website",
   },
 };
@@ -46,7 +46,7 @@ export default function EventosEsHubPage() {
         {EVENTOS_ES_CATALOG.map((e) => (
           <Link
             key={e.slug}
-            href={`/eventos-españa/${e.slug}`}
+            href={`/eventos-espana/${e.slug}`}
             className="rounded-xl border border-slate-700 bg-slate-800/40 p-5 transition-all hover:border-amber-500/60 hover:bg-slate-800/70"
           >
             <div className="mb-2 flex items-center justify-between gap-2">
