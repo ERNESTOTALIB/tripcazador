@@ -23,6 +23,7 @@ import { GLOSARIO_SLUGS } from "@/lib/glosario_landings";
 import { CHECK_IN_SLUGS } from "@/lib/check_in_rules";
 import { VUELO_TREN_SLUGS } from "@/lib/vuelo_tren_catalog";
 import { FREEBIES_SLUGS } from "@/lib/freebies_catalog";
+import { ESCAPADAS_SLUGS } from "@/lib/escapadas_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -195,6 +196,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/vuelos-vs-tren`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS429: hub /freebies — 4 lead magnets PDF
     { url: `${BASE_URL}/freebies`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS433: hub /escapadas — 12 escapadas fin de semana
+    { url: `${BASE_URL}/escapadas`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
     { url: `${BASE_URL}/vuelos`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/vuelos-baratos`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
@@ -269,6 +272,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.6,
+  }));
+
+  // SSS433: vertical /escapadas/[slug] — 12 escapadas fin de semana
+  const escapadasPages: MetadataRoute.Sitemap = ESCAPADAS_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/escapadas/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
   }));
 
   // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
@@ -839,6 +850,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...vueloTrenPages,
     // SSS429: 4 lead magnets
     ...freebiePages,
+    // SSS433: 12 escapadas fin de semana
+    ...escapadasPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
