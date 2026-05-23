@@ -198,6 +198,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/freebies`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS433: hub /escapadas — 12 escapadas fin de semana
     { url: `${BASE_URL}/escapadas`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS435: /transparencia — métricas + compromisos públicos
+    { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
     { url: `${BASE_URL}/vuelos`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/vuelos-baratos`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
