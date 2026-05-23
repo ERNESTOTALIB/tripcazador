@@ -124,6 +124,32 @@ export default function EmbedDocsPage() {
         </ul>
       </section>
 
+      <section className="rounded-2xl p-6 border border-slate-700 bg-slate-800/40">
+        <h2 className="text-lg font-bold text-white mb-2">
+          🔗 JSON público: /api/widgets/deals (SSS437)
+        </h2>
+        <p className="text-gray-400 mb-3 text-sm">
+          Para integraciones headless (apps móviles, generación de
+          contenido, scripts) hay un endpoint JSON con CORS abierto:
+        </p>
+        <pre className="bg-gray-900 border border-gray-800 rounded p-3 text-xs text-amber-300 overflow-auto">
+          <code>{`GET https://tripcazador.com/api/widgets/deals?limit=10&ref=tu-handle
+
+→ {
+  deals: [...],
+  generated_at: "...",
+  attribution: "Datos de tripcazador.com — mantén atribución visible.",
+  source_url: "https://tripcazador.com"
+}`}</code>
+        </pre>
+        <ul className="text-xs text-gray-400 mt-3 space-y-1">
+          <li>• <code className="text-amber-300">limit</code>: 1-30 (default 10)</li>
+          <li>• <code className="text-amber-300">ref</code>: tu handle / código partner — se inyecta como utm_campaign en booking_url</li>
+          <li>• Cache CDN 5 min, sin auth</li>
+          <li>• Licencia: free embed con atribución visible</li>
+        </ul>
+      </section>
+
       <section className="bg-gradient-to-br from-amber-500/10 to-transparent rounded-2xl p-6 border border-amber-500/20">
         <h2 className="text-lg font-bold text-white mb-2">¿Tu blog tiene tráfico?</h2>
         <p className="text-gray-400 mb-4 text-sm">
