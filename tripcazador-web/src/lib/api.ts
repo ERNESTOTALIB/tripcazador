@@ -65,6 +65,21 @@ export interface DealsResponse {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+// SSS416: en builds locales sin FastAPI corriendo (sandbox, CI sin env, dev sin
+// `make api`), API_BASE cae a `localhost:8000` y todo fetch falla con
+// ECONNREFUSED. El fallback a deals-latest.json funciona perfecto, pero el
+// `console.warn` por cada SSG page (50+) ensucia el log y enmascara warnings
+// reales. En Vercel/PROD `NEXT_PUBLIC_API_URL=https://api.tripcazador.com` está
+// set, así que ahí seguimos warnando (señal legítima de problema infra).
+// Esta helper centraliza la decisión: silenciar solo en builds donde API_BASE
+// apunta a localhost (= entorno de dev local sin backend).
+const IS_LOCAL_API_FALLBACK =
+  API_BASE.includes("localhost") || API_BASE.includes("127.0.0.1");
+function warnApiFallback(scope: string, e: unknown): void {
+  if (IS_LOCAL_API_FALLBACK) return;
+  console.warn(`[${scope}] fetch fail, fallback to static:`, e);
+}
+
 export async function getDeals(params?: {
   classification?: string;
   region?: string;
@@ -91,7 +106,7 @@ export async function getDeals(params?: {
       next: { revalidate: 300 }, // Revalidar cada 5 minutos (ISR)
     });
   } catch (e) {
-    console.warn("[api.getDeals] fetch fail, fallback to static:", e);
+    warnApiFallback("api.getDeals", e);
     return getDealsFromStatic();
   }
 
@@ -104,7 +119,7 @@ export async function getDeals(params?: {
   try {
     json = await res.json();
   } catch (e) {
-    console.warn("[api.getDeals] JSON parse fail, fallback to static:", e);
+    warnApiFallback("api.getDeals JSON parse", e);
     return getDealsFromStatic();
   }
 
