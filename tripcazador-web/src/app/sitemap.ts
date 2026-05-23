@@ -26,6 +26,7 @@ import { FREEBIES_SLUGS } from "@/lib/freebies_catalog";
 import { ESCAPADAS_SLUGS } from "@/lib/escapadas_catalog";
 import { EVENTOS_ES_SLUGS } from "@/lib/eventos_es_catalog";
 import { CONFERENCIAS_SLUGS } from "@/lib/conferencias_catalog";
+import { CODIGOS_PAIS_ISOS } from "@/lib/codigos_pais_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -208,6 +209,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/conferencias`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS441: /partner-badges — generador SVG badges + embed code
     { url: `${BASE_URL}/partner-badges`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
+    // SSS444: hub /codigos-pais — 15 países lookup
+    { url: `${BASE_URL}/codigos-pais`, lastModified: now, changeFrequency: "yearly", priority: 0.65 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -316,6 +319,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.7,
+  }));
+
+  // SSS444: vertical /codigos-pais/[iso] — 15 países lookup
+  const codigosPaisPages: MetadataRoute.Sitemap = CODIGOS_PAIS_ISOS.map((iso) => ({
+    url: `${BASE_URL}/codigos-pais/${iso}`,
+    lastModified: now,
+    changeFrequency: "yearly" as const,
+    priority: 0.6,
   }));
 
   // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
@@ -894,6 +905,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...eventosEsPages,
     // SSS440: 8 conferencias tech/business
     ...conferenciasPages,
+    // SSS444: 15 países códigos lookup
+    ...codigosPaisPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
