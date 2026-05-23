@@ -24,6 +24,7 @@ import { CHECK_IN_SLUGS } from "@/lib/check_in_rules";
 import { VUELO_TREN_SLUGS } from "@/lib/vuelo_tren_catalog";
 import { FREEBIES_SLUGS } from "@/lib/freebies_catalog";
 import { ESCAPADAS_SLUGS } from "@/lib/escapadas_catalog";
+import { EVENTOS_ES_SLUGS } from "@/lib/eventos_es_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -200,6 +201,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/escapadas`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS436: hub /preparar-viaje — checklist pre-trip
     { url: `${BASE_URL}/preparar-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS439: hub /eventos-españa — 8 eventos top
+    { url: `${BASE_URL}/eventos-españa`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -289,6 +292,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // SSS436: vertical /preparar-viaje/[destino] — checklist pre-trip por destino
   const prepararViajePages: MetadataRoute.Sitemap = DESTINO_CATALOG_SLUGS.map((slug) => ({
     url: `${BASE_URL}/preparar-viaje/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  // SSS439: vertical /eventos-españa/[slug] — 8 eventos top
+  const eventosEsPages: MetadataRoute.Sitemap = EVENTOS_ES_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/eventos-españa/${slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.7,
@@ -866,6 +877,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...escapadasPages,
     // SSS436: checklist pre-trip por destino
     ...prepararViajePages,
+    // SSS439: 8 eventos top España
+    ...eventosEsPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
