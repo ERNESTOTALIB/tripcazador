@@ -835,5 +835,14 @@
     "city_from": "Dubl\u00edn",
     "city_to": "Brindisi",
     "price_eur": 43.99
+  },
+  {
+    "timestamp": 1779507751.688143,
+    "deal_id": "ryanair_bcn_bru_20260710_economy",
+    "origin": "BCN",
+    "destination": "BRU",
+    "city_from": "Barcelona",
+    "city_to": "Brussels",
+    "price_eur": 29.99
   }
 ]
