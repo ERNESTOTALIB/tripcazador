@@ -2031,6 +2031,22 @@
       "destination": "SJJ",
       "price_eur": 15.49,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "305f14a9b09c",
+      "ts": "2026-05-23T15:59:51.616294+00:00",
+      "origin": "BGY",
+      "destination": "AHO",
+      "price_eur": 17.0,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "1f418fc7f435",
+      "ts": "2026-05-23T15:59:51.616294+00:00",
+      "origin": "BGY",
+      "destination": "PFO",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
