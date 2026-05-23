@@ -18,6 +18,7 @@ import { SEO_CITIES, SEO_ORIGINS, MONTHS_ES } from "@/lib/programmatic_seo";
 import { getAllCreatorHandles } from "@/lib/creators_seed";
 // SSS418: nuevos verticales /seguro-viaje/[destino], /esim/[destino], /visados/[destino]
 import { DESTINO_SLUGS as DESTINO_CATALOG_SLUGS } from "@/lib/destinos_catalog";
+import { AIRPORTS_ES_IATAS } from "@/lib/airports_es_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -182,6 +183,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/seguro-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     // SSS418: hub /esim (afiliado Holafly) — landings por destino debajo
     { url: `${BASE_URL}/esim`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    // SSS421: hub /aeropuertos — 15 IATA landings debajo
+    { url: `${BASE_URL}/aeropuertos`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
     { url: `${BASE_URL}/vuelos`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/vuelos-baratos`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
@@ -216,6 +219,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.65,
+  }));
+
+  // SSS421: vertical /aeropuertos hub + 15 IATA landings
+  const aeropuertoPages: MetadataRoute.Sitemap = AIRPORTS_ES_IATAS.map((iata) => ({
+    url: `${BASE_URL}/aeropuertos/${iata.toLowerCase()}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
   }));
 
   // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
@@ -776,6 +787,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...seguroDestinoPages,
     ...esimDestinoPages,
     ...visadoDestinoPages,
+    // SSS421: vertical /aeropuertos 15 hubs ES
+    ...aeropuertoPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
