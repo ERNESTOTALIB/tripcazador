@@ -76,7 +76,6 @@ export default function AeropuertoPage({ params }: { params: { iata: string } })
   if (!airport) notFound();
 
   const parclickUrl = buildParclickUrl(airport.iata, airport.city);
-  const parclickRel = "sponsored noopener noreferrer";
 
   // Filtrar airlines presentes que tenemos en catálogo
   const knownAirlines = airport.presentAirlines
@@ -259,7 +258,7 @@ export default function AeropuertoPage({ params }: { params: { iata: string } })
         <a
           href={parclickUrl}
           target="_blank"
-          rel={parclickRel}
+          rel="sponsored noopener noreferrer"
           className="mt-3 inline-block rounded-lg bg-amber-500 px-5 py-2 text-sm font-bold text-slate-900 transition-colors hover:bg-amber-400"
         >
           Comparar parking en {airport.iata} →
