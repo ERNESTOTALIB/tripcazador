@@ -2095,6 +2095,22 @@
       "destination": "MLA",
       "price_eur": 26.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fa6e35dab88b",
+      "ts": "2026-05-23T21:49:18.309295+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 27.29,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "284ed1847969",
+      "ts": "2026-05-23T21:49:18.309295+00:00",
+      "origin": "VLC",
+      "destination": "AGP",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
