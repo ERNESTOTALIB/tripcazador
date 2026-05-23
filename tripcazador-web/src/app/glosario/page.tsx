@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { GLOSSARY, getGlossaryByCategory, CATEGORY_LABELS } from "@/lib/glossary";
+import { GLOSARIO_CATALOG } from "@/lib/glosario_landings";
 import { JsonLd } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
@@ -72,6 +73,26 @@ export default function GlossaryPage() {
           {GLOSSARY.length} términos del sector aviación, error fares, alianzas y caza de chollos. Definiciones claras en español.
         </p>
       </header>
+
+      <section className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
+        <h2 className="text-lg font-bold text-white mb-2">
+          📖 Guías ampliadas ({GLOSARIO_CATALOG.length})
+        </h2>
+        <p className="text-sm text-gray-400 mb-3">
+          Términos con landing dedicada, ejemplo real, tips y cross-link a recursos prácticos.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {GLOSARIO_CATALOG.map((g) => (
+            <a
+              key={g.slug}
+              href={`/glosario/${g.slug}`}
+              className="text-xs bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 hover:text-amber-100 px-3 py-1.5 rounded-full border border-amber-500/30 transition-colors"
+            >
+              {g.emoji} {g.term} →
+            </a>
+          ))}
+        </div>
+      </section>
 
       <nav
         aria-label="Saltar a categoría"

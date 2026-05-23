@@ -41,7 +41,8 @@ export type EventType =
   | "agencia_product_select"   // SSS305: select tipo vuelo|vuelo_hotel
   | "agencia_buy_click"        // SSS305: click submit form pre-Stripe
   | "agencia_refund_request"   // SSS305: cliente solicita refund garantía
-  | "agencia_refund_submitted"; // SSS305: refund OK desde el panel
+  | "agencia_refund_submitted" // SSS305: refund OK desde el panel
+  | "newsletter_unsubscribe";  // SSS430: track reason de baja (sin email PII)
 
 export interface TrackedEvent {
   ts: number;          // epoch ms

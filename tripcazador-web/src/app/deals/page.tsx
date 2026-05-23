@@ -7,6 +7,7 @@ import { SectionHero } from "@/components/SectionHero";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { DealsViewToggle } from "@/components/DealsViewToggle";
 import { DealsFilterDrawer } from "@/components/DealsFilterDrawer";
+import { CurrencyToggle } from "@/components/CurrencyToggle";
 import { LiveDealsCounter } from "@/components/LiveDealsCounter";
 import type { Metadata } from "next";
 
@@ -380,6 +381,8 @@ export default async function DealsPage({
               )}
             </div>
             <div className="flex items-center gap-2">
+              {/* SSS424: CurrencyToggle global — afecta a todas las DealCard/DealRow visibles */}
+              <CurrencyToggle />
               <DealsFilterDrawer />
               <DealsViewToggle />
             </div>

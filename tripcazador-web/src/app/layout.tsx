@@ -17,6 +17,8 @@ import { FavoritePushNudge } from "@/components/FavoritePushNudge";
 import { ReferralNudge } from "@/components/ReferralNudge";
 import { SocialProofToast } from "@/components/SocialProofToast";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
+import { ConciergeAbandonmentBanner } from "@/components/ConciergeAbandonmentBanner";
+import { PWARegister } from "@/components/PWARegister";
 import "./globals.css";
 
 // Inter — subset latin solo (no cyrillic/greek/vietnamese), display=swap para
@@ -82,6 +84,8 @@ export const metadata: Metadata = {
     },
     types: {
       "application/rss+xml": [{ url: "/rss.xml", title: "TripCazador Blog RSS" }],
+      // SSS442: JSON Feed 1.1 spec — aggregators modernos (NetNewsWire, Inoreader)
+      "application/feed+json": [{ url: "/feed.json", title: "TripCazador Blog JSON Feed" }],
     },
   },
   manifest: "/site.webmanifest",
@@ -487,6 +491,10 @@ export default function RootLayout({
         <SocialProofToast />
         {/* SSS339 — Exit-intent capture email después de 15s engagement */}
         <ExitIntentModal />
+        {/* SSS423 — Concierge cart abandonment recovery banner (24h TTL) */}
+        <ConciergeAbandonmentBanner />
+        {/* SSS425 — PWA SW register (dormant si NEXT_PUBLIC_PWA_ENABLED!=1) */}
+        <PWARegister />
       </body>
     </html>
   );

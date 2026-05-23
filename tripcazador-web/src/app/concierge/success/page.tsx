@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, Clock, Mail } from "lucide-react";
+import { ConciergeSuccessCleanup } from "@/components/ConciergeSuccessCleanup";
+import { ConciergePostPurchaseUpsell } from "@/components/ConciergePostPurchaseUpsell";
 
 export const metadata: Metadata = {
   title: "Pago confirmado · Concierge — TripCazador",
@@ -24,6 +26,7 @@ export default function ConciergeSuccessPage({
 
   return (
     <div className="max-w-2xl mx-auto py-12 space-y-8">
+      <ConciergeSuccessCleanup />
       <div className="text-center space-y-4">
         <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/15 inline-flex items-center justify-center">
           <Check size={32} className="text-emerald-400" />
@@ -83,6 +86,9 @@ export default function ConciergeSuccessPage({
           mencionando tu pedido {orderId && <span className="font-mono">{orderId}</span>}.
         </p>
       </div>
+
+      {/* SSS431: post-purchase cross-sell — eSIM + Seguro afiliados */}
+      <ConciergePostPurchaseUpsell orderId={orderId} />
 
       {/* SSS328: portal cliente — track status sin esperar al email */}
       <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5">

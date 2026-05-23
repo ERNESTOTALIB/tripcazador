@@ -18,6 +18,10 @@ export default function robots(): MetadataRoute.Robots {
           // PROD desde SSS370+). Mantenerla aquí filtraba un path
           // inexistente desde robots y confundía auditorías. Si vuelve
           // a montarse mobile login UI, restaurar este disallow.
+          // SSS425: /offline es PWA fallback, no debe indexarse
+          "/offline",
+          // SSS430: /newsletter/unsubscribe es página de acción, no SEO
+          "/newsletter/",
         ],
       },
     ],

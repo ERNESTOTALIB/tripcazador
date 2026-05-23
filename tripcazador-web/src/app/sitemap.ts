@@ -18,6 +18,19 @@ import { SEO_CITIES, SEO_ORIGINS, MONTHS_ES } from "@/lib/programmatic_seo";
 import { getAllCreatorHandles } from "@/lib/creators_seed";
 // SSS418: nuevos verticales /seguro-viaje/[destino], /esim/[destino], /visados/[destino]
 import { DESTINO_SLUGS as DESTINO_CATALOG_SLUGS } from "@/lib/destinos_catalog";
+import { AIRPORTS_ES_IATAS } from "@/lib/airports_es_catalog";
+import { GLOSARIO_SLUGS } from "@/lib/glosario_landings";
+import { CHECK_IN_SLUGS } from "@/lib/check_in_rules";
+import { VUELO_TREN_SLUGS } from "@/lib/vuelo_tren_catalog";
+import { FREEBIES_SLUGS } from "@/lib/freebies_catalog";
+import { ESCAPADAS_SLUGS } from "@/lib/escapadas_catalog";
+import { EVENTOS_ES_SLUGS } from "@/lib/eventos_es_catalog";
+import { CONFERENCIAS_SLUGS } from "@/lib/conferencias_catalog";
+import { CODIGOS_PAIS_ISOS } from "@/lib/codigos_pais_catalog";
+import { AIRPORTS_WORLD_IATAS } from "@/lib/airports_world_catalog";
+import { FLAG_CARRIERS_ISOS } from "@/lib/flag_carriers_catalog";
+import { DIVISAS_CODES } from "@/lib/divisas_catalog";
+import { TASA_TURISTICA_SLUGS } from "@/lib/tasa_turistica_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -182,6 +195,46 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/seguro-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     // SSS418: hub /esim (afiliado Holafly) — landings por destino debajo
     { url: `${BASE_URL}/esim`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    // SSS421: hub /aeropuertos — 15 IATA landings debajo
+    { url: `${BASE_URL}/aeropuertos`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS427: hub /check-in — 15 aerolíneas landings debajo
+    { url: `${BASE_URL}/check-in`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS428: hub /vuelos-vs-tren — 8 comparadores AVE/Iryo/Ouigo
+    { url: `${BASE_URL}/vuelos-vs-tren`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS429: hub /freebies — 4 lead magnets PDF
+    { url: `${BASE_URL}/freebies`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS433: hub /escapadas — 12 escapadas fin de semana
+    { url: `${BASE_URL}/escapadas`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS436: hub /preparar-viaje — checklist pre-trip
+    { url: `${BASE_URL}/preparar-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS439: hub /eventos-españa — 8 eventos top (FIX-SEO-4: encodeURI ñ)
+    { url: encodeURI(`${BASE_URL}/eventos-españa`), lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS440: hub /conferencias — 8 tech/business
+    { url: `${BASE_URL}/conferencias`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS441: /partner-badges — generador SVG badges + embed code
+    { url: `${BASE_URL}/partner-badges`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
+    // SSS444: hub /codigos-pais — 15 países lookup
+    { url: `${BASE_URL}/codigos-pais`, lastModified: now, changeFrequency: "yearly", priority: 0.65 },
+    // SSS445: hub /aeropuertos-mundo — 20 hubs internacionales
+    { url: `${BASE_URL}/aeropuertos-mundo`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS447: /changelog — release notes públicas
+    { url: `${BASE_URL}/changelog`, lastModified: now, changeFrequency: "weekly", priority: 0.55 },
+    // SSS449: hub /aerolineas-bandera — flag carriers
+    { url: `${BASE_URL}/aerolineas-bandera`, lastModified: now, changeFrequency: "yearly", priority: 0.65 },
+    // SSS450: /equipaje-medidor — herramienta interactiva
+    { url: `${BASE_URL}/equipaje-medidor`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS451: /maleta-perdida — guía completa reclamación
+    { url: `${BASE_URL}/maleta-perdida`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
+    // SSS452: /tarjetas-viaje — comparativa 6 tarjetas top
+    { url: `${BASE_URL}/tarjetas-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS457: hub /divisas — 8 currency landings
+    { url: `${BASE_URL}/divisas`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    // SSS459: hub /tasa-turistica + 12 ciudades
+    { url: `${BASE_URL}/tasa-turistica`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS460: /vuelo-cancelado guía EU 261/2004
+    { url: `${BASE_URL}/vuelo-cancelado`, lastModified: now, changeFrequency: "yearly", priority: 0.75 },
+    // SSS435: /transparencia — métricas + compromisos públicos
+    { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
     { url: `${BASE_URL}/vuelos`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/vuelos-baratos`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
@@ -215,6 +268,119 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${BASE_URL}/visados/${slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
+    priority: 0.65,
+  }));
+
+  // SSS421: vertical /aeropuertos hub + 15 IATA landings
+  const aeropuertoPages: MetadataRoute.Sitemap = AIRPORTS_ES_IATAS.map((iata) => ({
+    url: `${BASE_URL}/aeropuertos/${iata.toLowerCase()}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  // SSS422: vertical /glosario/[term] — 15 guías ampliadas con FAQ JSON-LD
+  const glosarioTermPages: MetadataRoute.Sitemap = GLOSARIO_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/glosario/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
+  }));
+
+  // SSS427: vertical /check-in/[aerolinea] — 15 guías por aerolínea
+  const checkInPages: MetadataRoute.Sitemap = CHECK_IN_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/check-in/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  // SSS428: vertical /vuelos-vs-tren/[ruta] — 8 comparadores AVE vs avión
+  const vueloTrenPages: MetadataRoute.Sitemap = VUELO_TREN_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/vuelos-vs-tren/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
+  }));
+
+  // SSS429: vertical /freebies/[slug] — 4 lead magnets gated por email
+  const freebiePages: MetadataRoute.Sitemap = FREEBIES_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/freebies/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  // SSS433: vertical /escapadas/[slug] — 12 escapadas fin de semana
+  const escapadasPages: MetadataRoute.Sitemap = ESCAPADAS_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/escapadas/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+
+  // SSS436: vertical /preparar-viaje/[destino] — checklist pre-trip por destino
+  const prepararViajePages: MetadataRoute.Sitemap = DESTINO_CATALOG_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/preparar-viaje/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  // SSS439: vertical /eventos-españa/[slug] — 8 eventos top
+  // FIX-SEO-4: encodeURI para no emitir raw ñ en sitemap XML (RFC 3986).
+  const eventosEsPages: MetadataRoute.Sitemap = EVENTOS_ES_SLUGS.map((slug) => ({
+    url: encodeURI(`${BASE_URL}/eventos-españa/${slug}`),
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  // SSS440: vertical /conferencias/[slug] — 8 tech/business confs
+  const conferenciasPages: MetadataRoute.Sitemap = CONFERENCIAS_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/conferencias/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  // SSS444: vertical /codigos-pais/[iso] — 15 países lookup
+  const codigosPaisPages: MetadataRoute.Sitemap = CODIGOS_PAIS_ISOS.map((iso) => ({
+    url: `${BASE_URL}/codigos-pais/${iso}`,
+    lastModified: now,
+    changeFrequency: "yearly" as const,
+    priority: 0.6,
+  }));
+
+  // SSS445: vertical /aeropuertos-mundo/[iata] — 20 hubs internacionales
+  const aeropuertosMundoPages: MetadataRoute.Sitemap = AIRPORTS_WORLD_IATAS.map((iata) => ({
+    url: `${BASE_URL}/aeropuertos-mundo/${iata.toLowerCase()}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
+  }));
+
+  // SSS449: vertical /aerolineas-bandera/[iso] — 20 países flag carriers
+  const flagCarriersPages: MetadataRoute.Sitemap = FLAG_CARRIERS_ISOS.map((iso) => ({
+    url: `${BASE_URL}/aerolineas-bandera/${iso}`,
+    lastModified: now,
+    changeFrequency: "yearly" as const,
+    priority: 0.65,
+  }));
+
+  // SSS457: vertical /divisas/[code] — 8 currency landings
+  const divisasPages: MetadataRoute.Sitemap = DIVISAS_CODES.map((code) => ({
+    url: `${BASE_URL}/divisas/${code}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.65,
+  }));
+
+  // SSS459: vertical /tasa-turistica/[ciudad] — 12 ciudades
+  const tasaTuristicaPages: MetadataRoute.Sitemap = TASA_TURISTICA_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/tasa-turistica/${slug}`,
+    lastModified: now,
+    changeFrequency: "yearly" as const,
     priority: 0.65,
   }));
 
@@ -776,6 +942,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...seguroDestinoPages,
     ...esimDestinoPages,
     ...visadoDestinoPages,
+    // SSS421: vertical /aeropuertos 15 hubs ES
+    ...aeropuertoPages,
+    // SSS422: 15 guías ampliadas glosario
+    ...glosarioTermPages,
+    // SSS427: 15 guías check-in por aerolínea
+    ...checkInPages,
+    // SSS428: 8 comparadores tren vs avión
+    ...vueloTrenPages,
+    // SSS429: 4 lead magnets
+    ...freebiePages,
+    // SSS433: 12 escapadas fin de semana
+    ...escapadasPages,
+    // SSS436: checklist pre-trip por destino
+    ...prepararViajePages,
+    // SSS439: 8 eventos top España
+    ...eventosEsPages,
+    // SSS440: 8 conferencias tech/business
+    ...conferenciasPages,
+    // SSS444: 15 países códigos lookup
+    ...codigosPaisPages,
+    // SSS445: 20 hubs internacionales
+    ...aeropuertosMundoPages,
+    // SSS449: 20 flag carriers
+    ...flagCarriersPages,
+    // SSS457: 8 currency landings
+    ...divisasPages,
+    // SSS459: 12 tasa turística landings
+    ...tasaTuristicaPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
