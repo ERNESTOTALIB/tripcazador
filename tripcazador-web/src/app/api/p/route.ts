@@ -14,5 +14,14 @@
  * si falla (defense in depth).
  *
  * Reutiliza la lógica completa de /api/track/route.ts via re-export.
+ *
+ * SSS415: `runtime` y `dynamic` se declaran como literales aquí (no
+ * via re-export) porque Next.js 14 sólo puede inferir route segment
+ * config si está asignado a un string literal directo en el archivo.
+ * El re-export `export { runtime } from` quedaba ignorado silently
+ * (warning build) y el endpoint caía a defaults (auto runtime + auto
+ * dynamic). Manteniéndolo aquí explícito = paridad real con /api/track.
  */
-export { POST, runtime, dynamic } from "../track/route";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export { POST } from "../track/route";
