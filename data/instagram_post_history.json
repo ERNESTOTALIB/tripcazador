@@ -880,5 +880,14 @@
     "city_from": "Praga",
     "city_to": "Barcelona",
     "price_eur": 41.99
+  },
+  {
+    "timestamp": 1779569945.0943282,
+    "deal_id": "ryanair_vlc_ibz_20260725_economy",
+    "origin": "VLC",
+    "destination": "IBZ",
+    "city_from": "Valencia",
+    "city_to": "Ibiza",
+    "price_eur": 14.99
   }
 ]
