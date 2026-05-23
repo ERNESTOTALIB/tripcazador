@@ -10,6 +10,7 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 import { tcTrack, tcTrackOnce } from "@/lib/track_client";
 import { routeBookingUrl } from "@/lib/booking_url_router";
 import { getPremiumStatus } from "@/lib/premium";
+import { useDisplayCurrency } from "@/components/CurrencyToggle";
 
 interface DealCardProps {
   deal: Deal;
@@ -92,6 +93,9 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
     window.addEventListener("tc:premium-changed", onChange);
     return () => window.removeEventListener("tc:premium-changed", onChange);
   }, []);
+
+  // SSS424: precio en moneda seleccionada por el user (EUR/USD/CHF/GBP).
+  const { format: formatPrice } = useDisplayCurrency();
 
   const {
     headline,
@@ -293,7 +297,7 @@ export function DealCard({ deal, featured = false }: DealCardProps) {
         <div className="flex items-end justify-between">
           <div>
             <div className="text-3xl font-bold text-white">
-              {price_eur.toFixed(0)}€
+              {formatPrice(price_eur)}
             </div>
             <div className="text-xs text-gray-400">
               {getCabinLabel(cabin)}
@@ -479,6 +483,9 @@ export function DealRow({ deal }: { deal: Deal }) {
 
   void score; void verified;
 
+  // SSS424: precio en moneda seleccionada
+  const { format: formatPrice } = useDisplayCurrency();
+
   const classColor = getClassificationColor(classification);
 
   return (
@@ -548,7 +555,7 @@ export function DealRow({ deal }: { deal: Deal }) {
 
       {/* Precio */}
       <div className="text-right min-w-[80px]">
-        <div className="text-xl font-bold text-white">{price_eur.toFixed(0)}€</div>
+        <div className="text-xl font-bold text-white">{formatPrice(price_eur)}</div>
         {savings_pct > 0 && (
           <div className="text-xs text-amber-400">-{savings_pct.toFixed(0)}%</div>
         )}
