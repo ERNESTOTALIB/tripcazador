@@ -198,6 +198,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/freebies`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS433: hub /escapadas — 12 escapadas fin de semana
     { url: `${BASE_URL}/escapadas`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS436: hub /preparar-viaje — checklist pre-trip
+    { url: `${BASE_URL}/preparar-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -282,6 +284,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.75,
+  }));
+
+  // SSS436: vertical /preparar-viaje/[destino] — checklist pre-trip por destino
+  const prepararViajePages: MetadataRoute.Sitemap = DESTINO_CATALOG_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/preparar-viaje/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
   }));
 
   // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
@@ -854,6 +864,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...freebiePages,
     // SSS433: 12 escapadas fin de semana
     ...escapadasPages,
+    // SSS436: checklist pre-trip por destino
+    ...prepararViajePages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
