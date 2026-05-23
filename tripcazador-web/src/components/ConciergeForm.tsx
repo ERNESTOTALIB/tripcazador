@@ -79,7 +79,11 @@ export function ConciergeForm({ initialTier }: { initialTier?: ConciergeTier } =
     tcTrackOnce("concierge_view", "concierge_form", {
       path: typeof location !== "undefined" ? location.pathname : "/concierge",
     });
-  }, []);
+    // SSS423: marca para banner de cart abandonment cross-site (24h TTL)
+    void import("@/lib/concierge_abandonment").then((m) =>
+      m.markConciergeOpened(initialTier),
+    );
+  }, [initialTier]);
 
   function update<K extends keyof FormData>(key: K, value: FormData[K]) {
     setData((prev) => {

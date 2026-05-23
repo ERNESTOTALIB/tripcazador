@@ -17,6 +17,7 @@ import { FavoritePushNudge } from "@/components/FavoritePushNudge";
 import { ReferralNudge } from "@/components/ReferralNudge";
 import { SocialProofToast } from "@/components/SocialProofToast";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
+import { ConciergeAbandonmentBanner } from "@/components/ConciergeAbandonmentBanner";
 import "./globals.css";
 
 // Inter — subset latin solo (no cyrillic/greek/vietnamese), display=swap para
@@ -487,6 +488,8 @@ export default function RootLayout({
         <SocialProofToast />
         {/* SSS339 — Exit-intent capture email después de 15s engagement */}
         <ExitIntentModal />
+        {/* SSS423 — Concierge cart abandonment recovery banner (24h TTL) */}
+        <ConciergeAbandonmentBanner />
       </body>
     </html>
   );
