@@ -16,6 +16,8 @@ import { getHotelEntries } from "@/lib/hotel_seed";
 import { PARTNERS } from "@/lib/travel_partners";
 import { SEO_CITIES, SEO_ORIGINS, MONTHS_ES } from "@/lib/programmatic_seo";
 import { getAllCreatorHandles } from "@/lib/creators_seed";
+// SSS418: nuevos verticales /seguro-viaje/[destino], /esim/[destino], /visados/[destino]
+import { DESTINO_SLUGS as DESTINO_CATALOG_SLUGS } from "@/lib/destinos_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -178,6 +180,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/como-viajar`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS152: landing /seguro-viaje (afiliado Heymondo, captura "seguro viaje 2026" SEO)
     { url: `${BASE_URL}/seguro-viaje`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    // SSS418: hub /esim (afiliado Holafly) — landings por destino debajo
+    { url: `${BASE_URL}/esim`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
     { url: `${BASE_URL}/vuelos`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/vuelos-baratos`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
@@ -192,6 +196,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.8,
+  }));
+
+  // SSS418: 3 nuevos verticales programmatic (seguro / esim / visados) × 31 destinos = 93 URLs
+  const seguroDestinoPages: MetadataRoute.Sitemap = DESTINO_CATALOG_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/seguro-viaje/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+  const esimDestinoPages: MetadataRoute.Sitemap = DESTINO_CATALOG_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/esim/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+  const visadoDestinoPages: MetadataRoute.Sitemap = DESTINO_CATALOG_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/visados/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
   }));
 
   // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
@@ -748,6 +772,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticPages,
     ...destinoPages,
+    // SSS418: 3 nuevos verticales programmatic (93 URLs)
+    ...seguroDestinoPages,
+    ...esimDestinoPages,
+    ...visadoDestinoPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
