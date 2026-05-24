@@ -22,11 +22,13 @@ describe("GET /api/premium/hotel-watchlist-cron SSS323", () => {
     vi.restoreAllMocks();
   });
 
-  it("503 sin token configurado", async () => {
+  // AUDIT-FULL-3: post verifyCronToken devuelve 401 (no 503)
+  it("401 sin token configurado", async () => {
     delete process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM;
     delete process.env.PRICE_ALERT_CRON_TOKEN;
+    delete process.env.CRON_TOKEN_HOTEL_WATCHLIST;
     const res = await GET(getReq("?token=anything"));
-    expect(res.status).toBe(503);
+    expect(res.status).toBe(401);
   });
 
   it("401 token incorrecto", async () => {

@@ -15,6 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { listActivePremium } from "@/lib/premium_store";
+import { verifyCronToken } from "@/lib/cron_auth";
 import { listSavingsByCustomer, summarize } from "@/lib/savings_log_store";
 import {
   milestoneEmail,
@@ -112,14 +113,8 @@ function daysSince(ms: number, now: number): number {
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const token = req.nextUrl.searchParams.get("token") || "";
-  const expected =
-    process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM ||
-    process.env.PRICE_ALERT_CRON_TOKEN ||
-    "";
-  if (!expected) {
-    return NextResponse.json({ ok: false, error: "not_configured" }, { status: 503 });
-  }
-  if (!constantTimeEq(token, expected)) {
+  // AUDIT-FULL-3: token específico CRON_TOKEN_LIFECYCLE preferido, fallback shared
+  if (!verifyCronToken("lifecycle", token)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 

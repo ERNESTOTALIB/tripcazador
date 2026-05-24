@@ -23,6 +23,7 @@ import {
   type WatchlistEntry,
 } from "@/lib/watchlist_store";
 import { pickCurrentPrice, type DealLite } from "@/lib/watchlist_observation";
+import { verifyCronToken } from "@/lib/cron_auth";
 import { logSavings } from "@/lib/savings_log_store";
 
 export const runtime = "nodejs";
@@ -109,14 +110,8 @@ async function sendWatchTriggered(
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const token = req.nextUrl.searchParams.get("token") || "";
-  const expected =
-    process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM ||
-    process.env.PRICE_ALERT_CRON_TOKEN ||
-    "";
-  if (!expected) {
-    return NextResponse.json({ ok: false, error: "not_configured" }, { status: 503 });
-  }
-  if (!constantTimeEq(token, expected)) {
+  // AUDIT-FULL-3: token específico CRON_TOKEN_WATCHLIST preferido
+  if (!verifyCronToken("watchlist", token)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 

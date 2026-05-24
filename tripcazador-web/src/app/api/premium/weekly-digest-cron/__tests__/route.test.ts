@@ -27,11 +27,13 @@ describe("GET /api/premium/weekly-digest-cron SSS316 auth", () => {
     vi.restoreAllMocks();
   });
 
-  it("503 si no hay token configurado", async () => {
+  // AUDIT-FULL-3: post verifyCronToken devuelve 401 (no 503) — info disclosure fix
+  it("401 si no hay token configurado", async () => {
     delete process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM;
     delete process.env.PRICE_ALERT_CRON_TOKEN;
+    delete process.env.CRON_TOKEN_WEEKLY_DIGEST;
     const res = await GET(getReq("?token=anything"));
-    expect(res.status).toBe(503);
+    expect(res.status).toBe(401);
   });
 
   it("401 con token incorrecto", async () => {

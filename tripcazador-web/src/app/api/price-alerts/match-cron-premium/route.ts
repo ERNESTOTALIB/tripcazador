@@ -25,6 +25,7 @@ import {
   type PriceAlert,
 } from "@/lib/price_alerts_store";
 import { dealMatchesAlert, type DealForAlertMatch } from "@/lib/deal_alert_matcher";
+import { verifyCronToken } from "@/lib/cron_auth";
 import { logSavings } from "@/lib/savings_log_store";
 
 export const runtime = "nodejs";
@@ -100,16 +101,9 @@ async function sendPremiumNotify(alert: PriceAlert, deal: DealLite): Promise<boo
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const url = new URL(req.url);
   const token = url.searchParams.get("token") || "";
-  // Token Premium dedicado (puede coincidir con el gratis si se reusa, pero
-  // se permite tener uno separado para revocar el premium sin romper gratis).
-  const expected =
-    process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM ||
-    process.env.PRICE_ALERT_CRON_TOKEN ||
-    "";
-  if (!expected) {
-    return NextResponse.json({ ok: false, error: "not_configured" }, { status: 503 });
-  }
-  if (!constantTimeEq(token, expected)) {
+  // AUDIT-FULL-3: token específico CRON_TOKEN_MATCH_PREMIUM preferido,
+  // fallback al PRICE_ALERT_CRON_TOKEN_PREMIUM compartido.
+  if (!verifyCronToken("match-premium", token)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 

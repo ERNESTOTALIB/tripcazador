@@ -26,6 +26,7 @@ import { listSavedSearches } from "@/lib/saved_searches_store";
 import { scoreDeal, type DealLite } from "@/lib/premium_digest_scorer";
 import { buildDigestEmailHtml } from "@/lib/digest_email";
 import { safeCronMarker } from "@/lib/cron_idempotency";
+import { verifyCronToken } from "@/lib/cron_auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -110,14 +111,8 @@ async function sendDigestEmail(
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const token = req.nextUrl.searchParams.get("token") || "";
-  const expected =
-    process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM ||
-    process.env.PRICE_ALERT_CRON_TOKEN ||
-    "";
-  if (!expected) {
-    return NextResponse.json({ ok: false, error: "not_configured" }, { status: 503 });
-  }
-  if (!constantTimeEq(token, expected)) {
+  // AUDIT-FULL-3: token específico CRON_TOKEN_WEEKLY_DIGEST preferido
+  if (!verifyCronToken("weekly-digest", token)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 

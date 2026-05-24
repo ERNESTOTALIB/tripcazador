@@ -427,6 +427,12 @@ export default function RootLayout({
                   <li><a href="/comparar-aerolineas" className="hover:text-amber-400">Aerolínea vs aerolínea ⚡</a></li>
                   <li><a href="/comparar-barrios" className="hover:text-amber-400">Dónde dormir: barrio vs barrio 🏘️</a></li>
                   <li><a href="/cuando-viajar" className="hover:text-amber-400">Cuándo viajar: mes a mes 📅</a></li>
+                  <li><a href="/clima" className="hover:text-amber-400">Clima por destino 🌤️</a></li>
+                  <li><a href="/etiqueta" className="hover:text-amber-400">Etiqueta cultural 🌍</a></li>
+                  <li><a href="/jet-lag" className="hover:text-amber-400">Jet lag por ruta 🛬</a></li>
+                  <li><a href="/business-class-barato" className="hover:text-amber-400">Business class barato 👑</a></li>
+                  <li><a href="/apps-imprescindibles" className="hover:text-amber-400">Apps imprescindibles 📱</a></li>
+                  <li><a href="/seguro-cancelacion" className="hover:text-amber-400">Seguro cancelación 🛡️</a></li>
                   <li><a href="/hoteles-vs-airbnb" className="hover:text-amber-400">Hotel vs Airbnb</a></li>
                   <li><a href="/hoteles" className="hover:text-amber-400">Hoteles por ciudad 🏨</a></li>
                   <li><a href="/regalo" className="hover:text-amber-400">Regalar 🎁</a></li>

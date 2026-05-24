@@ -34,6 +34,7 @@ import { TASA_TURISTICA_SLUGS } from "@/lib/tasa_turistica_catalog";
 import { TEMPORADA_BAJA_SLUGS } from "@/lib/temporada_baja_catalog";
 import { ETIQUETA_SLUGS } from "@/lib/etiqueta_catalog";
 import { CLIMA_SLUGS } from "@/lib/clima_catalog";
+import { JETLAG_SLUGS } from "@/lib/jetlag_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -262,6 +263,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/business-class-barato`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     // AUDIT-FULL-2: /apps-imprescindibles
     { url: `${BASE_URL}/apps-imprescindibles`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // AUDIT-FULL-3: /seguro-cancelacion landing high-intent SEO
+    { url: `${BASE_URL}/seguro-cancelacion`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -427,6 +430,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/clima`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 },
     ...CLIMA_SLUGS.map((slug) => ({
       url: `${BASE_URL}/clima/${slug}`,
+      lastModified: now,
+      changeFrequency: "yearly" as const,
+      priority: 0.7,
+    })),
+  ];
+
+  // AUDIT-FULL-3: jet-lag vertical
+  const jetlagPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/jet-lag`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 },
+    ...JETLAG_SLUGS.map((slug) => ({
+      url: `${BASE_URL}/jet-lag/${slug}`,
       lastModified: now,
       changeFrequency: "yearly" as const,
       priority: 0.7,
@@ -1039,6 +1053,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...etiquetaPages,
     // AUDIT-FULL-2: clima por destino + hub
     ...climaPages,
+    // AUDIT-FULL-3: jet-lag por ruta + hub
+    ...jetlagPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,

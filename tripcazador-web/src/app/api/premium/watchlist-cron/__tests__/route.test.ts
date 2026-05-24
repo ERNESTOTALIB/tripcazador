@@ -32,11 +32,14 @@ describe("GET /api/premium/watchlist-cron SSS314 auth", () => {
     vi.restoreAllMocks();
   });
 
-  it("503 si no hay token configurado", async () => {
+  // AUDIT-FULL-3: post verifyCronToken, sin token configurado devuelve 401
+  // (no 503) para no distinguir entre "no config" y "token wrong" — info disclosure fix.
+  it("401 si no hay token configurado", async () => {
     delete process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM;
     delete process.env.PRICE_ALERT_CRON_TOKEN;
+    delete process.env.CRON_TOKEN_WATCHLIST;
     const res = await GET(getReq("?token=test_token_x"));
-    expect(res.status).toBe(503);
+    expect(res.status).toBe(401);
   });
 
   it("401 sin token correcto", async () => {

@@ -27,6 +27,7 @@ import {
   type DealOutcome,
 } from "@/lib/deal_scoring_v3";
 import { createKV } from "@/lib/kv_store";
+import { verifyCronToken } from "@/lib/cron_auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,14 +54,8 @@ interface DealEventMeta {
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const token = req.nextUrl.searchParams.get("token") || "";
-  const expected =
-    process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM ||
-    process.env.PRICE_ALERT_CRON_TOKEN ||
-    "";
-  if (!expected) {
-    return NextResponse.json({ ok: false, error: "not_configured" }, { status: 503 });
-  }
-  if (!constantTimeEq(token, expected)) {
+  // AUDIT-FULL-3: token específico CRON_TOKEN_SCORING_FEEDBACK preferido
+  if (!verifyCronToken("scoring-feedback", token)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 
