@@ -24,7 +24,7 @@ export async function generateMetadata({
   const dest = DESTINATIONS_I18N[params.slug];
   if (!dest) return { title: "Destination introuvable" };
   const content = dest.i18n.fr;
-  const title = `Vols pas chers pour ${content.name} | TripCazador`;
+  const title = `Vols pas chers pour ${content.name}`;
   const description = content.description.slice(0, 155);
   return {
     title,

@@ -45,9 +45,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const idx = citiesIndex();
   const entry = idx.get(params.city);
-  if (!entry) return { title: "Ciudad no encontrada | TripCazador" };
+  if (!entry) return { title: "Ciudad no encontrada" };
   return {
-    title: `Hoteles en ${entry.city} 2026 — comparativa cazador | TripCazador`,
+    title: `Hoteles en ${entry.city} 2026 — comparativa cazador`,
     description: `${entry.entries.length} hoteles en ${entry.city} (${entry.country}) seleccionados por valor: precio, ubicación, reviews. Cazador de ofertas en tiempo real.`,
     alternates: { canonical: `/hoteles/ciudad/${params.city}` },
   };

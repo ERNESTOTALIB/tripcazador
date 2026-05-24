@@ -24,7 +24,7 @@ import { VUELO_TREN_CATALOG } from "@/lib/vuelo_tren_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Transparencia y métricas | TripCazador",
+  title: "Transparencia y métricas",
   description:
     "Cifras públicas sobre TripCazador: verticales SEO cubiertas, partners afiliados, compromisos editoriales y stack tecnológico.",
   alternates: { canonical: `${SITE_URL}/transparencia` },

@@ -31,9 +31,9 @@ export async function generateMetadata({
   params: { code: string };
 }): Promise<Metadata> {
   const a = getAirlineByCode(params.code.toUpperCase());
-  if (!a) return { title: "Aerolínea no encontrada | TripCazador" };
+  if (!a) return { title: "Aerolínea no encontrada" };
   return {
-    title: `Rutas ${a.name} desde España (${a.popularRoutesFromSpain.length}) | TripCazador`,
+    title: `Rutas ${a.name} desde España (${a.popularRoutesFromSpain.length})`,
     description: `Todas las rutas ${a.name} desde España: ${a.popularRoutesFromSpain.length} destinos con precio típico y mínimo observado por el motor. Hubs: ${a.hubs.slice(0, 3).join(", ")}.`,
     alternates: { canonical: `${SITE_URL}/aerolineas/${a.code.toLowerCase()}/rutas` },
     openGraph: {

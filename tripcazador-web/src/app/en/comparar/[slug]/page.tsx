@@ -52,7 +52,7 @@ export async function generateMetadata({
   if (!c || !EN_COMPARISON_SLUGS.has(c.slug)) {
     return { title: "Comparison not found" };
   }
-  const title = `${c.a.name} vs ${c.b.name}: which to pick | TripCazador`;
+  const title = `${c.a.name} vs ${c.b.name}: which to pick`;
   const description = `Side-by-side comparison: ${c.a.name} vs ${c.b.name}. Pricing, best months, flight time, when to choose each.`;
   return {
     title,

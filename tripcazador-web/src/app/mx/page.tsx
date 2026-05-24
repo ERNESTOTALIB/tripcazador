@@ -4,7 +4,7 @@ import Link from "next/link";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Vuelos baratos desde México | TripCazador México",
+  title: "Vuelos baratos desde México México",
   description:
     "Chollos de vuelos desde Ciudad de México (MEX), Cancún (CUN), Guadalajara (GDL) y Monterrey (MTY). Cazamos errores de tarifa diariamente para viajeros mexicanos.",
   alternates: {

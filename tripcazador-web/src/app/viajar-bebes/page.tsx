@@ -19,7 +19,7 @@ const AIRLINE_CODES_LC = new Set(AIRLINES.map((a) => a.code.toLowerCase()));
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Viajar con bebés y niños: equipaje, asientos, normas | TripCazador",
+  title: "Viajar con bebés y niños: equipaje, asientos, normas",
   description:
     "Guía completa para volar con bebés (<2 años) y niños desde España: equipaje permitido, carrito, cuna, descuentos por aerolínea, documentación y tips.",
   alternates: { canonical: `${SITE_URL}/viajar-bebes` },

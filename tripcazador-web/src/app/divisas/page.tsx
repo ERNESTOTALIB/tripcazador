@@ -10,7 +10,7 @@ import { DIVISAS_CATALOG } from "@/lib/divisas_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Cambio EUR a 8 divisas: USD, GBP, JPY, CHF, ARS, BRL, MXN, THB | TripCazador",
+  title: "Cambio EUR a 8 divisas: USD, GBP, JPY, CHF, ARS, BRL, MXN, THB",
   description:
     "Tipos de cambio orientativos + tips de viajero para evitar comisiones bancarias. Wise, Revolut y trucos por destino.",
   alternates: { canonical: `${SITE_URL}/divisas` },

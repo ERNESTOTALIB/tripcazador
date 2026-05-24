@@ -36,7 +36,7 @@ export async function generateMetadata(
     description: meta.description,
     alternates: { canonical: `/feed/${meta.id}` },
     openGraph: {
-      title: `${meta.label} | TripCazador`,
+      title: `${meta.label}`,
       description: meta.description,
       type: "website",
     },

@@ -28,8 +28,8 @@ export async function generateMetadata({
   params: { aerolinea: string };
 }): Promise<Metadata> {
   const r = getBaggageBySlug(params.aerolinea);
-  if (!r) return { title: "Aerolínea no encontrada | TripCazador" };
-  const title = `${r.name} equipaje de mano: dimensiones, peso y precios 2026 | TripCazador`;
+  if (!r) return { title: "Aerolínea no encontrada" };
+  const title = `${r.name} equipaje de mano: dimensiones, peso y precios 2026`;
   const description = `Guía completa equipaje ${r.name}: bolso pequeño ${r.personalItem.dimensions}, cabina ${r.cabin.dimensions} ${r.cabin.weight}, gate fine €${r.gateFine.amountEur}. Tips cazador.`.slice(0, 155);
   return {
     title,

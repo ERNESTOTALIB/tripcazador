@@ -35,8 +35,8 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const e = getEventoEs(params.slug);
-  if (!e) return { title: "Evento no encontrado | TripCazador" };
-  const title = `${e.name} en ${e.city}: fechas, hoteles y tips | TripCazador`;
+  if (!e) return { title: "Evento no encontrado" };
+  const title = `${e.name} en ${e.city}: fechas, hoteles y tips`;
   return {
     title,
     description: e.summary,

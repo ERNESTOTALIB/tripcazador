@@ -13,7 +13,7 @@ import { FREEBIES_CATALOG } from "@/lib/freebies_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Guías gratis TripCazador (4 PDFs) | TripCazador",
+  title: "Guías gratis TripCazador (4 PDFs)",
   description:
     "4 guías gratis para cazar chollos, viajar con equipaje low-cost sin penalizaciones, tramitar visados express y entender el servicio Concierge.",
   alternates: { canonical: `${SITE_URL}/freebies` },

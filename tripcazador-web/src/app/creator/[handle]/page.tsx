@@ -31,7 +31,7 @@ export async function generateMetadata({
   const creator = findCreator(params.handle);
   if (!creator) return { title: "Creator no encontrado" };
   return {
-    title: `Chollos curados por ${creator.display_name} | TripCazador`,
+    title: `Chollos curados por ${creator.display_name}`,
     description: `${creator.bio.slice(0, 140)}... Descubre los chollos de vuelos seleccionados por ${creator.display_name}.`,
     alternates: { canonical: `/creator/${creator.handle}` },
     openGraph: {

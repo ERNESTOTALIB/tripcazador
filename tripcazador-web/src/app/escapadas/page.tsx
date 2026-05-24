@@ -14,7 +14,7 @@ import { ESCAPADAS_CATALOG } from "@/lib/escapadas_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Escapadas fin de semana desde España (12 destinos) | TripCazador",
+  title: "Escapadas fin de semana desde España (12 destinos)",
   description:
     "12 escapadas de 2-3 días con presupuesto realista, vuelo medio desde Madrid/Barcelona, itinerario y zona donde alojarse. Roma, Lisboa, Marrakech, Berlín y más.",
   alternates: { canonical: `${SITE_URL}/escapadas` },

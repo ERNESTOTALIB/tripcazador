@@ -820,8 +820,8 @@ export async function generateMetadata({
   params: { ruta: string };
 }): Promise<Metadata> {
   const route = TOP_ROUTES[params.ruta];
-  if (!route) return { title: "Ruta no encontrada | TripCazador" };
-  const title = `Vuelos baratos ${route.originLabel} → ${route.destLabel} | TripCazador`;
+  if (!route) return { title: "Ruta no encontrada" };
+  const title = `Vuelos baratos ${route.originLabel} → ${route.destLabel}`;
   const description =
     `${route.intro} Detectamos error fares en tiempo real y te avisamos al móvil cuando un vuelo ${route.originLabel}-${route.destLabel} baja del precio normal.`.slice(
       0,

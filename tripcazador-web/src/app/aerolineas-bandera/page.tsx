@@ -17,7 +17,7 @@ const ALLIANCE_LABEL: Record<string, string> = {
 };
 
 export const metadata: Metadata = {
-  title: "Aerolíneas bandera por país: flag carriers | TripCazador",
+  title: "Aerolíneas bandera por país: flag carriers",
   description:
     "20 países y sus aerolíneas bandera. Iberia (España), Air France, Lufthansa, BA, Turkish, Emirates, JAL/ANA, Qatar y más con alianzas globales.",
   alternates: { canonical: `${SITE_URL}/aerolineas-bandera` },

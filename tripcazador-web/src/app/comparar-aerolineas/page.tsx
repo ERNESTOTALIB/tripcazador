@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { AIRLINE_COMPARISONS } from "@/lib/airline_comparisons";
 
 export const metadata: Metadata = {
-  title: "Comparar aerolíneas head-to-head 2026 | TripCazador",
+  title: "Comparar aerolíneas head-to-head 2026",
   description:
     "10 comparativas head-to-head entre aerolíneas (Iberia vs Vueling, Ryanair vs easyJet, ANA vs JAL, Qatar vs Emirates, etc) con datos reales, error fares y veredictos honestos.",
   alternates: { canonical: "/comparar-aerolineas" },

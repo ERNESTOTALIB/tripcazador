@@ -17,7 +17,7 @@ import { BadgeCopyButton } from "@/components/BadgeCopyButton";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Partner badges para embeber | TripCazador",
+  title: "Partner badges para embeber",
   description:
     "SVG badges 'Featured on TripCazador', 'Partner', 'API Powered'. Código HTML/Markdown copiable para blogs, sites y emails.",
   alternates: { canonical: `${SITE_URL}/partner-badges` },

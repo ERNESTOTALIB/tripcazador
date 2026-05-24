@@ -15,7 +15,7 @@ import Link from "next/link";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Maleta perdida: guía completa de reclamación 2026 | TripCazador",
+  title: "Maleta perdida: guía completa de reclamación 2026",
   description:
     "Paso a paso si la aerolínea pierde tu maleta: PIR, plazos legales, compensación máxima EU 261, seguro de viaje cubre. Ejemplos reales de reembolso.",
   alternates: { canonical: `${SITE_URL}/maleta-perdida` },

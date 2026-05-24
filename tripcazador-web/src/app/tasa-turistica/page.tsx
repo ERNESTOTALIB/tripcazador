@@ -10,7 +10,7 @@ import { TASA_TURISTICA_CATALOG } from "@/lib/tasa_turistica_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Tasa turística por ciudad: cuánto pagas en cada destino | TripCazador",
+  title: "Tasa turística por ciudad: cuánto pagas en cada destino",
   description:
     "Roma €7, Barcelona €7, Amsterdam 12.5%+€3, Berlín 5%... 12 ciudades con tasa turística detallada: precios por noche, excepciones, cobro.",
   alternates: { canonical: `${SITE_URL}/tasa-turistica` },

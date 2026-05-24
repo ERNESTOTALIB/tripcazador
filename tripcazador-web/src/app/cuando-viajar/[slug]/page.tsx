@@ -38,7 +38,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const d = getDestinationBySlug(params.slug);
   if (!d) {
-    return { title: "Destino no encontrado | TripCazador" };
+    return { title: "Destino no encontrado" };
   }
   const sweet = formatMonthList(d.sweetSpotMonths);
   const title = `Cuándo ir a ${d.name}: mejor mes 2026 — TripCazador`;

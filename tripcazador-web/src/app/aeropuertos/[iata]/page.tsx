@@ -36,9 +36,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const airport = getAirportEs(params.iata.toUpperCase());
   if (!airport) {
-    return { title: "Aeropuerto no encontrado | TripCazador" };
+    return { title: "Aeropuerto no encontrado" };
   }
-  const title = `Aeropuerto ${airport.city} (${airport.iata}): transporte, aerolíneas, parking | TripCazador`;
+  const title = `Aeropuerto ${airport.city} (${airport.iata}): transporte, aerolíneas, parking`;
   const description = `Guía del aeropuerto ${airport.formalName}: cómo llegar al centro, aerolíneas presentes, top destinos y parking más barato. ${airport.paxMillions}M pax/año.`;
   return {
     title,

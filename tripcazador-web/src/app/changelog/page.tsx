@@ -18,7 +18,7 @@ import {
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Novedades y mejoras | TripCazador",
+  title: "Novedades y mejoras",
   description:
     "Las últimas funcionalidades, mejoras y correcciones publicadas en TripCazador. Build in public.",
   alternates: { canonical: `${SITE_URL}/changelog` },

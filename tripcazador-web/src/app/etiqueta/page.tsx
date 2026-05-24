@@ -12,7 +12,7 @@ import { breadcrumbSchema } from "@/lib/schema_helpers";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Etiqueta cultural: guía por país | TripCazador",
+  title: "Etiqueta cultural: guía por país",
   description: `Guías culturales para ${ETIQUETA_CATALOG.length} destinos top: propinas, saludos, vestuario, tabúes y gestos para no quedar mal viajando.`,
   alternates: { canonical: `${SITE_URL}/etiqueta` },
   // SSS493-FIX7: añadir openGraph para consistencia con otras landings nuevas

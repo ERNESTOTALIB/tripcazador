@@ -18,7 +18,7 @@ export async function generateMetadata({
   const route = MONTHLY_ROUTES[params.ruta];
   if (!route) return { title: "Precio mes a mes — TripCazador" };
 
-  const title = `Vuelos ${route.origin_city} → ${route.dest_city}: precio mes a mes 2026-2027 | TripCazador`;
+  const title = `Vuelos ${route.origin_city} → ${route.dest_city}: precio mes a mes 2026-2027`;
   const description = `Tabla precios mes a mes ${route.origin}→${route.destination} para próximos 12 meses. Mejor mes para volar, sweet spots de booking, calendar trending data del motor TripCazador.`;
   const url = `https://tripcazador.com/precio-mes-a-mes/${params.ruta}`;
 

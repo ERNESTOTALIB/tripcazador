@@ -18,6 +18,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { emitUnsubscribeToken } from "@/lib/unsubscribe_token";
 import { addSubscriber } from "@/lib/subscribers_store";
 import { getTemplate } from "@/lib/drip_templates";
 import { trackEvent } from "@/lib/event_store";
@@ -39,10 +40,9 @@ function unsubscribeUrl(email: string): string {
   if (!secret) {
     return `${SITE_URL}/legal#newsletter`;
   }
-  // Edge: usar Web Crypto. Aquí runtime nodejs, podríamos usar crypto.
-  // Mantenemos simple: ?email base64 — el endpoint /unsubscribe valida.
-  const token = Buffer.from(`${email}:${Date.now()}`).toString("base64url");
-  return `${SITE_URL}/api/unsubscribe?t=${token}`;
+  // AUDIT-FULL FIX-SEC-1 (24 may 2026): token con HMAC verificable.
+  // Antes era base64(email:ts) sin sig — forjable.
+  return `${SITE_URL}/api/unsubscribe?t=${emitUnsubscribeToken(email)}`;
 }
 
 async function sendWelcome(email: string, locale: string): Promise<boolean> {

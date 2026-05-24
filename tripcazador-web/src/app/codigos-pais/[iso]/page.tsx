@@ -31,8 +31,8 @@ export async function generateMetadata({
   params: { iso: string };
 }): Promise<Metadata> {
   const c = getCodigoPais(params.iso);
-  if (!c) return { title: "País no encontrado | TripCazador" };
-  const title = `${c.name}: códigos, divisa ${c.currency.code}, prefijo ${c.phonePrefix} | TripCazador`;
+  if (!c) return { title: "País no encontrado" };
+  const title = `${c.name}: códigos, divisa ${c.currency.code}, prefijo ${c.phonePrefix}`;
   const description = `Lookup ${c.name}: ${c.timezone}, divisa ${c.currency.name} (${c.currency.symbol}), prefijo ${c.phonePrefix}, enchufe ${c.plug.type}. Información esencial para viajeros españoles.`;
   return {
     title,

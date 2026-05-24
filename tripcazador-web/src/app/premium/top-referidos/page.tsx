@@ -14,7 +14,7 @@ import Link from "next/link";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Top referidos Premium — Leaderboard | TripCazador",
+  title: "Top referidos Premium — Leaderboard",
   description:
     "Top 10 referrers Premium del mes. Por cada amigo que se suscribe, te llevas 1 mes gratis (y él también). Sumate al ranking.",
   alternates: { canonical: `${SITE_URL}/premium/top-referidos` },

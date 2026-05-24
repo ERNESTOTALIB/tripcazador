@@ -36,8 +36,8 @@ export async function generateMetadata({
   params: { pais: string };
 }): Promise<Metadata> {
   const e = getEtiqueta(params.pais);
-  if (!e) return { title: "Guía de etiqueta no encontrada | TripCazador" };
-  const title = `Etiqueta cultural en ${e.country}: propinas, saludos, tabúes | TripCazador`;
+  if (!e) return { title: "Guía de etiqueta no encontrada" };
+  const title = `Etiqueta cultural en ${e.country}: propinas, saludos, tabúes`;
   // SSS493-FIX5: meta descripción ≤160 chars para no truncar en SERP.
   const description = `${e.oneLiner} Propinas, saludos, tabúes y gestos para viajar con respeto.`;
   return {

@@ -14,7 +14,7 @@ import { UnsubscribeForm } from "@/components/UnsubscribeForm";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Darse de baja del newsletter | TripCazador",
+  title: "Darse de baja del newsletter",
   description:
     "Baja del newsletter de TripCazador en un clic. Sin trucos, sin retención agresiva — sólo cuéntanos por qué (opcional) y listo.",
   alternates: { canonical: `${SITE_URL}/newsletter/unsubscribe` },

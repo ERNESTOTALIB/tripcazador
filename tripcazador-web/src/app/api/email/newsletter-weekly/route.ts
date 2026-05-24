@@ -24,6 +24,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { listPendingDrip } from "@/lib/subscribers_store";
+import { emitUnsubscribeToken } from "@/lib/unsubscribe_token";
 import type { Deal } from "@/lib/api";
 import {
   RATE_WINDOW_MS,
@@ -80,8 +81,8 @@ async function loadDeals(): Promise<Deal[]> {
 }
 
 function unsubscribeUrl(email: string): string {
-  const token = Buffer.from(`${email}:${Date.now()}`).toString("base64url");
-  return `${SITE}/api/unsubscribe?t=${token}`;
+  // AUDIT-FULL FIX-SEC-1: token con HMAC verificable
+  return `${SITE}/api/unsubscribe?t=${emitUnsubscribeToken(email)}`;
 }
 
 async function sendOne(

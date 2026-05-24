@@ -49,8 +49,8 @@ export async function generateMetadata({
   params: { iso: string };
 }): Promise<Metadata> {
   const c = getFlagCarriers(params.iso);
-  if (!c) return { title: "País no encontrado | TripCazador" };
-  const title = `Aerolínea bandera de ${c.country}: ${c.primary.name} | TripCazador`;
+  if (!c) return { title: "País no encontrado" };
+  const title = `Aerolínea bandera de ${c.country}: ${c.primary.name}`;
   const description = `${c.primary.name} (${c.primary.iata}) es la aerolínea bandera de ${c.country}, con hub en ${c.primary.hub}. ${c.alliance ? `Parte de ${ALLIANCE_LABEL[c.alliance]}.` : ""}`;
   return {
     title,

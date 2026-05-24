@@ -33,8 +33,8 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const c = getConferencia(params.slug);
-  if (!c) return { title: "Conferencia no encontrada | TripCazador" };
-  const title = `${c.name} ${c.city}: vuelos, hotel y tips | TripCazador`;
+  if (!c) return { title: "Conferencia no encontrada" };
+  const title = `${c.name} ${c.city}: vuelos, hotel y tips`;
   return {
     title,
     description: c.summary,

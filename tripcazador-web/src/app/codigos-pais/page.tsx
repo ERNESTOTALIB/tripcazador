@@ -10,7 +10,7 @@ import { CODIGOS_PAIS_CATALOG } from "@/lib/codigos_pais_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Códigos por país: huso, divisa, prefijo, enchufe | TripCazador",
+  title: "Códigos por país: huso, divisa, prefijo, enchufe",
   description:
     "Lookup rápido por país: huso horario, divisa, idioma, prefijo telefónico, tipo de enchufe, conducción, visa. 15 países top.",
   alternates: { canonical: `${SITE_URL}/codigos-pais` },

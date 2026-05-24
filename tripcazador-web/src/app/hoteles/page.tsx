@@ -9,7 +9,7 @@ import { HotelStarTierTabs } from "@/components/HotelStarTierTabs";
 export const revalidate = 900; // 15 minutos
 
 export const metadata: Metadata = {
-  title: "Buscador de hoteles — Chollos por noche con filtros | TripCazador",
+  title: "Buscador de hoteles — Chollos por noche con filtros",
   description:
     "Busca entre 60+ hoteles con mejor precio/noche en Phuket, Bali, Grecia, Maldivas y más. Filtra por categoría, rating, estrellas, servicios. Reserva con descuento.",
   alternates: { canonical: "/hoteles" },

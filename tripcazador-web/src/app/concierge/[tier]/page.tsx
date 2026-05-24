@@ -134,9 +134,9 @@ export async function generateMetadata({
 }: {
   params: { tier: string };
 }): Promise<Metadata> {
-  if (!isValidTier(params.tier)) return { title: "Tier no encontrado | TripCazador" };
+  if (!isValidTier(params.tier)) return { title: "Tier no encontrado" };
   const t = CONCIERGE_TIERS[params.tier];
-  const title = `Concierge ${t.name} €${t.amount_eur} — ${t.delivery_label} | TripCazador`;
+  const title = `Concierge ${t.name} €${t.amount_eur} — ${t.delivery_label}`;
   const description = TIER_CONTENT[params.tier].hero.slice(0, 155);
   return {
     title,

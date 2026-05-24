@@ -20,7 +20,7 @@ import { ScoringFeedbackClient } from "@/components/ScoringFeedbackClient";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Admin Scoring Feedback | TripCazador",
+  title: "Admin Scoring Feedback",
   robots: { index: false, follow: false },
 };
 

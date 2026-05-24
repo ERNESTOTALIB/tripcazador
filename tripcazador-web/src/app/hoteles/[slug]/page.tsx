@@ -34,8 +34,8 @@ export async function generateMetadata(
   { params }: { params: { slug: string } },
 ): Promise<Metadata> {
   const hotel = getHotelBySlug(params.slug);
-  if (!hotel) return { title: "Hotel no encontrado | TripCazador" };
-  const title = `${hotel.name} (${hotel.stars}★) — ${hotel.city}, ${hotel.country} desde ${hotel.pricePerNight}€/noche | TripCazador`;
+  if (!hotel) return { title: "Hotel no encontrado" };
+  const title = `${hotel.name} (${hotel.stars}★) — ${hotel.city}, ${hotel.country} desde ${hotel.pricePerNight}€/noche`;
   const description =
     `${hotel.name} ${hotel.stars} estrellas en ${hotel.city}. Desde ${hotel.pricePerNight}€/noche. ` +
     (hotel.highlight ?? `Reserva con descuento en Booking.com.`) +
