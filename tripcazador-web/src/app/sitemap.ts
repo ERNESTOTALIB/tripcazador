@@ -246,6 +246,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/podcast`, lastModified: now, changeFrequency: "monthly", priority: 0.55 },
     // SSS475: /testimonios
     { url: `${BASE_URL}/testimonios`, lastModified: now, changeFrequency: "monthly", priority: 0.65 },
+    // SSS480: /anuario-2026 PR landing
+    { url: `${BASE_URL}/anuario-2026`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS482: /predicciones-vuelos-2026 PR landing
+    { url: `${BASE_URL}/predicciones-vuelos-2026`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
