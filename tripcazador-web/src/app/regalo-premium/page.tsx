@@ -81,6 +81,8 @@ export default function RegaloPremiumPage() {
     name: "TripCazador Premium Gift — 1 mes",
     description:
       "Regalo Premium TripCazador 30 días. Alertas ilimitadas, error fares, filtros y secret deals.",
+    // SSS493-FIX6: añadir image para elegibilidad Product rich result en SERP
+    image: `${SITE_URL}/icon-512.png`,
     brand: { "@type": "Brand", name: "TripCazador" },
     offers: {
       "@type": "Offer",

@@ -15,6 +15,7 @@
  */
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { quickSearch, type QuickSearchResult } from "@/lib/quick_search";
 
 interface Props {
@@ -34,8 +35,11 @@ export function HomeSearchAutocomplete({
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   // Recalcula resultados cuando cambia query
+  // SSS493-FIX4: solo reset highlighted si queda fuera del rango (no pierdas
+  // selección activa del user en escritura rápida).
   useEffect(() => {
     if (query.trim().length < 2) {
       setResults([]);
@@ -43,7 +47,7 @@ export function HomeSearchAutocomplete({
     }
     const r = quickSearch(query.trim(), maxResults);
     setResults(r);
-    setHighlighted(0);
+    setHighlighted((h) => (h >= r.length ? 0 : h));
   }, [query, maxResults]);
 
   // Close on click-outside
@@ -72,7 +76,10 @@ export function HomeSearchAutocomplete({
     }
     if (e.key === "Enter" && results[highlighted]) {
       e.preventDefault();
-      window.location.href = results[highlighted].href;
+      // SSS493-FIX3: usar router SPA en lugar de full reload (preserva
+      // state, prefetch, scroll restoration; consistente con click via Link).
+      router.push(results[highlighted].href);
+      setOpen(false);
     }
   }
 

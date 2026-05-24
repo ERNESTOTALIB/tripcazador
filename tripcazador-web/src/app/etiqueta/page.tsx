@@ -15,6 +15,13 @@ export const metadata: Metadata = {
   title: "Etiqueta cultural: guía por país | TripCazador",
   description: `Guías culturales para ${ETIQUETA_CATALOG.length} destinos top: propinas, saludos, vestuario, tabúes y gestos para no quedar mal viajando.`,
   alternates: { canonical: `${SITE_URL}/etiqueta` },
+  // SSS493-FIX7: añadir openGraph para consistencia con otras landings nuevas
+  openGraph: {
+    title: "Etiqueta cultural: guía por país",
+    description: `Propinas, saludos, vestuario y tabúes para ${ETIQUETA_CATALOG.length} destinos top.`,
+    url: `${SITE_URL}/etiqueta`,
+    type: "website",
+  },
 };
 
 export const dynamic = "force-static";

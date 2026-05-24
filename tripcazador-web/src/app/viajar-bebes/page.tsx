@@ -11,6 +11,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { breadcrumbSchema, faqPageSchema, howToSchema } from "@/lib/schema_helpers";
+// SSS493-FIX1: validar code contra AIRLINES catalog antes de renderizar link
+// para evitar 404 garantizado en /aerolineas/[code]
+import { AIRLINES } from "@/lib/airlines";
+const AIRLINE_CODES_LC = new Set(AIRLINES.map((a) => a.code.toLowerCase()));
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -33,7 +37,7 @@ export const revalidate = 86400;
 const POR_AEROLINEA = [
   {
     airline: "Ryanair",
-    code: "ryanair",
+    code: "fr",
     infantFee: "€25/trayecto (sin asiento, regazo)",
     infantBaggage: "Bolso 5kg incluido para bebé",
     stroller: "Gratis (1 por bebé hasta puerta embarque)",
@@ -42,7 +46,7 @@ const POR_AEROLINEA = [
   },
   {
     airline: "Iberia",
-    code: "iberia",
+    code: "ib",
     infantFee: "10% precio adulto (regazo)",
     infantBaggage: "1 maleta facturada hasta 23kg + bolso mano 5kg",
     stroller: "Gratis hasta puerta embarque",
@@ -51,7 +55,7 @@ const POR_AEROLINEA = [
   },
   {
     airline: "Vueling",
-    code: "vueling",
+    code: "vy",
     infantFee: "€25/trayecto regazo",
     infantBaggage: "Bolso 6kg",
     stroller: "Gratis pero solo 1 por bebé",
@@ -60,7 +64,7 @@ const POR_AEROLINEA = [
   },
   {
     airline: "Air Europa",
-    code: "air-europa",
+    code: "ux",
     infantFee: "10% precio adulto (long-haul) / €40 (corto-medio)",
     infantBaggage: "1 maleta 23kg + bolso 5kg",
     stroller: "Gratis hasta puerta",
@@ -69,7 +73,7 @@ const POR_AEROLINEA = [
   },
   {
     airline: "easyJet",
-    code: "easyjet",
+    code: "u2",
     infantFee: "€32/trayecto regazo",
     infantBaggage: "Bolso 5kg + bolsa pañales (separada)",
     stroller: "Gratis + 2 items extra (silla coche, cuna porta)",
@@ -78,7 +82,7 @@ const POR_AEROLINEA = [
   },
   {
     airline: "Lufthansa",
-    code: "lufthansa",
+    code: "lh",
     infantFee: "10% precio adulto regazo",
     infantBaggage: "1 maleta 23kg + bolso 8kg",
     stroller: "Gratis hasta puerta + 1 carrito coche",
@@ -200,12 +204,16 @@ export default function ViajarBebesPage() {
               className="rounded-2xl border border-slate-700 bg-slate-800/40 p-5"
             >
               <h3 className="text-lg font-bold text-white">
-                <Link
-                  href={`/aerolineas/${a.code}`}
-                  className="hover:text-amber-400"
-                >
-                  {a.airline} →
-                </Link>
+                {AIRLINE_CODES_LC.has(a.code) ? (
+                  <Link
+                    href={`/aerolineas/${a.code}`}
+                    className="hover:text-amber-400"
+                  >
+                    {a.airline} →
+                  </Link>
+                ) : (
+                  a.airline
+                )}
               </h3>
               <div className="mt-3 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
                 <div>
