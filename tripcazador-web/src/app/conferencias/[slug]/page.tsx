@@ -16,6 +16,7 @@ import {
 // son distintos catálogos. Detectar y rutear correctamente para evitar 404.
 import { AIRPORTS_ES_IATAS } from "@/lib/airports_es_catalog";
 import { AIRPORTS_WORLD_IATAS } from "@/lib/airports_world_catalog";
+import { breadcrumbSchema } from "@/lib/schema_helpers";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -53,15 +54,11 @@ export default function ConferenciaPage({ params }: { params: { slug: string } }
 
   const others = CONFERENCIAS_CATALOG.filter((x) => x.slug !== c.slug).slice(0, 4);
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Conferencias", item: `${SITE_URL}/conferencias` },
-      { "@type": "ListItem", position: 3, name: c.name, item: `${SITE_URL}/conferencias/${c.slug}` },
-    ],
-  };
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: "Inicio", url: "/" },
+    { name: "Conferencias", url: "/conferencias" },
+    { name: c.name, url: `/conferencias/${c.slug}` },
+  ]);
 
   const eventJsonLd = {
     "@context": "https://schema.org",

@@ -12,6 +12,7 @@ import {
   AIRPORTS_WORLD_IATAS,
   getAirportWorld,
 } from "@/lib/airports_world_catalog";
+import { breadcrumbSchema } from "@/lib/schema_helpers";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -50,15 +51,11 @@ export default function AeropuertoMundoPage({ params }: { params: { iata: string
 
   const others = AIRPORTS_WORLD.filter((x) => x.iata !== a.iata).slice(0, 6);
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Aeropuertos mundo", item: `${SITE_URL}/aeropuertos-mundo` },
-      { "@type": "ListItem", position: 3, name: `${a.city} (${a.iata})`, item: `${SITE_URL}/aeropuertos-mundo/${a.iata.toLowerCase()}` },
-    ],
-  };
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: "Inicio", url: "/" },
+    { name: "Aeropuertos mundo", url: "/aeropuertos-mundo" },
+    { name: `${a.city} (${a.iata})`, url: `/aeropuertos-mundo/${a.iata.toLowerCase()}` },
+  ]);
 
   return (
     <main className="container mx-auto max-w-3xl px-4 py-8">

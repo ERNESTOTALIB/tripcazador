@@ -14,6 +14,7 @@ import {
   CODIGOS_PAIS_ISOS,
   getCodigoPais,
 } from "@/lib/codigos_pais_catalog";
+import { breadcrumbSchema } from "@/lib/schema_helpers";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -52,15 +53,11 @@ export default function CodigoPaisPage({ params }: { params: { iso: string } }) 
 
   const others = CODIGOS_PAIS_CATALOG.filter((x) => x.iso !== c.iso).slice(0, 6);
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Códigos por país", item: `${SITE_URL}/codigos-pais` },
-      { "@type": "ListItem", position: 3, name: c.name, item: `${SITE_URL}/codigos-pais/${c.iso}` },
-    ],
-  };
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: "Inicio", url: "/" },
+    { name: "Códigos por país", url: "/codigos-pais" },
+    { name: c.name, url: `/codigos-pais/${c.iso}` },
+  ]);
 
   return (
     <main className="container mx-auto max-w-3xl px-4 py-8">

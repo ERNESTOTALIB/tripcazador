@@ -32,6 +32,7 @@ import { FLAG_CARRIERS_ISOS } from "@/lib/flag_carriers_catalog";
 import { DIVISAS_CODES } from "@/lib/divisas_catalog";
 import { TASA_TURISTICA_SLUGS } from "@/lib/tasa_turistica_catalog";
 import { TEMPORADA_BAJA_SLUGS } from "@/lib/temporada_baja_catalog";
+import { ETIQUETA_SLUGS } from "@/lib/etiqueta_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -250,6 +251,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/anuario-2026`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS482: /predicciones-vuelos-2026 PR landing
     { url: `${BASE_URL}/predicciones-vuelos-2026`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS486: /etiqueta hub + 10 culturas
+    { url: `${BASE_URL}/etiqueta`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS487: /regalo-premium dedicated landing (revenue path €9.99)
+    { url: `${BASE_URL}/regalo-premium`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -407,6 +412,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.7,
+  }));
+
+  // SSS486: vertical /etiqueta/[pais] — 10 guías culturales
+  const etiquetaPages: MetadataRoute.Sitemap = ETIQUETA_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/etiqueta/${slug}`,
+    lastModified: now,
+    changeFrequency: "yearly" as const,
+    priority: 0.65,
   }));
 
   // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
@@ -1004,6 +1017,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...tasaTuristicaPages,
     // SSS463: 12 temporada baja landings
     ...temporadaBajaPages,
+    // SSS486: 10 etiqueta cultural landings
+    ...etiquetaPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
