@@ -116,17 +116,21 @@ export async function GET(): Promise<NextResponse> {
   const kv = probeKv();
 
   const subsystems: SubsystemStatus[] = [backend, dealsFresh, stripe, kv];
+  // SSS472: KV es opcional (in-memory fallback funciona OK). No degradar 503
+  // si solo KV falla — solo backend + deals_fresh + stripe son críticos para
+  // uptime alerts externos.
+  const criticalOk = backend.ok && dealsFresh.ok && stripe.ok;
   const allOk = subsystems.every((s) => s.ok);
 
   const body = {
-    status: allOk ? "ok" : "degraded",
+    status: allOk ? "ok" : criticalOk ? "partial" : "degraded",
     version: (process.env.VERCEL_GIT_COMMIT_SHA || "dev").slice(0, 8),
     timestamp: new Date().toISOString(),
     subsystems,
   };
 
   return NextResponse.json(body, {
-    status: allOk ? 200 : 503,
+    status: criticalOk ? 200 : 503,
     headers: {
       "Cache-Control": "no-store",
       "Access-Control-Allow-Origin": "*",

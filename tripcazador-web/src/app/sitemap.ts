@@ -242,6 +242,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/comparar-deals`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
     // SSS470: /equipo
     { url: `${BASE_URL}/equipo`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    // SSS472: /podcast landing (coming soon)
+    { url: `${BASE_URL}/podcast`, lastModified: now, changeFrequency: "monthly", priority: 0.55 },
+    // SSS475: /testimonios
+    { url: `${BASE_URL}/testimonios`, lastModified: now, changeFrequency: "monthly", priority: 0.65 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -464,6 +468,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.6,
+    })),
+    // SSS476: sub-vertical /aerolineas/[code]/rutas (solo airlines con popularRoutes)
+    ...AIRLINES.filter((a) => a.popularRoutesFromSpain.length > 0).map((a) => ({
+      url: `${BASE_URL}/aerolineas/${a.code.toLowerCase()}/rutas`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.55,
     })),
   ];
 
