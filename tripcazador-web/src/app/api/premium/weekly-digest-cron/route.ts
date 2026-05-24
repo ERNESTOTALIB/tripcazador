@@ -25,6 +25,7 @@ import { listActiveAlertsByTier, listAlertsByCustomer } from "@/lib/price_alerts
 import { listSavedSearches } from "@/lib/saved_searches_store";
 import { scoreDeal, type DealLite } from "@/lib/premium_digest_scorer";
 import { buildDigestEmailHtml } from "@/lib/digest_email";
+import { safeCronMarker } from "@/lib/cron_idempotency";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -131,6 +132,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const activeAlerts = alerts.filter((a) => a.active && !a.triggered_at);
 
     if (activeAlerts.length === 0 && searches.length === 0) {
+      skipped += 1;
+      continue;
+    }
+
+    // AUDIT-FULL-2: idempotency — evita doble digest si cron se ejecuta 2 veces
+    // misma semana (retry GH Actions o manual workflow_dispatch).
+    const proceed = await safeCronMarker("weekly-digest", customerId);
+    if (!proceed) {
       skipped += 1;
       continue;
     }

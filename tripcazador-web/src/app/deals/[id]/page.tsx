@@ -21,6 +21,7 @@ import { PriceHistoryChart } from "@/components/PriceHistoryChart";
 import { PremiumPriceHistoryChart } from "@/components/PremiumPriceHistoryChart";
 import { PremiumPricePredictorCard } from "@/components/PremiumPricePredictorCard";
 import { WatchThisDealButton } from "@/components/WatchThisDealButton";
+import { RecentlyViewedCarousel } from "@/components/RecentlyViewedCarousel";
 import { HotelCrossSell } from "@/components/HotelCrossSell";
 import { AffiliateCrossSell } from "@/components/AffiliateCrossSell";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
@@ -421,6 +422,19 @@ export default async function DealDetailPage({
         airlineName={deal.airline_name || deal.airline}
         dateOut={deal.date_out || null}
         dateRet={deal.date_ret || null}
+      />
+
+      {/* ─────────── Recently viewed (AUDIT-FULL-2: wire SSS473 dead code) ─────────── */}
+      <RecentlyViewedCarousel
+        currentDeal={{
+          id: deal.id,
+          origin: deal.origin,
+          destination: deal.destination,
+          cityTo: deal.city_to || deal.destination,
+          priceEur: deal.price_eur,
+          airline: deal.airline_name || deal.airline,
+          dateOut: deal.date_out || undefined,
+        }}
       />
 
       {/* ─────────── Add to calendar (SSS419) ─────────── */}

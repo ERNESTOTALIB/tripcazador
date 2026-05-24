@@ -23,6 +23,9 @@ import { useEffect, useRef, useState } from "react";
 import { getPremiumStatus } from "@/lib/premium";
 import { tcTrack, tcTrackOnce } from "@/lib/track_client";
 import { getVariant } from "@/lib/ab";
+// AUDIT-FULL-2 (24 may 2026): wire-up lib SSS465 — experimento urgency frame
+// independiente del existing copy A/B. Antes era dead code.
+import { getAbVariant, trackAbExposure } from "@/lib/ab_test";
 
 interface Props {
   /** Identificador del surface (home/blog/deal_card/...). Para analytics. */
@@ -43,12 +46,18 @@ export function PremiumInlineCTA({
   const [active, setActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [copyVariant, setCopyVariant] = useState<"A" | "B">("A");
+  // AUDIT-FULL-2: urgency frame A/B/C (control / "limited" / "social-proof")
+  const [urgencyVariant, setUrgencyVariant] = useState<"control" | "limited" | "social">("control");
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setActive(getPremiumStatus().active);
     // SSS294: A/B copy variant assignment client-side
     setCopyVariant(getVariant("premium_cta_copy_v1"));
+    // AUDIT-FULL-2: urgency frame assignment (3 variants)
+    const uv = getAbVariant("premium_cta_v2_urgency", ["control", "limited", "social"] as const);
+    setUrgencyVariant(uv);
+    trackAbExposure("premium_cta_v2_urgency", uv);
   }, []);
 
   // SSS294: copy por variant
@@ -174,6 +183,17 @@ export function PremiumInlineCTA({
               €9.99/mes · cancela cuando quieras
             </span>
           </div>
+          {/* AUDIT-FULL-2: urgency frame A/B/C — solo visible en variant card */}
+          {urgencyVariant === "limited" && (
+            <p className="mt-3 text-xs text-amber-300">
+              ⏱️ Oferta lanzamiento — €9.99/mes para los primeros 1000 usuarios.
+            </p>
+          )}
+          {urgencyVariant === "social" && (
+            <p className="mt-3 text-xs text-emerald-300">
+              ⭐ 2.000+ viajeros activos. Media de ahorro €387/año.
+            </p>
+          )}
         </div>
       </div>
     </div>
