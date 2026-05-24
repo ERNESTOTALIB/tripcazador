@@ -99,6 +99,27 @@ export default function GlobalError({
             Avisarnos por Telegram
           </a>
         </div>
+
+        {/* SUPERSESSION (24 may 2026): atajos a las pages más usadas */}
+        <div className="mt-8 pt-6 border-t border-gray-800 text-left">
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-3 text-center">
+            Mientras tanto, prueba estas
+          </p>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <a href="/deals" className="px-3 py-2 rounded-lg glass text-gray-300 hover:text-amber-400 transition-colors">
+              ✈️ Chollos vuelos
+            </a>
+            <a href="/destinos" className="px-3 py-2 rounded-lg glass text-gray-300 hover:text-amber-400 transition-colors">
+              🌍 Destinos top
+            </a>
+            <a href="/premium" className="px-3 py-2 rounded-lg glass text-gray-300 hover:text-amber-400 transition-colors">
+              ⭐ Premium €9.99/mes
+            </a>
+            <a href="/blog" className="px-3 py-2 rounded-lg glass text-gray-300 hover:text-amber-400 transition-colors">
+              📰 Blog
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
