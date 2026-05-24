@@ -255,6 +255,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/etiqueta`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS487: /regalo-premium dedicated landing (revenue path €9.99)
     { url: `${BASE_URL}/regalo-premium`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SSS489: /viajar-bebes guía equipaje con menores
+    { url: `${BASE_URL}/viajar-bebes`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos

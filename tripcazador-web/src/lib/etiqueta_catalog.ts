@@ -113,7 +113,6 @@ export const ETIQUETA_CATALOG: EtiquetaEntry[] = [
     slug: "india",
     country: "India",
     emoji: "🇮🇳",
-    destinoSlug: "india",
     oneLiner: "Diversidad religiosa + jerarquías sociales + hospitalidad legendaria.",
     saludo:
       "'Namaste' con palmas juntas frente al pecho (no se da mano, especialmente a mujeres). Saludo respeta la jerarquía: a mayor edad, mayor inclinación.",
@@ -169,7 +168,7 @@ export const ETIQUETA_CATALOG: EtiquetaEntry[] = [
     slug: "usa",
     country: "Estados Unidos",
     emoji: "🇺🇸",
-    destinoSlug: "estados-unidos",
+    destinoSlug: "nueva-york",
     oneLiner: "Cultura de propinas + small talk + casualismo + reglas de seguridad.",
     saludo:
       "Apretón de manos firme + sonrisa + 'how are you'. Es ritual, no esperan respuesta real. 'I'm good, thanks' suficiente.",
@@ -197,7 +196,7 @@ export const ETIQUETA_CATALOG: EtiquetaEntry[] = [
     slug: "reino-unido",
     country: "Reino Unido",
     emoji: "🇬🇧",
-    destinoSlug: "reino-unido",
+    destinoSlug: "londres",
     oneLiner: "Respeto a la cola + politeness extrema + ironía sutil + pub culture.",
     saludo:
       "Apretón firme. Beso solo entre amigos cercanos. 'How are you?' = saludo, no pregunta. 'I'm fine, thanks' suficiente.",
@@ -225,7 +224,6 @@ export const ETIQUETA_CATALOG: EtiquetaEntry[] = [
     slug: "china",
     country: "China",
     emoji: "🇨🇳",
-    destinoSlug: "china",
     oneLiner: "Cultura confuciana + jerarquía + 'guanxi' (relaciones) + sincretismo.",
     saludo:
       "Apretón suave (no firme). Nombre completo (apellido primero). Tarjeta de visita con DOS manos. 'Nǐ hǎo' (hola).",
@@ -253,7 +251,6 @@ export const ETIQUETA_CATALOG: EtiquetaEntry[] = [
     slug: "mexico",
     country: "México",
     emoji: "🇲🇽",
-    destinoSlug: "mexico",
     oneLiner: "Hospitalidad cálida + jerarquía respetada + indirecto cortés.",
     saludo:
       "Apretón mano hombre-hombre. Beso mejilla (1 derecha) mujer-mujer o hombre-mujer en social. Profesional: solo mano.",
@@ -281,7 +278,7 @@ export const ETIQUETA_CATALOG: EtiquetaEntry[] = [
     slug: "argentina",
     country: "Argentina",
     emoji: "🇦🇷",
-    destinoSlug: "argentina",
+    destinoSlug: "buenos-aires",
     oneLiner: "Cultura italo-rioplatense + asado social + pasión + 'voseo'.",
     saludo:
       "Beso mejilla (1, lado izquierdo) entre todos en social, incluso hombre-hombre amigos. Profesional: apretón firme y nombre.",

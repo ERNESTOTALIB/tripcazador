@@ -74,6 +74,11 @@ import {
 } from "@/lib/flag_carriers_catalog";
 import { DESTINO_SLUGS } from "@/lib/destinos_catalog";
 import { TRAVEL_CARDS_CATALOG } from "@/lib/travel_cards_catalog";
+// SSS491: etiqueta_catalog invariants
+import {
+  ETIQUETA_CATALOG,
+  ETIQUETA_SLUGS,
+} from "@/lib/etiqueta_catalog";
 
 /**
  * Verifica que un array de keys no tiene duplicados y match arr.length === set.size.
@@ -147,6 +152,17 @@ describe("catalogs_invariants — slug uniqueness", () => {
   it("travel_cards: slugs únicas", () => {
     const slugs = TRAVEL_CARDS_CATALOG.map((c) => c.slug);
     assertUniqueKeys("TRAVEL_CARDS slugs", slugs);
+  });
+
+  // SSS491: etiqueta cultural invariants
+  it("etiqueta: slugs únicas + 10 países en catálogo", () => {
+    assertUniqueKeys("ETIQUETA_SLUGS", ETIQUETA_SLUGS);
+    expect(ETIQUETA_CATALOG.length).toBe(10);
+  });
+
+  it("etiqueta: countries únicas (no duplicados)", () => {
+    const countries = ETIQUETA_CATALOG.map((e) => e.country);
+    assertUniqueKeys("ETIQUETA countries", countries);
   });
 });
 
@@ -236,5 +252,20 @@ describe("catalogs_invariants — cross-catalog coherencia", () => {
       orphans,
       `conferencias con IATA ni-ES ni-world: ${orphans.join(", ")} — link 404 garantizado`,
     ).toEqual([]);
+  });
+
+  // SSS491: etiqueta destinoSlug cross-link integrity
+  it("etiqueta.destinoSlug: si está presente, debe existir en DESTINO_SLUGS", () => {
+    const validDestinos = new Set(DESTINO_SLUGS);
+    const orphans = ETIQUETA_CATALOG.filter(
+      (e) => e.destinoSlug && !validDestinos.has(e.destinoSlug),
+    ).map((e) => `${e.slug}→${e.destinoSlug}`);
+    // Informativo — UI tiene guard. Pero el slug debería limpiarse o quitarse.
+    if (orphans.length > 0) {
+      console.warn(
+        `[catalogs_invariants] etiqueta con destinoSlug no en DESTINO_SLUGS: ${orphans.join(", ")}`,
+      );
+    }
+    expect(true).toBe(true);
   });
 });

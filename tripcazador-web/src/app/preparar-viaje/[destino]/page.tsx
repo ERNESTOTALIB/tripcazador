@@ -17,6 +17,8 @@ import {
 // FIX-CQ-1: /escapadas/[slug] tiene dynamicParams=false con solo 12 slugs.
 // Importamos ESCAPADAS_SLUGS para guard del link y evitar 404 garantizado.
 import { ESCAPADAS_SLUGS } from "@/lib/escapadas_catalog";
+// SSS490: cross-link to /etiqueta cultural guide cuando destino map a un país cubierto
+import { ETIQUETA_CATALOG } from "@/lib/etiqueta_catalog";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -249,6 +251,21 @@ export default function PrepararViajeDestinoPage({
           <div className="mt-1 text-sm font-bold text-white">Reglas equipaje</div>
           <div className="text-xs text-slate-400">Por aerolínea</div>
         </Link>
+        {/* SSS490: link a guía de etiqueta cultural si el destinoSlug está mapeado */}
+        {(() => {
+          const etiqueta = ETIQUETA_CATALOG.find((e) => e.destinoSlug === d.slug);
+          if (!etiqueta) return null;
+          return (
+            <Link
+              href={`/etiqueta/${etiqueta.slug}`}
+              className="rounded-lg border border-slate-700 bg-slate-900/60 p-4 transition-colors hover:border-amber-500/50"
+            >
+              <div className="text-2xl">{etiqueta.emoji}</div>
+              <div className="mt-1 text-sm font-bold text-white">Etiqueta cultural</div>
+              <div className="text-xs text-slate-400">Propinas, saludos, tabúes</div>
+            </Link>
+          );
+        })()}
       </section>
 
       {others.length > 0 && (
