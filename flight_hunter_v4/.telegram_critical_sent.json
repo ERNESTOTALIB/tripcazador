@@ -2215,6 +2215,22 @@
       "destination": "RMI",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "54ba0d9d6139",
+      "ts": "2026-05-24T19:08:44.682129+00:00",
+      "origin": "BER",
+      "destination": "ZAD",
+      "price_eur": 25.39,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fda24cdd3bc8",
+      "ts": "2026-05-24T19:08:44.682129+00:00",
+      "origin": "SOF",
+      "destination": "MLA",
+      "price_eur": 25.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
