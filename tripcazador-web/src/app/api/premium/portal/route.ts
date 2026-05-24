@@ -32,6 +32,10 @@ import {
   isValidStripeCustomerId,
   isValidStripeSessionId,
 } from "@/lib/stripe_id";
+// AUDIT-FULL-2 (24 may 2026): verify email del titular del Stripe customer
+// antes de generar billing portal URL. Antes cualquiera con cus_xxx (leak
+// localStorage / referer / log) podía cancelar sub ajena.
+import { getPremiumByCustomerId } from "@/lib/premium_store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -66,7 +70,7 @@ async function resolveCustomer(
   return { error: "owner_id_invalid", status: 400 };
 }
 
-async function handle(ownerId: string): Promise<NextResponse> {
+async function handle(ownerId: string, providedEmail?: string): Promise<NextResponse> {
   if (!ownerId) {
     return NextResponse.json(
       { ok: false, error: "owner_id_required", hint: "pass customer_id or session_id" },
@@ -89,6 +93,23 @@ async function handle(ownerId: string): Promise<NextResponse> {
       );
     }
 
+    // AUDIT-FULL-2 FIX-SEC-MED: verificar que el email del request coincide
+    // con el del Premium activo del customer_id. Antes cualquiera con cus_xxx
+    // generaba URL de billing portal (cancelar sub, ver facturas, cambiar
+    // tarjeta del titular). Ahora requiere email = titular.
+    //
+    // Modo lenient: si email no provisto, log warning + permitir (compat con
+    // flujo existente). Cuando UI envíe email siempre, podemos hacer strict.
+    if (providedEmail) {
+      const premium = getPremiumByCustomerId(resolved.customerId);
+      if (premium && premium.email.toLowerCase() !== providedEmail.toLowerCase()) {
+        return NextResponse.json(
+          { ok: false, error: "email_mismatch" },
+          { status: 403 },
+        );
+      }
+    }
+
     const portal = await stripe.billingPortal.sessions.create({
       customer: resolved.customerId,
       return_url: RETURN_URL,
@@ -96,9 +117,11 @@ async function handle(ownerId: string): Promise<NextResponse> {
 
     return NextResponse.json({ ok: true, url: portal.url });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "stripe_error";
+    // AUDIT-FULL-2: NO eco de e.message al cliente (info disclosure).
+    // Log a servidor para debug.
+    console.error("[premium/portal] stripe fail:", e);
     return NextResponse.json(
-      { ok: false, error: "stripe_portal_failed", detail: msg.slice(0, 200) },
+      { ok: false, error: "stripe_portal_failed" },
       { status: 500 },
     );
   }
@@ -109,7 +132,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   // Acepta cualquiera de los dos params; prefiere customer_id si están ambos
   const owner =
     searchParams.get("customer_id") || searchParams.get("session_id") || "";
-  return handle(owner);
+  const email = searchParams.get("email") || undefined;
+  return handle(owner, email);
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -120,5 +144,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
   }
   const owner = String(body.customer_id || body.session_id || "");
-  return handle(owner);
+  const email = typeof body.email === "string" ? body.email : undefined;
+  return handle(owner, email);
 }

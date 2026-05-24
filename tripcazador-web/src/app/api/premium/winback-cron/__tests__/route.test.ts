@@ -26,11 +26,15 @@ describe("GET /api/premium/winback-cron SSS322 auth", () => {
     vi.restoreAllMocks();
   });
 
-  it("503 sin token configurado", async () => {
+  // AUDIT-FULL-2: tras migrar a verifyCronToken (cron_auth.ts), el endpoint
+  // devuelve 401 unauthorized sin distinguir entre "sin token configurado" y
+  // "token incorrecto" — esto evita info disclosure útil para attackers.
+  it("401 sin token configurado", async () => {
     delete process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM;
     delete process.env.PRICE_ALERT_CRON_TOKEN;
+    delete process.env.CRON_TOKEN_WINBACK;
     const res = await GET(getReq("?token=anything"));
-    expect(res.status).toBe(503);
+    expect(res.status).toBe(401);
   });
 
   it("401 token incorrecto", async () => {

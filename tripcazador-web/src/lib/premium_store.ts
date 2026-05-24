@@ -100,6 +100,12 @@ export function getPremiumByEmail(email: string): PremiumStateEntry | null {
   return store.entries.find((e) => e.email === email && e.active) ?? null;
 }
 
+// AUDIT-FULL-2 (24 may 2026): lookup por customer_id para verificación
+// de email en /api/premium/portal (MEDIUM SEC fix).
+export function getPremiumByCustomerId(customerId: string): PremiumStateEntry | null {
+  return store.entries.find((e) => e.customer_id === customerId && e.active) ?? null;
+}
+
 /**
  * SSS340: lista todos los Premium activos — usado por crons de lifecycle
  * (milestone, anniversary, annual upsell). Devuelve snapshot inmutable.

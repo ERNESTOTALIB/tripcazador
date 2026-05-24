@@ -10,6 +10,10 @@ import { GetYourGuideWidget } from "@/components/GetYourGuideWidget";
 import { EsimBanner } from "@/components/EsimBanner";
 import { TravelInsuranceCTA } from "@/components/TravelInsuranceCTA";
 import { TravelToolkit } from "@/components/TravelToolkit";
+// AUDIT-FULL-2: internal linking — link a /clima/{slug} y /etiqueta/{slug}
+// si están en sus respectivos catalogos
+import { CLIMA_SLUGS } from "@/lib/clima_catalog";
+import { ETIQUETA_CATALOG } from "@/lib/etiqueta_catalog";
 
 // Datos de destinos (se puede mover a una BD/CMS)
 const DESTINATIONS: Record<string, {
@@ -881,6 +885,41 @@ export default async function DestinationPage({
           ))}
         </ul>
       </section>
+
+      {/* AUDIT-FULL-2: Cross-link a /clima/{slug} y /etiqueta/{slug} si existen */}
+      {(() => {
+        const climaExists = CLIMA_SLUGS.includes(params.slug);
+        const etiquetaEntry = ETIQUETA_CATALOG.find((e) => e.destinoSlug === params.slug);
+        if (!climaExists && !etiquetaEntry) return null;
+        return (
+          <section className="grid gap-3 sm:grid-cols-2">
+            {climaExists && (
+              <Link
+                href={`/clima/${params.slug}`}
+                className="rounded-xl border border-slate-700 bg-slate-800/40 p-4 transition-colors hover:border-amber-500/50"
+              >
+                <div className="text-2xl">🌤️</div>
+                <div className="mt-1 text-sm font-bold text-white">Clima mes a mes</div>
+                <div className="text-xs text-slate-400">
+                  Temperatura, precipitación y mejor mes para volar a {dest.name}
+                </div>
+              </Link>
+            )}
+            {etiquetaEntry && (
+              <Link
+                href={`/etiqueta/${etiquetaEntry.slug}`}
+                className="rounded-xl border border-slate-700 bg-slate-800/40 p-4 transition-colors hover:border-amber-500/50"
+              >
+                <div className="text-2xl">{etiquetaEntry.emoji}</div>
+                <div className="mt-1 text-sm font-bold text-white">Etiqueta cultural</div>
+                <div className="text-xs text-slate-400">
+                  Propinas, saludos, tabúes en {etiquetaEntry.country}
+                </div>
+              </Link>
+            )}
+          </section>
+        );
+      })()}
 
       {/* LLL2 — Travel toolkit (4 partners) + insurance separado al final */}
       <TravelToolkit
