@@ -37,6 +37,7 @@ import { CLIMA_SLUGS } from "@/lib/clima_catalog";
 import { JETLAG_SLUGS } from "@/lib/jetlag_catalog";
 import { IDIOMAS_SLUGS } from "@/lib/idiomas_catalog";
 import { DINERO_SLUGS } from "@/lib/dinero_catalog";
+import { PROMO_CODES_SLUGS } from "@/lib/promo_codes_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -269,6 +270,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/seguro-cancelacion`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SUPERSESSION: /error-fares hub high-intent
     { url: `${BASE_URL}/error-fares`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    // SUPER-1D: /conversion-millas calculadora
+    { url: `${BASE_URL}/conversion-millas`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SUPER-1D: /tiempo-conexion calculadora MCT
+    { url: `${BASE_URL}/tiempo-conexion`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -470,6 +475,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     })),
   ];
+
+  // SUPER-1D: /codigos-promo/[airline] × 8 + hub
+  const promoPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/codigos-promo`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.75 },
+    ...PROMO_CODES_SLUGS.map((slug) => ({
+      url: `${BASE_URL}/codigos-promo/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+  ];
+
+  // SUPER-1D: /aerolineas/[code]/equipaje sub-vertical × 15
+  const AIRLINE_EQUIPAJE_CODES = ["fr", "vy", "u2", "ib", "w6", "lh", "af", "kl", "dy", "qr", "tp", "tk", "ba", "ei", "ek"];
+  const equipajeAerolineaPages: MetadataRoute.Sitemap = AIRLINE_EQUIPAJE_CODES.map((c) => ({
+    url: `${BASE_URL}/aerolineas/${c}/equipaje`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
 
   const etiquetaPages: MetadataRoute.Sitemap = ETIQUETA_SLUGS.map((slug) => ({
     url: `${BASE_URL}/etiqueta/${slug}`,
@@ -1082,6 +1107,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // SUPERSESSION: idiomas + dinero verticals
     ...idiomasPages,
     ...dineroPages,
+    // SUPER-1D: codigos-promo + equipaje per aerolinea
+    ...promoPages,
+    ...equipajeAerolineaPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,

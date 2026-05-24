@@ -79,6 +79,10 @@ import {
   ETIQUETA_CATALOG,
   ETIQUETA_SLUGS,
 } from "@/lib/etiqueta_catalog";
+// SUPER-1D: nuevos catálogos
+import { MILLAS_PROGRAMAS, MILLAS_SLUGS } from "@/lib/millas_programas";
+import { MCT_AIRPORTS, MCT_IATAS } from "@/lib/mct_data";
+import { PROMO_CODES_CATALOG, PROMO_CODES_SLUGS } from "@/lib/promo_codes_catalog";
 
 /**
  * Verifica que un array de keys no tiene duplicados y match arr.length === set.size.
@@ -159,6 +163,36 @@ describe("catalogs_invariants — slug uniqueness", () => {
   it("etiqueta: slugs únicas + 15 países en catálogo", () => {
     assertUniqueKeys("ETIQUETA_SLUGS", ETIQUETA_SLUGS);
     expect(ETIQUETA_CATALOG.length).toBe(15);
+  });
+
+  // SUPER-1D: 3 catálogos nuevos
+  it("millas_programas: slugs únicas + 6 programas", () => {
+    assertUniqueKeys("MILLAS_SLUGS", MILLAS_SLUGS);
+    expect(MILLAS_PROGRAMAS.length).toBe(6);
+    // cpm valores razonables (8-20 cpm en saver awards realistas)
+    MILLAS_PROGRAMAS.forEach((p) => {
+      expect(p.cpm, `${p.slug} cpm out of range`).toBeGreaterThan(5);
+      expect(p.cpm, `${p.slug} cpm out of range`).toBeLessThan(25);
+    });
+  });
+
+  it("mct_data: IATAs únicas + 12 aeropuertos + MCT valores positivos", () => {
+    assertUniqueKeys("MCT_IATAS", MCT_IATAS);
+    expect(MCT_AIRPORTS.length).toBe(12);
+    MCT_AIRPORTS.forEach((m) => {
+      expect(m.domesticDomestic).toBeGreaterThan(0);
+      expect(m.internationalInternational).toBeGreaterThan(0);
+    });
+  });
+
+  it("promo_codes: slugs únicas + 8 aerolíneas + campos required", () => {
+    assertUniqueKeys("PROMO_CODES_SLUGS", PROMO_CODES_SLUGS);
+    expect(PROMO_CODES_CATALOG.length).toBe(8);
+    PROMO_CODES_CATALOG.forEach((p) => {
+      expect(p.cuandoSalen.length).toBeGreaterThan(20);
+      expect(p.donde.length).toBeGreaterThan(20);
+      expect(p.restriccionesTipo.length).toBeGreaterThan(0);
+    });
   });
 
   it("etiqueta: countries únicas (no duplicados)", () => {

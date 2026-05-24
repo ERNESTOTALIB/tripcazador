@@ -436,6 +436,9 @@ export default function RootLayout({
                   <li><a href="/idiomas" className="hover:text-amber-400">Idiomas para viajar 🗣️</a></li>
                   <li><a href="/dinero-en" className="hover:text-amber-400">Dinero por país 💰</a></li>
                   <li><a href="/error-fares" className="hover:text-amber-400 font-semibold">Error fares 🎯</a></li>
+                  <li><a href="/conversion-millas" className="hover:text-amber-400">Conversión millas 🧮</a></li>
+                  <li><a href="/tiempo-conexion" className="hover:text-amber-400">Tiempo conexión ⏱️</a></li>
+                  <li><a href="/codigos-promo" className="hover:text-amber-400">Códigos promo 🏷️</a></li>
                   <li><a href="/hoteles-vs-airbnb" className="hover:text-amber-400">Hotel vs Airbnb</a></li>
                   <li><a href="/hoteles" className="hover:text-amber-400">Hoteles por ciudad 🏨</a></li>
                   <li><a href="/regalo" className="hover:text-amber-400">Regalar 🎁</a></li>
