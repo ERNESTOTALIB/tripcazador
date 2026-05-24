@@ -2119,6 +2119,22 @@
       "destination": "IBZ",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "da8b44d7f589",
+      "ts": "2026-05-24T09:49:55.638185+00:00",
+      "origin": "BUD",
+      "destination": "ZAD",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "60e96ecf51cc",
+      "ts": "2026-05-24T09:49:55.638185+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 26.29,
+      "classification": "CRÍTICO"
     }
   ]
 }
