@@ -1,6 +1,3 @@
-{"ts":"2026-05-18T11:47:59.540Z","type":"result_viewed","visitor":"d9dfe451cf88917d","meta":{"deal_id":"ryanair_mad_opo_20260823_economy","destination":"OPO","origin":"MAD","price":18.89,"classification":"ERROR"}}
-{"ts":"2026-05-18T11:48:00.747Z","type":"result_viewed","visitor":"d9dfe451cf88917d","meta":{"deal_id":"ryanair_mad_vce_20260714_economy","destination":"VCE","origin":"MAD","price":24.99,"classification":"ERROR"}}
-{"ts":"2026-05-18T11:48:17.590Z","type":"page_view","visitor":"d9dfe451cf88917d","meta":{"path":"/destinos/maldivas"}}
 {"ts":"2026-05-18T11:48:32.551Z","type":"page_view","visitor":"d9dfe451cf88917d","meta":{"path":"/"}}
 {"ts":"2026-05-18T11:48:56.510Z","type":"page_view","visitor":"d9dfe451cf88917d","meta":{"path":"/deals"}}
 {"ts":"2026-05-18T11:54:11.753Z","type":"deal_click","visitor":"5188d1079cb7e576","meta":{"deal_id":"ryanair_bcn_ndr_20260828_economy","destination":"NDR","origin":"BCN","airline_name":"Ryanair","price":18.19,"cabin":"economy","classification":"CRÍTICO","direct_airline":false,"ab_variant":"B","rerouted":false}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-24T20:55:18.316Z","type":"landing_arrived","visitor":"1b67bcf37be944f9","meta":{"path":"/"}}
 {"ts":"2026-05-24T20:55:20.011Z","type":"landing_arrived","visitor":"1b67bcf37be944f9","meta":{"path":"/"}}
 {"ts":"2026-05-24T20:55:23.377Z","type":"landing_arrived","visitor":"1b67bcf37be944f9","meta":{"path":"/"}}
+{"ts":"2026-05-24T22:16:52.113Z","type":"landing_arrived","visitor":"55fceb23655c258b","meta":{"path":"/"}}
+{"ts":"2026-05-24T22:16:52.177Z","type":"page_view","visitor":"55fceb23655c258b","meta":{"path":"/"}}
+{"ts":"2026-05-24T22:16:52.229Z","type":"page_view","visitor":"55fceb23655c258b","meta":{"path":"/"}}
