@@ -14,6 +14,19 @@ describe("HOTEL_SEED — integridad", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  // AUDIT-FULL FIX-SEO-1 (24 may 2026): slugs deben ser URL-safe.
+  // Caracteres como `&` o espacios rompen el sitemap.xml (Google Search
+  // Console deja de parsear todo el sitemap tras encontrarlos).
+  it("todos los slugs son URL-safe (regex /^[a-z0-9-]+$/)", () => {
+    const offenders = HOTEL_SEED.filter((h) => !/^[a-z0-9-]+$/.test(h.slug)).map(
+      (h) => `${h.id}:${h.slug}`,
+    );
+    expect(
+      offenders,
+      `Hotel slugs con caracteres no URL-safe (rompen sitemap.xml): ${offenders.join(", ")}`,
+    ).toEqual([]);
+  });
+
   it("todos los hoteles tienen city_to no vacío", () => {
     HOTEL_SEED.forEach((h) => {
       expect(h.city_to?.length).toBeGreaterThan(0);

@@ -21,7 +21,7 @@ import { verifyToken, COOKIE_KEY } from "@/lib/panel_auth";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "System Health | TripCazador Admin",
+  title: "System Health Admin",
   robots: { index: false, follow: false },
 };
 

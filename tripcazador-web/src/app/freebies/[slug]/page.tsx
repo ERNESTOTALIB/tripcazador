@@ -30,8 +30,8 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const f = getFreebie(params.slug);
-  if (!f) return { title: "Guía no encontrada | TripCazador" };
-  const title = `${f.title} (gratis) | TripCazador`;
+  if (!f) return { title: "Guía no encontrada" };
+  const title = `${f.title} (gratis)`;
   return {
     title,
     description: f.subtitle,

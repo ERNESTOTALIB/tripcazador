@@ -10,7 +10,7 @@ import { CONFERENCIAS_CATALOG } from "@/lib/conferencias_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "8 conferencias tech top: vuelos + hotel + tips | TripCazador",
+  title: "8 conferencias tech top: vuelos + hotel + tips",
   description:
     "MWC Barcelona, Web Summit Lisboa, AWS re:Invent, Google I/O, WWDC, Slush, Dreamforce, South Summit. Cómo viajar a cada una desde España.",
   alternates: { canonical: `${SITE_URL}/conferencias` },

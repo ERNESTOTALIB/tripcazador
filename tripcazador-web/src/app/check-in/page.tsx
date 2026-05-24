@@ -13,7 +13,7 @@ import { CHECK_IN_RULES } from "@/lib/check_in_rules";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Check-in por aerolínea: cuándo abre, fees y tips | TripCazador",
+  title: "Check-in por aerolínea: cuándo abre, fees y tips",
   description:
     "Guías completas de check-in para 15 aerolíneas: cuándo abre online, fee mostrador, ventana de cierre, boarding pass digital y errores típicos.",
   alternates: { canonical: `${SITE_URL}/check-in` },

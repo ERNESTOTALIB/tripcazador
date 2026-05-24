@@ -4,7 +4,7 @@ import Link from "next/link";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Vuelos baratos desde Argentina | TripCazador Argentina",
+  title: "Vuelos baratos desde Argentina Argentina",
   description:
     "Chollos de vuelos desde Buenos Aires (EZE/AEP), Córdoba (COR) y Mendoza (MDZ). Especializados en vuelos hacia Europa, México y Norteamérica para viajeros argentinos.",
   alternates: {

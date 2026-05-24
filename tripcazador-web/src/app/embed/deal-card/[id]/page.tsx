@@ -19,7 +19,7 @@ import { getDeal } from "@/lib/api";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Deal card embed | TripCazador",
+  title: "Deal card embed",
   robots: { index: false, follow: false },
 };
 

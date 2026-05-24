@@ -37,8 +37,8 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const e = getEscapada(params.slug);
-  if (!e) return { title: "Escapada no encontrada | TripCazador" };
-  const title = `Escapada a ${e.name} en 2-3 días: itinerario + presupuesto | TripCazador`;
+  if (!e) return { title: "Escapada no encontrada" };
+  const title = `Escapada a ${e.name} en 2-3 días: itinerario + presupuesto`;
   const description = `Itinerario completo para una escapada a ${e.name} (${e.country}) en 2-3 días. Vuelo medio €${e.avgFlightMadEur}, hotel 2n €${e.avgHotel2nEur}, presupuesto total €${e.totalBudgetEur}. Mejor época: ${e.bestSeason.split(/[,(]/)[0].trim()}.`;
   return {
     title,

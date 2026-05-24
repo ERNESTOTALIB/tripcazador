@@ -18,7 +18,7 @@ import { CONFERENCIAS_CATALOG } from "@/lib/conferencias_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Anuario TripCazador 2026: año del viajero español | TripCazador",
+  title: "Anuario TripCazador 2026: año del viajero español",
   description:
     "Año 2026 en cifras: error fares detectados, top rutas, tendencias post-COVID, mejores meses para volar. Anuario público data-driven.",
   alternates: { canonical: `${SITE_URL}/anuario-2026` },

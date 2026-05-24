@@ -15,7 +15,7 @@ import { breadcrumbSchema } from "@/lib/schema_helpers";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Comparador de chollos lado a lado | TripCazador",
+  title: "Comparador de chollos lado a lado",
   description:
     "Compara 2-3 chollos de vuelo en paralelo: precio, escalas, aerolínea, fechas. Encuentra el mejor para tu fecha.",
   alternates: { canonical: `${SITE_URL}/comparar-deals` },

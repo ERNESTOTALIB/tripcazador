@@ -5,7 +5,7 @@ import { AGENCIA_PRODUCTS } from "@/lib/agencia_products";
 const product = AGENCIA_PRODUCTS.vuelo_hotel;
 
 export const metadata: Metadata = {
-  title: `${product.name} — ${product.amount_eur.toFixed(2).replace(".", ",")} € · Paquete completo | TripCazador`,
+  title: `${product.name} — ${product.amount_eur.toFixed(2).replace(".", ",")} € · Paquete completo`,
   description: `${product.tagline}. ${product.amount_eur.toFixed(2).replace(".", ",")} € pago único. Vuelo + hotel coordinado. Mejor precio garantizado o reembolso + 1 mes Premium gratis.`,
   alternates: { canonical: "/agencia/vuelo-hotel" },
   openGraph: {

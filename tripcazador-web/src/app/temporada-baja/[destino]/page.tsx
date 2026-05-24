@@ -26,9 +26,9 @@ export async function generateMetadata({
   params: { destino: string };
 }): Promise<Metadata> {
   const t = getTemporadaBaja(params.destino);
-  if (!t) return { title: "Destino no encontrado | TripCazador" };
+  if (!t) return { title: "Destino no encontrado" };
   return {
-    title: `Temporada baja ${t.destino}: ${t.cheapestMonth} (-${t.savingsVsPeakPct}%) | TripCazador`,
+    title: `Temporada baja ${t.destino}: ${t.cheapestMonth} (-${t.savingsVsPeakPct}%)`,
     description: `${t.destino} en ${t.cheapestMonth} es ${t.savingsVsPeakPct}% más barato que pico. ${t.reason.slice(0, 120)}...`,
     alternates: { canonical: `${SITE_URL}/temporada-baja/${t.slug}` },
   };

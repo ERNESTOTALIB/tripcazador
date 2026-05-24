@@ -16,7 +16,7 @@ import { JsonLd } from "@/components/JsonLd";
 const SITE_URL = "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Destinations — Cheap flights from Europe | TripCazador",
+  title: "Destinations — Cheap flights from Europe",
   description:
     "Curated guides for the twelve destinations our engine hunts hardest: Japan, Tanzania, Maldives, New York, Bali, Buenos Aires, Thailand and more.",
   alternates: {

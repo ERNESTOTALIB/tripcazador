@@ -33,8 +33,8 @@ export async function generateMetadata({
   params: { aerolinea: string };
 }): Promise<Metadata> {
   const rule = getCheckInRule(params.aerolinea);
-  if (!rule) return { title: "Aerolínea no encontrada | TripCazador" };
-  const title = `${rule.name} check-in: cuándo abre, fees y tips | TripCazador`;
+  if (!rule) return { title: "Aerolínea no encontrada" };
+  const title = `${rule.name} check-in: cuándo abre, fees y tips`;
   const description = `Guía completa de check-in en ${rule.name}: online abre ${rule.online.opens.split("/")[0].trim()}, ${rule.airportCheckIn.feeEur > 0 ? `fee mostrador €${rule.airportCheckIn.feeEur}` : "mostrador gratis"}, tips y errores típicos.`;
   return {
     title,

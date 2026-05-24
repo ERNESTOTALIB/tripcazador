@@ -14,7 +14,7 @@ import { EquipajeMedidorTool } from "@/components/EquipajeMedidorTool";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Medidor de equipaje: ¿qué aerolínea acepta tu bolso? | TripCazador",
+  title: "Medidor de equipaje: ¿qué aerolínea acepta tu bolso?",
   description:
     "Introduce dimensiones (cm) y peso (kg) de tu bolso y descubre al instante qué aerolíneas low-cost lo aceptan en cabina, gratis o con fee.",
   alternates: { canonical: `${SITE_URL}/equipaje-medidor` },

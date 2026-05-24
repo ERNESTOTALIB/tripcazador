@@ -53,7 +53,7 @@ export const dynamic = "force-dynamic";
 
 export function generateMetadata({ params }: PageProps): Metadata {
   return {
-    title: `Panel Partner ${params.ref_code} | TripCazador`,
+    title: `Panel Partner ${params.ref_code}`,
     robots: { index: false, follow: false },
   };
 }

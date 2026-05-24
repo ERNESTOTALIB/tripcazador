@@ -31,8 +31,8 @@ export async function generateMetadata({
   params: { ruta: string };
 }): Promise<Metadata> {
   const e = getVueloTren(params.ruta);
-  if (!e) return { title: "Ruta no encontrada | TripCazador" };
-  const title = `${e.origin} - ${e.destination}: tren AVE o avión | TripCazador`;
+  if (!e) return { title: "Ruta no encontrada" };
+  const title = `${e.origin} - ${e.destination}: tren AVE o avión`;
   const description = `¿Tren AVE o vuelo ${e.origin}-${e.destination}? Tiempo real door-to-door, precio medio, frecuencias y veredicto. ${e.recommendation.winner === "train" ? "Tren gana" : e.recommendation.winner === "flight" ? "Vuelo gana" : "Empate"}.`;
   return {
     title,

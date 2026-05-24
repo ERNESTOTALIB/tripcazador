@@ -25,7 +25,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const c = getNeighborhoodComparisonBySlug(params.slug);
-  if (!c) return { title: "Comparativa no encontrada | TripCazador" };
+  if (!c) return { title: "Comparativa no encontrada" };
   return {
     title: c.title,
     description: c.description,

@@ -10,7 +10,7 @@ import { breadcrumbSchema } from "@/lib/schema_helpers";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Equipo TripCazador: quiénes cazamos los chollos | TripCazador",
+  title: "Equipo TripCazador: quiénes cazamos los chollos",
   description:
     "Detrás de TripCazador: equipo lean (founder + ingeniería + content) que opera el motor de detección 24/7 y mantiene 6.000+ landings SEO.",
   alternates: { canonical: `${SITE_URL}/equipo` },

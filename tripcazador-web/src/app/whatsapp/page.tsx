@@ -11,7 +11,7 @@ import { WhatsAppOptInWidget } from "@/components/WhatsAppOptInWidget";
 import { WHATSAPP_CHATS, getActiveChats } from "@/lib/whatsapp_chats";
 
 export const metadata: Metadata = {
-  title: "Chollos de vuelos por WhatsApp · alertas en <60s | TripCazador",
+  title: "Chollos de vuelos por WhatsApp · alertas en <60s",
   description:
     "Recibe alertas de error fares y chollos de vuelos directamente en tu WhatsApp. Grupos por destino (Asia, América, Europa, África) o 1-on-1. Sin spam.",
   alternates: { canonical: "/whatsapp" },

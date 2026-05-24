@@ -14,7 +14,7 @@ import { JsonLd } from "@/components/JsonLd";
  * feed. A future refactor can add a proper `lang` field to frontmatter.
  */
 export const metadata: Metadata = {
-  title: "Blog — Error fare guides, strategies & analysis | TripCazador",
+  title: "Blog — Error fare guides, strategies & analysis",
   description:
     "Long-form guides about mistake fares, business-class deals, search strategies and destination analysis. Written by hunters, not scraped from AI slop.",
   alternates: {

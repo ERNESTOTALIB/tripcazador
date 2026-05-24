@@ -13,7 +13,7 @@ import { VUELO_TREN_CATALOG, formatDuration } from "@/lib/vuelo_tren_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Vuelo vs Tren AVE: 8 rutas comparadas | TripCazador",
+  title: "Vuelo vs Tren AVE: 8 rutas comparadas",
   description:
     "¿AVE o avión? Comparativa real para 8 rutas españolas: tiempo total door-to-door, precio medio, frecuencia. Resultados directos sin marketing.",
   alternates: { canonical: `${SITE_URL}/vuelos-vs-tren` },

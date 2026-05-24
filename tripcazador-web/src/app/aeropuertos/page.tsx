@@ -14,7 +14,7 @@ import { AIRPORTS_ES } from "@/lib/airports_es_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Aeropuertos España: guía completa | TripCazador",
+  title: "Aeropuertos España: guía completa",
   description:
     "Información práctica de los 15 aeropuertos top de España: transporte al centro, aerolíneas presentes, parking, top destinos. Ahorra tiempo y dinero.",
   alternates: { canonical: `${SITE_URL}/aeropuertos` },

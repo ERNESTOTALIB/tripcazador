@@ -15,7 +15,7 @@ import { breadcrumbSchema } from "@/lib/schema_helpers";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Vuelo cancelado: tus derechos según EU 261/2004 (2026) | TripCazador",
+  title: "Vuelo cancelado: tus derechos según EU 261/2004 (2026)",
   description:
     "Cancelación, retraso >3h o overbooking: cuándo te corresponden €250/€400/€600 + asistencia obligatoria. Plazos para reclamar y AESA.",
   alternates: { canonical: `${SITE_URL}/vuelo-cancelado` },

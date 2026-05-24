@@ -3,8 +3,16 @@
  *
  * Tests para GET + POST /api/unsubscribe (one-click List-Unsubscribe RFC 8058).
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { NextRequest } from "next/server";
+import crypto from "node:crypto";
+
+// AUDIT-FULL FIX-SEC-1 (24 may 2026): tests actualizados al nuevo formato
+// HMAC. Tokens legacy (email:ts sin sig) ahora son rechazados.
+const TEST_SECRET = "test-unsubscribe-secret-32chars-aaaa";
+beforeAll(() => {
+  process.env.UNSUBSCRIBE_SECRET = TEST_SECRET;
+});
 
 async function importMod() {
   vi.resetModules();
@@ -17,7 +25,18 @@ function buildReq(method: "GET" | "POST", token: string): NextRequest {
   });
 }
 
+// Genera token HMAC-signed compatible con el verifier actualizado.
 function makeToken(email: string): string {
+  const ts = Date.now().toString();
+  const sig = crypto
+    .createHmac("sha256", TEST_SECRET)
+    .update(`${email}:${ts}`)
+    .digest("hex");
+  return Buffer.from(`${email}:${ts}:${sig}`).toString("base64url");
+}
+
+// Helper para crear tokens legacy (sin HMAC) — útil en tests que validan rechazo.
+function makeLegacyToken(email: string): string {
   return Buffer.from(`${email}:${Date.now()}`).toString("base64url");
 }
 
@@ -40,6 +59,25 @@ describe("/api/unsubscribe — token validation", () => {
     const mod = await importMod();
     const fakeToken = Buffer.from("notanemail:123").toString("base64url");
     const req = buildReq("GET", fakeToken);
+    const res = await mod.GET(req);
+    expect(res.status).toBe(400);
+  });
+
+  // AUDIT-FULL FIX-SEC-1: tokens legacy (sin HMAC sig) deben ser rechazados.
+  it("400 para token legacy (email:ts sin HMAC) — bug previo arreglado", async () => {
+    const mod = await importMod();
+    const req = buildReq("GET", makeLegacyToken("victim@example.com"));
+    const res = await mod.GET(req);
+    expect(res.status).toBe(400);
+  });
+
+  // AUDIT-FULL FIX-SEC-1: token con HMAC tampered debe ser rechazado.
+  it("400 para token con HMAC forjado (signature inválida)", async () => {
+    const mod = await importMod();
+    const evilToken = Buffer.from(
+      "victim@example.com:" + Date.now() + ":deadbeef0000000000000000000000000000000000000000000000000000",
+    ).toString("base64url");
+    const req = buildReq("GET", evilToken);
     const res = await mod.GET(req);
     expect(res.status).toBe(400);
   });

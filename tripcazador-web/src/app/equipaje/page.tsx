@@ -12,7 +12,7 @@ import { JsonLd } from "@/components/JsonLd";
 const SITE = "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Equipaje aerolíneas 2026: dimensiones, peso y gate fees | TripCazador",
+  title: "Equipaje aerolíneas 2026: dimensiones, peso y gate fees",
   description:
     "Guía completa equipaje 10 aerolíneas: Ryanair, Vueling, easyJet, Iberia, Wizz, Lufthansa, KLM, Air France, Norwegian, Qatar. Dimensiones, peso, sanciones y tips cazador.",
   alternates: { canonical: "/equipaje" },

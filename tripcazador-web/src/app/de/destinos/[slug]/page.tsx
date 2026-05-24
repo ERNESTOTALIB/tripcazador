@@ -24,7 +24,7 @@ export async function generateMetadata({
   const dest = DESTINATIONS_I18N[params.slug];
   if (!dest) return { title: "Reiseziel nicht gefunden" };
   const content = dest.i18n.de;
-  const title = `Günstige Flüge nach ${content.name} | TripCazador`;
+  const title = `Günstige Flüge nach ${content.name}`;
   const description = content.description.slice(0, 155);
   return {
     title,

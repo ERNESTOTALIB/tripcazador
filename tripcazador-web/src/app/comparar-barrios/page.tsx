@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { NEIGHBORHOOD_COMPARISONS } from "@/lib/neighborhood_comparisons";
 
 export const metadata: Metadata = {
-  title: "Dónde dormir: comparar barrios en ciudades top 2026 | TripCazador",
+  title: "Dónde dormir: comparar barrios en ciudades top 2026",
   description:
     "Comparativas head-to-head entre barrios para alojarse: Barcelona Gòtic vs Eixample, Madrid Centro vs Malasaña, Roma Trastevere vs Centro, París Marais vs Montmartre, Lisboa Alfama vs Chiado, Sevilla Centro vs Triana. Precios reales, vibe, transporte. Veredicto cazador.",
   alternates: { canonical: "/comparar-barrios" },

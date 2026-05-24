@@ -15,7 +15,7 @@ import { PartnerApplyForm } from "@/components/PartnerApplyForm";
 import { LiveDealsCounter } from "@/components/LiveDealsCounter";
 
 export const metadata: Metadata = {
-  title: "Partners — Programa de afiliados para agencias y creadores | TripCazador",
+  title: "Partners — Programa de afiliados para agencias y creadores",
   description:
     "Revende TripCazador Premium (€9.99/mes) y Concierge a tu audiencia. Comisión 15-25% recurring + one-shot. Aplicación abierta.",
   alternates: { canonical: "https://tripcazador.com/partners/agencia" },

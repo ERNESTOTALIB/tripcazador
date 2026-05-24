@@ -29,8 +29,8 @@ export async function generateMetadata({
   params: { iata: string };
 }): Promise<Metadata> {
   const a = getAirportWorld(params.iata.toUpperCase());
-  if (!a) return { title: "Aeropuerto no encontrado | TripCazador" };
-  const title = `Aeropuerto ${a.city} (${a.iata}): terminales y tránsito | TripCazador`;
+  if (!a) return { title: "Aeropuerto no encontrado" };
+  const title = `Aeropuerto ${a.city} (${a.iata}): terminales y tránsito`;
   const description = `${a.formalName} en ${a.country}: ${a.paxMillions}M pax/año, ${a.terminals} terminal(es). ${a.transitTip}`;
   return {
     title,

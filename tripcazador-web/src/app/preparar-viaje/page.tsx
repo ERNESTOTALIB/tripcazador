@@ -11,7 +11,7 @@ import { DESTINOS_CATALOG } from "@/lib/destinos_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Preparar viaje: checklist pre-trip por destino | TripCazador",
+  title: "Preparar viaje: checklist pre-trip por destino",
   description:
     "Checklist completa antes de viajar: visa, seguro, eSIM, adaptador eléctrico, equipaje. Una guía por cada destino popular.",
   alternates: { canonical: `${SITE_URL}/preparar-viaje` },

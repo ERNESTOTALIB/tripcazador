@@ -24,6 +24,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { listPendingDrip, bumpStage, type Subscriber } from "@/lib/subscribers_store";
 import { getTemplate } from "@/lib/drip_templates";
+import { emitUnsubscribeToken } from "@/lib/unsubscribe_token";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,8 +34,8 @@ const RESEND_FROM = process.env.RESEND_FROM || "TripCazador <hola@tripcazador.co
 const SITE_URL = "https://tripcazador.com";
 
 function unsubscribeUrl(email: string): string {
-  const token = Buffer.from(`${email}:${Date.now()}`).toString("base64url");
-  return `${SITE_URL}/api/unsubscribe?t=${token}`;
+  // AUDIT-FULL FIX-SEC-1: token con HMAC verificable
+  return `${SITE_URL}/api/unsubscribe?t=${emitUnsubscribeToken(email)}`;
 }
 
 function constantTimeEq(a: string, b: string): boolean {

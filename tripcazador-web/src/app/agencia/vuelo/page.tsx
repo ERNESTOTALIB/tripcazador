@@ -5,7 +5,7 @@ import { AGENCIA_PRODUCTS } from "@/lib/agencia_products";
 const product = AGENCIA_PRODUCTS.vuelo;
 
 export const metadata: Metadata = {
-  title: `${product.name} — ${product.amount_eur.toFixed(2).replace(".", ",")} € · Mejor precio garantizado | TripCazador`,
+  title: `${product.name} — ${product.amount_eur.toFixed(2).replace(".", ",")} € · Mejor precio garantizado`,
   description: `${product.tagline}. ${product.amount_eur.toFixed(2).replace(".", ",")} € pago único. Si encuentras el mismo vuelo más barato en 7 días te devolvemos el dinero + 1 mes Premium gratis.`,
   alternates: { canonical: "/agencia/vuelo" },
   openGraph: {

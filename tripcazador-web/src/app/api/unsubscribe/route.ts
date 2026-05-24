@@ -9,16 +9,36 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "node:crypto";
 import { unsubscribe } from "@/lib/subscribers_store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// AUDIT-FULL FIX-SEC-1 (24 may 2026): el token DEBE incluir HMAC verificable.
+// Antes el `decodeToken` solo decodeaba base64 (sin HMAC). Cualquiera podía
+// dar de baja a otra persona enumerando emails típicos.
+//
+// Formato: base64url("email:ts:hmac(email:ts)").
+// Tokens legacy (sólo email o email:ts sin sig) son rechazados — los suscriptores
+// con tokens viejos deben re-suscribirse. Trade-off aceptable: legacy era vuln.
 function decodeToken(t: string): string | null {
   try {
     const decoded = Buffer.from(t, "base64url").toString("utf-8");
-    const [email] = decoded.split(":");
-    if (!email || !email.includes("@")) return null;
+    const parts = decoded.split(":");
+    if (parts.length !== 3) return null;
+    const [email, ts, sig] = parts;
+    if (!email || !email.includes("@") || !ts || !sig) return null;
+    const secret = process.env.UNSUBSCRIBE_SECRET || "";
+    if (!secret) return null; // fail-closed
+    const expected = crypto
+      .createHmac("sha256", secret)
+      .update(`${email}:${ts}`)
+      .digest("hex");
+    const sigBuf = Buffer.from(sig);
+    const expBuf = Buffer.from(expected);
+    if (sigBuf.length !== expBuf.length) return null;
+    if (!crypto.timingSafeEqual(sigBuf, expBuf)) return null;
     return email;
   } catch {
     return null;

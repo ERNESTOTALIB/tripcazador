@@ -13,7 +13,7 @@ import Link from "next/link";
 import { HotlineClient } from "@/components/HotlineClient";
 
 export const metadata: Metadata = {
-  title: "Hotline Premium — Pregunta por voz a tu AI Concierge | TripCazador",
+  title: "Hotline Premium — Pregunta por voz a tu AI Concierge",
   description:
     "Pregúntale a tu AI Concierge por chollos con voz: 'Tokio en agosto barato'. Respuesta en 3 segundos con audio + recomendación.",
   alternates: { canonical: "https://tripcazador.com/premium/hotline" },

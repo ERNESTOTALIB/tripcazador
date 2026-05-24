@@ -11,7 +11,7 @@ import { breadcrumbSchema } from "@/lib/schema_helpers";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Predicciones vuelos 2026: qué esperar | TripCazador",
+  title: "Predicciones vuelos 2026: qué esperar",
   description:
     "Análisis del estado de la aviación europea 2026: precios, rutas, eventos clave, error fares probables. Predicciones del equipo TripCazador.",
   alternates: { canonical: `${SITE_URL}/predicciones-vuelos-2026` },

@@ -11,7 +11,7 @@ import { TEMPORADA_BAJA_CATALOG } from "@/lib/temporada_baja_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Temporada baja: cuándo viajar barato a 12 destinos | TripCazador",
+  title: "Temporada baja: cuándo viajar barato a 12 destinos",
   description:
     "Roma en febrero, Tokio en enero, Bali en marzo... 12 destinos top con mes valle, savings 35-50% vs pico y caveats reales (clima, eventos cerrados).",
   alternates: { canonical: `${SITE_URL}/temporada-baja` },

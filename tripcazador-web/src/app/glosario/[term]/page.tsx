@@ -33,7 +33,7 @@ export async function generateMetadata({
   params: { term: string };
 }): Promise<Metadata> {
   const entry = getGlosario(params.term);
-  if (!entry) return { title: "Término no encontrado | TripCazador" };
+  if (!entry) return { title: "Término no encontrado" };
   const title = `${entry.term}: definición y ejemplos | Glosario TripCazador`;
   return {
     title,

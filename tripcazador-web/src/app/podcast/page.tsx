@@ -11,7 +11,7 @@ import { breadcrumbSchema } from "@/lib/schema_helpers";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Podcast TripCazador (próximamente) | TripCazador",
+  title: "Podcast TripCazador (próximamente)",
   description:
     "Próximamente: el podcast TripCazador. Entrevistas con cazadores de chollos, casos reales de ahorro y análisis tendencias aviación. Apúntate para notificación.",
   alternates: { canonical: `${SITE_URL}/podcast` },

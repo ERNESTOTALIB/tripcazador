@@ -28,8 +28,8 @@ export async function generateMetadata({
   params: { ciudad: string };
 }): Promise<Metadata> {
   const t = getTasaTuristica(params.ciudad);
-  if (!t) return { title: "Ciudad no encontrada | TripCazador" };
-  const title = `Tasa turística ${t.city} 2026: ${t.ratePerNight.split(" ")[0]} | TripCazador`;
+  if (!t) return { title: "Ciudad no encontrada" };
+  const title = `Tasa turística ${t.city} 2026: ${t.ratePerNight.split(" ")[0]}`;
   const description = `Cuánto pagas de tasa turística en ${t.city}: ${t.ratePerNight}. Cobro: ${t.collection}. Excepciones detalladas y actualización ${t.lastUpdated}.`;
   return {
     title,

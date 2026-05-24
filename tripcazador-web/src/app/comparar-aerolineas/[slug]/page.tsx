@@ -23,7 +23,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const c = getAirlineComparisonBySlug(params.slug);
-  if (!c) return { title: "Comparativa no encontrada | TripCazador" };
+  if (!c) return { title: "Comparativa no encontrada" };
   // JJJJ02 + KKKK01: OG image dinámico por comparativa con score X-Y wins.
   // Path /api/og-comparison/[slug] (no /api/og/airline/[slug]) para evitar
   // conflict con rewrite Next/Vercel dynamic segments en nested paths.

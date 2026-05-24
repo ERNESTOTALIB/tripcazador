@@ -14,7 +14,7 @@ import { EVENTOS_ES_CATALOG } from "@/lib/eventos_es_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "8 eventos top de España: fechas, alojamiento y tips | TripCazador",
+  title: "8 eventos top de España: fechas, alojamiento y tips",
   description:
     "San Fermines, Feria de Abril, Fallas, Carnaval Tenerife, La Tomatina, Semana Santa Sevilla, Cap Roig y Año Nuevo. Fechas + dónde dormir + tips prácticos.",
   alternates: { canonical: `${SITE_URL}/eventos-espana` },

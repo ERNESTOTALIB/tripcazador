@@ -25,7 +25,7 @@ export async function generateMetadata({
   const dest = DESTINATIONS_I18N[params.slug];
   if (!dest) return { title: "Destinazione non trovata" };
   const content = dest.i18n.it;
-  const title = `Voli economici per ${content.name} | TripCazador`;
+  const title = `Voli economici per ${content.name}`;
   const description = content.description.slice(0, 155);
   return {
     title,

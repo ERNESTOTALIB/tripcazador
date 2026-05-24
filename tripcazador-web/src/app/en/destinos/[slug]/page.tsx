@@ -224,7 +224,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const dest = DESTINATIONS_EN[params.slug];
   if (!dest) return { title: "Destination not found" };
-  const title = `Cheap flights to ${dest.name} | TripCazador`;
+  const title = `Cheap flights to ${dest.name}`;
   const description = dest.description.slice(0, 155);
   return {
     title,

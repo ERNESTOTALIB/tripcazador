@@ -32,8 +32,8 @@ export async function generateMetadata({
   params: { code: string };
 }): Promise<Metadata> {
   const d = getDivisa(params.code);
-  if (!d) return { title: "Divisa no encontrada | TripCazador" };
-  const title = `Cambio Euro a ${d.nameEs}: ${d.symbol} (${d.code}) hoy | TripCazador`;
+  if (!d) return { title: "Divisa no encontrada" };
+  const title = `Cambio Euro a ${d.nameEs}: ${d.symbol} (${d.code}) hoy`;
   const description = `1 EUR ≈ ${d.symbol}${d.rateFromEur.toLocaleString("es-ES")} ${d.code}. Tips para viajar a ${d.countries[0]} con menos comisiones bancarias. Wise vs Revolut.`;
   return {
     title,

@@ -58,7 +58,19 @@ export async function GET(req: NextRequest) {
     const auth = req.headers.get("authorization") || "";
     const adminToken = process.env.ADMIN_TOKEN || "";
     const provided = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-    if (!adminToken || provided !== adminToken) {
+    // AUDIT-FULL FIX-SEC-3 (24 may 2026): constant-time compare (otros admin
+    // routes ya usan timingSafeEqual desde SSS329; este endpoint era el outlier).
+    if (!adminToken || provided.length !== adminToken.length) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+    try {
+      const provBuf = Buffer.from(provided);
+      const tokBuf = Buffer.from(adminToken);
+      const cryptoMod = await import("node:crypto");
+      if (!cryptoMod.timingSafeEqual(provBuf, tokBuf)) {
+        return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      }
+    } catch {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
   }

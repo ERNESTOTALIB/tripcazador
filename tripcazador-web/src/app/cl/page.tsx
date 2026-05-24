@@ -4,7 +4,7 @@ import Link from "next/link";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Vuelos baratos desde Chile | TripCazador Chile",
+  title: "Vuelos baratos desde Chile Chile",
   description:
     "Chollos de vuelos desde Santiago (SCL) y Iquique. Especializados en rutas a Europa, EEUU y resto de Latam para viajeros chilenos.",
   alternates: {

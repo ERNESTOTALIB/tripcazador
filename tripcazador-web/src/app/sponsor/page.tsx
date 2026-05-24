@@ -14,7 +14,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Patrocinios y partnerships | TripCazador",
+  title: "Patrocinios y partnerships",
   description:
     "Patrocina TripCazador. 25.000+ visitantes mensuales hispanohablantes con intent de viaje verificado. Newsletter, blog, deal-of-the-day y prelanding placements.",
   alternates: { canonical: "/sponsor" },

@@ -48,7 +48,7 @@ export async function generateMetadata({
 
   const title = `${deal.city_from} → ${deal.city_to} desde ${Math.round(
     deal.price_eur,
-  )}€ — ${getCabinLabel(deal.cabin)} | TripCazador`;
+  )}€ — ${getCabinLabel(deal.cabin)}`;
 
   const savings =
     deal.savings_pct > 0 ? ` (${deal.savings_pct.toFixed(0)}% menos)` : "";

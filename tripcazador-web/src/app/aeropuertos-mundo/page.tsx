@@ -11,7 +11,7 @@ import { AIRPORTS_WORLD } from "@/lib/airports_world_catalog";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Top 20 aeropuertos del mundo: terminales y tránsito | TripCazador",
+  title: "Top 20 aeropuertos del mundo: terminales y tránsito",
   description:
     "CDG, LHR, FRA, AMS, JFK, LAX, NRT, HND, ICN, SIN, DXB, DOH y más. Terminales, tips de tránsito y conexiones desde España.",
   alternates: { canonical: `${SITE_URL}/aeropuertos-mundo` },

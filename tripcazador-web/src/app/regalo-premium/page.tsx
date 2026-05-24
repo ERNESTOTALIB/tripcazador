@@ -19,7 +19,7 @@ import { PremiumGiftClient } from "@/components/PremiumGiftClient";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Regala Premium 1 mes — €9.99 | TripCazador",
+  title: "Regala Premium 1 mes — €9.99",
   description:
     "Regala Premium TripCazador a un amigo: alertas ilimitadas, error fares, filtros avanzados y secret deals 24h. €9.99 una vez (no se renueva).",
   alternates: { canonical: `${SITE_URL}/regalo-premium` },

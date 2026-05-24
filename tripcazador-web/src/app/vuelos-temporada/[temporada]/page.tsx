@@ -210,8 +210,8 @@ export async function generateMetadata({
   params: { temporada: string };
 }): Promise<Metadata> {
   const t = TEMPORADAS[params.temporada];
-  if (!t) return { title: "Temporada no encontrada | TripCazador" };
-  const title = `${t.label} | TripCazador`;
+  if (!t) return { title: "Temporada no encontrada" };
+  const title = `${t.label}`;
   const description = `${t.hero.slice(0, 155)}`;
   const url = `${SITE}/vuelos-temporada/${params.temporada}`;
   return {

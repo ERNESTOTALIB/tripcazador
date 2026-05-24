@@ -14,7 +14,7 @@ import { breadcrumbSchema } from "@/lib/schema_helpers";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Testimonios reales TripCazador | TripCazador",
+  title: "Testimonios reales TripCazador",
   description:
     "Casos reales de ahorro: cómo viajeros cazadores han usado TripCazador para vuelos +50% por debajo de mercado. Concierge, Premium, error fares.",
   alternates: { canonical: `${SITE_URL}/testimonios` },

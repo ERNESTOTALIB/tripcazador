@@ -566,7 +566,7 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const dest = DESTINATIONS[params.slug];
-  if (!dest) return { title: "Destino no encontrado | TripCazador" };
+  if (!dest) return { title: "Destino no encontrado" };
   // SSS97 SEO: canonical + hreflang + OG completo. Antes faltaban los 3 →
   // 24 destinos pierden CTR (sin OG image específico) y duplicate content
   // risk para variantes ?utm_source. Description capada a 155 chars.
@@ -589,7 +589,7 @@ export async function generateMetadata({
       },
     },
     openGraph: {
-      title: `${dest.emoji} Vuelos baratos a ${dest.name} | TripCazador`,
+      title: `${dest.emoji} Vuelos baratos a ${dest.name}`,
       description,
       url,
       siteName: "TripCazador",

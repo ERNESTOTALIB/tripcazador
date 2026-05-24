@@ -83,8 +83,8 @@ export async function generateMetadata({
   params: { destino: string };
 }): Promise<Metadata> {
   const d = getDestino(params.destino);
-  if (!d) return { title: "Destino no encontrado | TripCazador" };
-  const title = `Preparar viaje a ${d.name}: checklist | TripCazador`;
+  if (!d) return { title: "Destino no encontrado" };
+  const title = `Preparar viaje a ${d.name}: checklist`;
   const description = `Todo lo que necesitas antes de viajar a ${d.name}: visa, seguro, eSIM, adaptador eléctrico, equipaje. Checklist completa actualizada 2026.`;
   return {
     title,

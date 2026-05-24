@@ -23,7 +23,7 @@ const TYPE_LABEL: Record<string, { label: string; color: string }> = {
 };
 
 export const metadata: Metadata = {
-  title: "Mejor tarjeta para viajar: comparativa 2026 | TripCazador",
+  title: "Mejor tarjeta para viajar: comparativa 2026",
   description:
     "Revolut vs Wise vs N26 vs BBVA Aqua vs Vivid vs Openbank. Comisiones FX, retiradas ATM, cuota mensual y pros/cons. Sin trampas.",
   alternates: { canonical: `${SITE_URL}/tarjetas-viaje` },
