@@ -2247,6 +2247,22 @@
       "destination": "TRN",
       "price_eur": 28.52,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c7e19590fb86",
+      "ts": "2026-05-24T21:51:33.372625+00:00",
+      "origin": "BCN",
+      "destination": "GDN",
+      "price_eur": 28.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a57b78d96aa5",
+      "ts": "2026-05-24T21:51:33.372625+00:00",
+      "origin": "VLC",
+      "destination": "AGP",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
