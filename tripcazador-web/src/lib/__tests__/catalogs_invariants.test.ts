@@ -155,9 +155,10 @@ describe("catalogs_invariants — slug uniqueness", () => {
   });
 
   // SSS491: etiqueta cultural invariants
-  it("etiqueta: slugs únicas + 10 países en catálogo", () => {
+  // AUDIT-FULL-2 (24 may): expandido 10 → 15 países
+  it("etiqueta: slugs únicas + 15 países en catálogo", () => {
     assertUniqueKeys("ETIQUETA_SLUGS", ETIQUETA_SLUGS);
-    expect(ETIQUETA_CATALOG.length).toBe(10);
+    expect(ETIQUETA_CATALOG.length).toBe(15);
   });
 
   it("etiqueta: countries únicas (no duplicados)", () => {

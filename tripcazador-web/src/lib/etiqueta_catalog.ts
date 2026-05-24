@@ -302,6 +302,146 @@ export const ETIQUETA_CATALOG: EtiquetaEntry[] = [
     curiosidad:
       "Voseo: el 'vos' reemplaza al 'tú' completamente. 'Vos podés' no 'tú puedes'. Es seña inconfundible del rioplatense. Los españoles parecen 'formales' con el 'tú'.",
   },
+  // AUDIT-FULL-2 (24 may 2026): +5 países high-traffic
+  {
+    slug: "brasil",
+    country: "Brasil",
+    emoji: "🇧🇷",
+    oneLiner: "Calidez personal + cuerpo cercano + 'jeitinho' (apaño informal).",
+    saludo:
+      "Beso 1 vez (Río) o 2 veces (São Paulo) entre mujeres o entre hombre-mujer en social. Hombres: abrazo + palmada espalda en amigos. Profesional: apretón firme.",
+    propinas:
+      "10% en restaurante (a veces ya incluido como 'serviço' — verifica bill). Taxi NO. Hotel mozo 5 R$/maleta. Garçom de bar: redondear o 10% si abierto.",
+    vestuario:
+      "Playa: bikini diminuto socialmente normal (no shorts encima). Ciudad: smart-casual relajado (pantalón corto sólo turistas). Iglesia: hombros cubiertos.",
+    tabues: [
+      "Comparar Brasil con Argentina (rivalidad histórica fútbol)",
+      "Asumir que se habla español (es portugués)",
+      "Hacer chistes con drogas (favelas no es Disney)",
+      "Ostentar tecnología cara en zonas turísticas (asalto)",
+      "Llegar puntual a fiesta privada (siempre 1-2h tarde)",
+    ],
+    gestos: {
+      do: ["Sonreír mucho — gesto cultural clave", "Decir 'obrigado/a' al recibir cualquier cosa", "Aceptar comida ofrecida en casa"],
+      dont: ["Gesto OK (puño con pulgar e índice circular) — es ofensivo grave", "Apuntar con dedo", "Hablar fuerte de política o Lula"],
+    },
+    comida:
+      "Feijoada sábado (judías + carne ahumada). Pão de queijo, açaí, brigadeiro, caipirinha (lima + cachaça). Almoço 12-14h, cena 20h+.",
+    curiosidad:
+      "'Jeitinho brasileiro' es cultura: encontrar la forma de saltarse reglas amablemente. NO es corrupción — es flexibilidad social. Aprenderla = mejor experiencia turística (saltarte colas, conseguir mesa, descuentos).",
+  },
+  {
+    slug: "egipto",
+    country: "Egipto",
+    emoji: "🇪🇬",
+    destinoSlug: "el-cairo",
+    oneLiner: "Hospitalidad árabe legendaria + regateo + influencia islámica conservadora.",
+    saludo:
+      "'As-salamu alaykum' + mano derecha (la izquierda es impura). Beso entre hombres amigos (mejilla). Mujer extranjera a hombre: sólo si ella ofrece mano. 'Habibi' como cariño universal.",
+    propinas:
+      "Baksheesh es OBLIGATORIO. Camarero 10%, mozo 10 EGP, taxi redondear, guía 50-100 EGP/día, fotógrafo en pirámides 20 EGP. Lleva billetes 5/10 EGP siempre.",
+    vestuario:
+      "Mujeres: cubrir hombros y rodillas en El Cairo/zonas religiosas. Resorts Sharm/Hurghada: bikini OK en playa privada. Mezquita: pañuelo cabeza (se prestan).",
+    tabues: [
+      "Mostrar suela del zapato (apuntar al rostro = insulto)",
+      "Beso público entre pareja",
+      "Mano izquierda para comer o saludar",
+      "Fotografiar mujeres locales sin permiso",
+      "Comer en público durante Ramadán (sol arriba)",
+    ],
+    gestos: {
+      do: ["Aceptar té/café ofrecido (es cortesía clave)", "Regatear (50-70% del precio inicial)", "Vestir modesto en El Cairo"],
+      dont: ["Negarse a hospitalidad sin agradecer enfático", "Mostrar fortuna ostentosa", "Discutir Israel/Palestina con desconocidos"],
+    },
+    comida:
+      "Koshari (lentejas + arroz + pasta), ful medames, baklawa, té karkadé (hibisco). Pan baladi en todas comidas. No alcohol con musulmán conservador.",
+    curiosidad:
+      "El regateo es deporte social — no es ofensivo, es esperado. Salir caminando del puesto es estrategia válida y respetada. Si aceptas primer precio, el vendedor pierde respeto (no estás jugando el juego).",
+  },
+  {
+    slug: "indonesia",
+    country: "Indonesia",
+    emoji: "🇮🇩",
+    destinoSlug: "bali",
+    oneLiner: "Mayoritariamente musulmana + Bali hindú. 'Senyum' (sonrisa) universal.",
+    saludo:
+      "Apretón suave (no firme), mano derecha. Inclinación leve cabeza para respeto a mayores. 'Selamat pagi/siang/malam' según hora. En Bali: 'Om Swastiastu' (saludo hindú).",
+    propinas:
+      "Bali 10% restaurante (a veces ya en bill como 'service'). Hotel mozo 10-15 K Rp. Guía 100-200 K Rp/día. Taxi NO. Bemo (mini-bus): pago acordado.",
+    vestuario:
+      "Bali: sarong + faja para templos (se prestan). Java/Sumatra (musulmana): cubre hombros y rodillas siempre. Playa: bikini OK pero sin shock visual al pasar pueblo.",
+    tabues: [
+      "Tocar cabeza de alguien (especialmente niños — sagrada en hinduismo)",
+      "Apuntar pies a templo, ofrenda o persona",
+      "Pasar por encima de ofrenda balinesa (canang sari en suelo)",
+      "Beso público entre pareja",
+      "Insultar el Islam (Java) o el hinduismo (Bali)",
+    ],
+    gestos: {
+      do: ["Quitarse zapatos en templos y casas", "Sonreír siempre — incluso confuso o tenso", "Aceptar comida con mano derecha"],
+      dont: ["Mano izquierda para comer/saludar", "Mostrar enfado público (perder cara)", "Apuntar con índice (usa pulgar)"],
+    },
+    comida:
+      "Nasi goreng, mie goreng, rendang, sate ayam. Con mano derecha en algunos sitios tradicionales. Picante variable — pedir 'tidak pedas' si sensible.",
+    curiosidad:
+      "'Jam karet' (tiempo de goma): puntualidad relativa en Bali. Llegar 30-60 min tarde es socialmente OK. En Java es más estricto. Aprende a relajar el reloj — frustración por demoras es cultural friction principal.",
+  },
+  {
+    slug: "vietnam",
+    country: "Vietnam",
+    emoji: "🇻🇳",
+    destinoSlug: "vietnam",
+    oneLiner: "Cultura confuciana + budista + influencia francesa. Hospitalidad cálida pero formal.",
+    saludo:
+      "Apretón suave con 2 manos para respeto. Inclinación leve a mayores. 'Xin chào' (hola). NO besos sociales. Nombre completo: apellido va primero (familia primero), nombre personal después.",
+    propinas:
+      "Históricamente no, ahora 5-10% en restaurante turístico. Spa: 20-50K VND. Hotel mozo: 20K VND/maleta. Taxi: redondear. Conductor moto particular: 50K VND/día.",
+    vestuario:
+      "Modesto en templos (pagodas) y zonas rurales. Ciudades modernas (Saigón, Hanói): relajado. Casa local: descalzarse al entrar.",
+    tabues: [
+      "Tocar cabeza de alguien (sagrado para budistas)",
+      "Apuntar con pie a estatua de Buda",
+      "Discutir Guerra de Vietnam con vietnamitas mayores",
+      "Pedir cambio en dólares (se prefiere VND)",
+      "Tomar fotos a militares o instalaciones gubernamentales",
+    ],
+    gestos: {
+      do: ["Aceptar té ofrecido (cortesía clave)", "Quitarse zapatos en templos y casas", "Comer pho con palillos + cuchara"],
+      dont: ["Mostrar enfado público (perder cara fatal)", "Tocar a desconocidos", "Beso público pareja"],
+    },
+    comida:
+      "Pho (sopa fideos res/pollo), banh mi (bocadillo francés), goi cuon (rollo fresco). Café muy fuerte con leche condensada. Salsa de pescado en todo.",
+    curiosidad:
+      "Saigón se llama oficialmente Ho Chi Minh City pero todos dicen Saigón. Hanói es Hanói siempre. La división norte/sur sigue siendo cultural: norte más formal/confuciana, sur más relajada/comercial.",
+  },
+  {
+    slug: "turquia",
+    country: "Turquía",
+    emoji: "🇹🇷",
+    destinoSlug: "estambul",
+    oneLiner: "Puente Europa-Asia. Hospitalidad legendaria + té omnipresente + influencia islámica moderada.",
+    saludo:
+      "Apretón firme + contacto visual. Beso doble mejilla entre amigos cercanos. Hombres mayores: mano derecha en pecho como respeto. 'Merhaba' (hola), 'Nasılsın?' (¿cómo estás?).",
+    propinas:
+      "10% restaurante (raramente en bill como 'servis'). Hotel mozo 10-20 TL. Taxi redondear. Spa hamam: 50-100 TL. Lokum (delicia turca) en mesa: gratis cortesía.",
+    vestuario:
+      "Mezquita: hombros y rodillas cubiertos OBLIGATORIO + pañuelo cabeza mujeres (se prestan en Mezquita Azul). Estambul moderno: smart casual. Costa egea/mediterránea: bikini OK.",
+    tabues: [
+      "Discutir Armenia con turcos (tema histórico tenso)",
+      "Mostrar suela del zapato",
+      "Hablar mal de Atatürk (fundador, casi sagrado)",
+      "Negarse a té cuando se ofrece (es insulto)",
+      "Tomar fotos en mezquita durante oración",
+    ],
+    gestos: {
+      do: ["Aceptar té (siempre. Siempre)", "Regatear en zoco (50-60% precio inicial)", "Quitarse zapatos en mezquita"],
+      dont: ["Decir gracias por té rechazado — di 'Çok teşekkürler' al aceptar", "Apuntar con dedo", "Discutir religión o Erdogan"],
+    },
+    comida:
+      "Kebab, baklava, dolma, meze (entrantes). Té (çay) en vaso tulipán omnipresente. Café turco final comida. Raki en cena formal (anís).",
+    curiosidad:
+      "Té (çay) NO se rechaza nunca — es ritual social. Lo ofrecen al sentarse en restaurante, al entrar tienda, al esperar autobús. Aceptar = respeto. Rechazar = insulto leve. Si no puedes más, di 'doluyum' (lleno).",
+  },
 ];
 
 export const ETIQUETA_SLUGS: string[] = ETIQUETA_CATALOG.map((e) => e.slug);

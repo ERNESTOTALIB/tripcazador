@@ -22,6 +22,7 @@ import { getLastSeen, qualifiesForWinback } from "@/lib/last_seen_store";
 import { listSavingsByCustomer, summarize } from "@/lib/savings_log_store";
 import { buildWinbackEmailHtml, type WinbackTopDeal } from "@/lib/winback_email";
 import { pickFavoriteRoute, pickTopDealsForRoute } from "@/lib/winback_helpers";
+import { safeCronMarker } from "@/lib/cron_idempotency";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -92,6 +93,18 @@ async function sendWinback(
     return res.ok;
   } catch (err) {
     console.error("[winback-cron] resend fail:", err);
+    // AUDIT-FULL-2: Sentry capture (LOW OPS — solo 10 archivos capturaban antes).
+    try {
+      const { captureRevenueError } = await import("@/lib/sentry_helper");
+      captureRevenueError(err, {
+        module: "winback-cron",
+        code: "resend_send_failed",
+        extra: { customerId: customerId.slice(0, 20) },
+        level: "warning",
+      });
+    } catch {
+      /* sentry_helper no disponible — silencioso */
+    }
     return false;
   }
 }
@@ -133,6 +146,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   for (const [customerId, info] of Array.from(customers.entries())) {
     const lastSeen = await getLastSeen(customerId);
     if (!qualifiesForWinback(lastSeen, info.oldestAlertTs, now)) {
+      skipped += 1;
+      continue;
+    }
+    // AUDIT-FULL-2: idempotency marker — skip si ya enviado hoy a este customer
+    const proceed = await safeCronMarker("winback", customerId);
+    if (!proceed) {
       skipped += 1;
       continue;
     }

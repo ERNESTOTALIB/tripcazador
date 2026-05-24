@@ -116,10 +116,12 @@ export async function GET(): Promise<NextResponse> {
   const kv = probeKv();
 
   const subsystems: SubsystemStatus[] = [backend, dealsFresh, stripe, kv];
-  // SSS472: KV es opcional (in-memory fallback funciona OK). No degradar 503
-  // si solo KV falla — solo backend + deals_fresh + stripe son críticos para
-  // uptime alerts externos.
-  const criticalOk = backend.ok && dealsFresh.ok && stripe.ok;
+  // SSS472: KV es opcional (in-memory fallback funciona OK).
+  // AUDIT-FULL-2 (24 may 2026): backend remoto puede estar caído pero si
+  // deals_fresh está OK (cache <12h), el sitio público funciona. No 503.
+  // criticalOk requiere solo (stripe LIVE configurado) + (deals frescos o backend OK)
+  const dealsOrBackend = dealsFresh.ok || backend.ok;
+  const criticalOk = stripe.ok && dealsOrBackend;
   const allOk = subsystems.every((s) => s.ok);
 
   const body = {

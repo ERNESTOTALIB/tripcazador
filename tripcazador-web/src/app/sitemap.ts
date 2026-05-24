@@ -33,6 +33,7 @@ import { DIVISAS_CODES } from "@/lib/divisas_catalog";
 import { TASA_TURISTICA_SLUGS } from "@/lib/tasa_turistica_catalog";
 import { TEMPORADA_BAJA_SLUGS } from "@/lib/temporada_baja_catalog";
 import { ETIQUETA_SLUGS } from "@/lib/etiqueta_catalog";
+import { CLIMA_SLUGS } from "@/lib/clima_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -417,6 +418,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // SSS486: vertical /etiqueta/[pais] — 10 guías culturales
+  // AUDIT-FULL-2: clima vertical
+  const climaPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/clima`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 },
+    ...CLIMA_SLUGS.map((slug) => ({
+      url: `${BASE_URL}/clima/${slug}`,
+      lastModified: now,
+      changeFrequency: "yearly" as const,
+      priority: 0.7,
+    })),
+  ];
+
   const etiquetaPages: MetadataRoute.Sitemap = ETIQUETA_SLUGS.map((slug) => ({
     url: `${BASE_URL}/etiqueta/${slug}`,
     lastModified: now,
@@ -1019,8 +1031,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...tasaTuristicaPages,
     // SSS463: 12 temporada baja landings
     ...temporadaBajaPages,
-    // SSS486: 10 etiqueta cultural landings
+    // SSS486 + AUDIT-FULL-2: 15 etiqueta cultural landings
     ...etiquetaPages,
+    // AUDIT-FULL-2: clima por destino + hub
+    ...climaPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,

@@ -109,6 +109,28 @@ export const AIRLINES: Airline[] = [
       "Iberia es la aerolínea de bandera española y, por su red largo-radio hacia Latinoamérica, una pieza clave para el viajero hispanohablante. Hub único en MAD, lo que significa que las rutas long-haul siempre son MAD-X — desde otros origenes ES hay que conectar. \n\nLa fortaleza histórica está en ES → Argentina, Chile, Cuba, México, Colombia, Perú: la red más densa para hispanohablante de cualquier carrier, con 8-12 frecuencias semanales a destinos clave. Error fares typical: MAD-EZE business class a €380 RT (vs €750 normal), MAD-JFK a €290 (vs €580). \n\nEl truco para cazar es el codeshare con Finnair (oneworld): cuando Finnair vende segmento HEL-NRT a precio glitched, el segmento MAD-HEL-NRT comparte el mismo error fare a veces a precios muy bajos. Iberia Plus (Avios) vale la pena para viajero frecuente — los premios saver MAD-NYC están a 25-35K Avios + tasas, una de las redenciones más eficientes del programa.",
   },
   {
+    code: "UX",
+    icao: "AEA",
+    name: "Air Europa",
+    category: "full-service",
+    country: "España",
+    hubs: ["MAD"],
+    popularRoutesFromSpain: [
+      { route: "MAD-EZE", typicalPriceEur: 780, minPriceEur: 380 },
+      { route: "MAD-MIA", typicalPriceEur: 620, minPriceEur: 310 },
+      { route: "MAD-HAV", typicalPriceEur: 720, minPriceEur: 380 },
+      { route: "MAD-CCS", typicalPriceEur: 900, minPriceEur: 450 },
+    ],
+    keyPoints: [
+      "Hub MAD enfocado al corredor España–Latinoamérica + Caribe",
+      "SkyTeam member — sinergias con KLM/AF/Delta para conexiones a USA",
+      "Históricamente más agresiva con descuentos que Iberia para Latam",
+      "Flota long-haul Boeing 787 Dreamliner — cabina business reclinada",
+    ],
+    description:
+      "Air Europa es la segunda aerolínea española y la principal competencia de Iberia en el corredor España–Latinoamérica. Pertenece a SkyTeam (no oneworld como Iberia), lo que abre conexiones interesantes con KLM/Delta/AF para llegar a destinos secundarios en USA.\n\nSu hub único en MAD-T1 da una experiencia más relajada que el T4 de Iberia (menos cola, menos gates en uso). Las rutas estrella son MAD-Caribe (HAV, PUJ, SDQ, CCS) y MAD-Cono Sur (EZE, SCL, GRU). Históricamente bookea más agresiva en sales que Iberia — bajadas de 35-45% en Black Friday y enero son habituales.\n\nError fares: el más famoso fue MAD-PUJ business a €99 en abril 2014 (12h ventana). Más recientes: MAD-EZE business €380 RT en 2024. La política de seguros tras error fare es relativamente generosa — honra la mayoría de los billetes glitched salvo escala fraudulenta.",
+  },
+  {
     code: "VY",
     icao: "VLG",
     name: "Vueling",
