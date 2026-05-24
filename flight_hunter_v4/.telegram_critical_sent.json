@@ -2231,6 +2231,22 @@
       "destination": "MLA",
       "price_eur": 25.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fc9fe5e5ae4e",
+      "ts": "2026-05-24T20:47:22.063973+00:00",
+      "origin": "KRK",
+      "destination": "MLA",
+      "price_eur": 26.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8f19e6116f9a",
+      "ts": "2026-05-24T20:47:22.063973+00:00",
+      "origin": "TIA",
+      "destination": "TRN",
+      "price_eur": 28.52,
+      "classification": "CRÍTICO"
     }
   ]
 }
