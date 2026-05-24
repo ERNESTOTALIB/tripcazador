@@ -2183,6 +2183,22 @@
       "destination": "RAK",
       "price_eur": 16.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "15b06db0b04a",
+      "ts": "2026-05-24T16:02:21.151815+00:00",
+      "origin": "OTP",
+      "destination": "PFO",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "08ee157263ea",
+      "ts": "2026-05-24T16:02:21.151815+00:00",
+      "origin": "STN",
+      "destination": "TNG",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
