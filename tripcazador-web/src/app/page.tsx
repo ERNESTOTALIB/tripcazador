@@ -15,6 +15,7 @@ import { HotelDealsStrip } from "@/components/HotelDealsStrip";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
 import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import { StreakBadge } from "@/components/StreakBadge";
+import { HomeSearchAutocomplete } from "@/components/HomeSearchAutocomplete";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -364,6 +365,16 @@ export default async function HomePage() {
       <RecentSearchesStrip />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 text-center">
         <StreakBadge />
+      </div>
+
+      {/* SSS484: Quick search autocomplete — alternativa de teclado al SkyHero.
+          Cubre destinos / aeropuertos / verticales (escapadas, equipaje, etc).
+          quickSearch lib indexa catálogos en build time. */}
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <HomeSearchAutocomplete />
+        <p className="mt-2 text-center text-xs text-slate-500">
+          ¿Buscas algo específico? Empieza a escribir un destino, IATA (MAD, BCN…) o servicio.
+        </p>
       </div>
 
       {/* Stats + chips quick-filters en sección body light, después del hero.

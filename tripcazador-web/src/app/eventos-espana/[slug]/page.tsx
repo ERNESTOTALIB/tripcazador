@@ -18,6 +18,7 @@ import {
 // DESTINOS_CATALOG, y IATA PNA/TFN NO están en AIRPORTS_ES_CATALOG.
 import { DESTINO_SLUGS } from "@/lib/destinos_catalog";
 import { AIRPORTS_ES_IATAS } from "@/lib/airports_es_catalog";
+import { breadcrumbSchema } from "@/lib/schema_helpers";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -55,15 +56,11 @@ export default function EventoEsPage({ params }: { params: { slug: string } }) {
 
   const others = EVENTOS_ES_CATALOG.filter((x) => x.slug !== e.slug).slice(0, 4);
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Eventos España", item: `${SITE_URL}/eventos-espana` },
-      { "@type": "ListItem", position: 3, name: e.name, item: `${SITE_URL}/eventos-espana/${e.slug}` },
-    ],
-  };
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: "Inicio", url: "/" },
+    { name: "Eventos España", url: "/eventos-espana" },
+    { name: e.name, url: `/eventos-espana/${e.slug}` },
+  ]);
 
   const eventJsonLd = {
     "@context": "https://schema.org",

@@ -15,6 +15,7 @@ import {
   getFlagCarriers,
 } from "@/lib/flag_carriers_catalog";
 import { getAirlineByCode } from "@/lib/airlines";
+import { breadcrumbSchema } from "@/lib/schema_helpers";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -72,15 +73,11 @@ export default function FlagCarrierPage({ params }: { params: { iso: string } })
 
   const primaryInCatalog = getAirlineByCode(c.primary.iata);
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Aerolíneas bandera", item: `${SITE_URL}/aerolineas-bandera` },
-      { "@type": "ListItem", position: 3, name: c.country, item: `${SITE_URL}/aerolineas-bandera/${c.iso}` },
-    ],
-  };
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: "Inicio", url: "/" },
+    { name: "Aerolíneas bandera", url: "/aerolineas-bandera" },
+    { name: c.country, url: `/aerolineas-bandera/${c.iso}` },
+  ]);
 
   return (
     <main className="container mx-auto max-w-3xl px-4 py-8">
