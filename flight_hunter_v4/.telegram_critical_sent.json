@@ -2151,6 +2151,22 @@
       "destination": "ZAD",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a31a75ab0fcd",
+      "ts": "2026-05-24T13:11:22.155669+00:00",
+      "origin": "PSA",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "df5c8f9443cd",
+      "ts": "2026-05-24T13:11:22.155669+00:00",
+      "origin": "WRO",
+      "destination": "GDN",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
