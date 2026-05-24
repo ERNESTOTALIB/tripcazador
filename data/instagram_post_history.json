@@ -916,5 +916,14 @@
     "city_from": "Lisboa",
     "city_to": "Madeira Funchal",
     "price_eur": 37.99
+  },
+  {
+    "timestamp": 1779642566.1912537,
+    "deal_id": "ryanair_dub_bds_20260813_economy",
+    "origin": "DUB",
+    "destination": "BDS",
+    "city_from": "Dubl\u00edn",
+    "city_to": "Brindisi",
+    "price_eur": 43.99
   }
 ]
