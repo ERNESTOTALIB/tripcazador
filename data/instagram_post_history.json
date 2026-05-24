@@ -898,5 +898,14 @@
     "city_from": "Varsovia",
     "city_to": "Vienna",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1779616797.9258716,
+    "deal_id": "ryanair_prg_gdn_20260826_economy",
+    "origin": "PRG",
+    "destination": "GDN",
+    "city_from": "Praga",
+    "city_to": "Gdansk",
+    "price_eur": 27.46
   }
 ]
