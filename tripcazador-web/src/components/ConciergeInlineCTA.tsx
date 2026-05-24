@@ -15,8 +15,12 @@
  *  - concierge_inline_view (IntersectionObserver, 1× per source)
  *  - concierge_inline_click
  */
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { tcTrack, tcTrackOnce } from "@/lib/track_client";
+// SUPERSESSION (24 may 2026): 2do experimento real con ab_test.ts lib.
+// Variants A=control / B=highlight "garantía opción mejor". trackAbExposure
+// auto en mount cuando user ve el componente.
+import { getAbVariant, trackAbExposure } from "@/lib/ab_test";
 
 interface Props {
   source: string;
@@ -43,6 +47,15 @@ export function ConciergeInlineCTA({
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const tier = TIER_LABELS[highlightTier];
+  // SUPERSESSION: A/B guarantee badge — "control" vs "money-back" vs "best-option"
+  const [guaranteeVariant, setGuaranteeVariant] = useState<"control" | "money_back" | "best_option">("control");
+
+  useEffect(() => {
+    // SUPERSESSION: assign + track guarantee A/B variant on mount
+    const gv = getAbVariant("concierge_guarantee_v1", ["control", "money_back", "best_option"] as const);
+    setGuaranteeVariant(gv);
+    trackAbExposure("concierge_guarantee_v1", gv);
+  }, []);
 
   useEffect(() => {
     const node = ref.current;
@@ -55,6 +68,7 @@ export function ConciergeInlineCTA({
               source,
               variant,
               tier: highlightTier,
+              guarantee_variant: guaranteeVariant,
             });
             io.disconnect();
             break;
@@ -144,6 +158,17 @@ export function ConciergeInlineCTA({
               Comparar todos los planes
             </a>
           </div>
+          {/* SUPERSESSION A/B test guarantee badge */}
+          {guaranteeVariant === "money_back" && (
+            <p className="mt-3 text-xs text-emerald-300">
+              💸 100% money-back si no encuentras valor en las 5 opciones.
+            </p>
+          )}
+          {guaranteeVariant === "best_option" && (
+            <p className="mt-3 text-xs text-amber-300">
+              🏆 Garantía &quot;opción mejor&quot;: si la encuentras tú, devolvemos el €{tier.price}.
+            </p>
+          )}
         </div>
       </div>
     </div>

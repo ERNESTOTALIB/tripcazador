@@ -35,6 +35,8 @@ import { TEMPORADA_BAJA_SLUGS } from "@/lib/temporada_baja_catalog";
 import { ETIQUETA_SLUGS } from "@/lib/etiqueta_catalog";
 import { CLIMA_SLUGS } from "@/lib/clima_catalog";
 import { JETLAG_SLUGS } from "@/lib/jetlag_catalog";
+import { IDIOMAS_SLUGS } from "@/lib/idiomas_catalog";
+import { DINERO_SLUGS } from "@/lib/dinero_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -265,6 +267,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/apps-imprescindibles`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // AUDIT-FULL-3: /seguro-cancelacion landing high-intent SEO
     { url: `${BASE_URL}/seguro-cancelacion`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    // SUPERSESSION: /error-fares hub high-intent
+    { url: `${BASE_URL}/error-fares`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -441,6 +445,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/jet-lag`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 },
     ...JETLAG_SLUGS.map((slug) => ({
       url: `${BASE_URL}/jet-lag/${slug}`,
+      lastModified: now,
+      changeFrequency: "yearly" as const,
+      priority: 0.7,
+    })),
+  ];
+
+  // SUPERSESSION: idiomas + dinero verticals
+  const idiomasPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/idiomas`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 },
+    ...IDIOMAS_SLUGS.map((slug) => ({
+      url: `${BASE_URL}/idiomas/${slug}`,
+      lastModified: now,
+      changeFrequency: "yearly" as const,
+      priority: 0.7,
+    })),
+  ];
+  const dineroPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/dinero-en`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 },
+    ...DINERO_SLUGS.map((slug) => ({
+      url: `${BASE_URL}/dinero-en/${slug}`,
       lastModified: now,
       changeFrequency: "yearly" as const,
       priority: 0.7,
@@ -1055,6 +1079,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...climaPages,
     // AUDIT-FULL-3: jet-lag por ruta + hub
     ...jetlagPages,
+    // SUPERSESSION: idiomas + dinero verticals
+    ...idiomasPages,
+    ...dineroPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
