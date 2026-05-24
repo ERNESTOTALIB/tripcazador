@@ -2111,6 +2111,14 @@
       "destination": "AGP",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "76a7aa4591bd",
+      "ts": "2026-05-23T22:45:34.192682+00:00",
+      "origin": "VLC",
+      "destination": "IBZ",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
