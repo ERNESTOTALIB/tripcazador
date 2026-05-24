@@ -925,5 +925,14 @@
     "city_from": "Dubl\u00edn",
     "city_to": "Brindisi",
     "price_eur": 43.99
+  },
+  {
+    "timestamp": 1779656559.644447,
+    "deal_id": "ryanair_mad_mla_20260824_economy",
+    "origin": "MAD",
+    "destination": "MLA",
+    "city_from": "Madrid",
+    "city_to": "Malta",
+    "price_eur": 26.29
   }
 ]
