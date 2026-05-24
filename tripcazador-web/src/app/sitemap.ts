@@ -31,6 +31,7 @@ import { AIRPORTS_WORLD_IATAS } from "@/lib/airports_world_catalog";
 import { FLAG_CARRIERS_ISOS } from "@/lib/flag_carriers_catalog";
 import { DIVISAS_CODES } from "@/lib/divisas_catalog";
 import { TASA_TURISTICA_SLUGS } from "@/lib/tasa_turistica_catalog";
+import { TEMPORADA_BAJA_SLUGS } from "@/lib/temporada_baja_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -233,6 +234,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/tasa-turistica`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // SSS460: /vuelo-cancelado guía EU 261/2004
     { url: `${BASE_URL}/vuelo-cancelado`, lastModified: now, changeFrequency: "yearly", priority: 0.75 },
+    // SSS463: hub /temporada-baja
+    { url: `${BASE_URL}/temporada-baja`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // SSS464: leaderboard referidos públicos
+    { url: `${BASE_URL}/premium/top-referidos`, lastModified: now, changeFrequency: "daily", priority: 0.5 },
+    // SSS467: comparador deals
+    { url: `${BASE_URL}/comparar-deals`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
+    // SSS470: /equipo
+    { url: `${BASE_URL}/equipo`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS435: /transparencia — métricas + compromisos públicos
     { url: `${BASE_URL}/transparencia`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     // SSS153: índices que estaban 404 — breadcrumbs internos rotos
@@ -382,6 +391,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "yearly" as const,
     priority: 0.65,
+  }));
+
+  // SSS463: vertical /temporada-baja/[destino] — 12 destinos
+  const temporadaBajaPages: MetadataRoute.Sitemap = TEMPORADA_BAJA_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/temporada-baja/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
   }));
 
   // ppp PPP1: páginas /como-viajar/[slug] una por partner afiliado
@@ -970,6 +987,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...divisasPages,
     // SSS459: 12 tasa turística landings
     ...tasaTuristicaPages,
+    // SSS463: 12 temporada baja landings
+    ...temporadaBajaPages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
