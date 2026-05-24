@@ -2199,6 +2199,22 @@
       "destination": "TNG",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d675c33af946",
+      "ts": "2026-05-24T17:55:06.641027+00:00",
+      "origin": "STN",
+      "destination": "TNG",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7d64329b37c8",
+      "ts": "2026-05-24T17:55:06.641027+00:00",
+      "origin": "KRK",
+      "destination": "RMI",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
