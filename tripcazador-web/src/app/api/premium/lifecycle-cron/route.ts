@@ -82,6 +82,18 @@ async function sendEmail(to: string, subject: string, html: string): Promise<boo
     return res.ok;
   } catch (err) {
     console.error("[lifecycle-cron] resend fail:", err);
+    // AUDIT-FULL-2: Sentry capture parity con winback
+    try {
+      const { captureRevenueError } = await import("@/lib/sentry_helper");
+      captureRevenueError(err, {
+        module: "lifecycle-cron",
+        code: "resend_send_failed",
+        extra: { to: to.slice(0, 30) },
+        level: "warning",
+      });
+    } catch {
+      /* sentry no disponible — silencioso */
+    }
     return false;
   }
 }

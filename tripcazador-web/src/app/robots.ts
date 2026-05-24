@@ -12,8 +12,8 @@ export default function robots(): MetadataRoute.Robots {
           "/admin/",
           // SSS383: panel privado (auth-only) — no debe crawlearse
           "/panel/",
-          // Magic-link verify endpoints (no leakear via crawl)
-          "/concierge/pedido/",
+          // AUDIT-FULL-2 (24 may 2026): legacy /concierge/pedido eliminado
+          // tras rename a /concierge/mis-pedidos (cookie-gated en app code).
           // SSS417: /m/login dropped — la ruta UI ya no existe (404 en
           // PROD desde SSS370+). Mantenerla aquí filtraba un path
           // inexistente desde robots y confundía auditorías. Si vuelve

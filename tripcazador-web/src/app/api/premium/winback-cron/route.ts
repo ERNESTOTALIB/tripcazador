@@ -23,6 +23,7 @@ import { listSavingsByCustomer, summarize } from "@/lib/savings_log_store";
 import { buildWinbackEmailHtml, type WinbackTopDeal } from "@/lib/winback_email";
 import { pickFavoriteRoute, pickTopDealsForRoute } from "@/lib/winback_helpers";
 import { safeCronMarker } from "@/lib/cron_idempotency";
+import { verifyCronToken } from "@/lib/cron_auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -111,14 +112,8 @@ async function sendWinback(
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const token = req.nextUrl.searchParams.get("token") || "";
-  const expected =
-    process.env.PRICE_ALERT_CRON_TOKEN_PREMIUM ||
-    process.env.PRICE_ALERT_CRON_TOKEN ||
-    "";
-  if (!expected) {
-    return NextResponse.json({ ok: false, error: "not_configured" }, { status: 503 });
-  }
-  if (!constantTimeEq(token, expected)) {
+  // AUDIT-FULL-2: prefer CRON_TOKEN_WINBACK específico, fallback a shared.
+  if (!verifyCronToken("winback", token)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 

@@ -92,6 +92,18 @@ async function sendDigestEmail(
     return res.ok;
   } catch (err) {
     console.error("[weekly-digest-cron] resend fail:", err);
+    // AUDIT-FULL-2: Sentry capture parity
+    try {
+      const { captureRevenueError } = await import("@/lib/sentry_helper");
+      captureRevenueError(err, {
+        module: "weekly-digest-cron",
+        code: "resend_send_failed",
+        extra: { customerId: customerId.slice(0, 20) },
+        level: "warning",
+      });
+    } catch {
+      /* silencioso */
+    }
     return false;
   }
 }
