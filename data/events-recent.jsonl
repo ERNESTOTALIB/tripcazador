@@ -1,6 +1,3 @@
-{"ts":"2026-05-19T10:36:43.737Z","type":"landing_arrived","visitor":"41794b1cbf1869ca","meta":{"path":"/"}}
-{"ts":"2026-05-19T10:36:43.966Z","type":"page_view","visitor":"f30aefad73724437","meta":{"path":"/"}}
-{"ts":"2026-05-19T10:36:44.142Z","type":"page_view","visitor":"f30aefad73724437","meta":{"path":"/"}}
 {"ts":"2026-05-19T10:36:43.647Z","type":"page_view","visitor":"41794b1cbf1869ca","meta":{"path":"/"}}
 {"ts":"2026-05-19T10:36:43.965Z","type":"landing_arrived","visitor":"f30aefad73724437","meta":{"path":"/"}}
 {"ts":"2026-05-19T10:36:46.623Z","type":"landing_arrived","visitor":"3235dbd55607311b","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-25T16:06:08.324Z","type":"page_view","visitor":"3fd70dc6f5e13e1e","meta":{"path":"/en"}}
 {"ts":"2026-05-25T16:06:30.167Z","type":"result_viewed","visitor":"3fd70dc6f5e13e1e","meta":{"deal_id":"ryanair_bcn_gdn_20260903_economy","destination":"GDN","origin":"BCN","price":27.99,"classification":"CRÍTICO"}}
 {"ts":"2026-05-25T16:06:31.467Z","type":"result_viewed","visitor":"3fd70dc6f5e13e1e","meta":{"deal_id":"ryanair_bcn_bru_20260710_economy","destination":"BRU","origin":"BCN","price":29.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-25T16:06:36.682Z","type":"result_viewed","visitor":"3fd70dc6f5e13e1e","meta":{"deal_id":"ryanair_mad_mla_20260824_economy","destination":"MLA","origin":"MAD","price":27.08,"classification":"ERROR"}}
+{"ts":"2026-05-25T16:06:37.381Z","type":"result_viewed","visitor":"3fd70dc6f5e13e1e","meta":{"deal_id":"ryanair_bcn_ndr_20260826_economy","destination":"NDR","origin":"BCN","price":17.49,"classification":"ERROR"}}
+{"ts":"2026-05-25T16:06:37.950Z","type":"result_viewed","visitor":"3fd70dc6f5e13e1e","meta":{"deal_id":"travelpayouts_mad_lei_20260901_economy","destination":"LEI","origin":"MAD","price":104.88,"classification":"ERROR"}}
