@@ -2359,6 +2359,22 @@
       "destination": "FNC",
       "price_eur": 34.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6eb73f67e3d3",
+      "ts": "2026-05-25T22:14:03.383322+00:00",
+      "origin": "VLC",
+      "destination": "LPA",
+      "price_eur": 29.47,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f9b3c4fe04d8",
+      "ts": "2026-05-25T22:14:03.383322+00:00",
+      "origin": "MAD",
+      "destination": "IBZ",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
