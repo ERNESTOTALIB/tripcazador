@@ -2295,6 +2295,22 @@
       "destination": "AHO",
       "price_eur": 15.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f40cf63fb70d",
+      "ts": "2026-05-25T14:42:42.967822+00:00",
+      "origin": "BUD",
+      "destination": "ZAD",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "74b9f598dc5f",
+      "ts": "2026-05-25T14:42:42.967822+00:00",
+      "origin": "BUD",
+      "destination": "BOJ",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
