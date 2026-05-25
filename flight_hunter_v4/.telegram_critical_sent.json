@@ -2311,6 +2311,22 @@
       "destination": "BOJ",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a4859a71f63d",
+      "ts": "2026-05-25T17:03:24.151333+00:00",
+      "origin": "STN",
+      "destination": "RAK",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d009ffb64a7e",
+      "ts": "2026-05-25T17:03:24.151333+00:00",
+      "origin": "STN",
+      "destination": "MLA",
+      "price_eur": 24.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
