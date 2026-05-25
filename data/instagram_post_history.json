@@ -943,5 +943,14 @@
     "city_from": "Barcelona",
     "city_to": "Gdansk",
     "price_eur": 28.99
+  },
+  {
+    "timestamp": 1779710183.9576375,
+    "deal_id": "ryanair_ber_zad_20260826_economy",
+    "origin": "BER",
+    "destination": "ZAD",
+    "city_from": "Berl\u00edn",
+    "city_to": "Zadar",
+    "price_eur": 25.39
   }
 ]
