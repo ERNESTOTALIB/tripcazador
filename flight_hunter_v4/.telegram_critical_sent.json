@@ -2279,6 +2279,22 @@
       "destination": "IBZ",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7921998b0e20",
+      "ts": "2026-05-25T11:48:24.316990+00:00",
+      "origin": "AGP",
+      "destination": "RAK",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "4733228562ce",
+      "ts": "2026-05-25T11:48:24.316990+00:00",
+      "origin": "BGY",
+      "destination": "AHO",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
