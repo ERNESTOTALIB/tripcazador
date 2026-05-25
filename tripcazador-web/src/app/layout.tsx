@@ -439,6 +439,7 @@ export default function RootLayout({
                   <li><a href="/conversion-millas" className="hover:text-amber-400">Conversión millas 🧮</a></li>
                   <li><a href="/tiempo-conexion" className="hover:text-amber-400">Tiempo conexión ⏱️</a></li>
                   <li><a href="/codigos-promo" className="hover:text-amber-400">Códigos promo 🏷️</a></li>
+                  <li><a href="/equipo-viaje" className="hover:text-amber-400">Equipo de viaje 🎒</a></li>
                   <li><a href="/hoteles-vs-airbnb" className="hover:text-amber-400">Hotel vs Airbnb</a></li>
                   <li><a href="/hoteles" className="hover:text-amber-400">Hoteles por ciudad 🏨</a></li>
                   <li><a href="/regalo" className="hover:text-amber-400">Regalar 🎁</a></li>
@@ -448,6 +449,7 @@ export default function RootLayout({
                   <li><a href="/business" className="hover:text-amber-400">Para empresas 💼</a></li>
                   <li><a href="/api-docs" className="hover:text-amber-400">API developers</a></li>
                   <li><a href="/sponsor" className="hover:text-amber-400">Patrocinios</a></li>
+                  <li><a href="/patrocinadores" className="hover:text-amber-400 font-semibold">Patrocinios self-serve →</a></li>
                 </ul>
               </div>
             </div>

@@ -13,6 +13,8 @@ import { RecentSearchesStrip } from "@/components/RecentSearchesStrip";
 import { MyFeedStrip } from "@/components/MyFeedStrip";
 import { HotelDealsStrip } from "@/components/HotelDealsStrip";
 import { PremiumInlineCTA } from "@/components/PremiumInlineCTA";
+// SUPER-SPONSORS: SponsorSlot rotating widget — placeholder + self-serve CTA
+import SponsorSlot from "@/components/SponsorSlot";
 import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import { StreakBadge } from "@/components/StreakBadge";
 import { HomeSearchAutocomplete } from "@/components/HomeSearchAutocomplete";
@@ -459,6 +461,9 @@ export default async function HomePage() {
           User ya ha visto los chollos, momento ideal para promover SMS alerts +
           Deep Search. Banner-style (no card grande) — discreto pero presente. */}
       <PremiumInlineCTA source="home-mid" variant="banner" />
+
+      {/* SUPER-SPONSORS: rotating sponsor slot home below-fold */}
+      <SponsorSlot slotId="home_below_fold" />
 
       {/* Destinos populares con tarjetas visuales */}
       <section className="space-y-6">

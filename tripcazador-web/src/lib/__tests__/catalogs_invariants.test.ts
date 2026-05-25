@@ -83,6 +83,8 @@ import {
 import { MILLAS_PROGRAMAS, MILLAS_SLUGS } from "@/lib/millas_programas";
 import { MCT_AIRPORTS, MCT_IATAS } from "@/lib/mct_data";
 import { PROMO_CODES_CATALOG, PROMO_CODES_SLUGS } from "@/lib/promo_codes_catalog";
+// SUPER-SPONSORS: equipo viaje catalog invariants
+import { EQUIPO_VIAJE, EQUIPO_VIAJE_SLUGS } from "@/lib/equipo_viaje_catalog";
 
 /**
  * Verifica que un array de keys no tiene duplicados y match arr.length === set.size.
@@ -198,6 +200,30 @@ describe("catalogs_invariants — slug uniqueness", () => {
   it("etiqueta: countries únicas (no duplicados)", () => {
     const countries = ETIQUETA_CATALOG.map((e) => e.country);
     assertUniqueKeys("ETIQUETA countries", countries);
+  });
+
+  it("equipo_viaje: slugs únicas + 12 productos + criterios populados", () => {
+    assertUniqueKeys("EQUIPO_VIAJE_SLUGS", EQUIPO_VIAJE_SLUGS);
+    expect(EQUIPO_VIAJE.length).toBeGreaterThanOrEqual(10);
+    EQUIPO_VIAJE.forEach((p) => {
+      expect(p.criterios.length).toBeGreaterThanOrEqual(3);
+      expect(p.guia.length).toBeGreaterThanOrEqual(2);
+      expect(p.faqs.length).toBeGreaterThanOrEqual(2);
+      expect(p.picks.presupuesto.rangeEur).toContain("€");
+      expect(p.picks.medio.rangeEur).toContain("€");
+      expect(p.picks.premium.rangeEur).toContain("€");
+      // SEO description Google limit 160 chars
+      expect(
+        p.seoDescription.length,
+        `seoDescription too long for ${p.slug} (${p.seoDescription.length} chars)`,
+      ).toBeLessThanOrEqual(170);
+    });
+  });
+
+  it("equipo_viaje: slugs match regex SEO-safe (no & ñ spaces)", () => {
+    EQUIPO_VIAJE_SLUGS.forEach((s) => {
+      expect(s, `slug "${s}" no es URL-safe`).toMatch(/^[a-z0-9-]+$/);
+    });
   });
 });
 
