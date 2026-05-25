@@ -1,6 +1,3 @@
-{"ts":"2026-05-18T23:13:07.565Z","type":"page_view","visitor":"5a664d43e31778c8","meta":{"path":"/"}}
-{"ts":"2026-05-18T23:13:12.440Z","type":"page_view","visitor":"5a664d43e31778c8","meta":{"path":"/"}}
-{"ts":"2026-05-18T23:13:13.260Z","type":"page_view","visitor":"5a664d43e31778c8","meta":{"path":"/"}}
 {"ts":"2026-05-18T23:13:12.450Z","type":"landing_arrived","visitor":"5a664d43e31778c8","meta":{"path":"/"}}
 {"ts":"2026-05-18T23:13:31.148Z","type":"page_view","visitor":"94d70039812e03ad","meta":{"path":"/"}}
 {"ts":"2026-05-18T23:13:31.465Z","type":"page_view","visitor":"94d70039812e03ad","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-25T10:05:50.388Z","type":"page_view","visitor":"32f96e698bcd3aae","meta":{"path":"/destinos/lisboa"}}
 {"ts":"2026-05-25T10:05:54.240Z","type":"result_viewed","visitor":"32f96e698bcd3aae","meta":{"deal_id":"ryanair_ber_lis_20260829_economy","destination":"LIS","origin":"BER","price":54.99,"classification":"ERROR"}}
 {"ts":"2026-05-25T10:06:07.213Z","type":"landing_arrived","visitor":"32f96e698bcd3aae","meta":{"path":"/destinos/paris"}}
+{"ts":"2026-05-25T10:06:11.703Z","type":"result_viewed","visitor":"32f96e698bcd3aae","meta":{"deal_id":"seed-002c02d08c","destination":"CDG","origin":"SVQ","price":59,"classification":"OFERTA"}}
+{"ts":"2026-05-25T10:06:13.920Z","type":"page_view","visitor":"3e29885c48e15806","meta":{"path":"/destinos/paris"}}
+{"ts":"2026-05-25T10:06:24.647Z","type":"page_view","visitor":"32f96e698bcd3aae","meta":{"path":"/destinos/paris"}}
