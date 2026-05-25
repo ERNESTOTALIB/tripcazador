@@ -934,5 +934,14 @@
     "city_from": "Madrid",
     "city_to": "Malta",
     "price_eur": 26.29
+  },
+  {
+    "timestamp": 1779682601.3689508,
+    "deal_id": "ryanair_bcn_gdn_20260903_economy",
+    "origin": "BCN",
+    "destination": "GDN",
+    "city_from": "Barcelona",
+    "city_to": "Gdansk",
+    "price_eur": 28.99
   }
 ]
