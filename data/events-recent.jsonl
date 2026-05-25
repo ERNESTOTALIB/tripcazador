@@ -1,6 +1,3 @@
-{"ts":"2026-05-18T17:27:25.282Z","type":"landing_arrived","visitor":"cec0baeb69c0f2e1","meta":{"path":"/","utm_source":"chatgpt.com"}}
-{"ts":"2026-05-18T17:28:06.273Z","type":"page_view","visitor":"cec0baeb69c0f2e1","meta":{"path":"/deals"}}
-{"ts":"2026-05-18T17:28:20.775Z","type":"page_view","visitor":"cec0baeb69c0f2e1","meta":{"path":"/deals"}}
 {"ts":"2026-05-18T20:26:27.196Z","type":"landing_arrived","visitor":"a415b98572636f12","meta":{"path":"/","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-18T21:04:27.690Z","type":"page_view","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
 {"ts":"2026-05-18T21:04:27.747Z","type":"landing_arrived","visitor":"11b77b7d70937a8a","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-25T10:01:48.107Z","type":"result_viewed","visitor":"32f96e698bcd3aae","meta":{"deal_id":"ryanair_svq_trn_20260715_economy","destination":"TRN","origin":"SVQ","price":14.99,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-25T10:02:01.119Z","type":"page_view","visitor":"32f96e698bcd3aae","meta":{"path":"/"}}
 {"ts":"2026-05-25T10:02:01.180Z","type":"landing_arrived","visitor":"32f96e698bcd3aae","meta":{"path":"/"}}
+{"ts":"2026-05-25T10:01:48.095Z","type":"result_viewed","visitor":"32f96e698bcd3aae","meta":{"deal_id":"ryanair_vlc_sof_20260914_economy","destination":"SOF","origin":"VLC","price":27.99,"classification":"ERROR"}}
+{"ts":"2026-05-25T10:02:09.215Z","type":"result_viewed","visitor":"32f96e698bcd3aae","meta":{"deal_id":"ryanair_vlc_opo_20260715_economy","destination":"OPO","origin":"VLC","price":24.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-25T10:02:09.256Z","type":"result_viewed","visitor":"32f96e698bcd3aae","meta":{"deal_id":"ryanair_agp_gdn_20260918_economy","destination":"GDN","origin":"AGP","price":37.99,"classification":"ERROR"}}
