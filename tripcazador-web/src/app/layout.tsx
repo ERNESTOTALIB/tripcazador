@@ -184,6 +184,21 @@ export default function RootLayout({
         )}
         <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
         <link rel="dns-prefetch" href="https://plausible.io" />
+        {/* SUPER-SEO (25 may): OpenSearch description — habilita
+            "Add to Chrome search engines" desde el menú del navegador */}
+        <link
+          rel="search"
+          type="application/opensearchdescription+xml"
+          title="TripCazador"
+          href="/opensearch.xml"
+        />
+        {/* SUPER-SEO: feed JSON+RSS para lectores y agregadores */}
+        <link
+          rel="alternate"
+          type="application/feed+json"
+          title="TripCazador chollos"
+          href="/feed.json"
+        />
         <JsonLd
           data={[
             {
@@ -263,6 +278,37 @@ export default function RootLayout({
                   eagerness: "moderate",
                 },
               ],
+            }),
+          }}
+        />
+        {/* SUPER-SEO (25 may 2026): WebSite SearchAction global —
+            habilita Google "sitelinks search box" en branded search SERP.
+            Critical para "tripcazador" búsquedas. */}
+        <script
+          type="application/ld+json"
+          nonce={nonce}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "@id": "https://tripcazador.com/#website",
+              name: "TripCazador",
+              url: "https://tripcazador.com",
+              description: "Cazadores de chollos de vuelos hispanohablantes",
+              publisher: {
+                "@type": "Organization",
+                name: "TripCazador",
+              },
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate:
+                    "https://tripcazador.com/buscar?q={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+              inLanguage: "es-ES",
             }),
           }}
         />
@@ -440,6 +486,8 @@ export default function RootLayout({
                   <li><a href="/tiempo-conexion" className="hover:text-amber-400">Tiempo conexión ⏱️</a></li>
                   <li><a href="/codigos-promo" className="hover:text-amber-400">Códigos promo 🏷️</a></li>
                   <li><a href="/equipo-viaje" className="hover:text-amber-400">Equipo de viaje 🎒</a></li>
+                  <li><a href="/transporte-aeropuerto" className="hover:text-amber-400">Transporte aeropuerto 🚇</a></li>
+                  <li><a href="/lounge-aeropuerto" className="hover:text-amber-400">Lounges aeropuerto 🛋️</a></li>
                   <li><a href="/hoteles-vs-airbnb" className="hover:text-amber-400">Hotel vs Airbnb</a></li>
                   <li><a href="/hoteles" className="hover:text-amber-400">Hoteles por ciudad 🏨</a></li>
                   <li><a href="/regalo" className="hover:text-amber-400">Regalar 🎁</a></li>

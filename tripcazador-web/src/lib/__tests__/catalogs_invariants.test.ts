@@ -85,6 +85,9 @@ import { MCT_AIRPORTS, MCT_IATAS } from "@/lib/mct_data";
 import { PROMO_CODES_CATALOG, PROMO_CODES_SLUGS } from "@/lib/promo_codes_catalog";
 // SUPER-SPONSORS: equipo viaje catalog invariants
 import { EQUIPO_VIAJE, EQUIPO_VIAJE_SLUGS } from "@/lib/equipo_viaje_catalog";
+// SUPER-SEO: transporte aeropuerto + lounges
+import { TRANSPORTE_AEROPUERTO, TRANSPORTE_AEROPUERTO_SLUGS } from "@/lib/transporte_aeropuerto_catalog";
+import { LOUNGES, LOUNGE_IATAS } from "@/lib/lounges_catalog";
 
 /**
  * Verifica que un array de keys no tiene duplicados y match arr.length === set.size.
@@ -223,6 +226,36 @@ describe("catalogs_invariants — slug uniqueness", () => {
   it("equipo_viaje: slugs match regex SEO-safe (no & ñ spaces)", () => {
     EQUIPO_VIAJE_SLUGS.forEach((s) => {
       expect(s, `slug "${s}" no es URL-safe`).toMatch(/^[a-z0-9-]+$/);
+    });
+  });
+
+  it("transporte_aeropuerto: 15 ciudades + slugs URL-safe + IATAs válidas", () => {
+    assertUniqueKeys("TRANSPORTE_AEROPUERTO_SLUGS", TRANSPORTE_AEROPUERTO_SLUGS);
+    expect(TRANSPORTE_AEROPUERTO.length).toBeGreaterThanOrEqual(15);
+    TRANSPORTE_AEROPUERTO.forEach((c) => {
+      expect(c.slug, `slug "${c.slug}" URL-safe`).toMatch(/^[a-z0-9-]+$/);
+      expect(c.iata, `IATA "${c.iata}" 3 letras upper`).toMatch(/^[A-Z]{3}$/);
+      expect(c.distanciaKm).toBeGreaterThan(0);
+      expect(c.options.length).toBeGreaterThanOrEqual(2);
+      expect(c.tips.length).toBeGreaterThanOrEqual(2);
+      c.options.forEach((o) => {
+        expect(o.precioEur).toBeGreaterThanOrEqual(0);
+        expect(o.tiempoMin).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  it("lounges: 12 hubs + IATAs únicas + datos populados", () => {
+    assertUniqueKeys("LOUNGE_IATAS", LOUNGE_IATAS);
+    expect(LOUNGES.length).toBeGreaterThanOrEqual(12);
+    LOUNGES.forEach((h) => {
+      expect(h.iata).toMatch(/^[A-Z]{3}$/);
+      expect(h.lounges.length).toBeGreaterThanOrEqual(1);
+      expect(h.tarjetasRecomendadas.length).toBeGreaterThanOrEqual(1);
+      h.lounges.forEach((l) => {
+        expect(l.acceso.length).toBeGreaterThanOrEqual(1);
+        expect(l.servicios.length).toBeGreaterThanOrEqual(1);
+      });
     });
   });
 });
