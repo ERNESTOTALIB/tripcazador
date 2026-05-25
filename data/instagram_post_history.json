@@ -970,5 +970,14 @@
     "city_from": "Barcelona",
     "city_to": "Gdansk",
     "price_eur": 27.99
+  },
+  {
+    "timestamp": 1779743720.9611042,
+    "deal_id": "ryanair_vlc_lpa_20260920_economy",
+    "origin": "VLC",
+    "destination": "LPA",
+    "city_from": "Valencia",
+    "city_to": "Gran Canaria",
+    "price_eur": 29.47
   }
 ]
