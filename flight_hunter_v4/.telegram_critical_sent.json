@@ -2343,6 +2343,22 @@
       "destination": "PFO",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a3c103d1ea5e",
+      "ts": "2026-05-25T21:00:00.087543+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 34.8,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e8a5b4176d66",
+      "ts": "2026-05-25T21:00:00.087543+00:00",
+      "origin": "LIS",
+      "destination": "FNC",
+      "price_eur": 34.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
