@@ -2423,6 +2423,22 @@
       "destination": "BTS",
       "price_eur": 32.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "faf6a51a4e07",
+      "ts": "2026-05-26T22:16:43.000878+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 24.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "86c6e26b8654",
+      "ts": "2026-05-26T22:16:43.000878+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 33.82,
+      "classification": "CRÍTICO"
     }
   ]
 }
