@@ -997,5 +997,14 @@
     "city_from": "Barcelona",
     "city_to": "Bratislava",
     "price_eur": 25.99
+  },
+  {
+    "timestamp": 1779820325.5499659,
+    "deal_id": "ryanair_lis_rak_20260814_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 16.99
   }
 ]
