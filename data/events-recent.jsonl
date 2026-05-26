@@ -1,6 +1,3 @@
-{"ts":"2026-05-19T18:50:08.196Z","type":"page_view","visitor":"e13b42e3acbd4936","meta":{"path":"/"}}
-{"ts":"2026-05-19T18:50:08.354Z","type":"landing_arrived","visitor":"e13b42e3acbd4936","meta":{"path":"/"}}
-{"ts":"2026-05-19T18:50:11.943Z","type":"page_view","visitor":"e13b42e3acbd4936","meta":{"path":"/deals"}}
 {"ts":"2026-05-19T19:01:57.001Z","type":"landing_arrived","visitor":"7655fdc7a5937691","meta":{"path":"/"}}
 {"ts":"2026-05-19T19:02:03.823Z","type":"page_view","visitor":"7655fdc7a5937691","meta":{"path":"/"}}
 {"ts":"2026-05-19T19:02:03.852Z","type":"landing_arrived","visitor":"7655fdc7a5937691","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-26T11:09:10.882Z","type":"landing_arrived","visitor":"abda1ca88daaee20","meta":{"path":"/blog/cabo-verde-vuelos-baratos-desde-espana-2026","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-26T11:09:10.916Z","type":"page_view","visitor":"abda1ca88daaee20","meta":{"path":"/blog/cabo-verde-vuelos-baratos-desde-espana-2026"}}
 {"ts":"2026-05-26T11:09:10.930Z","type":"landing_arrived","visitor":"abda1ca88daaee20","meta":{"path":"/deals"}}
+{"ts":"2026-05-26T18:53:28.149Z","type":"landing_arrived","visitor":"b444cad42836b9ba","meta":{"path":"/"}}
+{"ts":"2026-05-26T18:53:42.167Z","type":"landing_arrived","visitor":"f46592316d3fcce5","meta":{"path":"/"}}
+{"ts":"2026-05-26T18:53:43.833Z","type":"page_view","visitor":"f46592316d3fcce5","meta":{"path":"/"}}
