@@ -20,6 +20,8 @@ import {
   howToSchema,
   articleSchema,
 } from "@/lib/schema_helpers";
+// AUDIT-FIX: gate /aeropuertos/[iata] link — TFN/OVD/IBZ no están en AIRPORTS_ES
+import { aeropuertoExists, loungeExists, parkingExists } from "@/lib/cross_vertical_links";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -37,7 +39,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const c = getTransporteCiudadBySlug(params.ciudad);
   if (!c) return { title: "Ciudad no encontrada" };
-  const title = `Cómo ir del aeropuerto ${c.iata} al centro de ${c.ciudad} 2026`;
+  const title = `Aeropuerto ${c.iata} al centro de ${c.ciudad}: transporte`;
   const descBase = `${c.options.length} opciones transporte aeropuerto ${c.iata} → ${c.ciudad}: ${c.options
     .slice(0, 3)
     .map((o) => `${o.modo} ${o.precioEur}€`)
@@ -137,6 +139,7 @@ export default function TransporteAeropuertoPage({
     url: `${SITE_URL}/transporte-aeropuerto/${c.slug}`,
     datePublished: c.lastUpdated,
     articleSection: "Transporte aeropuerto",
+    imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(`${c.iata} → ${c.ciudad}`)}`,
   });
 
   return (
@@ -283,17 +286,35 @@ export default function TransporteAeropuertoPage({
           Relacionado
         </h2>
         <div className="flex flex-wrap gap-2">
+          {aeropuertoExists(c.iata) && (
+            <Link
+              href={`/aeropuertos/${c.iata.toLowerCase()}`}
+              className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"
+            >
+              ✈️ Aeropuerto {c.iata}
+            </Link>
+          )}
+          {loungeExists(c.iata) && (
+            <Link
+              href={`/lounge-aeropuerto/${c.iata.toLowerCase()}`}
+              className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"
+            >
+              🛋️ Salas VIP
+            </Link>
+          )}
+          {parkingExists(c.iata) && (
+            <Link
+              href={`/parking-aeropuerto/${c.iata.toLowerCase()}`}
+              className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"
+            >
+              🅿️ Parking
+            </Link>
+          )}
           <Link
-            href={`/aeropuertos/${c.iata.toLowerCase()}`}
+            href="/equipo-viaje"
             className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"
           >
-            ✈️ Aeropuerto {c.iata}
-          </Link>
-          <Link
-            href={`/preparar-viaje/${c.slug.split("-")[0]}`}
-            className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"
-          >
-            📋 Preparar viaje
+            🎒 Equipo viaje
           </Link>
           <Link
             href="/equipaje-medidor"

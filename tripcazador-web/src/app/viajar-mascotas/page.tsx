@@ -16,7 +16,7 @@ import {
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 export const metadata: Metadata = {
-  title: "Viajar con perro o gato en avión 2026: requisitos, jaula, aerolíneas",
+  title: "Viajar con perro o gato en avión: guía 2026",
   description: "Guía completa viajar con mascota: documentación, microchip, vacuna rabia, jaula IATA, mascota cabina vs bodega, restricciones por país y aerolínea.",
   alternates: { canonical: `${SITE_URL}/viajar-mascotas` },
   openGraph: {
@@ -121,6 +121,7 @@ export default function ViajarMascotasPage() {
     url: `${SITE_URL}/viajar-mascotas`,
     datePublished: "2026-05-26",
     articleSection: "Viajar con mascotas",
+    imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent("Viajar con mascotas en avión")}`,
   });
 
   return (

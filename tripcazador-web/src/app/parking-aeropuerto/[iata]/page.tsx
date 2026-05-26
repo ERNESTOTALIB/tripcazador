@@ -17,6 +17,12 @@ import {
   faqPageSchema,
   articleSchema,
 } from "@/lib/schema_helpers";
+// AUDIT-FIX: safe cross-vertical lookup (evita soft-404 internos)
+import {
+  getTransporteSlugForIata,
+  aeropuertoExists,
+  loungeExists,
+} from "@/lib/cross_vertical_links";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -35,7 +41,7 @@ export async function generateMetadata({
   const p = getParkingByIata(params.iata);
   if (!p) return { title: "Aeropuerto no encontrado" };
   const cheapest = [...p.options].sort((a, b) => a.diaEur - b.diaEur)[0];
-  const title = `Parking aeropuerto ${p.iata} ${p.ciudad} 2026: precios día/semana, reserva online`;
+  const title = `Parking aeropuerto ${p.ciudad} (${p.iata}): precios 2026`;
   const description = `Comparativa parking aeropuerto ${p.iata}: AENA general, larga estancia, concertados con shuttle. Desde ${cheapest.diaEur}€/día.`.slice(0, 170);
   return {
     title,
@@ -90,6 +96,7 @@ export default function ParkingAeropuertoPage({
     url: `${SITE_URL}/parking-aeropuerto/${p.iata.toLowerCase()}`,
     datePublished: p.lastUpdated,
     articleSection: "Parking aeropuerto",
+    imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(`Parking ${p.iata} ${p.ciudad}`)}`,
   });
 
   return (
@@ -217,15 +224,24 @@ export default function ParkingAeropuertoPage({
           Relacionado
         </h2>
         <div className="flex flex-wrap gap-2">
-          <Link href={`/aeropuertos/${p.iata.toLowerCase()}`} className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40">
-            ✈️ Aeropuerto {p.iata}
-          </Link>
-          <Link href={`/transporte-aeropuerto/${p.ciudad.toLowerCase().replace(/[áéíóú]/g, (c) => "aeiou"["áéíóú".indexOf(c)]).split(" ")[0]}`} className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40">
-            🚇 Transporte centro
-          </Link>
-          <Link href={`/lounge-aeropuerto/${p.iata.toLowerCase()}`} className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40">
-            🛋️ Salas VIP
-          </Link>
+          {aeropuertoExists(p.iata) && (
+            <Link href={`/aeropuertos/${p.iata.toLowerCase()}`} className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40">
+              ✈️ Aeropuerto {p.iata}
+            </Link>
+          )}
+          {(() => {
+            const transporteSlug = getTransporteSlugForIata(p.iata);
+            return transporteSlug ? (
+              <Link href={`/transporte-aeropuerto/${transporteSlug}`} className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40">
+                🚇 Transporte centro
+              </Link>
+            ) : null;
+          })()}
+          {loungeExists(p.iata) && (
+            <Link href={`/lounge-aeropuerto/${p.iata.toLowerCase()}`} className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40">
+              🛋️ Salas VIP
+            </Link>
+          )}
         </div>
       </section>
 
