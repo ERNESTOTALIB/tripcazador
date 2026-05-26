@@ -2407,6 +2407,22 @@
       "destination": "RMI",
       "price_eur": 23.79,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ab4f792b4456",
+      "ts": "2026-05-26T20:01:46.731347+00:00",
+      "origin": "PRG",
+      "destination": "ZAD",
+      "price_eur": 24.7,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "33c1a8451f04",
+      "ts": "2026-05-26T20:01:46.731347+00:00",
+      "origin": "BCN",
+      "destination": "BTS",
+      "price_eur": 32.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
