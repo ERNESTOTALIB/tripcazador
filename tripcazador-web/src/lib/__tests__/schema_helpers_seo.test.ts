@@ -3,6 +3,8 @@ import {
   websiteSearchActionSchema,
   aggregateRatingSchema,
   speakableSchema,
+  airportPlaceSchema,
+  touristDestinationSchema,
 } from "@/lib/schema_helpers";
 
 describe("websiteSearchActionSchema", () => {
@@ -63,5 +65,55 @@ describe("speakableSchema", () => {
     const s = speakableSchema(["h1", ".lead"]);
     expect(s["@type"]).toBe("SpeakableSpecification");
     expect((s as Record<string, unknown>).cssSelector).toEqual(["h1", ".lead"]);
+  });
+});
+
+describe("airportPlaceSchema", () => {
+  it("genera Airport con GeoCoordinates + PostalAddress", () => {
+    const s = airportPlaceSchema({
+      iata: "MAD",
+      ciudad: "Madrid",
+      formalName: "Adolfo Suárez Madrid-Barajas",
+      lat: 40.4983,
+      lng: -3.5676,
+      address: "Av. Hispanidad",
+      postalCode: "28042",
+      url: "https://tripcazador.com/aeropuertos/mad",
+    });
+    expect(s["@type"]).toBe("Airport");
+    expect((s as Record<string, unknown>).iataCode).toBe("MAD");
+    const geo = (s as { geo: { latitude: number; longitude: number } }).geo;
+    expect(geo.latitude).toBe(40.4983);
+    expect(geo.longitude).toBe(-3.5676);
+    const addr = (s as { address: { addressCountry: string } }).address;
+    expect(addr.addressCountry).toBe("ES");
+  });
+});
+
+describe("touristDestinationSchema", () => {
+  it("genera TouristDestination con campos básicos", () => {
+    const s = touristDestinationSchema({
+      name: "Japón",
+      description: "Cultura ancestral y tecnología moderna",
+      url: "https://tripcazador.com/destinos/japon",
+      country: "JP",
+      touristType: ["Cultural", "Urban"],
+    });
+    expect(s["@type"]).toBe("TouristDestination");
+    expect((s as Record<string, unknown>).name).toBe("Japón");
+    const addr = (s as { address: { addressCountry: string } }).address;
+    expect(addr.addressCountry).toBe("JP");
+  });
+
+  it("incluye geo cuando lat+lng pasados", () => {
+    const s = touristDestinationSchema({
+      name: "Tokio",
+      description: "Capital",
+      url: "https://tripcazador.com/destinos/tokio",
+      lat: 35.6762,
+      lng: 139.6503,
+    });
+    const geo = (s as { geo?: { latitude: number; longitude: number } }).geo;
+    expect(geo?.latitude).toBe(35.6762);
   });
 });

@@ -41,6 +41,9 @@ import { PROMO_CODES_SLUGS } from "@/lib/promo_codes_catalog";
 import { EQUIPO_VIAJE_SLUGS } from "@/lib/equipo_viaje_catalog";
 import { TRANSPORTE_AEROPUERTO_SLUGS } from "@/lib/transporte_aeropuerto_catalog";
 import { LOUNGE_IATAS } from "@/lib/lounges_catalog";
+// NEXT (26 may): parking + duty-free verticales
+import { PARKING_AEROPUERTO_IATAS } from "@/lib/parking_aeropuerto_catalog";
+import { DUTY_FREE_IATAS } from "@/lib/duty_free_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -518,6 +521,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),
+  ];
+
+  // NEXT (26 may): /parking-aeropuerto/[iata] × 15 (Parclick afiliado)
+  const parkingPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/parking-aeropuerto`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.8 },
+    ...PARKING_AEROPUERTO_IATAS.map((iata) => ({
+      url: `${BASE_URL}/parking-aeropuerto/${iata.toLowerCase()}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
+    })),
+  ];
+
+  // NEXT (26 may): /duty-free/[iata] × 10
+  const dutyFreePages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/duty-free`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 },
+    ...DUTY_FREE_IATAS.map((iata) => ({
+      url: `${BASE_URL}/duty-free/${iata.toLowerCase()}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+  ];
+
+  // NEXT (26 may): /viajar-mascotas (single landing)
+  const viajarMascotasPage: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/viajar-mascotas`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.75 },
   ];
 
   // SUPER-1D: /aerolineas/[code]/equipaje sub-vertical × 15
@@ -1163,6 +1193,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...transporteAeropuertoPages,
     // SUPER-SEO: lounges aeropuerto × 12 + hub
     ...loungePages,
+    // NEXT: parking aeropuerto × 15 + hub (Parclick afiliado)
+    ...parkingPages,
+    // NEXT: duty-free × 10 + hub
+    ...dutyFreePages,
+    // NEXT: viajar mascotas single landing
+    ...viajarMascotasPage,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,
