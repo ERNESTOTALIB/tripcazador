@@ -38,6 +38,9 @@ import { JETLAG_SLUGS } from "@/lib/jetlag_catalog";
 import { IDIOMAS_SLUGS } from "@/lib/idiomas_catalog";
 import { DINERO_SLUGS } from "@/lib/dinero_catalog";
 import { PROMO_CODES_SLUGS } from "@/lib/promo_codes_catalog";
+import { EQUIPO_VIAJE_SLUGS } from "@/lib/equipo_viaje_catalog";
+import { TRANSPORTE_AEROPUERTO_SLUGS } from "@/lib/transporte_aeropuerto_catalog";
+import { LOUNGE_IATAS } from "@/lib/lounges_catalog";
 
 const BASE_URL = "https://tripcazador.com";
 
@@ -487,6 +490,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
+  // SUPER-SPONSORS: /equipo-viaje vertical Amazon Associates × 12 productos
+  const equipoViajePages: MetadataRoute.Sitemap = EQUIPO_VIAJE_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/equipo-viaje/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  // SUPER-SEO: /transporte-aeropuerto/[ciudad] × 15 + hub
+  const transporteAeropuertoPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/transporte-aeropuerto`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.75 },
+    ...TRANSPORTE_AEROPUERTO_SLUGS.map((slug) => ({
+      url: `${BASE_URL}/transporte-aeropuerto/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
+    })),
+  ];
+
+  // SUPER-SEO: /lounge-aeropuerto/[iata] × 12 + hub
+  const loungePages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/lounge-aeropuerto`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 },
+    ...LOUNGE_IATAS.map((iata) => ({
+      url: `${BASE_URL}/lounge-aeropuerto/${iata.toLowerCase()}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+  ];
+
   // SUPER-1D: /aerolineas/[code]/equipaje sub-vertical × 15
   const AIRLINE_EQUIPAJE_CODES = ["fr", "vy", "u2", "ib", "w6", "lh", "af", "kl", "dy", "qr", "tp", "tk", "ba", "ei", "ek"];
   const equipajeAerolineaPages: MetadataRoute.Sitemap = AIRLINE_EQUIPAJE_CODES.map((c) => ({
@@ -613,6 +646,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.55,
+    },
+    {
+      // SUPER-SPONSORS (25 may): /patrocinadores self-serve Stripe Checkout
+      url: `${BASE_URL}/patrocinadores`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      // SUPER-SPONSORS: /equipo-viaje hub Amazon Associates ready
+      url: `${BASE_URL}/equipo-viaje`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
     // SSS365 — wire nuevas landings post-MEGA
     {
@@ -1110,6 +1157,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // SUPER-1D: codigos-promo + equipaje per aerolinea
     ...promoPages,
     ...equipajeAerolineaPages,
+    // SUPER-SPONSORS: equipo viaje Amazon Associates × 12
+    ...equipoViajePages,
+    // SUPER-SEO: transporte aeropuerto-centro × 15 + hub
+    ...transporteAeropuertoPages,
+    // SUPER-SEO: lounges aeropuerto × 12 + hub
+    ...loungePages,
     ...comoViajarPages,
     ...blogPages,
     ...esTagPages,

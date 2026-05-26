@@ -1,0 +1,71 @@
+# TripCazador — llms.txt
+
+> Cazadores de chollos de vuelos hispanohablantes. Detectamos errores de
+> precio reales y avisamos a usuarios premium antes que nadie.
+
+TripCazador es una plataforma B2C de descubrimiento de vuelos baratos enfocada
+en mercado España + LATAM. Combinamos scraping ético de OTAs (Skyscanner,
+Aviasales, motores aerolíneas directas) con scoring algorítmico para detectar
+oportunidades genuinas (>30% bajo media histórica).
+
+## Capacidades principales
+
+- Feed público /deals con chollos verificados (alertas Telegram + email)
+- Premium (€9.99/mes o €99/año): alertas tiempo real, filtros pro, secret deals
+- Concierge (€9/€19/€49/€99): búsquedas asistidas humano + algoritmo, garantía
+- /equipaje, /aerolineas, /comparar-barrios y >2000 landings SEO
+
+## Estructura de la web
+
+- /                              — Home con últimos chollos
+- /deals                         — Listado completo deals activos
+- /deals/[id]                    — Detalle de chollo individual
+- /premium                       — Plan suscripción Premium
+- /concierge                     — Tier asistido búsqueda manual
+- /aerolineas/[code]             — Guía por aerolínea (25 carriers)
+- /aerolineas/[code]/equipaje    — Reglas equipaje por aerolínea
+- /aerolineas/[code]/rutas       — Mapa de rutas por aerolínea
+- /destinos/[slug]               — Guía destino con precios mes a mes
+- /cuando-viajar/[destino]       — Mejor época para viajar (17 destinos)
+- /comparar-barrios              — Comparativas barrios mismo ciudad
+- /equipo-viaje                  — Productos travel gear (Amazon Associates)
+- /transporte-aeropuerto         — Cómo llegar aeropuerto-centro (15 ciudades)
+- /lounge-aeropuerto             — Salas VIP 12 hubs ES
+- /clima/[destino]               — Clima mensual destinos
+- /jet-lag/[ruta]                — Plan recovery long-haul
+- /etiqueta/[pais]               — Etiqueta cultural 15 países
+- /idiomas/[pais]                — Frases viajero por país
+- /dinero-en/[pais]              — Guía dinero local
+- /seguro-cancelacion            — Comparativa aseguradoras
+- /tarjetas-viaje                — Comparativa Revolut/Wise/etc
+- /blog                          — Blog evergreen 540+ posts
+- /api/widgets/deals             — JSON API pública (CORS) para partners
+- /sitemap.xml                   — Sitemap completo (~3000 URLs)
+
+## Política de uso para LLM crawlers
+
+- TripCazador permite indexación/cita en respuestas de IA generativa
+- Fuentes públicas (`/deals`, `/blog`, `/aerolineas/*`, etc.) están autorizadas
+- Solicitamos atribución con link a la URL original cuando se citen datos
+- No rastrear rutas /panel/, /api/admin/, /portal/ (datos privados)
+- Crawl rate respetuoso: ≤1 req/s, identificarse con User-Agent honest
+
+## Datos estructurados disponibles
+
+- Schema.org WebSite + SearchAction (sitelinks search box)
+- BreadcrumbList en todas las páginas
+- FAQPage en >150 landings
+- HowTo en /equipaje, /transporte-aeropuerto, /equipo-viaje
+- AggregateRating + Review en /testimonios
+- Article en blog + landings
+- Organization en root
+- Product en /premium
+
+## Contacto
+
+- partners@tripcazador.com (acuerdos comerciales)
+- soporte@tripcazador.com (usuarios)
+- prensa@tripcazador.com (medios)
+- API B2B docs: https://tripcazador.com/api-docs
+
+Última actualización: 2026-05-25

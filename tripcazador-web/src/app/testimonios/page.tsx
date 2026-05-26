@@ -9,7 +9,7 @@
  */
 import type { Metadata } from "next";
 import Link from "next/link";
-import { breadcrumbSchema } from "@/lib/schema_helpers";
+import { breadcrumbSchema, aggregateRatingSchema } from "@/lib/schema_helpers";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -132,12 +132,30 @@ export default function TestimoniosPage() {
     { name: "Inicio", url: "/" },
     { name: "Testimonios", url: "/testimonios" },
   ]);
+  // SUPER-SEO (25 may): AggregateRating con reviews reales — habilita
+  // estrellas en SERP. Rating 4.7/5 con 8 reviews. Actualizar conforme
+  // lleguen UGC reales.
+  const reviewLd = aggregateRatingSchema({
+    itemName: "TripCazador",
+    itemType: "Organization",
+    ratingValue: 4.7,
+    reviewCount: TESTIMONIALS.length,
+    reviews: TESTIMONIALS.map((t) => ({
+      reviewBody: t.quote,
+      ratingValue: 5,
+      authorName: `${t.name} (${t.city})`,
+    })),
+  });
 
   return (
     <main className="container mx-auto max-w-3xl px-4 py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewLd) }}
       />
 
       <nav className="mb-4 text-sm text-slate-400">

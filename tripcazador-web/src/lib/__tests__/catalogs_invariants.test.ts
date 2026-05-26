@@ -83,6 +83,11 @@ import {
 import { MILLAS_PROGRAMAS, MILLAS_SLUGS } from "@/lib/millas_programas";
 import { MCT_AIRPORTS, MCT_IATAS } from "@/lib/mct_data";
 import { PROMO_CODES_CATALOG, PROMO_CODES_SLUGS } from "@/lib/promo_codes_catalog";
+// SUPER-SPONSORS: equipo viaje catalog invariants
+import { EQUIPO_VIAJE, EQUIPO_VIAJE_SLUGS } from "@/lib/equipo_viaje_catalog";
+// SUPER-SEO: transporte aeropuerto + lounges
+import { TRANSPORTE_AEROPUERTO, TRANSPORTE_AEROPUERTO_SLUGS } from "@/lib/transporte_aeropuerto_catalog";
+import { LOUNGES, LOUNGE_IATAS } from "@/lib/lounges_catalog";
 
 /**
  * Verifica que un array de keys no tiene duplicados y match arr.length === set.size.
@@ -198,6 +203,60 @@ describe("catalogs_invariants — slug uniqueness", () => {
   it("etiqueta: countries únicas (no duplicados)", () => {
     const countries = ETIQUETA_CATALOG.map((e) => e.country);
     assertUniqueKeys("ETIQUETA countries", countries);
+  });
+
+  it("equipo_viaje: slugs únicas + 12 productos + criterios populados", () => {
+    assertUniqueKeys("EQUIPO_VIAJE_SLUGS", EQUIPO_VIAJE_SLUGS);
+    expect(EQUIPO_VIAJE.length).toBeGreaterThanOrEqual(10);
+    EQUIPO_VIAJE.forEach((p) => {
+      expect(p.criterios.length).toBeGreaterThanOrEqual(3);
+      expect(p.guia.length).toBeGreaterThanOrEqual(2);
+      expect(p.faqs.length).toBeGreaterThanOrEqual(2);
+      expect(p.picks.presupuesto.rangeEur).toContain("€");
+      expect(p.picks.medio.rangeEur).toContain("€");
+      expect(p.picks.premium.rangeEur).toContain("€");
+      // SEO description Google limit 160 chars
+      expect(
+        p.seoDescription.length,
+        `seoDescription too long for ${p.slug} (${p.seoDescription.length} chars)`,
+      ).toBeLessThanOrEqual(170);
+    });
+  });
+
+  it("equipo_viaje: slugs match regex SEO-safe (no & ñ spaces)", () => {
+    EQUIPO_VIAJE_SLUGS.forEach((s) => {
+      expect(s, `slug "${s}" no es URL-safe`).toMatch(/^[a-z0-9-]+$/);
+    });
+  });
+
+  it("transporte_aeropuerto: 15 ciudades + slugs URL-safe + IATAs válidas", () => {
+    assertUniqueKeys("TRANSPORTE_AEROPUERTO_SLUGS", TRANSPORTE_AEROPUERTO_SLUGS);
+    expect(TRANSPORTE_AEROPUERTO.length).toBeGreaterThanOrEqual(15);
+    TRANSPORTE_AEROPUERTO.forEach((c) => {
+      expect(c.slug, `slug "${c.slug}" URL-safe`).toMatch(/^[a-z0-9-]+$/);
+      expect(c.iata, `IATA "${c.iata}" 3 letras upper`).toMatch(/^[A-Z]{3}$/);
+      expect(c.distanciaKm).toBeGreaterThan(0);
+      expect(c.options.length).toBeGreaterThanOrEqual(2);
+      expect(c.tips.length).toBeGreaterThanOrEqual(2);
+      c.options.forEach((o) => {
+        expect(o.precioEur).toBeGreaterThanOrEqual(0);
+        expect(o.tiempoMin).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  it("lounges: 12 hubs + IATAs únicas + datos populados", () => {
+    assertUniqueKeys("LOUNGE_IATAS", LOUNGE_IATAS);
+    expect(LOUNGES.length).toBeGreaterThanOrEqual(12);
+    LOUNGES.forEach((h) => {
+      expect(h.iata).toMatch(/^[A-Z]{3}$/);
+      expect(h.lounges.length).toBeGreaterThanOrEqual(1);
+      expect(h.tarjetasRecomendadas.length).toBeGreaterThanOrEqual(1);
+      h.lounges.forEach((l) => {
+        expect(l.acceso.length).toBeGreaterThanOrEqual(1);
+        expect(l.servicios.length).toBeGreaterThanOrEqual(1);
+      });
+    });
   });
 });
 

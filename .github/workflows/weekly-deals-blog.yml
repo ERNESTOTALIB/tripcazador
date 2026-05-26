@@ -1,0 +1,63 @@
+name: Weekly Deals Blog Auto-Post
+
+# Cron domingos 08:00 UTC — genera un post MDX evergreen con los
+# top-5 chollos más baratos de la semana extraídos de /api/deals.
+# El post se commit a `pre` automáticamente.
+#
+# Beneficio SEO: cada semana una nueva URL evergreen indexed por Google
+# con keywords reales (rutas, fechas, precios). Compound effect:
+# 52 posts/año = 52 nuevas landings sin trabajo manual.
+#
+# Requiere secret: GITHUB_TOKEN (built-in, no setup) y permission
+# contents:write en el job. Si falla la generación, no commit nada.
+
+on:
+  schedule:
+    - cron: "0 8 * * 0"   # domingos 8am UTC = 10am ES
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout pre branch
+        uses: actions/checkout@v4
+        with:
+          ref: pre
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch top deals + generate MDX
+        id: generate
+        run: |
+          node tripcazador-web/scripts/generate_weekly_blog.mjs
+        env:
+          DEALS_API_URL: "https://tripcazador.com/api/deals"
+          OUTPUT_DIR: "tripcazador-web/src/content/blog"
+
+      - name: Commit generated post
+        if: steps.generate.outputs.created == 'true'
+        run: |
+          git config user.email "bot@tripcazador.com"
+          git config user.name "TripCazador Bot"
+          git add tripcazador-web/src/content/blog/
+          git commit -m "chore(blog): auto-generate weekly deals post ${{ steps.generate.outputs.filename }} [skip ci]"
+          git push origin pre
+
+      - name: Notify Telegram on failure
+        if: failure() && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MSG="⚠ Weekly deals blog cron failed\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+            -d chat_id="$TELEGRAM_CHAT_ID" \
+            -d text="$MSG"

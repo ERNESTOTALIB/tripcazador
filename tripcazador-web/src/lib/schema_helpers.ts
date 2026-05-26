@@ -290,6 +290,92 @@ export function articleSchema(input: ArticleSchemaInput): Record<string, unknown
   };
 }
 
+// ──────────────────────────────────────────────────────────────
+// SUPER-SEO (25 may 2026) — WebSite SearchAction + Speakable + Review
+
+/**
+ * WebSite con SearchAction — habilita Google "sitelinks search box"
+ * cuando aparece TripCazador en SERP. Critical para branded search.
+ */
+export function websiteSearchActionSchema(): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${BASE_URL}/#website`,
+    name: "TripCazador",
+    url: BASE_URL,
+    description: "Cazadores de chollos de vuelos hispanohablantes",
+    publisher: {
+      "@type": "Organization",
+      name: "TripCazador",
+    },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${BASE_URL}/buscar?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+    inLanguage: "es-ES",
+  };
+}
+
+export interface ReviewSchemaInput {
+  reviewBody: string;
+  ratingValue: number;
+  authorName: string;
+  datePublished?: string;
+}
+
+/**
+ * AggregateRating Review — para landings con testimonios reales.
+ * Critical para mostrar estrellas en SERP.
+ */
+export function aggregateRatingSchema(opts: {
+  itemName: string;
+  itemType: "Organization" | "Product" | "Service";
+  ratingValue: number;
+  reviewCount: number;
+  bestRating?: number;
+  reviews?: ReviewSchemaInput[];
+}): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": opts.itemType,
+    name: opts.itemName,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: opts.ratingValue,
+      reviewCount: opts.reviewCount,
+      bestRating: opts.bestRating ?? 5,
+      worstRating: 1,
+    },
+    review: opts.reviews?.map((r) => ({
+      "@type": "Review",
+      reviewBody: r.reviewBody,
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: r.ratingValue,
+        bestRating: 5,
+      },
+      author: { "@type": "Person", name: r.authorName },
+      datePublished: r.datePublished,
+    })),
+  };
+}
+
+/**
+ * SpeakableSpecification — marca contenido apto para voice assistants
+ * (Google Assistant lo lee en respuesta voz). Mejora "Hey Google, ¿X?".
+ */
+export function speakableSchema(cssSelectors: string[]): Record<string, unknown> {
+  return {
+    "@type": "SpeakableSpecification",
+    cssSelector: cssSelectors,
+  };
+}
+
 /**
  * Limpieza: drops undefined keys recursivamente — Google a veces se queja
  * de "missing required field" si hay nulls.

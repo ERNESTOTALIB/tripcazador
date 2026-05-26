@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { captureRevenueError } from "@/lib/sentry_helper";
 import { extractAttributionFromSession } from "@/lib/partner_attribution";
+import {
+  recordSponsorActivation,
+  getSponsorTier,
+  type SponsorActive,
+  type SponsorTierSlug,
+} from "@/lib/sponsors_catalog";
 
 /**
  * /api/stripe/webhook — fase SSS9 LIVE
@@ -129,6 +135,50 @@ export async function POST(req: NextRequest) {
         } catch (e) {
           console.error("[partner-attribution] exception", e);
         }
+
+        // SUPER-SPONSORS — auto-record sponsor activation post-pago.
+        // El sponsor queda en "pending_review" hasta que admin lo aprueba
+        // (evita activación automática de marcas inappropriate).
+        try {
+          const meta = (s.metadata as Record<string, string> | null) ?? {};
+          if (meta.source === "sponsor_checkout" && meta.tier) {
+            const tier = getSponsorTier(meta.tier);
+            if (tier) {
+              const now = Date.now();
+              const expiresAt = new Date(
+                now + tier.durationDays * 86400_000,
+              ).toISOString();
+              const record: SponsorActive = {
+                sessionId: s.id,
+                tier: tier.slug as SponsorTierSlug,
+                brand: meta.brand || "Sponsor",
+                url: meta.url || "https://tripcazador.com",
+                tagline: meta.tagline,
+                contactEmail: meta.contact_email || email,
+                activatedAt: new Date(now).toISOString(),
+                expiresAt,
+                status: "pending_review",
+              };
+              await recordSponsorActivation(record);
+              await notifyAdmin(
+                `📢 <b>Nuevo sponsor pagado (pending review)</b>\n` +
+                  `Tier: ${tier.name} (${tier.priceEur} €)\n` +
+                  `Brand: ${record.brand}\n` +
+                  `URL: ${record.url}\n` +
+                  `Contact: ${record.contactEmail}\n` +
+                  `Session: ${s.id}\n` +
+                  `Revisar y aprobar en /panel/admin/sponsors`,
+              );
+            }
+          }
+        } catch (e) {
+          captureRevenueError(e, {
+            module: "sponsor_activation",
+            code: "sponsor_record_failed",
+            extra: { event_id: event.id, session_id: s.id },
+          });
+        }
+
         break;
       }
       case "customer.subscription.created":

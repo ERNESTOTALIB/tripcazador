@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>TripCazador</ShortName>
+  <Description>Buscar chollos de vuelos en TripCazador</Description>
+  <Tags>vuelos chollos viajes ofertas tripcazador</Tags>
+  <Contact>partners@tripcazador.com</Contact>
+  <Image height="16" width="16" type="image/x-icon">https://tripcazador.com/favicon.ico</Image>
+  <Image height="64" width="64" type="image/png">https://tripcazador.com/android-chrome-192x192.png</Image>
+  <Url type="text/html" method="get" template="https://tripcazador.com/buscar?q={searchTerms}"/>
+  <Url type="application/x-suggestions+json" template="https://tripcazador.com/api/search/suggest?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://tripcazador.com/opensearch.xml"/>
+  <Language>es-ES</Language>
+  <OutputEncoding>UTF-8</OutputEncoding>
+  <InputEncoding>UTF-8</InputEncoding>
+  <moz:SearchForm>https://tripcazador.com/buscar</moz:SearchForm>
+</OpenSearchDescription>
