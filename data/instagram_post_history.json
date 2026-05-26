@@ -1006,5 +1006,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 16.99
+  },
+  {
+    "timestamp": 1779832151.7872941,
+    "deal_id": "ryanair_ams_agp_20260818_economy",
+    "origin": "AMS",
+    "destination": "AGP",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Malaga",
+    "price_eur": 38.23
   }
 ]
