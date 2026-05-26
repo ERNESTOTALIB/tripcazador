@@ -979,5 +979,14 @@
     "city_from": "Valencia",
     "city_to": "Gran Canaria",
     "price_eur": 29.47
+  },
+  {
+    "timestamp": 1779768109.3928077,
+    "deal_id": "ryanair_ams_dub_20260829_economy",
+    "origin": "AMS",
+    "destination": "DUB",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Dublin",
+    "price_eur": 36.19
   }
 ]
