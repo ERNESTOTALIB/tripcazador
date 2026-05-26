@@ -988,5 +988,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Dublin",
     "price_eur": 36.19
+  },
+  {
+    "timestamp": 1779810716.0736344,
+    "deal_id": "ryanair_bcn_bts_20260923_economy",
+    "origin": "BCN",
+    "destination": "BTS",
+    "city_from": "Barcelona",
+    "city_to": "Bratislava",
+    "price_eur": 25.99
   }
 ]
