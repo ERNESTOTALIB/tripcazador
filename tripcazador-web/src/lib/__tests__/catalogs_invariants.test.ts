@@ -88,6 +88,10 @@ import { EQUIPO_VIAJE, EQUIPO_VIAJE_SLUGS } from "@/lib/equipo_viaje_catalog";
 // SUPER-SEO: transporte aeropuerto + lounges
 import { TRANSPORTE_AEROPUERTO, TRANSPORTE_AEROPUERTO_SLUGS } from "@/lib/transporte_aeropuerto_catalog";
 import { LOUNGES, LOUNGE_IATAS } from "@/lib/lounges_catalog";
+// NEXT: parking + duty-free + airport geocoords
+import { PARKING_AEROPUERTOS, PARKING_AEROPUERTO_IATAS } from "@/lib/parking_aeropuerto_catalog";
+import { DUTY_FREE, DUTY_FREE_IATAS } from "@/lib/duty_free_catalog";
+import { AIRPORT_GEOCOORDS } from "@/lib/airport_geocoords";
 
 /**
  * Verifica que un array de keys no tiene duplicados y match arr.length === set.size.
@@ -256,6 +260,50 @@ describe("catalogs_invariants — slug uniqueness", () => {
         expect(l.acceso.length).toBeGreaterThanOrEqual(1);
         expect(l.servicios.length).toBeGreaterThanOrEqual(1);
       });
+    });
+  });
+
+  it("parking_aeropuerto: 15 hubs + IATAs únicas + precios coherentes", () => {
+    assertUniqueKeys("PARKING_AEROPUERTO_IATAS", PARKING_AEROPUERTO_IATAS);
+    expect(PARKING_AEROPUERTOS.length).toBeGreaterThanOrEqual(13);
+    PARKING_AEROPUERTOS.forEach((p) => {
+      expect(p.iata).toMatch(/^[A-Z]{3}$/);
+      expect(p.options.length).toBeGreaterThanOrEqual(2);
+      p.options.forEach((o) => {
+        expect(o.diaEur).toBeGreaterThan(0);
+        expect(o.semanaEur).toBeGreaterThanOrEqual(o.diaEur);
+        // Semana < 7×día (rebajado por estancia múltiple) — sanity check coherencia precio
+        expect(o.semanaEur).toBeLessThanOrEqual(o.diaEur * 7 + 5);
+      });
+      expect(p.tips.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it("duty_free: 10 hubs + IATAs únicas + categorías populadas", () => {
+    assertUniqueKeys("DUTY_FREE_IATAS", DUTY_FREE_IATAS);
+    expect(DUTY_FREE.length).toBeGreaterThanOrEqual(10);
+    DUTY_FREE.forEach((d) => {
+      expect(d.iata).toMatch(/^[A-Z]{3}$/);
+      expect(d.categorias.length).toBeGreaterThanOrEqual(2);
+      expect(d.marcas.length).toBeGreaterThanOrEqual(1);
+      d.categorias.forEach((c) => {
+        expect(c.exampleItems.length).toBeGreaterThanOrEqual(1);
+        expect(c.vaLaPena.length).toBeGreaterThan(10);
+      });
+    });
+  });
+
+  it("airport_geocoords: lat+lng dentro de rangos válidos España", () => {
+    const entries = Object.values(AIRPORT_GEOCOORDS);
+    expect(entries.length).toBeGreaterThanOrEqual(15);
+    entries.forEach((g) => {
+      expect(g.iata).toMatch(/^[A-Z]{3}$/);
+      // España continental: lat 27-44, lng -19 a 5 (incluye Canarias)
+      expect(g.lat).toBeGreaterThan(27);
+      expect(g.lat).toBeLessThan(45);
+      expect(g.lng).toBeGreaterThan(-19);
+      expect(g.lng).toBeLessThan(5);
+      expect(g.address.length).toBeGreaterThan(5);
     });
   });
 });

@@ -291,6 +291,93 @@ export function articleSchema(input: ArticleSchemaInput): Record<string, unknown
 }
 
 // ──────────────────────────────────────────────────────────────
+// NEXT (26 may 2026) — Place schema con GeoCoordinates + TouristDestination
+
+/**
+ * Airport schema (extends Place with GeoCoordinates) — habilita Google
+ * Maps rich result en SERP cuando alguien busca "aeropuerto X".
+ */
+export interface AirportPlaceInput {
+  iata: string;
+  ciudad: string;
+  formalName: string;
+  lat: number;
+  lng: number;
+  address: string;
+  postalCode?: string;
+  url: string;
+  /** Sameas Wikipedia/Wikidata (opcional) */
+  sameAs?: string[];
+}
+
+export function airportPlaceSchema(input: AirportPlaceInput): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Airport",
+    name: input.formalName,
+    iataCode: input.iata,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: input.address,
+      addressLocality: input.ciudad,
+      postalCode: input.postalCode,
+      addressCountry: "ES",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: input.lat,
+      longitude: input.lng,
+    },
+    url: input.url,
+    sameAs: input.sameAs,
+  };
+}
+
+/**
+ * TouristDestination schema — destino turístico para /destinos/[slug].
+ * Google muestra rich cards con imagen + descripción en SERP "qué visitar X".
+ */
+export interface TouristDestinationInput {
+  name: string;
+  description: string;
+  url: string;
+  /** Country ISO o "Multiple" */
+  country?: string;
+  imageUrl?: string;
+  /** Touristic types (Beach, Mountain, City, Cultural, etc.) */
+  touristType?: string[];
+  /** Lat/Lng opcional para Maps rich result */
+  lat?: number;
+  lng?: number;
+}
+
+export function touristDestinationSchema(input: TouristDestinationInput): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "TouristDestination",
+    name: input.name,
+    description: input.description,
+    url: input.url,
+    image: input.imageUrl,
+    touristType: input.touristType,
+    geo:
+      input.lat && input.lng
+        ? {
+            "@type": "GeoCoordinates",
+            latitude: input.lat,
+            longitude: input.lng,
+          }
+        : undefined,
+    address: input.country
+      ? {
+          "@type": "PostalAddress",
+          addressCountry: input.country,
+        }
+      : undefined,
+  };
+}
+
+// ──────────────────────────────────────────────────────────────
 // SUPER-SEO (25 may 2026) — WebSite SearchAction + Speakable + Review
 
 /**

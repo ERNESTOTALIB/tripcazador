@@ -488,6 +488,9 @@ export default function RootLayout({
                   <li><a href="/equipo-viaje" className="hover:text-amber-400">Equipo de viaje 🎒</a></li>
                   <li><a href="/transporte-aeropuerto" className="hover:text-amber-400">Transporte aeropuerto 🚇</a></li>
                   <li><a href="/lounge-aeropuerto" className="hover:text-amber-400">Lounges aeropuerto 🛋️</a></li>
+                  <li><a href="/parking-aeropuerto" className="hover:text-amber-400">Parking aeropuerto 🅿️</a></li>
+                  <li><a href="/duty-free" className="hover:text-amber-400">Duty-free 🛍️</a></li>
+                  <li><a href="/viajar-mascotas" className="hover:text-amber-400">Viajar con mascotas 🐶</a></li>
                   <li><a href="/hoteles-vs-airbnb" className="hover:text-amber-400">Hotel vs Airbnb</a></li>
                   <li><a href="/hoteles" className="hover:text-amber-400">Hoteles por ciudad 🏨</a></li>
                   <li><a href="/regalo" className="hover:text-amber-400">Regalar 🎁</a></li>

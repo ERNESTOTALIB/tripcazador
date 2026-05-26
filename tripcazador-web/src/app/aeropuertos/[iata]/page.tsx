@@ -18,6 +18,9 @@ import {
   getAirportEs,
 } from "@/lib/airports_es_catalog";
 import { getAirlineByCode } from "@/lib/airlines";
+// NEXT (26 may 2026): Place schema GeoCoordinates → Google Maps rich result
+import { getAirportGeo } from "@/lib/airport_geocoords";
+import { airportPlaceSchema } from "@/lib/schema_helpers";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 const PARCLICK_REF = process.env.NEXT_PUBLIC_PARCLICK_REF || "tripcazador";
@@ -134,6 +137,21 @@ export default function AeropuertoPage({ params }: { params: { iata: string } })
     ],
   };
 
+  // NEXT (26 may): Airport Place schema with GeoCoordinates if coords known.
+  const geo = getAirportGeo(airport.iata);
+  const placeJsonLd = geo
+    ? airportPlaceSchema({
+        iata: airport.iata,
+        ciudad: airport.city,
+        formalName: airport.formalName,
+        lat: geo.lat,
+        lng: geo.lng,
+        address: geo.address,
+        postalCode: geo.postalCode,
+        url: `${SITE_URL}/aeropuertos/${airport.iata.toLowerCase()}`,
+      })
+    : null;
+
   return (
     <main className="container mx-auto max-w-5xl px-4 py-8">
       <script
@@ -144,6 +162,12 @@ export default function AeropuertoPage({ params }: { params: { iata: string } })
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      {placeJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(placeJsonLd) }}
+        />
+      )}
 
       <nav className="mb-4 text-sm text-slate-400">
         <Link href="/" className="hover:text-amber-400">Inicio</Link>
