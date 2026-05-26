@@ -16,6 +16,11 @@ import {
   faqPageSchema,
   articleSchema,
 } from "@/lib/schema_helpers";
+// AUDIT-FIX: safe cross-vertical lookup (evita soft-404 transporte-aeropuerto)
+import {
+  getTransporteSlugForIata,
+  aeropuertoExists,
+} from "@/lib/cross_vertical_links";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
@@ -33,7 +38,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const h = getLoungesByIata(params.iata);
   if (!h) return { title: "Aeropuerto no encontrado" };
-  const title = `Salas VIP aeropuerto ${h.iata} ${h.ciudad}: acceso, precio, day pass 2026`;
+  const title = `Salas VIP ${h.ciudad} (${h.iata}): acceso y day pass`;
   const description = `${h.lounges.length} lounges en ${h.iata}: cómo acceder (Priority Pass, Iberia Plus, business), day-pass walk-in desde ${
     Math.min(...h.lounges.filter((l) => l.dayPassEur).map((l) => l.dayPassEur!))
   } €.`;
@@ -102,6 +107,7 @@ export default function LoungeHubPage({
     url: `${SITE_URL}/lounge-aeropuerto/${h.iata.toLowerCase()}`,
     datePublished: h.lastUpdated,
     articleSection: "Lounges aeropuerto",
+    imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(`Salas VIP ${h.iata}`)}`,
   });
 
   return (
@@ -233,18 +239,25 @@ export default function LoungeHubPage({
           Relacionado
         </h2>
         <div className="flex flex-wrap gap-2">
-          <Link
-            href={`/aeropuertos/${h.iata.toLowerCase()}`}
-            className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"
-          >
-            ✈️ Aeropuerto {h.iata}
-          </Link>
-          <Link
-            href={`/transporte-aeropuerto/${h.ciudad.toLowerCase().replace(/ /g, "-").replace(/[áéíóú]/g, (c) => "aeiou"["áéíóú".indexOf(c)])}`}
-            className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"
-          >
-            🚇 Cómo llegar al centro
-          </Link>
+          {aeropuertoExists(h.iata) && (
+            <Link
+              href={`/aeropuertos/${h.iata.toLowerCase()}`}
+              className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"
+            >
+              ✈️ Aeropuerto {h.iata}
+            </Link>
+          )}
+          {(() => {
+            const transporteSlug = getTransporteSlugForIata(h.iata);
+            return transporteSlug ? (
+              <Link
+                href={`/transporte-aeropuerto/${transporteSlug}`}
+                className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"
+              >
+                🚇 Cómo llegar al centro
+              </Link>
+            ) : null;
+          })()}
           <Link
             href="/tarjetas-viaje"
             className="rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-200 hover:border-amber-500/40"

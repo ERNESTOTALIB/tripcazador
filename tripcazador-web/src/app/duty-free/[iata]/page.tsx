@@ -31,7 +31,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const d = getDutyFreeByIata(params.iata);
   if (!d) return { title: "Aeropuerto no encontrado" };
-  const title = `Duty free aeropuerto ${d.iata} ${d.ciudad}: ¿merece la pena? 2026`;
+  const title = `Duty-free ${d.ciudad} (${d.iata}): análisis honest 2026`;
   const description = `Guía honest duty-free ${d.iata}: ${d.categorias.length} categorías analizadas (alcohol, perfumes, tabaco, productos locales). Ahorros reales vs ciudad.`.slice(0, 170);
   return {
     title,
@@ -86,6 +86,7 @@ export default function DutyFreePage({
     url: `${SITE_URL}/duty-free/${d.iata.toLowerCase()}`,
     datePublished: d.lastUpdated,
     articleSection: "Duty-free aeropuerto",
+    imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(`Duty-free ${d.iata}`)}`,
   });
 
   return (

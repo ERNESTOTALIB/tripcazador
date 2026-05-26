@@ -72,6 +72,7 @@ export default function EquipoViajeDetailPage({
     url: `${SITE_URL}/equipo-viaje/${p.slug}`,
     datePublished: p.lastUpdated,
     articleSection: "Equipo viaje",
+    imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(p.name)}`,
   });
 
   return (
