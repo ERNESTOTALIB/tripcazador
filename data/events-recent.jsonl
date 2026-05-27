@@ -1,6 +1,3 @@
-{"ts":"2026-05-19T20:37:21.395Z","type":"favorite_added","visitor":"d70137c02f7f3ec5","meta":{"deal_id":"seed-00bc632c1c","destination":"JFK","origin":"MUC","price":339}}
-{"ts":"2026-05-19T20:44:13.525Z","type":"page_view","visitor":"d70137c02f7f3ec5","meta":{"path":"/deals"}}
-{"ts":"2026-05-19T20:44:51.211Z","type":"page_view","visitor":"d70137c02f7f3ec5","meta":{"path":"/deals"}}
 {"ts":"2026-05-19T20:45:53.836Z","type":"page_view","visitor":"d70137c02f7f3ec5","meta":{"path":"/deals"}}
 {"ts":"2026-05-19T21:48:15.683Z","type":"landing_arrived","visitor":"73d898a3b03da6e6","meta":{"path":"/"}}
 {"ts":"2026-05-19T21:48:21.409Z","type":"landing_arrived","visitor":"73d898a3b03da6e6","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-27T09:19:06.098Z","type":"page_view","visitor":"822ef35af9f9fbea","meta":{"path":"/precio-mes-a-mes/mad-hav"}}
 {"ts":"2026-05-27T09:19:06.116Z","type":"landing_arrived","visitor":"822ef35af9f9fbea","meta":{"path":"/precio-mes-a-mes/mad-hav","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-27T09:42:06.180Z","type":"landing_arrived","visitor":"7124f56efd8718cf","meta":{"path":"/blog/airline-stopover-programs-comparison-2026","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-27T09:42:19.073Z","type":"landing_arrived","visitor":"44e45285e96c8645","meta":{"path":"/"}}
+{"ts":"2026-05-27T09:42:23.928Z","type":"page_view","visitor":"44e45285e96c8645","meta":{"path":"/"}}
+{"ts":"2026-05-27T09:42:23.965Z","type":"landing_arrived","visitor":"44e45285e96c8645","meta":{"path":"/"}}
