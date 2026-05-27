@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T10:33:20.343Z","type":"page_view","visitor":"d4079501f493ebf4","meta":{"path":"/deals"}}
-{"ts":"2026-05-20T10:32:15.083Z","type":"page_view","visitor":"782e012740bb1737","meta":{"path":"/"}}
-{"ts":"2026-05-20T10:32:17.664Z","type":"page_view","visitor":"782e012740bb1737","meta":{"path":"/"}}
 {"ts":"2026-05-20T10:33:01.306Z","type":"result_viewed","visitor":"d4079501f493ebf4","meta":{"deal_id":"seed-222504a99f","destination":"NRT","origin":"MUC","price":499,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-20T10:33:46.862Z","type":"page_view","visitor":"d4079501f493ebf4","meta":{"path":"/deals"}}
 {"ts":"2026-05-20T10:33:47.138Z","type":"page_view","visitor":"d4079501f493ebf4","meta":{"path":"/deals"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-27T20:39:53.175Z","type":"page_view","visitor":"6b51c7b41e6a6a12","meta":{"path":"/en"}}
 {"ts":"2026-05-27T20:41:04.426Z","type":"landing_arrived","visitor":"f43a4e9908b8d5ce","meta":{"path":"/"}}
 {"ts":"2026-05-27T20:41:21.707Z","type":"landing_arrived","visitor":"6b51c7b41e6a6a12","meta":{"path":"/"}}
+{"ts":"2026-05-27T20:47:15.920Z","type":"landing_arrived","visitor":"e603a7a1800093f5","meta":{"path":"/en","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-27T20:47:15.951Z","type":"page_view","visitor":"e603a7a1800093f5","meta":{"path":"/en"}}
+{"ts":"2026-05-27T20:47:22.072Z","type":"page_view","visitor":"e603a7a1800093f5","meta":{"path":"/"}}
