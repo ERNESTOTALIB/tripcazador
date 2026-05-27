@@ -1,6 +1,3 @@
-{"ts":"2026-05-19T21:48:21.511Z","type":"page_view","visitor":"73d898a3b03da6e6","meta":{"path":"/"}}
-{"ts":"2026-05-19T21:48:40.102Z","type":"landing_arrived","visitor":"1e8f8278873bdd94","meta":{"path":"/"}}
-{"ts":"2026-05-19T21:48:43.892Z","type":"landing_arrived","visitor":"1e8f8278873bdd94","meta":{"path":"/"}}
 {"ts":"2026-05-19T21:48:44.050Z","type":"page_view","visitor":"1e8f8278873bdd94","meta":{"path":"/"}}
 {"ts":"2026-05-20T07:13:26.702Z","type":"scroll_75","visitor":"5188d1079cb7e576","meta":{"path":"/agencia"}}
 {"ts":"2026-05-20T07:20:20.795Z","type":"page_view","visitor":"11aa0e6547ce98b8","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-27T09:42:19.072Z","type":"page_view","visitor":"44e45285e96c8645","meta":{"path":"/"}}
 {"ts":"2026-05-27T09:42:24.497Z","type":"landing_arrived","visitor":"44e45285e96c8645","meta":{"path":"/"}}
 {"ts":"2026-05-27T09:42:26.617Z","type":"page_view","visitor":"44e45285e96c8645","meta":{"path":"/"}}
+{"ts":"2026-05-27T09:42:26.607Z","type":"landing_arrived","visitor":"44e45285e96c8645","meta":{"path":"/"}}
+{"ts":"2026-05-27T09:42:27.087Z","type":"page_view","visitor":"44e45285e96c8645","meta":{"path":"/"}}
+{"ts":"2026-05-27T09:42:41.826Z","type":"page_view","visitor":"288153bf7d788b46","meta":{"path":"/"}}
