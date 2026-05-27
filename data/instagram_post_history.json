@@ -1033,5 +1033,14 @@
     "city_from": "Barcelona",
     "city_to": "Bratislava",
     "price_eur": 26.99
+  },
+  {
+    "timestamp": 1779897440.6928842,
+    "deal_id": "ryanair_mad_mla_20260824_economy",
+    "origin": "MAD",
+    "destination": "MLA",
+    "city_from": "Madrid",
+    "city_to": "Malta",
+    "price_eur": 26.29
   }
 ]
