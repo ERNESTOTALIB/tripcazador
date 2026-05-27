@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T09:29:55.921Z","type":"page_view","visitor":"42920e438c0efede","meta":{"path":"/"}}
-{"ts":"2026-05-20T09:29:55.947Z","type":"landing_arrived","visitor":"42920e438c0efede","meta":{"path":"/"}}
-{"ts":"2026-05-20T09:30:12.064Z","type":"landing_arrived","visitor":"56825530e0a5b5ba","meta":{"path":"/"}}
 {"ts":"2026-05-20T09:30:16.201Z","type":"page_view","visitor":"56825530e0a5b5ba","meta":{"path":"/"}}
 {"ts":"2026-05-20T09:30:17.979Z","type":"page_view","visitor":"56825530e0a5b5ba","meta":{"path":"/"}}
 {"ts":"2026-05-20T09:30:20.512Z","type":"page_view","visitor":"56825530e0a5b5ba","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-27T10:53:49.225Z","type":"landing_arrived","visitor":"80cdc58c625aa3c5","meta":{"path":"/"}}
 {"ts":"2026-05-27T10:53:49.611Z","type":"landing_arrived","visitor":"d066375aa4c515c2","meta":{"path":"/"}}
 {"ts":"2026-05-27T10:53:50.827Z","type":"result_viewed","visitor":"918fe4789ae2a77e","meta":{"deal_id":"ryanair_bcn_bts_20260923_economy","destination":"BTS","origin":"BCN","price":26.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-27T10:53:51.576Z","type":"landing_arrived","visitor":"d066375aa4c515c2","meta":{"path":"/"}}
+{"ts":"2026-05-27T10:53:51.934Z","type":"page_view","visitor":"ddb7b63c20073759","meta":{"path":"/"}}
+{"ts":"2026-05-27T10:53:52.089Z","type":"page_view","visitor":"918fe4789ae2a77e","meta":{"path":"/"}}
