@@ -1024,5 +1024,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Tangier",
     "price_eur": 21.99
+  },
+  {
+    "timestamp": 1779882163.8521569,
+    "deal_id": "ryanair_bcn_bts_20260923_economy",
+    "origin": "BCN",
+    "destination": "BTS",
+    "city_from": "Barcelona",
+    "city_to": "Bratislava",
+    "price_eur": 26.99
   }
 ]
