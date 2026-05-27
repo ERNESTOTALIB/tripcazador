@@ -2471,6 +2471,22 @@
       "destination": "CDT",
       "price_eur": 33.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "49f046fda1e2",
+      "ts": "2026-05-27T18:21:53.829282+00:00",
+      "origin": "BUD",
+      "destination": "SKG",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a98427d00580",
+      "ts": "2026-05-27T18:21:53.829282+00:00",
+      "origin": "STN",
+      "destination": "CHQ",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
