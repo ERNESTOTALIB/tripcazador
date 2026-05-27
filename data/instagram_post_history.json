@@ -1015,5 +1015,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Malaga",
     "price_eur": 38.23
+  },
+  {
+    "timestamp": 1779855346.503548,
+    "deal_id": "ryanair_stn_tng_20260828_economy",
+    "origin": "STN",
+    "destination": "TNG",
+    "city_from": "Londres Stansted",
+    "city_to": "Tangier",
+    "price_eur": 21.99
   }
 ]
