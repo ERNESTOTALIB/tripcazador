@@ -2455,6 +2455,22 @@
       "destination": "PFO",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "62564d62deec",
+      "ts": "2026-05-27T15:23:13.793528+00:00",
+      "origin": "BCN",
+      "destination": "GDN",
+      "price_eur": 26.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "4555ccc7ab9c",
+      "ts": "2026-05-27T15:23:13.793528+00:00",
+      "origin": "BUD",
+      "destination": "CDT",
+      "price_eur": 33.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
