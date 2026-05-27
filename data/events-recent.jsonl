@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T09:30:26.108Z","type":"landing_arrived","visitor":"56825530e0a5b5ba","meta":{"path":"/"}}
-{"ts":"2026-05-20T10:11:58.356Z","type":"page_view","visitor":"f8b50fccbaee6a80","meta":{"path":"/deals"}}
-{"ts":"2026-05-20T10:11:59.613Z","type":"page_view","visitor":"f8b50fccbaee6a80","meta":{"path":"/"}}
 {"ts":"2026-05-20T10:12:08.493Z","type":"page_view","visitor":"f8b50fccbaee6a80","meta":{"path":"/deals"}}
 {"ts":"2026-05-20T10:16:24.886Z","type":"result_viewed","visitor":"f843826a9a1d3345","meta":{"deal_id":"seed-00bef3e637","destination":"SYD","origin":"MAD","price":2495,"classification":"CRÍTICO"}}
 {"ts":"2026-05-20T10:16:26.019Z","type":"result_viewed","visitor":"f843826a9a1d3345","meta":{"deal_id":"seed-00e0cf188c","destination":"FCO","origin":"BCN","price":29,"classification":"OFERTA"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-27T10:53:53.731Z","type":"page_view","visitor":"80cdc58c625aa3c5","meta":{"path":"/"}}
 {"ts":"2026-05-27T10:53:53.745Z","type":"landing_arrived","visitor":"80cdc58c625aa3c5","meta":{"path":"/"}}
 {"ts":"2026-05-27T10:53:54.101Z","type":"landing_arrived","visitor":"ddb7b63c20073759","meta":{"path":"/"}}
+{"ts":"2026-05-27T10:53:49.353Z","type":"landing_arrived","visitor":"918fe4789ae2a77e","meta":{"path":"/"}}
+{"ts":"2026-05-27T10:53:49.644Z","type":"landing_arrived","visitor":"d066375aa4c515c2","meta":{"path":"/"}}
+{"ts":"2026-05-27T10:53:55.029Z","type":"page_view","visitor":"918fe4789ae2a77e","meta":{"path":"/"}}
