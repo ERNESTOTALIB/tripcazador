@@ -2439,6 +2439,22 @@
       "destination": "TGD",
       "price_eur": 33.82,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "45e8ad3279f7",
+      "ts": "2026-05-27T11:32:37.725206+00:00",
+      "origin": "PRG",
+      "destination": "GDN",
+      "price_eur": 29.4,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "82ef7f49b2da",
+      "ts": "2026-05-27T11:32:37.725206+00:00",
+      "origin": "WAW",
+      "destination": "PFO",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
