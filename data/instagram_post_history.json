@@ -1060,5 +1060,14 @@
     "city_from": "Barcelona",
     "city_to": "Gdansk",
     "price_eur": 26.99
+  },
+  {
+    "timestamp": 1779941032.3854332,
+    "deal_id": "ryanair_lis_rak_20260809_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 16.99
   }
 ]
