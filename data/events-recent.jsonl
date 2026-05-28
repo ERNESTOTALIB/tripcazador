@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T14:23:57.025Z","type":"landing_arrived","visitor":"df26a11d519d68fa","meta":{"path":"/"}}
-{"ts":"2026-05-20T14:24:15.402Z","type":"landing_arrived","visitor":"0bff32e070b4825f","meta":{"path":"/"}}
-{"ts":"2026-05-20T14:24:15.490Z","type":"page_view","visitor":"0bff32e070b4825f","meta":{"path":"/"}}
 {"ts":"2026-05-20T14:24:20.103Z","type":"landing_arrived","visitor":"0bff32e070b4825f","meta":{"path":"/"}}
 {"ts":"2026-05-20T15:04:43.545Z","type":"search_submitted","visitor":"fcb408e6acece04c","meta":{"origin":"HOU","destination":"CIA","date_out":"2026-06-17","one_way":true,"airline_code":"any"}}
 {"ts":"2026-05-20T15:06:15.076Z","type":"landing_arrived","visitor":"c3fcdd165cf5b8a8","meta":{"path":"/en","utm_source":"chatgpt.com"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-28T10:52:55.374Z","type":"landing_arrived","visitor":"58aca77a455d53fc","meta":{"path":"/"}}
 {"ts":"2026-05-28T10:52:55.630Z","type":"landing_arrived","visitor":"d3a3aa7430c944d0","meta":{"path":"/"}}
 {"ts":"2026-05-28T10:52:58.031Z","type":"page_view","visitor":"d3a3aa7430c944d0","meta":{"path":"/"}}
+{"ts":"2026-05-28T10:52:59.071Z","type":"page_view","visitor":"12e51f7b3626dff2","meta":{"path":"/"}}
+{"ts":"2026-05-28T10:52:59.557Z","type":"page_view","visitor":"4f5b4525eec01aee","meta":{"path":"/"}}
+{"ts":"2026-05-28T10:53:00.916Z","type":"landing_arrived","visitor":"58aca77a455d53fc","meta":{"path":"/"}}
