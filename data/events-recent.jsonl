@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T11:54:44.901Z","type":"landing_arrived","visitor":"769171a1d705191f","meta":{"path":"/"}}
-{"ts":"2026-05-20T11:54:54.407Z","type":"landing_arrived","visitor":"769171a1d705191f","meta":{"path":"/"}}
-{"ts":"2026-05-20T11:54:54.453Z","type":"page_view","visitor":"769171a1d705191f","meta":{"path":"/"}}
 {"ts":"2026-05-20T11:55:10.639Z","type":"page_view","visitor":"0169d56a687aa671","meta":{"path":"/"}}
 {"ts":"2026-05-20T11:55:14.865Z","type":"landing_arrived","visitor":"0169d56a687aa671","meta":{"path":"/"}}
 {"ts":"2026-05-20T11:55:14.892Z","type":"page_view","visitor":"0169d56a687aa671","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-28T10:52:34.345Z","type":"landing_arrived","visitor":"845c6f63c6461f05","meta":{"path":"/"}}
 {"ts":"2026-05-28T10:52:35.974Z","type":"landing_arrived","visitor":"845c6f63c6461f05","meta":{"path":"/"}}
 {"ts":"2026-05-28T10:52:37.274Z","type":"page_view","visitor":"d8a4c67b76b8a87c","meta":{"path":"/"}}
+{"ts":"2026-05-28T10:52:37.868Z","type":"result_viewed","visitor":"845c6f63c6461f05","meta":{"deal_id":"ryanair_mad_mla_20260824_economy","destination":"MLA","origin":"MAD","price":21.66,"classification":"CRÍTICO"}}
+{"ts":"2026-05-28T10:52:38.417Z","type":"page_view","visitor":"d8a4c67b76b8a87c","meta":{"path":"/"}}
+{"ts":"2026-05-28T10:52:39.558Z","type":"landing_arrived","visitor":"845c6f63c6461f05","meta":{"path":"/"}}
