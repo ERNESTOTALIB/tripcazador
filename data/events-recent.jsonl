@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T21:21:10.938Z","type":"page_view","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
-{"ts":"2026-05-20T21:20:54.400Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
-{"ts":"2026-05-20T21:20:58.413Z","type":"landing_arrived","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:21:12.689Z","type":"page_view","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:21:15.174Z","type":"landing_arrived","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:21:16.052Z","type":"page_view","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-28T23:27:07.368Z","type":"page_view","visitor":"542844d330696a4c","meta":{"path":"/en"}}
 {"ts":"2026-05-28T23:27:07.416Z","type":"landing_arrived","visitor":"542844d330696a4c","meta":{"path":"/en","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-28T23:27:07.556Z","type":"page_view","visitor":"542844d330696a4c","meta":{"path":"/deals"}}
+{"ts":"2026-05-28T23:27:31.362Z","type":"result_viewed","visitor":"542844d330696a4c","meta":{"deal_id":"seed-00bef3e637","destination":"SYD","origin":"MAD","price":2495,"classification":"CRÍTICO"}}
+{"ts":"2026-05-28T23:27:53.652Z","type":"result_viewed","visitor":"542844d330696a4c","meta":{"deal_id":"seed-0020bea268","destination":"CAG","origin":"MAD","price":49,"classification":"OFERTA"}}
+{"ts":"2026-05-28T23:27:53.752Z","type":"result_viewed","visitor":"542844d330696a4c","meta":{"deal_id":"seed-0055a63cf0","destination":"DUB","origin":"MAD","price":45,"classification":"OFERTA"}}
