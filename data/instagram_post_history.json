@@ -1078,5 +1078,14 @@
     "city_from": "Varsovia",
     "city_to": "Paphos",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1779984689.2783713,
+    "deal_id": "ryanair_stn_tng_20260901_economy",
+    "origin": "STN",
+    "destination": "TNG",
+    "city_from": "Londres Stansted",
+    "city_to": "Tangier",
+    "price_eur": 20.99
   }
 ]
