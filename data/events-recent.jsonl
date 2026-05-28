@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T21:20:51.910Z","type":"landing_arrived","visitor":"b90119eb388cca26","meta":{"path":"/"}}
-{"ts":"2026-05-20T21:20:50.755Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
-{"ts":"2026-05-20T21:20:58.426Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:21:10.938Z","type":"page_view","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:20:54.400Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:20:58.413Z","type":"landing_arrived","visitor":"b90119eb388cca26","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-28T23:02:31.997Z","type":"page_view","visitor":"6b25e98e004100a7","meta":{"path":"/en"}}
 {"ts":"2026-05-28T23:05:55.032Z","type":"result_viewed","visitor":"6b25e98e004100a7","meta":{"deal_id":"seed-00bb871c54","destination":"SYD","origin":"MAD","price":2295,"classification":"CRÍTICO"}}
 {"ts":"2026-05-28T23:05:56.487Z","type":"page_view","visitor":"6b25e98e004100a7","meta":{"path":"/deals"}}
+{"ts":"2026-05-28T23:27:07.368Z","type":"page_view","visitor":"542844d330696a4c","meta":{"path":"/en"}}
+{"ts":"2026-05-28T23:27:07.416Z","type":"landing_arrived","visitor":"542844d330696a4c","meta":{"path":"/en","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-28T23:27:07.556Z","type":"page_view","visitor":"542844d330696a4c","meta":{"path":"/deals"}}
