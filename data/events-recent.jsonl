@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T21:11:02.721Z","type":"page_view","visitor":"664bbae52c503a85","meta":{"path":"/deals"}}
-{"ts":"2026-05-20T21:11:05.814Z","type":"page_view","visitor":"664bbae52c503a85","meta":{"path":"/deals"}}
-{"ts":"2026-05-20T21:11:07.032Z","type":"page_view","visitor":"664bbae52c503a85","meta":{"path":"/deals"}}
 {"ts":"2026-05-20T21:20:41.229Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:20:41.255Z","type":"landing_arrived","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:20:50.754Z","type":"landing_arrived","visitor":"b90119eb388cca26","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-28T20:35:48.000Z","type":"page_view","visitor":"809caed071ad16b5","meta":{"path":"/comparar-aerolineas/iberia-vs-vueling"}}
 {"ts":"2026-05-28T20:36:16.016Z","type":"page_view","visitor":"809caed071ad16b5","meta":{"path":"/comparar-aerolineas/qatar-vs-emirates"}}
 {"ts":"2026-05-28T20:36:33.296Z","type":"page_view","visitor":"809caed071ad16b5","meta":{"path":"/comparar-aerolineas/qatar-vs-emirates"}}
+{"ts":"2026-05-28T20:41:19.767Z","type":"result_viewed","visitor":"b8884ce053720f6c","meta":{"deal_id":"ryanair_mad_cph_20260908_economy","destination":"CPH","origin":"MAD","price":38.99,"classification":"ERROR"}}
+{"ts":"2026-05-28T20:41:25.903Z","type":"result_viewed","visitor":"b8884ce053720f6c","meta":{"deal_id":"ryanair_bcn_aho_20260716_economy","destination":"AHO","origin":"BCN","price":14.99,"classification":"ANOMALÍA"}}
+{"ts":"2026-05-28T21:01:12.322Z","type":"landing_arrived","visitor":"e60abbebff71c49c","meta":{"path":"/","utm_source":"chatgpt.com"}}
