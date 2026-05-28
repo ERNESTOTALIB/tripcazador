@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T15:07:28.752Z","type":"page_view","visitor":"c3fcdd165cf5b8a8","meta":{"path":"/deals"}}
-{"ts":"2026-05-20T16:39:10.328Z","type":"page_view","visitor":"8e9905bb48d9acea","meta":{"path":"/en"}}
-{"ts":"2026-05-20T16:39:10.397Z","type":"landing_arrived","visitor":"8e9905bb48d9acea","meta":{"path":"/en","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-20T16:39:39.929Z","type":"page_view","visitor":"8e9905bb48d9acea","meta":{"path":"/"}}
 {"ts":"2026-05-20T16:39:46.896Z","type":"page_view","visitor":"8e9905bb48d9acea","meta":{"path":"/en"}}
 {"ts":"2026-05-20T16:39:57.418Z","type":"page_view","visitor":"8e9905bb48d9acea","meta":{"path":"/deals"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-28T16:45:00.225Z","type":"landing_arrived","visitor":"974dd254c1412f10","meta":{"path":"/"}}
 {"ts":"2026-05-28T17:30:47.037Z","type":"page_view","visitor":"bc37d498b19b7075","meta":{"path":"/"}}
 {"ts":"2026-05-28T17:30:47.071Z","type":"landing_arrived","visitor":"bc37d498b19b7075","meta":{"path":"/","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-28T19:13:02.625Z","type":"page_view","visitor":"aba51aa5cccf1eaf","meta":{"path":"/en"}}
+{"ts":"2026-05-28T19:13:02.643Z","type":"landing_arrived","visitor":"aba51aa5cccf1eaf","meta":{"path":"/en","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-28T19:13:03.106Z","type":"page_view","visitor":"aba51aa5cccf1eaf","meta":{"path":"/deals"}}
