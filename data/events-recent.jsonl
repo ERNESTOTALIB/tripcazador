@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T19:48:51.840Z","type":"scroll_75","visitor":"357257aa80983fb5","meta":{"path":"/deals"}}
-{"ts":"2026-05-20T20:52:24.577Z","type":"landing_arrived","visitor":"07585300083f609f","meta":{"path":"/"}}
-{"ts":"2026-05-20T20:52:24.593Z","type":"page_view","visitor":"07585300083f609f","meta":{"path":"/"}}
 {"ts":"2026-05-20T20:52:24.987Z","type":"page_view","visitor":"07585300083f609f","meta":{"path":"/"}}
 {"ts":"2026-05-20T20:52:31.714Z","type":"page_view","visitor":"07585300083f609f","meta":{"path":"/"}}
 {"ts":"2026-05-20T20:52:34.095Z","type":"landing_arrived","visitor":"07585300083f609f","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-28T20:24:19.965Z","type":"page_view","visitor":"809caed071ad16b5","meta":{"path":"/"}}
 {"ts":"2026-05-28T20:24:27.564Z","type":"result_viewed","visitor":"809caed071ad16b5","meta":{"deal_id":"ryanair_mad_lis_20260902_economy","destination":"LIS","origin":"MAD","price":14.99,"classification":"ERROR"}}
 {"ts":"2026-05-28T20:24:27.582Z","type":"result_viewed","visitor":"809caed071ad16b5","meta":{"deal_id":"ryanair_mad_cag_20260923_economy","destination":"CAG","origin":"MAD","price":32.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-28T20:24:52.658Z","type":"result_viewed","visitor":"809caed071ad16b5","meta":{"deal_id":"travelpayouts_mad_lei_20260901_economy","destination":"LEI","origin":"MAD","price":104.88,"classification":"ERROR"}}
+{"ts":"2026-05-28T20:25:13.954Z","type":"result_viewed","visitor":"809caed071ad16b5","meta":{"deal_id":"travelpayouts_mad_lei_20260901_economy","destination":"LEI","origin":"MAD","price":104.88,"classification":"ERROR"}}
+{"ts":"2026-05-28T20:26:06.484Z","type":"landing_arrived","visitor":"809caed071ad16b5","meta":{"path":"/deals"}}
