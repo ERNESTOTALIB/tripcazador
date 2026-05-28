@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T20:52:34.802Z","type":"page_view","visitor":"07585300083f609f","meta":{"path":"/"}}
-{"ts":"2026-05-20T20:52:50.175Z","type":"landing_arrived","visitor":"9158565abb78a1a9","meta":{"path":"/"}}
-{"ts":"2026-05-20T20:52:50.708Z","type":"page_view","visitor":"9158565abb78a1a9","meta":{"path":"/"}}
 {"ts":"2026-05-20T20:52:53.852Z","type":"landing_arrived","visitor":"9158565abb78a1a9","meta":{"path":"/"}}
 {"ts":"2026-05-20T20:52:31.702Z","type":"landing_arrived","visitor":"07585300083f609f","meta":{"path":"/"}}
 {"ts":"2026-05-20T20:52:34.815Z","type":"landing_arrived","visitor":"07585300083f609f","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-28T20:27:56.177Z","type":"landing_arrived","visitor":"809caed071ad16b5","meta":{"path":"/destinos/japon"}}
 {"ts":"2026-05-28T20:28:00.619Z","type":"result_viewed","visitor":"809caed071ad16b5","meta":{"deal_id":"seed-00d9407418","destination":"KIX","origin":"MAD","price":745,"classification":"OFERTA"}}
 {"ts":"2026-05-28T20:28:00.666Z","type":"result_viewed","visitor":"809caed071ad16b5","meta":{"deal_id":"seed-00a95acf86","destination":"NRT","origin":"MUC","price":519,"classification":"OFERTA"}}
+{"ts":"2026-05-28T20:28:18.212Z","type":"result_viewed","visitor":"809caed071ad16b5","meta":{"deal_id":"ryanair_bud_lis_20260925_economy","destination":"LIS","origin":"BUD","price":60.99,"classification":"CRÍTICO"}}
+{"ts":"2026-05-28T20:28:20.450Z","type":"page_view","visitor":"809caed071ad16b5","meta":{"path":"/destinos/lisboa"}}
+{"ts":"2026-05-28T20:28:31.219Z","type":"landing_arrived","visitor":"809caed071ad16b5","meta":{"path":"/destinos/lisboa"}}
