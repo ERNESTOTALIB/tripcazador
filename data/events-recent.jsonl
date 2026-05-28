@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T21:20:41.229Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
-{"ts":"2026-05-20T21:20:41.255Z","type":"landing_arrived","visitor":"b90119eb388cca26","meta":{"path":"/"}}
-{"ts":"2026-05-20T21:20:50.754Z","type":"landing_arrived","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:20:51.910Z","type":"landing_arrived","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:20:50.755Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:20:58.426Z","type":"page_view","visitor":"b90119eb388cca26","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-28T20:41:19.767Z","type":"result_viewed","visitor":"b8884ce053720f6c","meta":{"deal_id":"ryanair_mad_cph_20260908_economy","destination":"CPH","origin":"MAD","price":38.99,"classification":"ERROR"}}
 {"ts":"2026-05-28T20:41:25.903Z","type":"result_viewed","visitor":"b8884ce053720f6c","meta":{"deal_id":"ryanair_bcn_aho_20260716_economy","destination":"AHO","origin":"BCN","price":14.99,"classification":"ANOMALÍA"}}
 {"ts":"2026-05-28T21:01:12.322Z","type":"landing_arrived","visitor":"e60abbebff71c49c","meta":{"path":"/","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-28T23:02:31.997Z","type":"page_view","visitor":"6b25e98e004100a7","meta":{"path":"/en"}}
+{"ts":"2026-05-28T23:05:55.032Z","type":"result_viewed","visitor":"6b25e98e004100a7","meta":{"deal_id":"seed-00bb871c54","destination":"SYD","origin":"MAD","price":2295,"classification":"CRÍTICO"}}
+{"ts":"2026-05-28T23:05:56.487Z","type":"page_view","visitor":"6b25e98e004100a7","meta":{"path":"/deals"}}
