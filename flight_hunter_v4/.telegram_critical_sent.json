@@ -2519,6 +2519,22 @@
       "destination": "TNG",
       "price_eur": 20.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2a05488cf3b9",
+      "ts": "2026-05-28T11:32:48.797080+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 21.66,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8ad01eb652a1",
+      "ts": "2026-05-28T11:32:48.797080+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 24.69,
+      "classification": "CRÍTICO"
     }
   ]
 }
