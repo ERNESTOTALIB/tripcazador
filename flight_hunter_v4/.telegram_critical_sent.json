@@ -2551,6 +2551,22 @@
       "destination": "MLA",
       "price_eur": 28.32,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fa515f4c89e5",
+      "ts": "2026-05-28T18:32:15.247050+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 33.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "3a2dd5585ce6",
+      "ts": "2026-05-28T18:32:15.247050+00:00",
+      "origin": "LIS",
+      "destination": "FNC",
+      "price_eur": 35.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
