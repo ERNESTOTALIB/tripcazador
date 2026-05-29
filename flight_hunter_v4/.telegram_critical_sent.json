@@ -2631,6 +2631,22 @@
       "destination": "SKG",
       "price_eur": 20.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "204f294c6dc4",
+      "ts": "2026-05-29T18:09:05.499669+00:00",
+      "origin": "BUD",
+      "destination": "ATH",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7d36f95bdbea",
+      "ts": "2026-05-29T18:09:05.499669+00:00",
+      "origin": "STN",
+      "destination": "ATH",
+      "price_eur": 28.59,
+      "classification": "CRÍTICO"
     }
   ]
 }
