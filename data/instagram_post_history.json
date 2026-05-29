@@ -1096,5 +1096,14 @@
     "city_from": "Barcelona",
     "city_to": "Bratislava",
     "price_eur": 24.99
+  },
+  {
+    "timestamp": 1780027570.1864908,
+    "deal_id": "ryanair_bud_ber_20260714_economy",
+    "origin": "BUD",
+    "destination": "BER",
+    "city_from": "Budapest",
+    "city_to": "Berlin Brandenburg",
+    "price_eur": 15.99
   }
 ]
