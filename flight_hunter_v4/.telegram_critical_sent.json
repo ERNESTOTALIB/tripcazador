@@ -2663,6 +2663,22 @@
       "destination": "CAG",
       "price_eur": 28.93,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "030c5ad42559",
+      "ts": "2026-05-29T23:07:53.953897+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 31.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "91f3df9f07d0",
+      "ts": "2026-05-29T23:07:53.953897+00:00",
+      "origin": "DUB",
+      "destination": "BDS",
+      "price_eur": 43.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
