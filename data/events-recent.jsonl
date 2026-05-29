@@ -1,6 +1,3 @@
-{"ts":"2026-05-21T06:59:50.336Z","type":"page_view","visitor":"0249da8b8ee4e8b8","meta":{"path":"/"}}
-{"ts":"2026-05-21T08:30:25.741Z","type":"landing_arrived","visitor":"a9938655c01d047d","meta":{"path":"/deals"}}
-{"ts":"2026-05-21T08:30:25.760Z","type":"page_view","visitor":"a9938655c01d047d","meta":{"path":"/deals"}}
 {"ts":"2026-05-21T08:30:27.809Z","type":"page_view","visitor":"a9938655c01d047d","meta":{"path":"/deals"}}
 {"ts":"2026-05-21T08:30:31.784Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"seed-00bcb89090","destination":"MEX","origin":"MAD","price":480,"classification":"OFERTA"}}
 {"ts":"2026-05-21T08:30:32.449Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"seed-003065e963","destination":"TLV","origin":"MAD","price":195,"classification":"OFERTA"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-29T20:05:20.988Z","type":"landing_arrived","visitor":"f2ad39b75c7e28fa","meta":{"path":"/"}}
 {"ts":"2026-05-29T20:05:21.041Z","type":"page_view","visitor":"f2ad39b75c7e28fa","meta":{"path":"/"}}
 {"ts":"2026-05-29T20:05:22.880Z","type":"page_view","visitor":"f2ad39b75c7e28fa","meta":{"path":"/"}}
+{"ts":"2026-05-29T20:05:22.900Z","type":"landing_arrived","visitor":"f2ad39b75c7e28fa","meta":{"path":"/"}}
+{"ts":"2026-05-29T20:05:25.157Z","type":"landing_arrived","visitor":"f2ad39b75c7e28fa","meta":{"path":"/"}}
+{"ts":"2026-05-29T20:05:28.506Z","type":"landing_arrived","visitor":"f2ad39b75c7e28fa","meta":{"path":"/"}}
