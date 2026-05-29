@@ -1105,5 +1105,14 @@
     "city_from": "Budapest",
     "city_to": "Berlin Brandenburg",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1780054437.0246823,
+    "deal_id": "ryanair_dub_boj_20260923_economy",
+    "origin": "DUB",
+    "destination": "BOJ",
+    "city_from": "Dubl\u00edn",
+    "city_to": "Burgas",
+    "price_eur": 45.99
   }
 ]
