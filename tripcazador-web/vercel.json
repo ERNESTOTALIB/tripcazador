@@ -5,7 +5,8 @@
   "installCommand": "npm install --legacy-peer-deps --no-audit --no-fund",
 
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://api.tripcazador.com"
+    "NEXT_PUBLIC_API_URL": "https://api.tripcazador.com",
+        "NEXT_PUBLIC_API_TIMEOUT_MS": "3000"
   },
 
   "rewrites": [
