@@ -2647,6 +2647,22 @@
       "destination": "ATH",
       "price_eur": 28.59,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "652822f01ae5",
+      "ts": "2026-05-29T21:05:47.674608+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "eabba15ae1ec",
+      "ts": "2026-05-29T21:05:47.674608+00:00",
+      "origin": "STN",
+      "destination": "CAG",
+      "price_eur": 28.93,
+      "classification": "CRÍTICO"
     }
   ]
 }
