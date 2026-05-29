@@ -1,6 +1,3 @@
-{"ts":"2026-05-20T21:21:18.736Z","type":"landing_arrived","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
-{"ts":"2026-05-20T21:21:18.873Z","type":"page_view","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
-{"ts":"2026-05-20T21:21:19.864Z","type":"landing_arrived","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:21:23.437Z","type":"landing_arrived","visitor":"2cf937bcb4506bd0","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:27:45.818Z","type":"page_view","visitor":"bbdbf2728a1f6db7","meta":{"path":"/"}}
 {"ts":"2026-05-20T21:27:48.653Z","type":"page_view","visitor":"bbdbf2728a1f6db7","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-29T02:22:06.568Z","type":"page_view","visitor":"c8511ec35d7857e6","meta":{"path":"/comparar-aerolineas/ryanair-vs-vueling"}}
 {"ts":"2026-05-29T02:22:06.597Z","type":"landing_arrived","visitor":"c8511ec35d7857e6","meta":{"path":"/comparar-aerolineas/ryanair-vs-vueling","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-29T02:22:14.987Z","type":"page_view","visitor":"c8511ec35d7857e6","meta":{"path":"/deals"}}
+{"ts":"2026-05-29T08:48:13.608Z","type":"page_view","visitor":"7311dc2a55a08454","meta":{"path":"/deals"}}
+{"ts":"2026-05-29T08:48:13.643Z","type":"landing_arrived","visitor":"7311dc2a55a08454","meta":{"path":"/deals"}}
+{"ts":"2026-05-29T08:48:13.664Z","type":"page_view","visitor":"7311dc2a55a08454","meta":{"path":"/en"}}
