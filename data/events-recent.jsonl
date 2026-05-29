@@ -1,6 +1,3 @@
-{"ts":"2026-05-21T08:34:58.092Z","type":"result_viewed","visitor":"a9938655c01d047d","meta":{"deal_id":"ryanair_mad_cag_20260914_economy","destination":"CAG","origin":"MAD","price":36.99,"classification":"CRÍTICO"}}
-{"ts":"2026-05-21T08:42:19.218Z","type":"page_view","visitor":"76ae3de9999febee","meta":{"path":"/"}}
-{"ts":"2026-05-21T08:42:19.469Z","type":"landing_arrived","visitor":"76ae3de9999febee","meta":{"path":"/","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-21T09:38:05.660Z","type":"landing_arrived","visitor":"88a50b13cb3344e3","meta":{"path":"/"}}
 {"ts":"2026-05-21T09:38:11.882Z","type":"page_view","visitor":"88a50b13cb3344e3","meta":{"path":"/"}}
 {"ts":"2026-05-21T09:38:12.277Z","type":"page_view","visitor":"88a50b13cb3344e3","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-29T20:27:59.623Z","type":"page_view","visitor":"b61b70cf0b63ef93","meta":{"path":"/en"}}
 {"ts":"2026-05-29T20:27:59.636Z","type":"landing_arrived","visitor":"b61b70cf0b63ef93","meta":{"path":"/en","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-29T20:28:00.955Z","type":"page_view","visitor":"b61b70cf0b63ef93","meta":{"path":"/deals"}}
+{"ts":"2026-05-29T20:28:10.061Z","type":"page_view","visitor":"b61b70cf0b63ef93","meta":{"path":"/deals"}}
+{"ts":"2026-05-29T21:31:01.537Z","type":"landing_arrived","visitor":"a2701562ce2a88c6","meta":{"path":"/","utm_source":"chatgpt.com"}}
+{"ts":"2026-05-29T21:31:01.566Z","type":"page_view","visitor":"a2701562ce2a88c6","meta":{"path":"/"}}
