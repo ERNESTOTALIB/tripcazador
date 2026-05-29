@@ -1123,5 +1123,14 @@
     "city_from": "Barcelona",
     "city_to": "Bratislava",
     "price_eur": 24.99
+  },
+  {
+    "timestamp": 1780079866.573391,
+    "deal_id": "ryanair_prg_zad_20260829_economy",
+    "origin": "PRG",
+    "destination": "ZAD",
+    "city_from": "Praga",
+    "city_to": "Zadar",
+    "price_eur": 24.7
   }
 ]
