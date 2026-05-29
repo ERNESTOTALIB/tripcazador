@@ -2615,6 +2615,22 @@
       "destination": "RAK",
       "price_eur": 17.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8a67f00dec28",
+      "ts": "2026-05-29T14:49:51.945689+00:00",
+      "origin": "STN",
+      "destination": "BIQ",
+      "price_eur": 24.66,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "4bd47369b4b2",
+      "ts": "2026-05-29T14:49:51.945689+00:00",
+      "origin": "BUD",
+      "destination": "SKG",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
