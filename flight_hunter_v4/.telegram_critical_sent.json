@@ -2759,6 +2759,22 @@
       "destination": "ZAD",
       "price_eur": 20.29,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5c2d3a40013a",
+      "ts": "2026-05-30T18:00:41.641279+00:00",
+      "origin": "SOF",
+      "destination": "PFO",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d401bc192b32",
+      "ts": "2026-05-30T18:00:41.641279+00:00",
+      "origin": "KRK",
+      "destination": "MLA",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
