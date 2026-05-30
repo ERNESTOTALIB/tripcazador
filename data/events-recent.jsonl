@@ -1,6 +1,3 @@
-{"ts":"2026-05-21T10:37:29.199Z","type":"result_viewed","visitor":"8db5a55e2dd4f193","meta":{"deal_id":"ryanair_bcn_rak_20260822_economy","destination":"RAK","origin":"BCN","price":24.23,"classification":"CRÍTICO"}}
-{"ts":"2026-05-21T10:37:29.757Z","type":"page_view","visitor":"8db5a55e2dd4f193","meta":{"path":"/"}}
-{"ts":"2026-05-21T10:37:31.753Z","type":"landing_arrived","visitor":"8db5a55e2dd4f193","meta":{"path":"/"}}
 {"ts":"2026-05-21T10:37:32.363Z","type":"page_view","visitor":"a67f8a99c2bbe80c","meta":{"path":"/"}}
 {"ts":"2026-05-21T10:37:29.719Z","type":"landing_arrived","visitor":"8db5a55e2dd4f193","meta":{"path":"/"}}
 {"ts":"2026-05-21T10:37:34.120Z","type":"landing_arrived","visitor":"8db5a55e2dd4f193","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-30T09:13:44.069Z","type":"page_view","visitor":"4f82ecbda17a523e","meta":{"path":"/"}}
 {"ts":"2026-05-30T09:13:44.486Z","type":"landing_arrived","visitor":"fd2dfe2e365949de","meta":{"path":"/"}}
 {"ts":"2026-05-30T09:13:45.241Z","type":"landing_arrived","visitor":"8ef3dca2fa66d0bb","meta":{"path":"/"}}
+{"ts":"2026-05-30T09:13:45.388Z","type":"page_view","visitor":"8ef3dca2fa66d0bb","meta":{"path":"/"}}
+{"ts":"2026-05-30T09:13:45.630Z","type":"page_view","visitor":"4f82ecbda17a523e","meta":{"path":"/"}}
+{"ts":"2026-05-30T09:13:47.666Z","type":"landing_arrived","visitor":"85d87b9a04ca04bd","meta":{"path":"/"}}
