@@ -1141,5 +1141,14 @@
     "city_from": "Dubl\u00edn",
     "city_to": "Burgas",
     "price_eur": 45.99
+  },
+  {
+    "timestamp": 1780113184.1720407,
+    "deal_id": "ryanair_bcn_bts_20260719_economy",
+    "origin": "BCN",
+    "destination": "BTS",
+    "city_from": "Barcelona",
+    "city_to": "Bratislava",
+    "price_eur": 24.99
   }
 ]
