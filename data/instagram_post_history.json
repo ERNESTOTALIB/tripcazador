@@ -1168,5 +1168,14 @@
     "city_from": "Praga",
     "city_to": "Zadar",
     "price_eur": 20.99
+  },
+  {
+    "timestamp": 1780148979.00221,
+    "deal_id": "ryanair_stn_ath_20260825_economy",
+    "origin": "STN",
+    "destination": "ATH",
+    "city_from": "Londres Stansted",
+    "city_to": "Athens",
+    "price_eur": 28.59
   }
 ]
