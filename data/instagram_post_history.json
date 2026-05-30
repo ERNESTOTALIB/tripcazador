@@ -1159,5 +1159,14 @@
     "city_from": "Varsovia",
     "city_to": "Paphos",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1780135492.0518377,
+    "deal_id": "ryanair_prg_zad_20260927_economy",
+    "origin": "PRG",
+    "destination": "ZAD",
+    "city_from": "Praga",
+    "city_to": "Zadar",
+    "price_eur": 20.99
   }
 ]
