@@ -2727,6 +2727,22 @@
       "destination": "EFL",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "602766cd2e9a",
+      "ts": "2026-05-30T15:01:43.782380+00:00",
+      "origin": "SOF",
+      "destination": "PFO",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "9801c62469c5",
+      "ts": "2026-05-30T15:01:43.782380+00:00",
+      "origin": "BGY",
+      "destination": "RAK",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
