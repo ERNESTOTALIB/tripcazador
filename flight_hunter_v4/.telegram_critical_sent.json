@@ -2791,6 +2791,22 @@
       "destination": "BIQ",
       "price_eur": 26.29,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "57c2b0e813ce",
+      "ts": "2026-05-30T21:55:39.541555+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 30.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d3024c6e5b03",
+      "ts": "2026-05-30T21:55:39.541555+00:00",
+      "origin": "AGP",
+      "destination": "GDN",
+      "price_eur": 38.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
