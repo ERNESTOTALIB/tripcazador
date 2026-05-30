@@ -2807,6 +2807,22 @@
       "destination": "GDN",
       "price_eur": 38.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "36a50f75e08a",
+      "ts": "2026-05-30T22:54:29.626896+00:00",
+      "origin": "MAD",
+      "destination": "LIS",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "3c38d6241f7e",
+      "ts": "2026-05-30T22:54:29.626896+00:00",
+      "origin": "VLC",
+      "destination": "AGP",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
