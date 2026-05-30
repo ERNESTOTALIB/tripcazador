@@ -2679,6 +2679,22 @@
       "destination": "BDS",
       "price_eur": 43.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7d6552dee402",
+      "ts": "2026-05-30T09:53:18.510951+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 18.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6f9f52a7950f",
+      "ts": "2026-05-30T09:53:18.510951+00:00",
+      "origin": "PRG",
+      "destination": "ZAD",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
