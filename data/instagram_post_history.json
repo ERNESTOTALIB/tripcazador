@@ -1213,5 +1213,14 @@
     "city_from": "Varsovia",
     "city_to": "Paphos",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1780235729.8195124,
+    "deal_id": "ryanair_bcn_bts_20260718_economy",
+    "origin": "BCN",
+    "destination": "BTS",
+    "city_from": "Barcelona",
+    "city_to": "Bratislava",
+    "price_eur": 24.99
   }
 ]
