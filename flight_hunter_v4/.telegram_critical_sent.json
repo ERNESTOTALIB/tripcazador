@@ -2823,6 +2823,22 @@
       "destination": "AGP",
       "price_eur": 14.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "211f7853f52a",
+      "ts": "2026-05-31T10:09:57.493636+00:00",
+      "origin": "PRG",
+      "destination": "ZAD",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5c21dc072934",
+      "ts": "2026-05-31T10:09:57.493636+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
