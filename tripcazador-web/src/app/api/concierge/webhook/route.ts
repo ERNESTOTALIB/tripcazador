@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { CONCIERGE_TIERS, isValidTier, type ConciergeTier } from "@/lib/concierge_tiers";
 import { sendOwnerNotify } from "@/lib/owner_notify";
+import { saveConciergeOrderKv } from "@/lib/concierge_orders_kv";
+import { generateOrderId, type ConciergeOrder } from "@/lib/concierge_store";
 
 /**
  * /api/concierge/webhook — fase sss SSS10 (May 2026, tiered)
@@ -190,6 +192,35 @@ export async function POST(req: Request) {
       };
 
       await notifyBackend(orderPayload);
+
+      // AUDIT-WEB FIX-CQ-H2 (31 may 2026): persist en KV para que el
+      // customer portal /concierge/mis-pedidos pueda leer el histórico.
+      // Antes solo enviábamos al VPS muerto → portal mostraba 0 orders.
+      try {
+        const kvOrder: ConciergeOrder = {
+          id: orderPayload.order_id || generateOrderId(),
+          email: orderPayload.email,
+          status: "pending",
+          createdAt: orderPayload.paid_at,
+          origin: orderPayload.origin,
+          destination: orderPayload.destination,
+          date_from: orderPayload.date_from,
+          date_to: orderPayload.date_to,
+          flex_days: orderPayload.flex_days,
+          budget: orderPayload.budget,
+          travelers: orderPayload.travelers,
+          hotel_stars: orderPayload.hotel_stars,
+          amount_paid_eur: amountTotalEur,
+          stripe_session_id: orderPayload.stripe_session_id,
+          tier,
+        };
+        await saveConciergeOrderKv(kvOrder);
+      } catch (e) {
+        console.error(
+          "[concierge-webhook] saveConciergeOrderKv failed:",
+          e instanceof Error ? e.message : String(e),
+        );
+      }
 
       const tgMsg =
         `🎯 *Nuevo pedido Concierge ${tierDef.name.toUpperCase()}*\n\n` +

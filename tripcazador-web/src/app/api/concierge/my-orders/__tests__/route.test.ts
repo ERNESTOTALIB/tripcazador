@@ -122,43 +122,48 @@ describe("GET /api/concierge/my-orders SSS328", () => {
     expect(d.orders).toEqual([]);
   });
 
-  it("200 + filtra orders por email del token (no acepta email del query)", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () =>
-        new Response(
-          JSON.stringify({
-            orders: [
-              {
-                id: "ord_a",
-                email: "user@example.com",
-                status: "pending",
-                createdAt: "2026-05-15T10:00:00Z",
-                origin: "BCN",
-                destination: "JFK",
-                date_from: "2026-08-15",
-                travelers: 2,
-                amount_paid_eur: 19,
-                tier: "standard",
-              },
-              {
-                id: "ord_b",
-                email: "other@example.com",
-                status: "pending",
-                createdAt: "2026-05-14T10:00:00Z",
-                origin: "MAD",
-                destination: "LAX",
-                date_from: "2026-09-01",
-                travelers: 1,
-                amount_paid_eur: 9,
-                tier: "express",
-              },
-            ],
-          }),
-          { status: 200, headers: { "content-type": "application/json" } },
-        ),
-      ),
-    );
+  // AUDIT-WEB FIX-CQ-H2 (31 may 2026): post-refactor static-only el portal
+  // lee de KV (concierge_orders_kv), no del backend FastAPI VPS.
+  // Tests adaptados a saveConciergeOrderKv + __clearConciergeOrdersKvForTests.
+
+  it("200 + filtra orders por email del token (KV-backed)", async () => {
+    const {
+      saveConciergeOrderKv,
+      __clearConciergeOrdersKvForTests,
+    } = await import("@/lib/concierge_orders_kv");
+    await __clearConciergeOrdersKvForTests();
+    await saveConciergeOrderKv({
+      id: "ord_a",
+      email: "user@example.com",
+      status: "pending",
+      createdAt: "2026-05-15T10:00:00Z",
+      origin: "BCN",
+      destination: "JFK",
+      date_from: "2026-08-15",
+      date_to: "2026-08-22",
+      flex_days: 3,
+      budget: 2000,
+      travelers: 2,
+      hotel_stars: 4,
+      amount_paid_eur: 19,
+      tier: "standard",
+    });
+    await saveConciergeOrderKv({
+      id: "ord_b",
+      email: "other@example.com",
+      status: "pending",
+      createdAt: "2026-05-14T10:00:00Z",
+      origin: "MAD",
+      destination: "LAX",
+      date_from: "2026-09-01",
+      date_to: "2026-09-15",
+      flex_days: 5,
+      budget: 1500,
+      travelers: 1,
+      hotel_stars: 3,
+      amount_paid_eur: 9,
+      tier: "express",
+    });
     const token = issueConciergeAccessToken("user@example.com");
     const res = await GET(getReq(`?token=${encodeURIComponent(token)}`));
     const d = await res.json();
@@ -167,34 +172,28 @@ describe("GET /api/concierge/my-orders SSS328", () => {
   });
 
   it("sanitization: response NO incluye stripe_session_id, email, ni internos", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () =>
-        new Response(
-          JSON.stringify({
-            orders: [
-              {
-                id: "ord_x",
-                email: "user@example.com",
-                stripe_session_id: "cs_live_SECRET12345",
-                notes: "internal notes",
-                budget: 1000,
-                flex_days: 3,
-                hotel_stars: 4,
-                status: "pending",
-                createdAt: "2026-05-15T10:00:00Z",
-                origin: "BCN",
-                destination: "JFK",
-                date_from: "2026-08-15",
-                travelers: 2,
-                amount_paid_eur: 19,
-              },
-            ],
-          }),
-          { status: 200, headers: { "content-type": "application/json" } },
-        ),
-      ),
-    );
+    const {
+      saveConciergeOrderKv,
+      __clearConciergeOrdersKvForTests,
+    } = await import("@/lib/concierge_orders_kv");
+    await __clearConciergeOrdersKvForTests();
+    await saveConciergeOrderKv({
+      id: "ord_x",
+      email: "user@example.com",
+      stripe_session_id: "cs_live_SECRET12345",
+      notes: "internal notes",
+      budget: 1000,
+      flex_days: 3,
+      hotel_stars: 4,
+      status: "pending",
+      createdAt: "2026-05-15T10:00:00Z",
+      origin: "BCN",
+      destination: "JFK",
+      date_from: "2026-08-15",
+      date_to: "2026-08-22",
+      travelers: 2,
+      amount_paid_eur: 19,
+    });
     const token = issueConciergeAccessToken("user@example.com");
     const res = await GET(getReq(`?token=${encodeURIComponent(token)}`));
     const d = await res.json();
@@ -205,7 +204,6 @@ describe("GET /api/concierge/my-orders SSS328", () => {
     expect(o.budget).toBeUndefined();
     expect(o.flex_days).toBeUndefined();
     expect(o.hotel_stars).toBeUndefined();
-    // pero sí status, origin, destination, etc.
     expect(o.id).toBe("ord_x");
     expect(o.status_label).toBeDefined();
   });

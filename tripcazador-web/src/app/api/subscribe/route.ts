@@ -134,11 +134,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     welcomeSent = await sendWelcome(email, locale);
   }
 
+  // AUDIT-WEB FIX-SEC-H1 (31 may 2026): no exponer `created` ni `welcome_sent`
+  // al cliente — permitía enumeration de subscribers (POST con email known →
+  // `created:false` confirmaba pertenencia a la lista). Mismo response para
+  // nuevo y existente. El status interno queda en server logs (vía trackEvent).
+  void welcomeSent;
+  void result;
   return NextResponse.json(
     {
       ok: true,
-      created: result.created,
-      welcome_sent: welcomeSent,
+      status: "queued",
     },
     { status: 201 },
   );

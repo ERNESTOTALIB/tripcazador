@@ -93,16 +93,25 @@ async function handle(ownerId: string, providedEmail?: string): Promise<NextResp
       );
     }
 
-    // AUDIT-FULL-2 FIX-SEC-MED: verificar que el email del request coincide
-    // con el del Premium activo del customer_id. Antes cualquiera con cus_xxx
-    // generaba URL de billing portal (cancelar sub, ver facturas, cambiar
-    // tarjeta del titular). Ahora requiere email = titular.
+    // AUDIT-WEB FIX-SEC-H2 (31 may 2026): strict email verification.
+    // Antes el verify era opcional ("Modo lenient: si email no provisto,
+    // permitir") → atacante con cus_xxx (de localStorage scrape, referer,
+    // logs) generaba URL de billing portal sin acreditar el email. Ahora:
     //
-    // Modo lenient: si email no provisto, log warning + permitir (compat con
-    // flujo existente). Cuando UI envíe email siempre, podemos hacer strict.
-    if (providedEmail) {
-      const premium = getPremiumByCustomerId(resolved.customerId);
-      if (premium && premium.email.toLowerCase() !== providedEmail.toLowerCase()) {
+    //  - Si hay registro Premium para este customer_id: email REQUIRED y
+    //    debe matchear titular (timing-safe lowercase compare).
+    //  - Si NO hay registro Premium (legacy / pre-activate): permite el
+    //    portal (compat con cohortes pre-SSS301 que solo guardaban
+    //    customer_id en localStorage sin email persistido server-side).
+    const premium = getPremiumByCustomerId(resolved.customerId);
+    if (premium) {
+      if (!providedEmail) {
+        return NextResponse.json(
+          { ok: false, error: "email_required" },
+          { status: 401 },
+        );
+      }
+      if (premium.email.toLowerCase() !== providedEmail.toLowerCase()) {
         return NextResponse.json(
           { ok: false, error: "email_mismatch" },
           { status: 403 },
