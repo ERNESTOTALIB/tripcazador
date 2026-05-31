@@ -7,6 +7,22 @@ import { enhanceDealBookingUrl, applyTPMarkerServerSide } from "./airline_links"
 import { diversifyDeals } from "./seed_diversifier";
 import { enrichDealLocations, hasEuOrigin, hasSpainOrigin } from "./iata_city";
 
+// ──────────────────────────────────────────────────────────────
+// COST-SAVER (vercel ahorro mayo-2026): timeout en TODOS los fetch
+// al backend api.tripcazador.com. Sin esto, cuando el backend cuelga
+// (100% error rate observado), cada request bloquea la función Vercel
+// durante el max-duration consumiendo memoria + CPU. Coste real
+// detectado: ~$370 USD/mes solo en este bug. 3s es generoso para un
+// FastAPI sano (P50 ≤ 200ms).
+// Si necesitas ajustar sin redeploy, usa NEXT_PUBLIC_API_TIMEOUT_MS.
+// ──────────────────────────────────────────────────────────────
+const API_TIMEOUT_MS = Number(process.env.NEXT_PUBLIC_API_TIMEOUT_MS) || 3000;
+
+function withTimeout(init?: RequestInit): RequestInit {
+  return { ...init, signal: AbortSignal.timeout(API_TIMEOUT_MS) };
+}
+
+
 export interface Deal {
   id: string;
   type: "flight" | "hotel";
@@ -102,9 +118,9 @@ export async function getDeals(params?: {
   // limpiamente al static fallback (worker output / deals-latest.json).
   let res: Response;
   try {
-    res = await fetch(url, {
+    res = await fetch(url, withTimeout({
       next: { revalidate: 300 }, // Revalidar cada 5 minutos (ISR)
-    });
+    }));
   } catch (e) {
     warnApiFallback("api.getDeals", e);
     return getDealsFromStatic();
@@ -266,9 +282,9 @@ export async function getAirports(params?: {
   const url = `${API_BASE}/api/airports${query.toString() ? "?" + query : ""}`;
 
   try {
-    const res = await fetch(url, {
+    const res = await fetch(url, withTimeout({
       next: { revalidate: 86400 }, // catálogo cambia raramente; cache 24 h
-    });
+    }));
     if (!res.ok) return [];
     const data: AirportsResponse = await res.json();
     return data.airports || [];
@@ -320,7 +336,7 @@ export async function getPriceHistory(params: {
   });
   const url = `${API_BASE}/api/price_history?${q}`;
   try {
-    const res = await fetch(url, { next: { revalidate: 3600 } }); // cache 1 h
+    const res = await fetch(url, withTimeout({ next: { revalidate: 3600 } })); // cache 1 h
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -343,7 +359,7 @@ export async function searchDeals(params: SearchParams): Promise<Deal[]> {
   const url = `${API_BASE}/api/search?${query.toString()}`;
 
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, withTimeout({ cache: "no-store" }));
     if (!res.ok) return [];
     return res.json();
   } catch {
@@ -383,7 +399,7 @@ export async function getTopHotels(params?: {
     q.set("max_price_per_night", String(params.maxPricePerNight));
   const url = `${API_BASE}/api/hotels/top${q.toString() ? "?" + q : ""}`;
   try {
-    const res = await fetch(url, { next: { revalidate: 900 } }); // 15 min
+    const res = await fetch(url, withTimeout({ next: { revalidate: 900 } })); // 15 min
     if (!res.ok) {
       // ww WW1: backend devuelve error → seed fallback (30 hoteles reales con marker Booking)
       const { getHotelSeedFallback } = await import("@/lib/hotel_seed");
@@ -404,9 +420,9 @@ export async function getTopHotels(params?: {
 
 export async function getTopDeals(limit = 10): Promise<Deal[]> {
   try {
-    const res = await fetch(`${API_BASE}/api/deals/top?limit=${limit}`, {
+    const res = await fetch(`${API_BASE}/api/deals/top?limit=${limit}`, withTimeout({
       next: { revalidate: 300 },
-    });
+    }));
     if (!res.ok) {
       const data = await getDealsFromStatic();
       return data.deals.slice(0, limit).map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
@@ -532,9 +548,9 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
   // fallback a VPS endpoint
   if (pool.length === 0) {
     try {
-      const res = await fetch(`${API_BASE}/api/deals/top?limit=50`, {
+      const res = await fetch(`${API_BASE}/api/deals/top?limit=50`, withTimeout({
         next: { revalidate: 300 },
-      });
+      }));
       if (res.ok) {
         const arr = await res.json();
         pool = Array.isArray(arr) ? arr : [];
@@ -656,7 +672,7 @@ async function getDealsFromStatic(): Promise<DealsResponse> {
       // SSS415: NO mezclar `cache: "no-store"` + `next.revalidate` — son
       // contradictorios y Next.js emite warning al elegir uno de los dos.
       // Mantenemos ISR 300s (deals-latest.json actualiza ~hourly via worker).
-      const res = await fetch(url, { next: { revalidate: 300 } });
+      const res = await fetch(url, withTimeout({ next: { revalidate: 300 } }));
       if (!res.ok) continue;
       const json = await res.json();
 

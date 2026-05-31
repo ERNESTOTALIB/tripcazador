@@ -1006,5 +1006,203 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 16.99
+  },
+  {
+    "timestamp": 1779832151.7872941,
+    "deal_id": "ryanair_ams_agp_20260818_economy",
+    "origin": "AMS",
+    "destination": "AGP",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Malaga",
+    "price_eur": 38.23
+  },
+  {
+    "timestamp": 1779855346.503548,
+    "deal_id": "ryanair_stn_tng_20260828_economy",
+    "origin": "STN",
+    "destination": "TNG",
+    "city_from": "Londres Stansted",
+    "city_to": "Tangier",
+    "price_eur": 21.99
+  },
+  {
+    "timestamp": 1779882163.8521569,
+    "deal_id": "ryanair_bcn_bts_20260923_economy",
+    "origin": "BCN",
+    "destination": "BTS",
+    "city_from": "Barcelona",
+    "city_to": "Bratislava",
+    "price_eur": 26.99
+  },
+  {
+    "timestamp": 1779897440.6928842,
+    "deal_id": "ryanair_mad_mla_20260824_economy",
+    "origin": "MAD",
+    "destination": "MLA",
+    "city_from": "Madrid",
+    "city_to": "Malta",
+    "price_eur": 26.29
+  },
+  {
+    "timestamp": 1779906659.4643042,
+    "deal_id": "ryanair_waw_pmi_20260726_economy",
+    "origin": "WAW",
+    "destination": "PMI",
+    "city_from": "Varsovia",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 29.99
+  },
+  {
+    "timestamp": 1779919251.7268453,
+    "deal_id": "ryanair_bcn_gdn_20260903_economy",
+    "origin": "BCN",
+    "destination": "GDN",
+    "city_from": "Barcelona",
+    "city_to": "Gdansk",
+    "price_eur": 26.99
+  },
+  {
+    "timestamp": 1779941032.3854332,
+    "deal_id": "ryanair_lis_rak_20260809_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 16.99
+  },
+  {
+    "timestamp": 1779968551.8082554,
+    "deal_id": "ryanair_waw_pfo_20260731_economy",
+    "origin": "WAW",
+    "destination": "PFO",
+    "city_from": "Varsovia",
+    "city_to": "Paphos",
+    "price_eur": 29.99
+  },
+  {
+    "timestamp": 1779984689.2783713,
+    "deal_id": "ryanair_stn_tng_20260901_economy",
+    "origin": "STN",
+    "destination": "TNG",
+    "city_from": "Londres Stansted",
+    "city_to": "Tangier",
+    "price_eur": 20.99
+  },
+  {
+    "timestamp": 1780005521.807127,
+    "deal_id": "ryanair_bcn_bts_20260718_economy",
+    "origin": "BCN",
+    "destination": "BTS",
+    "city_from": "Barcelona",
+    "city_to": "Bratislava",
+    "price_eur": 24.99
+  },
+  {
+    "timestamp": 1780027570.1864908,
+    "deal_id": "ryanair_bud_ber_20260714_economy",
+    "origin": "BUD",
+    "destination": "BER",
+    "city_from": "Budapest",
+    "city_to": "Berlin Brandenburg",
+    "price_eur": 15.99
+  },
+  {
+    "timestamp": 1780054437.0246823,
+    "deal_id": "ryanair_dub_boj_20260923_economy",
+    "origin": "DUB",
+    "destination": "BOJ",
+    "city_from": "Dubl\u00edn",
+    "city_to": "Burgas",
+    "price_eur": 45.99
+  },
+  {
+    "timestamp": 1780069985.1667125,
+    "deal_id": "ryanair_bcn_bts_20260719_economy",
+    "origin": "BCN",
+    "destination": "BTS",
+    "city_from": "Barcelona",
+    "city_to": "Bratislava",
+    "price_eur": 24.99
+  },
+  {
+    "timestamp": 1780079866.573391,
+    "deal_id": "ryanair_prg_zad_20260829_economy",
+    "origin": "PRG",
+    "destination": "ZAD",
+    "city_from": "Praga",
+    "city_to": "Zadar",
+    "price_eur": 24.7
+  },
+  {
+    "timestamp": 1780091737.5922105,
+    "deal_id": "ryanair_dub_boj_20260925_economy",
+    "origin": "DUB",
+    "destination": "BOJ",
+    "city_from": "Dubl\u00edn",
+    "city_to": "Burgas",
+    "price_eur": 45.99
+  },
+  {
+    "timestamp": 1780113184.1720407,
+    "deal_id": "ryanair_bcn_bts_20260719_economy",
+    "origin": "BCN",
+    "destination": "BTS",
+    "city_from": "Barcelona",
+    "city_to": "Bratislava",
+    "price_eur": 24.99
+  },
+  {
+    "timestamp": 1780123843.9562042,
+    "deal_id": "ryanair_waw_pfo_20260731_economy",
+    "origin": "WAW",
+    "destination": "PFO",
+    "city_from": "Varsovia",
+    "city_to": "Paphos",
+    "price_eur": 29.99
+  },
+  {
+    "timestamp": 1780135492.0518377,
+    "deal_id": "ryanair_prg_zad_20260927_economy",
+    "origin": "PRG",
+    "destination": "ZAD",
+    "city_from": "Praga",
+    "city_to": "Zadar",
+    "price_eur": 20.99
+  },
+  {
+    "timestamp": 1780148979.00221,
+    "deal_id": "ryanair_stn_ath_20260825_economy",
+    "origin": "STN",
+    "destination": "ATH",
+    "city_from": "Londres Stansted",
+    "city_to": "Athens",
+    "price_eur": 28.59
+  },
+  {
+    "timestamp": 1780161250.9673324,
+    "deal_id": "ryanair_waw_pfo_20260731_economy",
+    "origin": "WAW",
+    "destination": "PFO",
+    "city_from": "Varsovia",
+    "city_to": "Paphos",
+    "price_eur": 29.99
+  },
+  {
+    "timestamp": 1780175087.7531059,
+    "deal_id": "ryanair_bcn_bts_20260829_economy",
+    "origin": "BCN",
+    "destination": "BTS",
+    "city_from": "Barcelona",
+    "city_to": "Bratislava",
+    "price_eur": 24.99
+  },
+  {
+    "timestamp": 1780201092.2271316,
+    "deal_id": "ryanair_prg_zad_20260928_economy",
+    "origin": "PRG",
+    "destination": "ZAD",
+    "city_from": "Praga",
+    "city_to": "Zadar",
+    "price_eur": 20.99
   }
 ]

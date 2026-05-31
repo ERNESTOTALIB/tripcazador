@@ -2407,6 +2407,422 @@
       "destination": "RMI",
       "price_eur": 23.79,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ab4f792b4456",
+      "ts": "2026-05-26T20:01:46.731347+00:00",
+      "origin": "PRG",
+      "destination": "ZAD",
+      "price_eur": 24.7,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "33c1a8451f04",
+      "ts": "2026-05-26T20:01:46.731347+00:00",
+      "origin": "BCN",
+      "destination": "BTS",
+      "price_eur": 32.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "faf6a51a4e07",
+      "ts": "2026-05-26T22:16:43.000878+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 24.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "86c6e26b8654",
+      "ts": "2026-05-26T22:16:43.000878+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 33.82,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "45e8ad3279f7",
+      "ts": "2026-05-27T11:32:37.725206+00:00",
+      "origin": "PRG",
+      "destination": "GDN",
+      "price_eur": 29.4,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "82ef7f49b2da",
+      "ts": "2026-05-27T11:32:37.725206+00:00",
+      "origin": "WAW",
+      "destination": "PFO",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "62564d62deec",
+      "ts": "2026-05-27T15:23:13.793528+00:00",
+      "origin": "BCN",
+      "destination": "GDN",
+      "price_eur": 26.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "4555ccc7ab9c",
+      "ts": "2026-05-27T15:23:13.793528+00:00",
+      "origin": "BUD",
+      "destination": "CDT",
+      "price_eur": 33.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "49f046fda1e2",
+      "ts": "2026-05-27T18:21:53.829282+00:00",
+      "origin": "BUD",
+      "destination": "SKG",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a98427d00580",
+      "ts": "2026-05-27T18:21:53.829282+00:00",
+      "origin": "STN",
+      "destination": "CHQ",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6f2fe757ff7a",
+      "ts": "2026-05-27T20:58:42.248000+00:00",
+      "origin": "STN",
+      "destination": "GDN",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "442bce540f2c",
+      "ts": "2026-05-27T20:58:42.248000+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "30ddb27367c2",
+      "ts": "2026-05-27T22:43:17.684732+00:00",
+      "origin": "STN",
+      "destination": "GDN",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "726a74a3f384",
+      "ts": "2026-05-27T22:43:17.684732+00:00",
+      "origin": "STN",
+      "destination": "TNG",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2a05488cf3b9",
+      "ts": "2026-05-28T11:32:48.797080+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 21.66,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8ad01eb652a1",
+      "ts": "2026-05-28T11:32:48.797080+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 24.69,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "99b121f38aa9",
+      "ts": "2026-05-28T15:39:49.734375+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "91be1fd13beb",
+      "ts": "2026-05-28T15:39:49.734375+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 28.32,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fa515f4c89e5",
+      "ts": "2026-05-28T18:32:15.247050+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 33.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "3a2dd5585ce6",
+      "ts": "2026-05-28T18:32:15.247050+00:00",
+      "origin": "LIS",
+      "destination": "FNC",
+      "price_eur": 35.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "53d46f1bb3d7",
+      "ts": "2026-05-28T21:04:02.320873+00:00",
+      "origin": "BUD",
+      "destination": "ZAD",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "23833da2efb9",
+      "ts": "2026-05-28T21:04:02.320873+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 32.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e7a6d59fc89d",
+      "ts": "2026-05-28T23:09:38.931785+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ea087c115e5c",
+      "ts": "2026-05-28T23:09:38.931785+00:00",
+      "origin": "BUD",
+      "destination": "ZAD",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2488e9abef8c",
+      "ts": "2026-05-29T11:23:04.106874+00:00",
+      "origin": "BUD",
+      "destination": "ZAD",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "b8d218666c21",
+      "ts": "2026-05-29T11:23:04.106874+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8a67f00dec28",
+      "ts": "2026-05-29T14:49:51.945689+00:00",
+      "origin": "STN",
+      "destination": "BIQ",
+      "price_eur": 24.66,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "4bd47369b4b2",
+      "ts": "2026-05-29T14:49:51.945689+00:00",
+      "origin": "BUD",
+      "destination": "SKG",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "204f294c6dc4",
+      "ts": "2026-05-29T18:09:05.499669+00:00",
+      "origin": "BUD",
+      "destination": "ATH",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7d36f95bdbea",
+      "ts": "2026-05-29T18:09:05.499669+00:00",
+      "origin": "STN",
+      "destination": "ATH",
+      "price_eur": 28.59,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "652822f01ae5",
+      "ts": "2026-05-29T21:05:47.674608+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "eabba15ae1ec",
+      "ts": "2026-05-29T21:05:47.674608+00:00",
+      "origin": "STN",
+      "destination": "CAG",
+      "price_eur": 28.93,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "030c5ad42559",
+      "ts": "2026-05-29T23:07:53.953897+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 31.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "91f3df9f07d0",
+      "ts": "2026-05-29T23:07:53.953897+00:00",
+      "origin": "DUB",
+      "destination": "BDS",
+      "price_eur": 43.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7d6552dee402",
+      "ts": "2026-05-30T09:53:18.510951+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 18.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6f9f52a7950f",
+      "ts": "2026-05-30T09:53:18.510951+00:00",
+      "origin": "PRG",
+      "destination": "ZAD",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "494952726a99",
+      "ts": "2026-05-30T11:16:03.920020+00:00",
+      "origin": "BUD",
+      "destination": "BOJ",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7e9b012e411f",
+      "ts": "2026-05-30T11:16:03.920020+00:00",
+      "origin": "PRG",
+      "destination": "GDN",
+      "price_eur": 28.56,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "48b5fa62593e",
+      "ts": "2026-05-30T13:14:44.691759+00:00",
+      "origin": "BGY",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f5cf099b81fa",
+      "ts": "2026-05-30T13:14:44.691759+00:00",
+      "origin": "BGY",
+      "destination": "EFL",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "602766cd2e9a",
+      "ts": "2026-05-30T15:01:43.782380+00:00",
+      "origin": "SOF",
+      "destination": "PFO",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "9801c62469c5",
+      "ts": "2026-05-30T15:01:43.782380+00:00",
+      "origin": "BGY",
+      "destination": "RAK",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8738204907ee",
+      "ts": "2026-05-30T16:55:34.226242+00:00",
+      "origin": "HHN",
+      "destination": "CAG",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ab44f48ec034",
+      "ts": "2026-05-30T16:55:34.226242+00:00",
+      "origin": "HHN",
+      "destination": "ZAD",
+      "price_eur": 20.29,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5c2d3a40013a",
+      "ts": "2026-05-30T18:00:41.641279+00:00",
+      "origin": "SOF",
+      "destination": "PFO",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d401bc192b32",
+      "ts": "2026-05-30T18:00:41.641279+00:00",
+      "origin": "KRK",
+      "destination": "MLA",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ee3474207835",
+      "ts": "2026-05-30T20:04:40.829729+00:00",
+      "origin": "KRK",
+      "destination": "RMI",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "0f595002a31b",
+      "ts": "2026-05-30T20:04:40.829729+00:00",
+      "origin": "STN",
+      "destination": "BIQ",
+      "price_eur": 26.29,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "57c2b0e813ce",
+      "ts": "2026-05-30T21:55:39.541555+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 30.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d3024c6e5b03",
+      "ts": "2026-05-30T21:55:39.541555+00:00",
+      "origin": "AGP",
+      "destination": "GDN",
+      "price_eur": 38.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "36a50f75e08a",
+      "ts": "2026-05-30T22:54:29.626896+00:00",
+      "origin": "MAD",
+      "destination": "LIS",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "3c38d6241f7e",
+      "ts": "2026-05-30T22:54:29.626896+00:00",
+      "origin": "VLC",
+      "destination": "AGP",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
