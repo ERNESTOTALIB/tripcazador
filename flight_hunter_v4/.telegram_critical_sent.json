@@ -2951,6 +2951,22 @@
       "destination": "ACE",
       "price_eur": 35.56,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d6676447dc2e",
+      "ts": "2026-05-31T22:55:43.162043+00:00",
+      "origin": "AGP",
+      "destination": "GDN",
+      "price_eur": 43.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f576c0135a72",
+      "ts": "2026-05-31T22:55:43.162043+00:00",
+      "origin": "MAD",
+      "destination": "LIS",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
