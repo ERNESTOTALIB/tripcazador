@@ -1,6 +1,3 @@
-{"ts":"2026-05-21T19:58:32.237Z","type":"result_viewed","visitor":"ccf6b762861d85a6","meta":{"deal_id":"ryanair_dub_lis_20260819_economy","destination":"LIS","origin":"DUB","price":37.99,"classification":"ERROR"}}
-{"ts":"2026-05-21T19:58:45.241Z","type":"page_view","visitor":"ccf6b762861d85a6","meta":{"path":"/destinos/paris"}}
-{"ts":"2026-05-21T19:58:49.553Z","type":"result_viewed","visitor":"ccf6b762861d85a6","meta":{"deal_id":"seed-00e247b538","destination":"CDG","origin":"SCQ","price":59,"classification":"OFERTA"}}
 {"ts":"2026-05-21T19:59:02.476Z","type":"landing_arrived","visitor":"ccf6b762861d85a6","meta":{"path":"/destinos/paris"}}
 {"ts":"2026-05-21T20:03:02.716Z","type":"page_view","visitor":"ccf6b762861d85a6","meta":{"path":"/aerolineas/iberia"}}
 {"ts":"2026-05-21T20:03:19.673Z","type":"page_view","visitor":"ccf6b762861d85a6","meta":{"path":"/aerolineas/iberia"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-31T08:43:06.094Z","type":"page_view","visitor":"edec12893c635588","meta":{"path":"/"}}
 {"ts":"2026-05-31T08:43:11.847Z","type":"page_view","visitor":"edec12893c635588","meta":{"path":"/"}}
 {"ts":"2026-05-31T08:43:12.058Z","type":"landing_arrived","visitor":"edec12893c635588","meta":{"path":"/"}}
+{"ts":"2026-05-31T08:43:12.043Z","type":"page_view","visitor":"edec12893c635588","meta":{"path":"/"}}
+{"ts":"2026-05-31T08:43:16.488Z","type":"page_view","visitor":"edec12893c635588","meta":{"path":"/"}}
+{"ts":"2026-05-31T08:43:19.296Z","type":"page_view","visitor":"edec12893c635588","meta":{"path":"/"}}
