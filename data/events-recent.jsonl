@@ -1,6 +1,3 @@
-{"ts":"2026-05-22T08:59:52.354Z","type":"page_view","visitor":"be8afef3a0fd25d6","meta":{"path":"/"}}
-{"ts":"2026-05-22T08:59:52.574Z","type":"page_view","visitor":"be8afef3a0fd25d6","meta":{"path":"/"}}
-{"ts":"2026-05-22T08:59:56.083Z","type":"landing_arrived","visitor":"be8afef3a0fd25d6","meta":{"path":"/"}}
 {"ts":"2026-05-22T09:05:29.066Z","type":"page_view","visitor":"4461f7f100892687","meta":{"path":"/en"}}
 {"ts":"2026-05-22T09:05:29.136Z","type":"landing_arrived","visitor":"4461f7f100892687","meta":{"path":"/en","utm_source":"chatgpt.com"}}
 {"ts":"2026-05-22T09:05:33.629Z","type":"page_view","visitor":"4461f7f100892687","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-31T12:06:32.890Z","type":"result_viewed","visitor":"e2bd9cc9e311c64f","meta":{"deal_id":"seed-003065e963","destination":"TLV","origin":"MAD","price":195,"classification":"OFERTA"}}
 {"ts":"2026-05-31T12:06:34.602Z","type":"result_viewed","visitor":"e2bd9cc9e311c64f","meta":{"deal_id":"seed-008bd02e00","destination":"VTE","origin":"MAD","price":685,"classification":"OFERTA"}}
 {"ts":"2026-05-31T12:06:45.971Z","type":"booking_redirect","visitor":"e2bd9cc9e311c64f","meta":{"deal_id":"seed-001c23ed88","destination":"CMN","origin":"CDG","airline_name":"Royal Air Maroc","price":79,"cabin":"economy","classification":"OFERTA","direct_airline":false,"ab_variant":"A","rerouted":false}}
+{"ts":"2026-05-31T11:57:50.478Z","type":"search_submitted","visitor":"e2bd9cc9e311c64f","meta":{"origin":"CDG","destination":"CMN","date_out":"2026-09-05","one_way":false,"airline_code":"any"}}
+{"ts":"2026-05-31T11:59:10.121Z","type":"page_view","visitor":"e2bd9cc9e311c64f","meta":{"path":"/deals"}}
+{"ts":"2026-05-31T12:07:27.167Z","type":"page_view","visitor":"e2bd9cc9e311c64f","meta":{"path":"/deals"}}
