@@ -2935,6 +2935,22 @@
       "destination": "ZAD",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "68fd937f7299",
+      "ts": "2026-05-31T21:54:57.069760+00:00",
+      "origin": "VLC",
+      "destination": "AGP",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c92e0e31e6d1",
+      "ts": "2026-05-31T21:54:57.069760+00:00",
+      "origin": "MAD",
+      "destination": "ACE",
+      "price_eur": 35.56,
+      "classification": "CRÍTICO"
     }
   ]
 }
