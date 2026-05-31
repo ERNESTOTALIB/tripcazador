@@ -91,19 +91,9 @@ export interface DealsResponse {
 //   - /api/search Vercel route (búsqueda in-memory edge)
 //   - /api/premium/price-history Vercel route (legacy /api/price_history)
 //
-// API_BASE mantenido como const exportada para compatibilidad pero ya no se
-// usa internamente. NEXT_PUBLIC_API_URL env var queda dormida (no rompe nada
-// si se elimina). NEXT_PUBLIC_API_TIMEOUT_MS sigue útil para defensiva en
-// otros fetches externos.
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
-void API_BASE; // suprime "unused" — keep for backward compat external imports
-
-function warnApiFallback(scope: string, e: unknown): void {
-  // En refactor solo loguear si proceso es server-side y no es entorno test
-  if (typeof window !== "undefined") return;
-  if (process.env.NODE_ENV === "test") return;
-  console.warn(`[${scope}] static-only mode:`, e);
-}
+// AUDIT-FIX (31 may 2026): `API_BASE` y `warnApiFallback` eran helpers del
+// código pre-refactor (try-fetch + warn-on-fail). Post-refactor static-only
+// nada los usa. Eliminados. `NEXT_PUBLIC_API_URL` env var queda dormida.
 
 export async function getDeals(params?: {
   classification?: string;

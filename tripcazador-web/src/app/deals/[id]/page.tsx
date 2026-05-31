@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import {
   getDeal,
   getDeals,
-  getPriceHistory,
   formatDate,
   formatDuration,
   getCabinLabel,
@@ -107,16 +106,12 @@ export default async function DealDetailPage({
     notFound();
   }
 
-  // Cargar deals similares + historial de precios en paralelo
-  const [similarData, priceHistory] = await Promise.all([
-    getDeals({ region: deal.region, limit: 12 }),
-    getPriceHistory({
-      origin: deal.origin,
-      destination: deal.destination,
-      cabin: deal.cabin,
-      days: 90,
-    }),
-  ]);
+  // Cargar deals similares. AUDIT-FIX (31 may 2026): getPriceHistory() eliminado
+  // del SSR fetch — el legacy backend devolvía serie temporal 90d pero post-refactor
+  // siempre retorna null. El gráfico de precios sigue disponible para Premium
+  // via PremiumPriceHistoryChart (lee de KV con datos propios).
+  const similarData = await getDeals({ region: deal.region, limit: 12 });
+  const priceHistory = null;
   const similar = similarData.deals
     .filter((d) => d.id !== deal.id && d.destination === deal.destination)
     .slice(0, 6);

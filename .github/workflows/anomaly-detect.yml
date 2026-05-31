@@ -9,8 +9,10 @@ name: Anomaly Detection — Hunter Health
 # Uso: requiere TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID secrets.
 
 on:
-  schedule:
-    - cron: "15 */6 * * *"  # cada 6 horas (00:15 06:15 12:15 18:15 UTC)
+  # AUDIT-FIX (31 may 2026): backend VPS terminated → endpoint /api/health
+  # ya no existe. Cron deshabilitado para evitar false-positive alerts.
+  # schedule:
+  #   - cron: "15 */6 * * *"
   workflow_dispatch:
 
 jobs:

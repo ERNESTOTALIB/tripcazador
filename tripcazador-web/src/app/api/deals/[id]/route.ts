@@ -1,17 +1,15 @@
 /**
- * /api/deals/[id] — SSS83 (May 2026)
+ * /api/deals/[id] — REFACTOR (31 may 2026)
  *
- * Hermano de /api/deals/route.ts: si el VPS devuelve 404 (porque el deal real
- * no está en su deals.json stale) o devuelve un seed, busca el id en el
- * deals-latest.json del repo (1271+ deals reales del hunter).
+ * Backend FastAPI Oracle muerto desde 18 may. Lee directo de
+ * public/deals-latest.json (hunter cron commits). Misma signature.
  */
 import { NextRequest, NextResponse } from "next/server";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const VPS_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.tripcazador.com";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
 
 interface Deal {
   id: string;
@@ -20,27 +18,22 @@ interface Deal {
   [k: string]: unknown;
 }
 
-function isSeedDeal(d: Deal): boolean {
-  return (
-    (typeof d.id === "string" && d.id.startsWith("seed-")) ||
-    (Array.isArray(d.sources) && d.sources.includes("seed")) ||
-    (Array.isArray(d.tags) && d.tags.includes("seed"))
-  );
-}
+// Cache module-level 60s. El JSON solo cambia con commits del worker.
+let cached: { deals: Deal[]; ts: number } | null = null;
+const CACHE_MS = 60_000;
 
-async function fetchFromRepo(id: string): Promise<Deal | null> {
+async function loadStaticDeals(): Promise<Deal[]> {
+  const now = Date.now();
+  if (cached && now - cached.ts < CACHE_MS) return cached.deals;
   try {
-    const r = await fetch(`${SITE_URL}/deals-latest.json`, {
-      cache: "force-cache",
-      next: { revalidate: 300 },
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!r.ok) return null;
-    const j = await r.json();
-    const deals: Deal[] = Array.isArray(j) ? j : Array.isArray(j.deals) ? j.deals : [];
-    return deals.find((d) => d.id === id) || null;
+    const filepath = path.join(process.cwd(), "public", "deals-latest.json");
+    const raw = await fs.readFile(filepath, "utf8");
+    const json = JSON.parse(raw) as { deals?: Deal[] };
+    const deals = Array.isArray(json.deals) ? json.deals : [];
+    cached = { deals, ts: now };
+    return deals;
   } catch {
-    return null;
+    return cached?.deals ?? [];
   }
 }
 
@@ -53,53 +46,19 @@ export async function GET(
     return NextResponse.json({ error: "invalid id" }, { status: 400 });
   }
 
-  // 1) Try VPS
-  let vpsDeal: Deal | null = null;
-  try {
-    const r = await fetch(`${VPS_BASE}/api/deals/${encodeURIComponent(id)}`, {
-      cache: "no-store",
-      signal: AbortSignal.timeout(8000),
-    });
-    if (r.ok) vpsDeal = (await r.json()) as Deal;
-  } catch {
-    // VPS down/timeout
+  const deals = await loadStaticDeals();
+  const deal = deals.find((d) => d.id === id);
+
+  if (!deal) {
+    return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 
-  // 2) Si VPS devolvió un deal real, devolver tal cual
-  if (vpsDeal && !isSeedDeal(vpsDeal)) {
-    return new NextResponse(JSON.stringify(vpsDeal), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "X-Deals-Source": "vps",
-        "Cache-Control": "s-maxage=300, stale-while-revalidate=600",
-      },
-    });
-  }
-
-  // 3) VPS sin deal o seed → buscar en repo
-  const repoDeal = await fetchFromRepo(id);
-  if (repoDeal) {
-    return new NextResponse(JSON.stringify(repoDeal), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "X-Deals-Source": "repo-fallback",
-        "Cache-Control": "s-maxage=300, stale-while-revalidate=600",
-      },
-    });
-  }
-
-  // 4) Si VPS sí devolvió pero era seed, lo damos como último recurso
-  if (vpsDeal) {
-    return new NextResponse(JSON.stringify(vpsDeal), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "X-Deals-Source": "vps-seed",
-      },
-    });
-  }
-
-  return NextResponse.json({ error: "not found" }, { status: 404 });
+  return new NextResponse(JSON.stringify(deal), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Deals-Source": "static",
+      "Cache-Control": "s-maxage=300, stale-while-revalidate=600",
+    },
+  });
 }

@@ -89,15 +89,24 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const origin = params.get("origin")?.toUpperCase();
   const destination = params.get("destination")?.toUpperCase();
-  const maxPrice = params.get("max_price")
-    ? Number(params.get("max_price"))
-    : null;
+  // AUDIT-FIX (31 may 2026): NaN guard. `?max_price=abc` antes producía NaN →
+  // `d.price_eur > NaN` siempre false → todos los deals pasaban el filtro.
+  // Ahora NaN se ignora y el filtro no aplica (consistent con max_price ausente).
+  const maxPriceRaw = params.get("max_price");
+  const maxPriceNum = maxPriceRaw !== null ? Number(maxPriceRaw) : null;
+  const maxPrice =
+    maxPriceNum !== null && Number.isFinite(maxPriceNum) ? maxPriceNum : null;
   const cabin = params.get("cabin")?.toLowerCase();
   const dealType = params.get("deal_type") as "flight" | "hotel" | null;
   const q = params.get("q");
   const dateFrom = params.get("date_from");
   const dateTo = params.get("date_to");
-  const limit = Math.min(Number(params.get("limit")) || 50, 200);
+  // AUDIT-FIX: NaN guard on limit (e.g. ?limit=abc → fallback 50).
+  const limitNum = Number(params.get("limit"));
+  const limit = Math.min(
+    Number.isFinite(limitNum) && limitNum > 0 ? limitNum : 50,
+    200,
+  );
 
   const all = await loadDeals();
 
