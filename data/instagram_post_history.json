@@ -1231,5 +1231,14 @@
     "city_from": "\u00c1msterdam",
     "city_to": "Malaga",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1780261526.9616766,
+    "deal_id": "ryanair_mad_cag_20260928_economy",
+    "origin": "MAD",
+    "destination": "CAG",
+    "city_from": "Madrid",
+    "city_to": "Cagliari",
+    "price_eur": 35.99
   }
 ]
