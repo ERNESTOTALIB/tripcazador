@@ -1,6 +1,3 @@
-{"ts":"2026-05-22T10:22:31.608Z","type":"page_view","visitor":"64b3a99b402734fe","meta":{"path":"/"}}
-{"ts":"2026-05-22T10:22:33.445Z","type":"result_viewed","visitor":"64b3a99b402734fe","meta":{"deal_id":"ryanair_bcn_ndr_20260826_economy","destination":"NDR","origin":"BCN","price":17.49,"classification":"CRÍTICO"}}
-{"ts":"2026-05-22T10:22:35.993Z","type":"landing_arrived","visitor":"8d38e61d127b1876","meta":{"path":"/"}}
 {"ts":"2026-05-22T10:22:38.198Z","type":"page_view","visitor":"64b3a99b402734fe","meta":{"path":"/"}}
 {"ts":"2026-05-22T10:22:41.582Z","type":"page_view","visitor":"8d38e61d127b1876","meta":{"path":"/"}}
 {"ts":"2026-05-22T10:22:43.121Z","type":"landing_arrived","visitor":"e36ad72ccb0225d3","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-31T13:04:25.838Z","type":"landing_arrived","visitor":"7ab6bf1d891ef88b","meta":{"path":"/"}}
 {"ts":"2026-05-31T13:04:28.577Z","type":"landing_arrived","visitor":"7ab6bf1d891ef88b","meta":{"path":"/"}}
 {"ts":"2026-05-31T13:04:43.663Z","type":"page_view","visitor":"e1526debafed2140","meta":{"path":"/"}}
+{"ts":"2026-05-31T13:04:43.566Z","type":"landing_arrived","visitor":"e1526debafed2140","meta":{"path":"/"}}
+{"ts":"2026-05-31T13:04:44.174Z","type":"page_view","visitor":"e1526debafed2140","meta":{"path":"/"}}
+{"ts":"2026-05-31T13:04:47.917Z","type":"page_view","visitor":"e1526debafed2140","meta":{"path":"/"}}
