@@ -30,8 +30,14 @@ jobs:
           echo "status=$STATUS" >> $GITHUB_OUTPUT
           cat /tmp/watch.json | head -c 1500
 
+          # DRIP-FIX (31 may 2026): fail loud si HTTP != 200 (job FAILED → telegram notify dispara)
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::cron endpoint returned HTTP $STATUS"
+            exit 1
+          fi
+
       - name: Notify Telegram on failure
-        if: steps.send.outputs.status != '200' && env.TELEGRAM_BOT_TOKEN != ''
+        if: failure() && secrets.TELEGRAM_BOT_TOKEN != ''
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
