@@ -2839,6 +2839,22 @@
       "destination": "TGD",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "bf2de979a2c2",
+      "ts": "2026-05-31T12:07:30.096262+00:00",
+      "origin": "STN",
+      "destination": "BIQ",
+      "price_eur": 25.75,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "48330b716058",
+      "ts": "2026-05-31T12:07:30.096262+00:00",
+      "origin": "LIS",
+      "destination": "FNC",
+      "price_eur": 33.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
