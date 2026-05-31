@@ -17,14 +17,13 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { isValidStripeOwnerId } from "@/lib/stripe_id";
 import { pickSecretDeals, secretTtlMs } from "@/lib/secret_deals";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const REPO_BASE = "https://raw.githubusercontent.com/ERNESTOTALIB/tripcazador/main";
-const VPS_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.tripcazador.com";
 
 interface RawDeal {
   id?: string;
@@ -44,34 +43,24 @@ interface RawDeal {
   [key: string]: unknown;
 }
 
+// REFACTOR (31 may 2026): backend Oracle VPS muerto → lee
+// public/deals-latest.json directo. Cache module-level 60s.
+let cached: { deals: RawDeal[]; ts: number } | null = null;
+const CACHE_MS = 60_000;
+
 async function fetchRawDeals(): Promise<RawDeal[]> {
-  // 1) VPS primero
+  const now = Date.now();
+  if (cached && now - cached.ts < CACHE_MS) return cached.deals;
   try {
-    const res = await fetch(`${VPS_BASE}/api/deals?limit=500`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      const arr = Array.isArray(data) ? data : Array.isArray(data?.deals) ? data.deals : [];
-      if (arr.length > 0) return arr as RawDeal[];
-    }
+    const filepath = path.join(process.cwd(), "public", "deals-latest.json");
+    const raw = await fs.readFile(filepath, "utf8");
+    const json = JSON.parse(raw) as { deals?: RawDeal[] };
+    const deals = Array.isArray(json.deals) ? json.deals : [];
+    cached = { deals, ts: now };
+    return deals;
   } catch {
-    /* no-op */
+    return cached?.deals ?? [];
   }
-  // 2) Repo fallback
-  try {
-    const res = await fetch(`${REPO_BASE}/deals-latest.json`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data?.deals)) return data.deals as RawDeal[];
-      if (Array.isArray(data)) return data as RawDeal[];
-    }
-  } catch {
-    /* no-op */
-  }
-  return [];
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {

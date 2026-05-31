@@ -79,22 +79,21 @@ export interface DealsResponse {
   deals: Deal[];
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-// SSS416: en builds locales sin FastAPI corriendo (sandbox, CI sin env, dev sin
-// `make api`), API_BASE cae a `localhost:8000` y todo fetch falla con
-// ECONNREFUSED. El fallback a deals-latest.json funciona perfecto, pero el
-// `console.warn` por cada SSG page (50+) ensucia el log y enmascara warnings
-// reales. En Vercel/PROD `NEXT_PUBLIC_API_URL=https://api.tripcazador.com` está
-// set, así que ahí seguimos warnando (señal legítima de problema infra).
-// Esta helper centraliza la decisión: silenciar solo en builds donde API_BASE
-// apunta a localhost (= entorno de dev local sin backend).
-const IS_LOCAL_API_FALLBACK =
-  API_BASE.includes("localhost") || API_BASE.includes("127.0.0.1");
-function warnApiFallback(scope: string, e: unknown): void {
-  if (IS_LOCAL_API_FALLBACK) return;
-  console.warn(`[${scope}] fetch fail, fallback to static:`, e);
-}
+// REFACTOR (31 may 2026): backend FastAPI Oracle VPS terminated por Oracle
+// Always Free idle reclaim policy (13 días caído sin previo aviso). Decisión:
+// eliminar dependencia infraestructura externa, leer todo desde static JSON
+// que el hunter cron GH Actions refresca cada ~3h.
+//
+// Funciones de api.ts siguen exportando misma firma para no romper los 44
+// callers, pero ahora leen directo desde:
+//   - public/deals-latest.json (754+ deals, hunter cron)
+//   - public/airports_full.json (5663 aeropuertos)
+//   - /api/search Vercel route (búsqueda in-memory edge)
+//   - /api/premium/price-history Vercel route (legacy /api/price_history)
+//
+// AUDIT-FIX (31 may 2026): `API_BASE` y `warnApiFallback` eran helpers del
+// código pre-refactor (try-fetch + warn-on-fail). Post-refactor static-only
+// nada los usa. Eliminados. `NEXT_PUBLIC_API_URL` env var queda dormida.
 
 export async function getDeals(params?: {
   classification?: string;
@@ -103,138 +102,82 @@ export async function getDeals(params?: {
   max_price?: number;
   limit?: number;
 }): Promise<DealsResponse> {
-  const query = new URLSearchParams();
-  if (params?.classification) query.set("classification", params.classification);
-  if (params?.region) query.set("region", params.region);
-  if (params?.cabin) query.set("cabin", params.cabin);
-  if (params?.max_price) query.set("max_price", String(params.max_price));
-  if (params?.limit) query.set("limit", String(params.limit));
+  // REFACTOR (31 may 2026): backend Oracle VPS muerto → leer directo desde
+  // static deals-latest.json y aplicar filtros in-memory. Mismo contrato,
+  // mismo enriquecimiento (booking_url + TP marker + iata_city).
+  const fresh = await getDealsFromStatic();
+  let deals = fresh.deals;
 
-  const url = `${API_BASE}/api/deals${query.toString() ? "?" + query : ""}`;
-
-  // SSS134 (May 2026): wrap fetch externo en try/catch. Si VPS api.tripcazador.com
-  // está caído / timeout / DNS issue, antes lanzaba al Server Component y
-  // disparaba error.tsx en home ("Algo salió mal en el radar"). Ahora cae
-  // limpiamente al static fallback (worker output / deals-latest.json).
-  let res: Response;
-  try {
-    res = await fetch(url, withTimeout({
-      next: { revalidate: 300 }, // Revalidar cada 5 minutos (ISR)
-    }));
-  } catch (e) {
-    warnApiFallback("api.getDeals", e);
-    return getDealsFromStatic();
+  // Aplicar filtros del usuario
+  if (params?.classification) {
+    deals = deals.filter((d) => d.classification === params.classification);
+  }
+  if (params?.region) {
+    deals = deals.filter((d) => d.region === params.region);
+  }
+  if (params?.cabin) {
+    deals = deals.filter((d) => d.cabin === params.cabin);
+  }
+  if (params?.max_price !== undefined) {
+    deals = deals.filter((d) => d.price_eur <= params.max_price!);
   }
 
-  if (!res.ok) {
-    // Fallback: intentar cargar desde deals.json estático
-    return getDealsFromStatic();
+  // Diversifier + enhancers (mantienen lógica fase EE6/B1 y C1)
+  const diversified = diversifyDeals(deals, params);
+  const enriched = diversified.map((d) =>
+    enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))),
+  );
+
+  if (params?.limit) {
+    deals = enriched.slice(0, params.limit);
+  } else {
+    deals = enriched;
   }
 
-  let json: unknown;
-  try {
-    json = await res.json();
-  } catch (e) {
-    warnApiFallback("api.getDeals JSON parse", e);
-    return getDealsFromStatic();
+  // Recompute stats post-filter
+  const flights = deals.filter((d) => d.type === "flight").length;
+  const hotels = deals.filter((d) => d.type === "hotel").length;
+  const verified = deals.filter((d) => d.verified).length;
+  const prices = deals.map((d) => d.price_eur).filter((p) => p > 0);
+  const priceMin = prices.length ? Math.min(...prices) : 0;
+  const priceMax = prices.length ? Math.max(...prices) : 0;
+  const priceAvg = prices.length
+    ? prices.reduce((a, b) => a + b, 0) / prices.length
+    : 0;
+  const byClass: Record<string, number> = {};
+  const byRegion: Record<string, number> = {};
+  const byCabin: Record<string, number> = {};
+  for (const d of deals) {
+    byClass[d.classification] = (byClass[d.classification] || 0) + 1;
+    byRegion[d.region] = (byRegion[d.region] || 0) + 1;
+    byCabin[d.cabin] = (byCabin[d.cabin] || 0) + 1;
   }
 
-  // SSS81 (May 2026): detectar seed VPS y caer al worker JSONL.
-  // El backend FastAPI a veces devuelve seed deals (id="seed-…",
-  // sources=["seed"], tags=["seed"]) cuando el upload del worker
-  // no llega o el deals.json del VPS está stale. En ese caso el repo
-  // tiene 1259+ deals reales en /deals-latest.json — usamos ESE.
-  // SSS134: json es `unknown` desde el try-parse, cast a any para el path-check
-  // siguiente (resto de la función ya trataba json como Deal[] | DealsResponse).
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const jsonAny = json as any;
-  const arr: Deal[] | null = Array.isArray(jsonAny)
-    ? (jsonAny as Deal[])
-    : (jsonAny && Array.isArray(jsonAny.deals) ? (jsonAny.deals as Deal[]) : null);
-  if (arr && arr.length > 0) {
-    const sample = arr.slice(0, 5);
-    const allSeed = sample.every((d: Deal) =>
-      (typeof d.id === "string" && d.id.startsWith("seed-")) ||
-      (Array.isArray(d.sources) && d.sources.includes("seed")) ||
-      (Array.isArray(d.tags) && d.tags.includes("seed"))
-    );
-    if (allSeed) {
-      const fresh = await getDealsFromStatic();
-      if (fresh.deals.length > arr.length) {
-        // Re-aplica los filtros del usuario sobre el catálogo real
-        const filtered = diversifyDeals(fresh.deals, params);
-        return {
-          ...fresh,
-          deals: filtered.map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d)))),
-          total_deals: filtered.length,
-        };
-      }
-    }
-  }
-
-  // FastAPI puede devolver un array plano (`Deal[]`) o el envoltorio
-  // `DealsResponse`. Cuando devuelve array (variante actual del backend),
-  // lo envolvemos para mantener el contrato del cliente.
-  // Bug fase-ee: sin este wrap, `data.stats.total` lanzaba en el server
-  // component de la home → error.tsx mostraba "Algo salió mal en el radar".
-  if (Array.isArray(jsonAny)) {
-    // Reescribir booking_url genérico (Google Flights) → URL directa
-    // de la aerolínea (Ryanair / easyJet / Wizz) o Kayak/Travelpayouts.
-    // Implementado fase EE6/B1 — usuarios prefieren ir directo a la web
-    // de la aerolínea, no a Google Flights.
-    //
-    // C1: si el seed VPS devuelve solo un mes (síntoma seed legacy),
-    // diversifyDeals reemplaza por catálogo TS con Jul-2026..Jun-2027.
-    // No-op transparente cuando el motor devuelve datos diversos.
-    const rawDeals = jsonAny as Deal[];
-    // BUG fix fase-hh: pasar params al diversifier para que filtre el catálogo
-    // fallback. Sin esto /deals?classification=CRÍTICO devolvía el catálogo
-    // entero ignorando el filtro del usuario.
-    const diversified = diversifyDeals(rawDeals, params);
-    const deals = diversified.map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
-    const totalCount = deals.length;
-    const flights = deals.filter((d) => d.type === "flight").length;
-    const hotels = deals.filter((d) => d.type === "hotel").length;
-    const verified = deals.filter((d) => d.verified).length;
-    const prices = deals.map((d) => d.price_eur).filter((p) => p > 0);
-    const priceMin = prices.length ? Math.min(...prices) : 0;
-    const priceMax = prices.length ? Math.max(...prices) : 0;
-    const priceAvg = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
-    const byClass: Record<string, number> = {};
-    const byRegion: Record<string, number> = {};
-    const byCabin: Record<string, number> = {};
-    for (const d of deals) {
-      byClass[d.classification] = (byClass[d.classification] || 0) + 1;
-      byRegion[d.region] = (byRegion[d.region] || 0) + 1;
-      byCabin[d.cabin] = (byCabin[d.cabin] || 0) + 1;
-    }
-    return {
-      schema_version: "1",
-      generated_at: new Date().toISOString(),
-      total_deals: totalCount,
-      stats: {
-        total: totalCount,
-        flights,
-        hotels,
-        by_classification: byClass,
-        by_region: byRegion,
-        by_cabin: byCabin,
-        price_min: priceMin,
-        price_max: priceMax,
-        price_avg: priceAvg,
-        verified_count: verified,
-      },
-      deals,
-    };
-  }
-
-  // Backend devolvió forma DealsResponse: enhancear cada deal igualmente
-  const wrapped = jsonAny as DealsResponse;
-  if (wrapped?.deals && Array.isArray(wrapped.deals)) {
-    wrapped.deals = wrapped.deals.map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
-  }
-  return wrapped;
+  return {
+    schema_version: fresh.schema_version,
+    generated_at: fresh.generated_at,
+    total_deals: deals.length,
+    stats: {
+      total: deals.length,
+      flights,
+      hotels,
+      by_classification: byClass,
+      by_region: byRegion,
+      by_cabin: byCabin,
+      price_min: priceMin,
+      price_max: priceMax,
+      price_avg: priceAvg,
+      verified_count: verified,
+    },
+    deals,
+  };
 }
+
+// REFACTOR (31 may 2026): legacy backend-fetch body eliminado.
+// getDeals() ahora lee directo desde getDealsFromStatic() + filtros in-memory.
+// Trabajo previo de seed-detection y array/wrapped unwrap del backend Oracle
+// ya no aplica — el static deals-latest.json del hunter cron es la única
+// fuente de verdad y siempre viene en formato DealsResponse.
 
 // ──────────────────────────────────────────────────────────────
 // Live search (llama a /api/search del FastAPI)
@@ -269,28 +212,54 @@ export interface AirportsResponse {
   airports: Airport[];
 }
 
+// REFACTOR (31 may 2026): lee public/airports_full.json (5663 aeropuertos
+// con shape {iata,city,country,region,emoji}). Cache module-level — el catálogo
+// solo cambia con commits manuales, no en runtime.
+let _airportsCache: Airport[] | null = null;
+
+async function _loadAirportsStatic(): Promise<Airport[]> {
+  if (_airportsCache) return _airportsCache;
+  const SITE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
+  try {
+    const url =
+      typeof window === "undefined"
+        ? `${SITE_URL}/airports_full.json`
+        : "/airports_full.json";
+    const res = await fetch(url, withTimeout({ next: { revalidate: 86400 } }));
+    if (!res.ok) return [];
+    const json = (await res.json()) as Airport[];
+    _airportsCache = Array.isArray(json) ? json : [];
+    return _airportsCache;
+  } catch {
+    return [];
+  }
+}
+
 export async function getAirports(params?: {
   q?: string;
   region?: string;
   limit?: number;
 }): Promise<Airport[]> {
-  const query = new URLSearchParams();
-  if (params?.q) query.set("q", params.q);
-  if (params?.region) query.set("region", params.region);
-  if (params?.limit) query.set("limit", String(params.limit));
+  const all = await _loadAirportsStatic();
+  let filtered = all;
 
-  const url = `${API_BASE}/api/airports${query.toString() ? "?" + query : ""}`;
-
-  try {
-    const res = await fetch(url, withTimeout({
-      next: { revalidate: 86400 }, // catálogo cambia raramente; cache 24 h
-    }));
-    if (!res.ok) return [];
-    const data: AirportsResponse = await res.json();
-    return data.airports || [];
-  } catch {
-    return [];
+  if (params?.q) {
+    const q = params.q.toLowerCase();
+    filtered = filtered.filter(
+      (a) =>
+        a.iata.toLowerCase().includes(q) ||
+        a.city.toLowerCase().includes(q) ||
+        a.country.toLowerCase().includes(q),
+    );
   }
+  if (params?.region) {
+    filtered = filtered.filter((a) => a.region === params.region);
+  }
+  if (params?.limit) {
+    filtered = filtered.slice(0, params.limit);
+  }
+  return filtered;
 }
 
 // ──────────────────────────────────────────────
@@ -322,41 +291,51 @@ export interface PriceHistory {
   stats: PriceHistoryStats | Record<string, never>;
 }
 
+/**
+ * REFACTOR (31 may 2026): Legacy /api/price_history del backend Oracle ya no
+ * existe. Esta función queda como NO-OP (devuelve null) para no romper imports.
+ *
+ * Para histórico precios Premium, los componentes (`PremiumPriceHistoryChart`,
+ * `PremiumPricePredictorCard`) ya usan `/api/premium/price-history` directamente
+ * — una Vercel route propia con datos del scoring KV store. No requieren
+ * llamar a esta función legacy.
+ *
+ * @deprecated Use `/api/premium/price-history` Vercel route directly from component
+ */
 export async function getPriceHistory(params: {
   origin: string;
   destination: string;
   cabin?: string;
   days?: number;
 }): Promise<PriceHistory | null> {
-  const q = new URLSearchParams({
-    origin: params.origin,
-    destination: params.destination,
-    cabin: params.cabin ?? "economy",
-    days: String(params.days ?? 90),
-  });
-  const url = `${API_BASE}/api/price_history?${q}`;
-  try {
-    const res = await fetch(url, withTimeout({ next: { revalidate: 3600 } })); // cache 1 h
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
+  void params;
+  return null;
 }
 
+/**
+ * REFACTOR (31 may 2026): llama a la nueva Vercel route /api/search que filtra
+ * deals-latest.json in-memory edge. Misma firma que antes — drop-in replacement
+ * para los componentes que llaman searchDeals().
+ */
 export async function searchDeals(params: SearchParams): Promise<Deal[]> {
   const query = new URLSearchParams();
   if (params.origin) query.set("origin", params.origin);
   if (params.destination) query.set("destination", params.destination);
   if (params.date_from) query.set("date_from", params.date_from);
   if (params.date_to) query.set("date_to", params.date_to);
-  if (params.max_price !== undefined) query.set("max_price", String(params.max_price));
+  if (params.max_price !== undefined)
+    query.set("max_price", String(params.max_price));
   if (params.cabin) query.set("cabin", params.cabin);
   if (params.deal_type) query.set("deal_type", params.deal_type);
   if (params.q) query.set("q", params.q);
   if (params.limit) query.set("limit", String(params.limit));
 
-  const url = `${API_BASE}/api/search?${query.toString()}`;
+  const SITE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://tripcazador.com";
+  const url =
+    typeof window === "undefined"
+      ? `${SITE_URL}/api/search?${query.toString()}`
+      : `/api/search?${query.toString()}`;
 
   try {
     const res = await fetch(url, withTimeout({ cache: "no-store" }));
@@ -367,75 +346,43 @@ export async function searchDeals(params: SearchParams): Promise<Deal[]> {
   }
 }
 
+/**
+ * REFACTOR (31 may 2026): lee directo de deals-latest.json (sin backend).
+ * El find() sobre 754 deals es O(n) trivial — sub-ms.
+ */
 export async function getDeal(id: string): Promise<Deal | null> {
-  try {
-    const res = await fetch(`${API_BASE}/api/deals/${encodeURIComponent(id)}`, {
-      next: { revalidate: 300 },
-    });
-    if (!res.ok) {
-      // Fallback: busca en el JSON estático
-      const data = await getDealsFromStatic();
-      return data.deals.find((d) => d.id === id) || null;
-    }
-    return res.json();
-  } catch {
-    const data = await getDealsFromStatic();
-    return data.deals.find((d) => d.id === id) || null;
-  }
+  const data = await getDealsFromStatic();
+  return data.deals.find((d) => d.id === id) || null;
 }
 
 // ──────────────────────────────────────────────
 // Hoteles — top deals por precio/noche
 // ──────────────────────────────────────────────
+/**
+ * REFACTOR (31 may 2026): hoteles SIEMPRE vienen del seed (el hunter cron no
+ * scrapeaba hoteles — hotel_hunter daba 0). Devolvemos el seed hardcoded
+ * directamente, mismo comportamiento que antes ante backend caído.
+ */
 export async function getTopHotels(params?: {
   limit?: number;
   minStars?: number;
   maxPricePerNight?: number;
 }): Promise<Deal[]> {
-  const q = new URLSearchParams();
-  if (params?.limit) q.set("limit", String(params.limit));
-  if (params?.minStars) q.set("min_stars", String(params.minStars));
-  if (params?.maxPricePerNight)
-    q.set("max_price_per_night", String(params.maxPricePerNight));
-  const url = `${API_BASE}/api/hotels/top${q.toString() ? "?" + q : ""}`;
-  try {
-    const res = await fetch(url, withTimeout({ next: { revalidate: 900 } })); // 15 min
-    if (!res.ok) {
-      // ww WW1: backend devuelve error → seed fallback (30 hoteles reales con marker Booking)
-      const { getHotelSeedFallback } = await import("@/lib/hotel_seed");
-      return getHotelSeedFallback(params);
-    }
-    const arr = await res.json();
-    if (Array.isArray(arr) && arr.length === 0) {
-      // backend OK pero array vacío (hotel_hunter sin datos) → seed fallback
-      const { getHotelSeedFallback } = await import("@/lib/hotel_seed");
-      return getHotelSeedFallback(params);
-    }
-    return arr;
-  } catch {
-    const { getHotelSeedFallback } = await import("@/lib/hotel_seed");
-    return getHotelSeedFallback(params);
-  }
+  const { getHotelSeedFallback } = await import("@/lib/hotel_seed");
+  return getHotelSeedFallback(params);
 }
 
+/**
+ * REFACTOR (31 may 2026): top deals desde deals-latest.json + diversify + enhance.
+ */
 export async function getTopDeals(limit = 10): Promise<Deal[]> {
-  try {
-    const res = await fetch(`${API_BASE}/api/deals/top?limit=${limit}`, withTimeout({
-      next: { revalidate: 300 },
-    }));
-    if (!res.ok) {
-      const data = await getDealsFromStatic();
-      return data.deals.slice(0, limit).map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
-    }
-    const arr: Deal[] = await res.json();
-    // B1: reescribir google.com/travel → ryanair/easyjet/wizz/kayak directos
-    // C1: diversificar si el seed devuelve un solo mes
-    if (!Array.isArray(arr)) return arr;
-    return diversifyDeals(arr, { limit }).map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
-  } catch {
-    const data = await getDealsFromStatic();
-    return data.deals.slice(0, limit).map((d) => enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))));
-  }
+  const data = await getDealsFromStatic();
+  const diversified = diversifyDeals(data.deals, { limit });
+  return diversified
+    .slice(0, limit)
+    .map((d) =>
+      enrichDealLocations(applyTPMarkerServerSide(enhanceDealBookingUrl(d))),
+    );
 }
 
 /**
@@ -544,21 +491,9 @@ export async function getAttractiveDeals(limit = 3): Promise<Deal[]> {
     pool = [];
   }
 
-  // Si worker output vacío (raro, solo si todavía no hay primer commit),
-  // fallback a VPS endpoint
-  if (pool.length === 0) {
-    try {
-      const res = await fetch(`${API_BASE}/api/deals/top?limit=50`, withTimeout({
-        next: { revalidate: 300 },
-      }));
-      if (res.ok) {
-        const arr = await res.json();
-        pool = Array.isArray(arr) ? arr : [];
-      }
-    } catch {
-      pool = [];
-    }
-  }
+  // REFACTOR (31 may 2026): backend VPS Oracle eliminado. Si pool vacío (raro,
+  // solo si no hay primer commit del worker), caemos al FALLBACK_CHOLLOS
+  // hardcoded más abajo.
 
   // AAAA01: enriquecer city_from/city_to si vienen como código IATA o vacío
   // (rutas LATAM internas que no estaban en el catálogo principal).

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.tripcazador.com";
+// REFACTOR (31 may 2026): backend Oracle VPS muerto → POST relativo a
+// /api/subscribe que es Vercel route nativa (NewsletterSignup ya lo hacía).
+// Mantenemos el patrón same-origin para evitar CORS y no depender de env vars.
 
 type Status = "idle" | "loading" | "ok" | "already" | "error";
 
@@ -17,7 +19,7 @@ export function NewsletterForm({ source = "web" }: { source?: string }) {
     setStatus("loading");
     setError(null);
     try {
-      const res = await fetch(`${API_BASE}/api/subscribe`, {
+      const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, consent, source }),

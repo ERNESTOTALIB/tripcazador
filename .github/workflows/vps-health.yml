@@ -13,9 +13,11 @@ name: VPS Health Check
 # branch nunca; usa actions/cache para no contaminar git).
 
 on:
-  schedule:
-    # Cada 30 min
-    - cron: "*/30 * * * *"
+  # AUDIT-FIX (31 may 2026): backend Oracle VPS terminated 18 may por idle
+  # reclaim. Refactor a static JSON eliminó la dependencia. Cron deshabilitado
+  # para evitar Telegram noise. Reactivar con workflow_dispatch si VPS vuelve.
+  # schedule:
+  #   - cron: "*/30 * * * *"
   workflow_dispatch:
 
 permissions:

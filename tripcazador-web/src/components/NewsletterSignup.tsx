@@ -22,10 +22,8 @@ import { tcTrack } from "@/lib/track_client";
  *  - Aria-live region para feedback de screen-reader.
  */
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  (typeof window !== "undefined" && window.location.origin) ||
-  "";
+// REFACTOR (31 may 2026): backend VPS down → fetch relativo a /api/subscribe
+// (Vercel route nativa). Mismo patrón same-origin que NewsletterForm.
 
 type Status = "idle" | "submitting" | "success" | "duplicate" | "error";
 
@@ -55,7 +53,7 @@ export function NewsletterSignup({ variant = "compact", context = "site" }: Prop
     setStatus("submitting");
     setErrorMsg("");
     try {
-      const res = await fetch(`${API_BASE}/api/subscribe`, {
+      const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
