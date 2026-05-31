@@ -101,34 +101,37 @@ describe("/api/subscribe POST — honeypot defense", () => {
 });
 
 describe("/api/subscribe POST — happy path", () => {
-  it("201 + created=true para nuevo email", async () => {
+  it("201 + ok:true para nuevo email (no expone created/welcome_sent)", async () => {
+    // AUDIT-WEB FIX-SEC-H1 (31 may 2026): response no expone `created` ni
+    // `welcome_sent` para evitar user enumeration. Solo { ok:true, status }.
     const POST = await importPost();
     const req = buildReq({ email: "new@example.com", consent: true });
     const res = await POST(req);
     expect(res.status).toBe(201);
     const j = await res.json();
     expect(j.ok).toBe(true);
-    expect(j.created).toBe(true);
-    // welcome_sent=false sin RESEND_API_KEY
-    expect(j.welcome_sent).toBe(false);
+    expect(j.status).toBe("queued");
+    expect(j.created).toBeUndefined();
+    expect(j.welcome_sent).toBeUndefined();
   });
 
   it("user enumeration defense: misma response 201 OK para email duplicate", async () => {
-    // Re-use mismo POST (no reset modules entre llamadas) para que el
-    // subscribers_store in-memory persista el primer signup.
+    // AUDIT-WEB FIX-SEC-H1: shape idéntico entre primer signup y duplicate —
+    // antes `created:true` vs `created:false` permitía enumeration.
     const POST = await importPost();
     const r1 = await POST(
       buildReq({ email: "dup@example.com", consent: true }),
     );
     expect(r1.status).toBe(201);
-    expect((await r1.json()).created).toBe(true);
+    const b1 = await r1.json();
+    expect(b1).toEqual({ ok: true, status: "queued" });
 
     const r2 = await POST(
       buildReq({ email: "dup@example.com", consent: true }),
     );
-    // Mismo status code — no expone enumeration
     expect(r2.status).toBe(201);
-    expect((await r2.json()).created).toBe(false);
+    const b2 = await r2.json();
+    expect(b2).toEqual({ ok: true, status: "queued" });
   });
 
   it("acepta source + locale opcionales", async () => {
@@ -164,12 +167,12 @@ describe("/api/subscribe POST — happy path", () => {
     const res = await POST(req);
     expect(res.status).toBe(201);
     const j = await res.json();
-    expect(j.created).toBe(true);
+    expect(j.ok).toBe(true);
   });
 });
 
 describe("/api/subscribe POST — RESEND welcome dormido", () => {
-  it("welcome_sent=false sin RESEND_API_KEY (no debe fallar la response)", async () => {
+  it("no debe fallar la response sin RESEND_API_KEY", async () => {
     const POST = await importPost();
     const req = buildReq({
       email: "no-resend@example.com",
@@ -178,7 +181,9 @@ describe("/api/subscribe POST — RESEND welcome dormido", () => {
     const res = await POST(req);
     expect(res.status).toBe(201);
     const j = await res.json();
-    expect(j.welcome_sent).toBe(false);
+    // AUDIT-WEB FIX-SEC-H1: welcome_sent ya no se expone.
+    expect(j.ok).toBe(true);
+    expect(j.welcome_sent).toBeUndefined();
   });
 });
 

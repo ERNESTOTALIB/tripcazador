@@ -91,21 +91,28 @@ export async function GET(req: NextRequest) {
     byOrigin[o] = (byOrigin[o] || 0) + 1;
   }
 
-  // Fetch real backend health
+  // AUDIT-WEB FIX-CQ-H3 (31 may 2026): VPS eliminado en refactor static-only.
+  // workerLastRun ahora se infiere de deals-latest.json generated_at (lo que
+  // ya hace el healthcheck público). workerStatus default = "static-mode".
   let workerLastRun: string | null = null;
-  let workerStatus = "unknown";
+  let workerStatus: string = "static-mode";
   let dealsTotal = 0;
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.tripcazador.com";
-    const r = await fetch(`${apiUrl}/api/health`, { cache: "no-store", signal: AbortSignal.timeout(5000) });
-    if (r.ok) {
-      const data = await r.json();
-      workerLastRun = data.deals_updated_at || null;
-      workerStatus = data.deals_exists ? "ok" : "no-deals";
-      dealsTotal = data.deals_count || 0;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (apiUrl) {
+    try {
+      const r = await fetch(`${apiUrl}/api/health`, {
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+      });
+      if (r.ok) {
+        const data = await r.json();
+        workerLastRun = data.deals_updated_at || null;
+        workerStatus = data.deals_exists ? "ok" : "no-deals";
+        dealsTotal = data.deals_count || 0;
+      }
+    } catch {
+      workerStatus = "backend-unreachable";
     }
-  } catch {
-    workerStatus = "backend-unreachable";
   }
 
   // Alerts heuristic
