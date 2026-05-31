@@ -2887,6 +2887,22 @@
       "destination": "CFU",
       "price_eur": 30.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "54637cf9aae3",
+      "ts": "2026-05-31T17:56:06.926170+00:00",
+      "origin": "BGY",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e3d93c0eff74",
+      "ts": "2026-05-31T17:56:06.926170+00:00",
+      "origin": "HAM",
+      "destination": "GDN",
+      "price_eur": 15.79,
+      "classification": "CRÍTICO"
     }
   ]
 }
