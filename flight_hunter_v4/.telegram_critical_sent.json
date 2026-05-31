@@ -2903,6 +2903,22 @@
       "destination": "GDN",
       "price_eur": 15.79,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "2e56874afdf1",
+      "ts": "2026-05-31T19:11:49.671914+00:00",
+      "origin": "BGY",
+      "destination": "OLB",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d78475263c4c",
+      "ts": "2026-05-31T19:11:49.671914+00:00",
+      "origin": "KRK",
+      "destination": "GDN",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
