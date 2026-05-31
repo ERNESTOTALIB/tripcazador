@@ -31,8 +31,14 @@ interface AlertResult {
 }
 
 async function checkHunterHealth(): Promise<AlertResult | null> {
+  // AUDIT-WEB FIX-CQ-H3 (31 may 2026): backend Oracle VPS eliminado en
+  // refactor static-only. Sin VPS no hay /api/health remoto que probar.
+  // Early-return null para no spamear Sentry/Telegram con "backend_down"
+  // cada 15 min. Hunter health real ahora se infiere de deals-latest.json
+  // generated_at (ver healthcheck route).
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) return null;
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.tripcazador.com";
     const r = await fetch(`${apiUrl}/api/health`, {
       headers: { "User-Agent": "tc-health-watch/1.0" },
       signal: AbortSignal.timeout(8000),

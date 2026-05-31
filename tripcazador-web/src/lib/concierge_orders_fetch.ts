@@ -84,34 +84,17 @@ export function sanitizeForCustomer(o: BackendConciergeOrder): CustomerVisibleOr
 export async function fetchOrdersByEmail(
   email: string,
 ): Promise<CustomerVisibleOrder[]> {
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "";
-  const adminToken = process.env.ADMIN_TOKEN || "";
-  if (!backendUrl || !adminToken) return [];
+  // AUDIT-WEB FIX-CQ-H2 (31 may 2026): leer de KV (no backend VPS muerto).
+  // El webhook concierge persiste cada checkout.session.completed en KV
+  // namespace "concierge_orders". Stripe webhook ya escribe ahí desde
+  // este commit. Orders pre-31-may persistidos solo en VPS no son
+  // recuperables — pre-existing data loss documented en backlog.
   if (!email) return [];
-
-  const norm = email.trim().toLowerCase();
-  try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 5000);
-    const res = await fetch(`${backendUrl}/api/admin/concierge/orders`, {
-      headers: { Authorization: `Bearer ${adminToken}` },
-      cache: "no-store",
-      signal: ctrl.signal,
-    });
-    clearTimeout(t);
-    if (!res.ok) return [];
-    const data = (await res.json().catch(() => null)) as
-      | { orders?: BackendConciergeOrder[] }
-      | BackendConciergeOrder[]
-      | null;
-    const arr = Array.isArray(data) ? data : data?.orders || [];
-    return arr
-      .filter((o) => (o.email || "").trim().toLowerCase() === norm)
-      .sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""))
-      .map(sanitizeForCustomer);
-  } catch {
-    return [];
-  }
+  const { fetchConciergeOrdersByEmailKv } = await import("./concierge_orders_kv");
+  const kvOrders = await fetchConciergeOrdersByEmailKv(email);
+  return kvOrders.map((o) =>
+    sanitizeForCustomer(o as unknown as BackendConciergeOrder),
+  );
 }
 
 /**

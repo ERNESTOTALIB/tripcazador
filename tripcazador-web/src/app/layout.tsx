@@ -236,21 +236,11 @@ export default function RootLayout({
                 ],
               },
             },
-            {
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              name: "TripCazador",
-              url: "https://tripcazador.com",
-              inLanguage: "es-ES",
-              potentialAction: {
-                "@type": "SearchAction",
-                target: {
-                  "@type": "EntryPoint",
-                  urlTemplate: "https://tripcazador.com/deals?q={search_term_string}",
-                },
-                "query-input": "required name=search_term_string",
-              },
-            },
+            // AUDIT-WEB FIX-SEO-H (31 may 2026): WebSite duplicado eliminado.
+            // El bloque standalone más abajo tiene @id + publisher + SearchAction
+            // canónico (/buscar). Tener dos WebSite con SearchAction distintos
+            // confundía Google sitelinks search box (escogía uno aleatorio,
+            // probablemente ignorando el otro).
           ]}
         />
         {/*

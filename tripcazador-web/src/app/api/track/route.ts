@@ -31,8 +31,11 @@ const VALID_TYPES: string[] = [
   "premium_cta_click",
 ];
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "";
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
+// AUDIT-WEB FIX-CQ-H1 (31 may 2026): BACKEND_URL + ADMIN_TOKEN + persistRemote
+// eliminados — backend Oracle VPS terminated (refactor static-only). La
+// persistencia ahora es: in-memory ring + GitHub commit JSONL. No regresión:
+// el VPS fire-and-forget ya silently fallaba post-18-may y nadie notó la
+// pérdida (solo 2s timeout per request).
 
 // SSS80: persistencia garantizada en GitHub repo (data/events-recent.jsonl).
 // Buffer global de la lambda (compartido entre requests del mismo container)
@@ -126,31 +129,6 @@ async function flushBufferToGitHub() {
   }
 }
 
-/**
- * Persist evento en backend FastAPI (best-effort). Si falla no crashea.
- * Backend escribe a JSONL append-only en /var/lib/tripcazador/events.jsonl.
- */
-async function persistRemote(event: {
-  ts: number;
-  type: string;
-  visitor_id: string;
-  meta: Record<string, string | number | boolean>;
-}): Promise<void> {
-  if (!BACKEND_URL || !ADMIN_TOKEN) return;
-  try {
-    await fetch(`${BACKEND_URL}/api/admin/events/track?token=${encodeURIComponent(ADMIN_TOKEN)}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ events: [event] }),
-      cache: "no-store",
-      // Timeout corto: no queremos bloquear el response al usuario
-      signal: AbortSignal.timeout(2000),
-    });
-  } catch {
-    /* best effort — no failback al ring buffer in-memory */
-  }
-}
-
 // Rate limit muy básico — cada IP máx 200 events/min
 const rate = new Map<string, { count: number; windowStart: number }>();
 const RATE_WINDOW_MS = 60_000;
@@ -216,9 +194,7 @@ export async function POST(req: NextRequest) {
   // 1) In-memory ring (rápido, vista admin sin backend)
   trackEvent(event);
 
-  // 2) Persist en backend (best-effort, sobrevive cold start)
-  // No await: fire-and-forget para no añadir latencia al response.
-  persistRemote(event).catch(() => { /* no-op */ });
+  // 2) AUDIT-WEB (31 may 2026): persistRemote eliminado — VPS muerto.
 
   // 3) SSS80: persistencia GitHub. VPS está down, event_store es por-lambda
   // (perdemos 80% de visibility). GH API es lento pero PERSISTE → veremos

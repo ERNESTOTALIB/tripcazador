@@ -10,6 +10,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { processHotline } from "@/lib/voice_hotline";
+import { isValidStripeCustomerId } from "@/lib/stripe_id";
+import { getPremiumByCustomerId } from "@/lib/premium_store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -46,6 +48,26 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 400 },
     );
   }
+
+  // AUDIT-WEB FIX-SEC-H3 (31 may 2026): gate auth Premium. Antes cualquier
+  // POST con string arbitrario pasaba — rotando customer_id se bypaseaba
+  // rate-limit y, con OPENAI_API_KEY activa, gastaba tokens pagados sin
+  // ningún Premium activo. Ahora: formato Stripe customer_id + Premium
+  // record activo o se rechaza 401/403.
+  if (!isValidStripeCustomerId(customerId)) {
+    return NextResponse.json(
+      { ok: false, error: "customer_id_invalid" },
+      { status: 401 },
+    );
+  }
+  const premium = getPremiumByCustomerId(customerId);
+  if (!premium || !premium.active) {
+    return NextResponse.json(
+      { ok: false, error: "premium_required" },
+      { status: 403 },
+    );
+  }
+
   if (isRateLimited(customerId)) {
     return NextResponse.json({ ok: false, error: "rate_limited" }, { status: 429 });
   }
