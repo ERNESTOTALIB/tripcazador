@@ -16,7 +16,6 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "";
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || "";
 const KV_URL = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || "";
 
@@ -28,27 +27,16 @@ interface SubsystemStatus {
 }
 
 async function probeBackend(): Promise<SubsystemStatus> {
-  if (!BACKEND_URL) return { name: "backend", ok: false, latencyMs: 0, note: "NOT_CONFIGURED" };
-  const start = Date.now();
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/health`, {
-      signal: AbortSignal.timeout(5000),
-      cache: "no-store",
-    });
-    return {
-      name: "backend",
-      ok: res.ok,
-      latencyMs: Date.now() - start,
-      note: res.ok ? undefined : `HTTP ${res.status}`,
-    };
-  } catch (e) {
-    return {
-      name: "backend",
-      ok: false,
-      latencyMs: Date.now() - start,
-      note: e instanceof Error ? e.name : "fetch_failed",
-    };
-  }
+  // AUDIT-FIX (31 may 2026): backend Oracle VPS eliminado en refactor static-only.
+  // El "subsystem backend" antes verificaba /api/health del FastAPI VPS; ahora
+  // no aplica. Mantenemos el slot por compat con monitors externos pero lo
+  // marcamos como deprecated (ok=true, sin fetch real).
+  return {
+    name: "backend",
+    ok: true,
+    latencyMs: 0,
+    note: "deprecated_static_only",
+  };
 }
 
 async function probeDealsFresh(): Promise<SubsystemStatus> {
