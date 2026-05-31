@@ -2855,6 +2855,22 @@
       "destination": "FNC",
       "price_eur": 33.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "55981639ff9e",
+      "ts": "2026-05-31T14:27:20.591763+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 35.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c6020ed4abb9",
+      "ts": "2026-05-31T14:27:20.591763+00:00",
+      "origin": "DUB",
+      "destination": "BOJ",
+      "price_eur": 45.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
