@@ -1,6 +1,3 @@
-{"ts":"2026-05-21T21:56:25.103Z","type":"page_view","visitor":"a31c5fc4a0e910e2","meta":{"path":"/"}}
-{"ts":"2026-05-21T21:59:00.788Z","type":"landing_arrived","visitor":"e98d1809638ebc5c","meta":{"path":"/"}}
-{"ts":"2026-05-21T21:59:03.217Z","type":"page_view","visitor":"e98d1809638ebc5c","meta":{"path":"/"}}
 {"ts":"2026-05-21T21:59:05.936Z","type":"landing_arrived","visitor":"e98d1809638ebc5c","meta":{"path":"/"}}
 {"ts":"2026-05-21T21:59:16.150Z","type":"page_view","visitor":"e98d1809638ebc5c","meta":{"path":"/"}}
 {"ts":"2026-05-21T21:59:27.774Z","type":"landing_arrived","visitor":"4328e54b225c2a9e","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-05-31T12:05:07.333Z","type":"result_viewed","visitor":"e2bd9cc9e311c64f","meta":{"deal_id":"seed-005c0b650c","destination":"SVO","origin":"MAD","price":245,"classification":"OFERTA"}}
 {"ts":"2026-05-31T12:05:08.365Z","type":"result_viewed","visitor":"e2bd9cc9e311c64f","meta":{"deal_id":"seed-00f5c036d8","destination":"SPU","origin":"BCN","price":75,"classification":"OFERTA"}}
 {"ts":"2026-05-31T12:05:58.029Z","type":"result_viewed","visitor":"e2bd9cc9e311c64f","meta":{"deal_id":"ryanair_bud_rho_20260827_economy","destination":"RHO","origin":"BUD","price":41.99,"classification":"ERROR"}}
+{"ts":"2026-05-31T12:06:01.595Z","type":"result_viewed","visitor":"e2bd9cc9e311c64f","meta":{"deal_id":"ryanair_bud_skg_20260925_economy","destination":"SKG","origin":"BUD","price":20.99,"classification":"ERROR"}}
+{"ts":"2026-05-31T12:06:03.584Z","type":"result_viewed","visitor":"e2bd9cc9e311c64f","meta":{"deal_id":"travelpayouts_fco_trs_20260824_economy","destination":"TRS","origin":"FCO","price":109.48,"classification":"ERROR"}}
+{"ts":"2026-05-31T12:06:04.452Z","type":"result_viewed","visitor":"e2bd9cc9e311c64f","meta":{"deal_id":"ryanair_dub_lis_20260818_economy","destination":"LIS","origin":"DUB","price":29.99,"classification":"ERROR"}}
