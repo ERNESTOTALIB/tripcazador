@@ -30,9 +30,21 @@ jobs:
             --max-time 60)
           echo "status=$STATUS" >> $GITHUB_OUTPUT
           cat /tmp/drip.json | head -c 1000
+          # DRIP-FIX (31 may 2026): fail loud si HTTP != 200.
+          # Antes el cron marcaba Success aunque endpoint devolviera 401/503 →
+          # 14 runs ✅ verdes pero 0 emails enviados durante semanas. Ahora
+          # exit 1 si status != 200 → job FAILED + Telegram notify dispara.
+          if [ "$STATUS" != "200" ]; then
+            echo ""
+            echo "::error::email-drip endpoint returned HTTP $STATUS (esperado 200). Revisar DRIP_CRON_TOKEN match GH ↔ Vercel."
+            exit 1
+          fi
 
       - name: Notify Telegram on failure
-        if: steps.send.outputs.status != '200' && env.TELEGRAM_BOT_TOKEN != ''
+        # DRIP-FIX: usar `failure()` + `secrets.TELEGRAM_BOT_TOKEN` (env.X no
+        # accesible en if: expression antes de exponer env). Antes esta
+        # condición NUNCA disparaba → fails pasaban desapercibidos.
+        if: failure() && secrets.TELEGRAM_BOT_TOKEN != ''
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
