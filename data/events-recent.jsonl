@@ -1,6 +1,3 @@
-{"ts":"2026-05-23T09:01:11.568Z","type":"page_view","visitor":"193f2faa639f4374","meta":{"path":"/"}}
-{"ts":"2026-05-23T09:01:12.030Z","type":"page_view","visitor":"d416c53db1bcd019","meta":{"path":"/"}}
-{"ts":"2026-05-23T09:01:12.205Z","type":"page_view","visitor":"3c9f5a68520129f8","meta":{"path":"/"}}
 {"ts":"2026-05-23T09:01:12.988Z","type":"page_view","visitor":"623a90f1f3c9a7e8","meta":{"path":"/"}}
 {"ts":"2026-05-23T09:01:15.818Z","type":"page_view","visitor":"3c9f5a68520129f8","meta":{"path":"/"}}
 {"ts":"2026-05-23T09:01:17.193Z","type":"page_view","visitor":"623a90f1f3c9a7e8","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-06-01T11:35:19.317Z","type":"landing_arrived","visitor":"e9a7404240251e77","meta":{"path":"/destinos/paris"}}
 {"ts":"2026-06-01T11:35:23.881Z","type":"result_viewed","visitor":"e9a7404240251e77","meta":{"deal_id":"seed-002c02d08c","destination":"CDG","origin":"SVQ","price":59,"classification":"OFERTA"}}
 {"ts":"2026-06-01T11:37:13.450Z","type":"landing_arrived","visitor":"ec15a0275c7764db","meta":{"path":"/"}}
+{"ts":"2026-06-01T11:30:32.917Z","type":"result_viewed","visitor":"e9a7404240251e77","meta":{"deal_id":"ryanair_mad_prg_20260908_economy","destination":"PRG","origin":"MAD","price":45.99,"classification":"ERROR"}}
+{"ts":"2026-06-01T11:30:54.151Z","type":"result_viewed","visitor":"e9a7404240251e77","meta":{"deal_id":"ryanair_mad_prg_20260908_economy","destination":"PRG","origin":"MAD","price":45.99,"classification":"ERROR"}}
+{"ts":"2026-06-01T11:37:13.490Z","type":"page_view","visitor":"ec15a0275c7764db","meta":{"path":"/"}}
