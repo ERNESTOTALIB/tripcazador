@@ -2983,6 +2983,22 @@
       "destination": "GDN",
       "price_eur": 30.71,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "3a18db60307a",
+      "ts": "2026-06-01T19:17:26.248042+00:00",
+      "origin": "BCN",
+      "destination": "NDR",
+      "price_eur": 17.49,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8aa8e78509b1",
+      "ts": "2026-06-01T19:17:26.248042+00:00",
+      "origin": "BCN",
+      "destination": "TNG",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
