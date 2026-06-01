@@ -1,6 +1,3 @@
-{"ts":"2026-05-22T18:36:10.036Z","type":"result_viewed","visitor":"34030b1a1b19958e","meta":{"deal_id":"seed-00a7da7580","destination":"AKL","origin":"MAD","price":1295,"classification":"OFERTA"}}
-{"ts":"2026-05-22T18:36:30.440Z","type":"scroll_75","visitor":"34030b1a1b19958e","meta":{"path":"/en"}}
-{"ts":"2026-05-22T18:36:45.037Z","type":"page_view","visitor":"34030b1a1b19958e","meta":{"path":"/deals"}}
 {"ts":"2026-05-22T20:49:19.982Z","type":"landing_arrived","visitor":"ba265532c03ac26f","meta":{"path":"/"}}
 {"ts":"2026-05-22T20:50:10.268Z","type":"landing_arrived","visitor":"4efdd5237710dce6","meta":{"path":"/"}}
 {"ts":"2026-05-22T20:50:10.313Z","type":"page_view","visitor":"4efdd5237710dce6","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-06-01T11:29:58.838Z","type":"landing_arrived","visitor":"e9a7404240251e77","meta":{"path":"/"}}
 {"ts":"2026-06-01T11:29:58.884Z","type":"page_view","visitor":"e9a7404240251e77","meta":{"path":"/"}}
 {"ts":"2026-06-01T11:30:00.377Z","type":"landing_arrived","visitor":"8a5afee849dfe581","meta":{"path":"/"}}
+{"ts":"2026-06-01T11:30:06.028Z","type":"page_view","visitor":"8a5afee849dfe581","meta":{"path":"/"}}
+{"ts":"2026-06-01T11:30:07.576Z","type":"result_viewed","visitor":"e9a7404240251e77","meta":{"deal_id":"ryanair_mad_prg_20260908_economy","destination":"PRG","origin":"MAD","price":45.99,"classification":"ERROR"}}
+{"ts":"2026-06-01T11:30:07.605Z","type":"result_viewed","visitor":"e9a7404240251e77","meta":{"deal_id":"ryanair_bcn_ndr_20260826_economy","destination":"NDR","origin":"BCN","price":17.49,"classification":"CRÍTICO"}}
