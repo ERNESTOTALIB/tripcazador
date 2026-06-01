@@ -2999,6 +2999,22 @@
       "destination": "TNG",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "1be912f03f59",
+      "ts": "2026-06-01T22:31:19.675749+00:00",
+      "origin": "STN",
+      "destination": "BIQ",
+      "price_eur": 27.08,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ace55f5d3962",
+      "ts": "2026-06-01T22:31:19.675749+00:00",
+      "origin": "STN",
+      "destination": "EFL",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
