@@ -1249,5 +1249,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1780321380.9618342,
+    "deal_id": "ryanair_ams_agp_20260818_economy",
+    "origin": "AMS",
+    "destination": "AGP",
+    "city_from": "\u00c1msterdam",
+    "city_to": "Malaga",
+    "price_eur": 29.99
   }
 ]
