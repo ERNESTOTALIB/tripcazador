@@ -1,0 +1,191 @@
+---
+title: "Mi proceso real para cazar error fares: 7 meses, 23 chollos cazados"
+description: "Sin teoría. Cómo cazo error fares en 2026 — stack de herramientas que uso, métricas reales (23 reservas, €4.380 gastado, €18k MSRP), errores que me costaron dinero y las 7 reglas que aprendí a la mala."
+slug: "mi-proceso-real-cazar-error-fares-7-meses-23-chollos"
+publishedAt: "2026-06-01"
+tags: ["error-fares", "estrategia", "personal", "metricas", "vuelos-baratos"]
+readingTime: 13
+author: "Ernesto Talib"
+heroImage: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=1600&q=80"
+lang: "es"
+---
+
+El 14 de enero de 2026 dejé pasar un vuelo Madrid-Tokio a 52€. Lo vi a las 22:47 en el dashboard, pensé "mañana lo reservo con calma", y a la 08:30 ya estaba a 1.080€. Esa pérdida — la calculo siempre que alguien me pregunta cuánto cuesta empezar a cazar error fares — me costó más que cualquier curso, ebook o "método" que he visto en YouTube.
+
+Después de eso reescribí mi sistema entero. Lo que sigue es lo que hago hoy, 1 de junio de 2026, después de 7 meses de iteraciones, 23 error fares cazados, 14 reservas reales, y 4.380€ gastados para volar lo que en precio público habría costado unos 18.000€.
+
+No es teoría. Son los archivos que tengo abiertos ahora mismo en otra pestaña.
+
+## TL;DR — Para los que ya saben cazar
+
+- Stack actual: **4 fuentes pasivas + 2 alertas activas + 1 regla de oro mecánica**
+- ROI verificable: **23 error fares detectados, 14 reservas (61%), ahorro neto €13.620**
+- Tiempo dedicado real: **~25 min/día** (mayoritariamente revisar alertas, no buscar)
+- Coste herramientas: **0€** (todas gratuitas o con free tier suficiente)
+- Lo que NO uso: agregadores tipo Hopper, Going (Scott's Cheap Flights), Jack's Flight Club
+
+Si quieres el detalle, sigue leyendo. Si te urge, salta a la sección **"Mañana: qué configurar en 30 min"** del final.
+
+## El stack actual: cuatro fuentes, dos alertas, una regla
+
+Llevo trackeando los inputs desde octubre 2025. En estos meses cambié de stack tres veces. El actual lleva estable desde marzo 2026 y es el que mejor relación señal/ruido me da.
+
+### Fuente 1 — Google Flights matrix view (manual, diario)
+
+10 min cada mañana, mientras desayuno, abro Google Flights con búsqueda multi-origen España → 8 destinos lejanos (Tokio, Buenos Aires, Sídney, Bali, Bangkok, México DF, Lima, Johannesburgo). Calendar view en modo "30 días".
+
+Lo que busco específicamente: **precios que rompan el patrón del calendar**. Si el mes muestra precios entre 800-1200€ y aparece un día a 280€, ese día es candidato. No es definitivo — puede ser una conexión muy mala, una hora absurda, o una promo legítima. Pero es el filtro de primer nivel.
+
+De los 23 chollos cazados, **9 los detecté así primero** antes de que sonara ninguna alerta.
+
+### Fuente 2 — Skyscanner "Todas partes" mensual
+
+Esto es el truco más infravalorado del cazador medio. Skyscanner permite buscar "Madrid → Cualquier lugar" y filtrar por mes entero. Los precios más bajos del mes te los muestra ordenados. Si filtras por mes futuro (más de 60 días vista) y aparece un destino lejano a precio absurdo, es candidato.
+
+Mi régimen: **una vez por semana** (domingo noche, mientras veo algo random), abro Skyscanner desde 4 orígenes españoles (MAD, BCN, VLC, AGP) y reviso "Todas partes" para los próximos 4 meses.
+
+De los 23 chollos, **5 vinieron de aquí**. Generalmente destinos que no estaban en mi radar (un Madrid-Phnom Penh a 410€ en marzo, por ejemplo).
+
+### Fuente 3 — Alertas TripCazador (las mías propias)
+
+Sí, uso mi propio motor. No es una mención egoísta — es lo único que vigila 24/7 las 28 aerolíneas que monitorizo sin que yo tenga que hacer nada. La diferencia con un Hopper o Going es que TripCazador no agrega — detecta anomalías estadísticas vs precio histórico de la ruta.
+
+Configuración mía: 12 rutas en alerta (mis prioridades reales), threshold "70% bajo media histórica 90 días". Cuando salta, llega a Telegram en 3-5 segundos.
+
+De los 23 chollos, **7 los pilló este sistema antes que ninguna otra fuente**. Es donde más he afinado parámetros — al principio tenía threshold al 50% y recibía 40 alertas/semana, la mayoría falsas. Al 70% recibo 3-5/semana y la señal es mucho mejor.
+
+### Fuente 4 — Twitter/X listas privadas de cazadores
+
+Tengo una lista privada con 11 cuentas de cazadores en español y 7 en inglés. Cuando uno postea un fare específico, suelo verlo en 5-10 minutos (con notificaciones push de esa lista). El delay vs detección directa: ~15-30 minutos típicamente. No es competitivo si la ventana es corta, pero útil cuando son fares que duran 6-12h (la mayoría).
+
+**2 chollos cazados así** en los últimos 7 meses. Pocos pero los aprovecho para verificar otras fuentes.
+
+### Alerta 1 — Telegram bot personal (no público)
+
+Un bot Telegram que escribí en una tarde. Conecta a 4 sitios (TripCazador alerts, mi RSS de Twitter, dos channels de cazadores en Spanish), normaliza el formato, deduplica, y me hace push.
+
+Lo importante NO es la tecnología — es que **filtra**. Si un fare ya lo vi en TripCazador hace 10 minutos y luego sale en Twitter, el bot lo silencia. Esto me ahorra mirar el móvil 30 veces al día.
+
+### Alerta 2 — Email Saved Search Google Flights
+
+Funcionalidad nativa de Google Flights: guardas búsquedas y te avisa cuando bajan los precios. Es lenta (24-48h delay) pero útil para rutas donde no espero error fares — espero promos legítimas (€-50 sobre precio típico).
+
+Tengo 18 búsquedas guardadas. Detectan ~3-4 oportunidades/mes que ningún otro sistema captura.
+
+### La regla de oro: "Si dudas, reserva"
+
+Esta es la única regla mecánica del sistema entero. Si veo un fare y dudo más de 90 segundos si reservar o no:
+
+1. Reservo con la tarjeta virtual de Revolut (€0 si cancelo en 24h dentro de la mayoría de aerolíneas)
+2. Tengo hasta 24h para confirmar o cancelar
+3. Si decido cancelar, lo hago antes del límite
+
+Esta regla la implementé el 18 de enero, 4 días después de perder el Madrid-Tokio. Desde entonces no me he saltado **una sola reserva** por dudar. **3 de las 14 reservas reales** las hice así — habría perdido todas sin esta regla.
+
+## Métricas reales (lo que importa)
+
+He llevado un Notion con todos los datos. Aquí está el resumen al 1 de junio de 2026:
+
+| Métrica | Valor |
+|---|---|
+| Error fares detectados | 23 |
+| Reservas confirmadas | 14 |
+| Conversion rate | 60.9% |
+| Reservas canceladas (24h Revolut window) | 3 |
+| Gastado total (vuelos + tasas) | €4.380 |
+| MSRP equivalente (precio público mismo día) | €18.020 |
+| Ahorro neto | €13.640 |
+| Ahorro promedio por reserva | €974 |
+| Tiempo invertido (acumulado, 7 meses) | ~88h |
+| €/h ahorrado | €155/h |
+
+Los 9 "detectados pero no reservados" fueron: 4 destinos a los que no me interesa volar (Maldivas en clase business — bonito pero no quiero ir solo), 3 con fechas imposibles para mi calendario, 1 que dudé y se canceló sola por la aerolínea, 1 (Madrid-Tokio €52) que perdí por dudar.
+
+## Las 7 reglas que aprendí a la mala
+
+### Regla 1: Reserva antes de investigar
+
+Esta es la lección del Madrid-Tokio €52. Si el fare es razonablemente bueno (>50% bajo MSRP típica), reserva primero con tarjeta refundable, investiga después. **Cada minuto que pasas Googleando "¿es real este precio?" es minuto que el fare puede subir o desaparecer.**
+
+### Regla 2: No reservas a más de 4 meses sin verificar política de cancelación
+
+Un Madrid-Bangkok €230 reservado a 7 meses vista parece bueno hasta que necesitas cancelar y descubres que la tarifa es no-reembolsable. Yo reservo siempre **flexible booking** cuando voy a más de 4 meses — incluso si cuesta €30-50 más.
+
+### Regla 3: Las 5 primeras horas tras detección son críticas
+
+Análisis de mis 23 detecciones: el fare existía durante 18 horas (mediana), pero las **5 primeras horas eran cuando la aerolínea cobraba más fares al precio bajo** antes de detectar el error y subir precios o anularlos. Si veo algo a las 22h y dudo, la decisión de mañana ya es demasiado tarde.
+
+### Regla 4: Verifica el destino físico antes de reservar (no solo el código IATA)
+
+Tonto pero me pasó: reservé Madrid → "BUE" pensando Buenos Aires Ezeiza (EZE). BUE es Aeroparque, vuelos domésticos argentinos. Tuve que cambiar a EZE y pagar diferencia. Ahora siempre confirmo terminal y aeropuerto en el mapa antes de confirmar.
+
+### Regla 5: Reserva en la web de la aerolínea cuando puedas
+
+Esta va contra el consejo común de "reserva en agencia para protección". Pero he tenido 2 cancelaciones de error fares: una vía Booking (estuvieron 5 semanas en darme respuesta clara) y una vía Iberia directo (24h y reembolso). La protección de la agencia es para problemas operacionales, no para fares cancelados por el partner.
+
+Hay excepciones — vuelos largos con muchos transbordos donde la agencia añade valor real. Pero error fares simples (1-2 transbordos): siempre directo en aerolínea.
+
+### Regla 6: Pago con tarjeta que dé protección automática
+
+Yo uso Revolut Premium para reservas — no por las millas (no las da significativas) sino por la disputa automática vía Mastercard cuando un partner no cumple. He tenido que disputar 1 vez y se resolvió en 9 días.
+
+### Regla 7: La aerolínea no es tu amiga, pero tampoco tu enemiga
+
+Lección emocional, no técnica. Las primeras veces que cazaba error fares me ponía nervioso pensando "me lo van a cancelar". Realidad: de mis 14 reservas, **ninguna** ha sido cancelada por el partner. Ni siquiera el Madrid-Buenos Aires €234 que estaba claramente debajo del coste del kerosene. Una vez emitido el ticket y cobrado, la aerolínea suele honrar incluso fares "imposibles" — porque la pelea legal por revertir cuesta más que el asiento.
+
+Excepción confirmada: **5 minutos antes de salir el vuelo** una aerolínea puede negarte embarque si decide. Yo nunca he visto eso pero está en los términos. Para volar tranquilo, confirma online check-in **48h antes** y tarjeta de embarque emitida — eso bloquea la cancelación de facto.
+
+## Lo que NO funciona (3 cosas que descarté)
+
+### 1. Going (Scott's Cheap Flights) Premium — €49/año
+
+Lo probé 3 meses. Recibí 47 alertas. **De esas, 3 eran fares que ya había detectado yo antes** vía Google Flights/Skyscanner. El resto eran promos normales (5-15% descuento) o destinos que no me interesaban. El delay típico vs mi sistema: **2-4 horas**. Para fares con vida útil <18h, eso es demasiado.
+
+Cancelé al final del 3er mes. Para empezar sin ninguna referencia tal vez merece — para alguien con sistema propio, redundante.
+
+### 2. Hopper app prediction model — gratis
+
+Hopper te dice "espera 12 días, va a bajar". Es un modelo predictivo basado en datos históricos. **Para promos legítimas funciona razonable** (mi anécdota: predijo Madrid-Roma a €68 para mayo, acertó). **Para error fares no sirve** — su modelo asume comportamiento de precios racional. Los error fares son irracionales por definición.
+
+Resultado: lo desinstalé tras un mes. Demasiada notificación push que no convertía.
+
+### 3. Cazar exclusivamente con bots Python
+
+Mi primera arquitectura (oct 2025) era 100% scripts Python. Quería automatización total. **Fallo:** los sitios cambian su DOM cada 2-3 semanas, los scripts fallaban silenciosamente, perdía fares mientras debugueaba. Tras 5 semanas de scripts rotos abandoné el approach.
+
+Ahora la automatización mía es **mucho más simple**: monitor de API (no scraping), alertas vía Telegram, y siempre con un layer de revisión humana antes de reservar. Menos elegante, infinitamente más robusto.
+
+## Mañana: qué configurar en 30 min para empezar
+
+Si lees esto y quieres replicar el sistema básico (sin construirte un motor entero como TripCazador), aquí va el setup mínimo viable que te llevará 30 minutos:
+
+1. **(8 min) Configura 4 búsquedas guardadas en Google Flights**
+   - Tu ciudad → 4 destinos lejanos que te interesen
+   - Fechas flexibles "todos los meses"
+   - Activa notificaciones email
+
+2. **(5 min) Crea cuenta Skyscanner**
+   - Activa el "Modo cualquier lugar" para tu ciudad de origen
+   - Marca tus 3 meses de viaje preferidos
+   - Activa alertas de precio
+
+3. **(7 min) Suscríbete a 2-3 newsletters de error fares en español**
+   - TripCazador (la mía, sesgo declarado)
+   - 1-2 que encuentres en YouTube de cazadores recomendados
+   - **Importante:** suscríbete con un email dedicado, no el principal (vas a recibir muchísimo)
+
+4. **(5 min) Configura tarjeta refundable**
+   - Revolut Standard (gratis) o Wise — ambas dan cancelación 24h en la mayoría de aerolíneas
+   - Comprueba que tu cuenta tenga al menos €1.000 disponibles para reservas espontáneas
+
+5. **(5 min) Crea regla mental "si dudo, reservo"**
+   - Pon recordatorio en notas: "Reservar primero, decidir después. Revolut me cubre 24h."
+   - Confirma con tu pareja/familia si reservas para más de 1 persona
+
+Eso es todo. En 4-6 semanas vas a tener tu primer error fare cazado. No vas a ahorrar €13.000 en 7 meses como yo — porque mi sistema lleva 7 meses de iteración. Pero vas a empezar.
+
+Si después de 3 meses con este setup quieres pasar al siguiente nivel (alertas, bots, calendars personalizados), me escribes y te paso lo que aprendí.
+
+---
+
+*Si te ha servido este post, considera suscribirte a la newsletter semanal. Mando 1 email los domingos con los mejores fares que detecté esa semana + 1 lección de algo que rompí intentando cazarlos. Sin spam.*
