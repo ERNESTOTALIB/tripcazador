@@ -2967,6 +2967,22 @@
       "destination": "LIS",
       "price_eur": 17.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "06660408692c",
+      "ts": "2026-06-01T13:30:55.784124+00:00",
+      "origin": "BCN",
+      "destination": "TNG",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "a0515d91a6eb",
+      "ts": "2026-06-01T13:30:55.784124+00:00",
+      "origin": "PRG",
+      "destination": "GDN",
+      "price_eur": 30.71,
+      "classification": "CRÍTICO"
     }
   ]
 }
