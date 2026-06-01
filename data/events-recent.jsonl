@@ -1,6 +1,3 @@
-{"ts":"2026-05-23T09:00:57.230Z","type":"page_view","visitor":"a19a96ed46399be0","meta":{"path":"/"}}
-{"ts":"2026-05-23T09:01:00.716Z","type":"result_viewed","visitor":"a19a96ed46399be0","meta":{"deal_id":"ryanair_bcn_gdn_20260903_economy","destination":"GDN","origin":"BCN","price":27.99,"classification":"CRÍTICO"}}
-{"ts":"2026-05-23T09:01:06.418Z","type":"page_view","visitor":"f331de4f89a6a5e5","meta":{"path":"/"}}
 {"ts":"2026-05-23T09:01:06.079Z","type":"landing_arrived","visitor":"3c9f5a68520129f8","meta":{"path":"/"}}
 {"ts":"2026-05-23T09:01:09.998Z","type":"result_viewed","visitor":"d416c53db1bcd019","meta":{"deal_id":"ryanair_bcn_cph_20260902_economy","destination":"CPH","origin":"BCN","price":35.99,"classification":"CRÍTICO"}}
 {"ts":"2026-05-23T09:01:10.019Z","type":"page_view","visitor":"623a90f1f3c9a7e8","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-06-01T11:34:09.739Z","type":"landing_arrived","visitor":"e9a7404240251e77","meta":{"path":"/destinos/lisboa"}}
 {"ts":"2026-06-01T11:34:14.122Z","type":"result_viewed","visitor":"e9a7404240251e77","meta":{"deal_id":"ryanair_bud_lis_20260929_economy","destination":"LIS","origin":"BUD","price":52.99,"classification":"CRÍTICO"}}
 {"ts":"2026-06-01T11:34:33.616Z","type":"page_view","visitor":"f70a08666d1a7d32","meta":{"path":"/destinos/lisboa"}}
+{"ts":"2026-06-01T11:35:01.867Z","type":"landing_arrived","visitor":"e9a7404240251e77","meta":{"path":"/destinos/paris"}}
+{"ts":"2026-06-01T11:35:06.397Z","type":"result_viewed","visitor":"e9a7404240251e77","meta":{"deal_id":"seed-002c02d08c","destination":"CDG","origin":"SVQ","price":59,"classification":"OFERTA"}}
+{"ts":"2026-06-01T11:35:06.502Z","type":"result_viewed","visitor":"e9a7404240251e77","meta":{"deal_id":"seed-00e247b538","destination":"CDG","origin":"SCQ","price":59,"classification":"OFERTA"}}
