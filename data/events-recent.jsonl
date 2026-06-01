@@ -1,6 +1,3 @@
-{"ts":"2026-05-23T09:54:27.793Z","type":"page_view","visitor":"69231381a7829c38","meta":{"path":"/deals"}}
-{"ts":"2026-05-23T09:54:38.951Z","type":"page_view","visitor":"69231381a7829c38","meta":{"path":"/deals"}}
-{"ts":"2026-05-23T09:55:21.742Z","type":"page_view","visitor":"69231381a7829c38","meta":{"path":"/deals"}}
 {"ts":"2026-05-23T10:00:00.157Z","type":"landing_arrived","visitor":"83099a703826e406","meta":{"path":"/"}}
 {"ts":"2026-05-23T10:00:00.488Z","type":"page_view","visitor":"83099a703826e406","meta":{"path":"/"}}
 {"ts":"2026-05-23T10:00:16.154Z","type":"landing_arrived","visitor":"b85359bb5ada051a","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-06-01T11:41:50.316Z","type":"landing_arrived","visitor":"e9a7404240251e77","meta":{"path":"/comparar-aerolineas/qatar-vs-emirates"}}
 {"ts":"2026-06-01T11:42:07.550Z","type":"page_view","visitor":"e9a7404240251e77","meta":{"path":"/comparar-aerolineas/qatar-vs-emirates"}}
 {"ts":"2026-06-01T11:42:24.760Z","type":"page_view","visitor":"e9a7404240251e77","meta":{"path":"/comparar-aerolineas/qatar-vs-emirates"}}
+{"ts":"2026-06-01T12:32:56.914Z","type":"page_view","visitor":"b45fc41c24b7563e","meta":{"path":"/"}}
+{"ts":"2026-06-01T12:32:57.358Z","type":"page_view","visitor":"b45fc41c24b7563e","meta":{"path":"/"}}
+{"ts":"2026-06-01T12:32:57.376Z","type":"landing_arrived","visitor":"b45fc41c24b7563e","meta":{"path":"/"}}
