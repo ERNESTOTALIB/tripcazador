@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { headers } from "next/headers";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { CookieBanner } from "@/components/CookieBanner";
 import { JsonLd } from "@/components/JsonLd";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
@@ -532,6 +533,10 @@ export default function RootLayout({
 
         <CookieBanner />
         <WebVitalsReporter />
+        {/* FIX-ANALYTICS (2 jun 2026): @vercel/analytics permite tracking
+            client-side preciso. Antes Vercel veía solo edge fingerprint
+            (IP+UA hash) — métricas ruidosas y subestimadas. */}
+        <Analytics />
         <PWAInstallBanner />
         <TrackingBeacon />
         <OnboardingTour />
