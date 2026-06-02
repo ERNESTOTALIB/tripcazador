@@ -3015,6 +3015,22 @@
       "destination": "EFL",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "71e9f21b740e",
+      "ts": "2026-06-02T11:59:53.712014+00:00",
+      "origin": "WRO",
+      "destination": "GDN",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "328f63d63a65",
+      "ts": "2026-06-02T11:59:53.712014+00:00",
+      "origin": "BGY",
+      "destination": "CRV",
+      "price_eur": 16.0,
+      "classification": "CRÍTICO"
     }
   ]
 }
