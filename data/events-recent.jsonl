@@ -1,6 +1,3 @@
-{"ts":"2026-05-24T09:08:18.125Z","type":"result_viewed","visitor":"58c8cc4a7752e98b","meta":{"deal_id":"seed-00cfd2138a","destination":"IST","origin":"MAD","price":1195,"classification":"CRÍTICO"}}
-{"ts":"2026-05-24T09:08:20.755Z","type":"result_viewed","visitor":"58c8cc4a7752e98b","meta":{"deal_id":"seed-00bef3e637","destination":"SYD","origin":"MAD","price":2495,"classification":"CRÍTICO"}}
-{"ts":"2026-05-24T09:08:24.028Z","type":"result_viewed","visitor":"58c8cc4a7752e98b","meta":{"deal_id":"seed-00e0cf188c","destination":"FCO","origin":"BCN","price":29,"classification":"OFERTA"}}
 {"ts":"2026-05-24T09:12:05.485Z","type":"page_view","visitor":"1f26460f2f408adf","meta":{"path":"/"}}
 {"ts":"2026-05-24T09:12:05.802Z","type":"landing_arrived","visitor":"1f26460f2f408adf","meta":{"path":"/"}}
 {"ts":"2026-05-24T09:12:10.158Z","type":"landing_arrived","visitor":"1f26460f2f408adf","meta":{"path":"/"}}
@@ -998,3 +995,6 @@
 {"ts":"2026-06-02T09:24:40.071Z","type":"page_view","visitor":"697abf450db6a709","meta":{"path":"/"}}
 {"ts":"2026-06-02T10:20:57.791Z","type":"landing_arrived","visitor":"189134be0e22b3d2","meta":{"path":"/"}}
 {"ts":"2026-06-02T10:20:57.880Z","type":"page_view","visitor":"189134be0e22b3d2","meta":{"path":"/"}}
+{"ts":"2026-06-02T10:21:03.377Z","type":"page_view","visitor":"189134be0e22b3d2","meta":{"path":"/"}}
+{"ts":"2026-06-02T10:21:05.979Z","type":"landing_arrived","visitor":"189134be0e22b3d2","meta":{"path":"/"}}
+{"ts":"2026-06-02T10:21:06.532Z","type":"landing_arrived","visitor":"189134be0e22b3d2","meta":{"path":"/"}}
