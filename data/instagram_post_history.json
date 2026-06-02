@@ -1267,5 +1267,14 @@
     "city_from": "Lisboa",
     "city_to": "Madeira Funchal",
     "price_eur": 23.99
+  },
+  {
+    "timestamp": 1780374341.7526119,
+    "deal_id": "ryanair_bud_ath_20260926_economy",
+    "origin": "BUD",
+    "destination": "ATH",
+    "city_from": "Budapest",
+    "city_to": "Athens",
+    "price_eur": 20.99
   }
 ]
