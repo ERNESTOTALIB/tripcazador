@@ -1276,5 +1276,14 @@
     "city_from": "Budapest",
     "city_to": "Athens",
     "price_eur": 20.99
+  },
+  {
+    "timestamp": 1780402178.024174,
+    "deal_id": "ryanair_opo_mla_20260918_economy",
+    "origin": "OPO",
+    "destination": "MLA",
+    "city_from": "Oporto",
+    "city_to": "Malta",
+    "price_eur": 50.19
   }
 ]
