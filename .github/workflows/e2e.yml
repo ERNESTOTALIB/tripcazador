@@ -1,9 +1,7 @@
 name: E2E — Playwright
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+    pull_request:
     branches: [main]
     paths:
       - "tripcazador-web/**"
