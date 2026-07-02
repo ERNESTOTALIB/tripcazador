@@ -1294,5 +1294,14 @@
     "city_from": "Berl\u00edn",
     "city_to": "Marseille",
     "price_eur": 45.99
+  },
+  {
+    "timestamp": 1783026825.0095892,
+    "deal_id": "ryanair_lis_nap_20261029_economy",
+    "origin": "LIS",
+    "destination": "NAP",
+    "city_from": "Lisboa",
+    "city_to": "Naples",
+    "price_eur": 41.99
   }
 ]
