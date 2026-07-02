@@ -1285,5 +1285,14 @@
     "city_from": "Oporto",
     "city_to": "Malta",
     "price_eur": 50.19
+  },
+  {
+    "timestamp": 1783014853.6792595,
+    "deal_id": "ryanair_ber_mrs_20260930_economy",
+    "origin": "BER",
+    "destination": "MRS",
+    "city_from": "Berl\u00edn",
+    "city_to": "Marseille",
+    "price_eur": 45.99
   }
 ]
