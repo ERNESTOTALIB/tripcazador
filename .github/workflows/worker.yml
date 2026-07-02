@@ -17,8 +17,8 @@ permissions:
 
 on:
   schedule:
-    # UTC — corre cada 4h: 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC
-    - cron: "0 */4 * * *"
+    # UTC - 4 runs/dia: 00 (business), 04 (hotels), 12 (business), 18. Gates hotels_flag/business_flag dependen de estas horas
+        - cron: "0 0,4,12,18 * * *"
   workflow_dispatch:
     inputs:
       mode:
