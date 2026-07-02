@@ -46,6 +46,8 @@
     "typescript": "^5"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "1.15.0",
+    "wrangler": "^4.59.2",
     "@axe-core/playwright": "^4.9.0",
     "@playwright/test": "^1.45.0",
     "@testing-library/jest-dom": "^6.6.3",
