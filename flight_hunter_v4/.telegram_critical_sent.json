@@ -3031,6 +3031,22 @@
       "destination": "CRV",
       "price_eur": 16.0,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "67f2ddba73bf",
+      "ts": "2026-07-02T20:57:59.133654+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "0a1b255241de",
+      "ts": "2026-07-02T20:57:59.133654+00:00",
+      "origin": "LIS",
+      "destination": "RAK",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
