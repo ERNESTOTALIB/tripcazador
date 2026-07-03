@@ -1330,5 +1330,14 @@
     "city_from": "Lisboa",
     "city_to": "Madeira Funchal",
     "price_eur": 23.58
+  },
+  {
+    "timestamp": 1783088362.7793043,
+    "deal_id": "ryanair_prg_cfu_20261020_economy",
+    "origin": "PRG",
+    "destination": "CFU",
+    "city_from": "Praga",
+    "city_to": "Corfu",
+    "price_eur": 19.99
   }
 ]
