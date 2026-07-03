@@ -1339,5 +1339,14 @@
     "city_from": "Praga",
     "city_to": "Corfu",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1783100260.7638633,
+    "deal_id": "ryanair_waw_svq_20260923_economy",
+    "origin": "WAW",
+    "destination": "SVQ",
+    "city_from": "Varsovia",
+    "city_to": "Seville",
+    "price_eur": 26.99
   }
 ]
