@@ -1303,5 +1303,14 @@
     "city_from": "Lisboa",
     "city_to": "Naples",
     "price_eur": 41.99
+  },
+  {
+    "timestamp": 1783050139.1703556,
+    "deal_id": "ryanair_bcn_mla_20260824_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 14.99
   }
 ]
