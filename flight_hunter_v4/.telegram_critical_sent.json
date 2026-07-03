@@ -3143,6 +3143,22 @@
       "destination": "MLA",
       "price_eur": 27.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "9dc3c07fb856",
+      "ts": "2026-07-03T20:57:21.256040+00:00",
+      "origin": "STN",
+      "destination": "CAG",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "aa9fe10bc7d6",
+      "ts": "2026-07-03T20:57:21.256040+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
