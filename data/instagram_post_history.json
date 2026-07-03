@@ -1312,5 +1312,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1783063598.6794937,
+    "deal_id": "ryanair_waw_svq_20261024_economy",
+    "origin": "WAW",
+    "destination": "SVQ",
+    "city_from": "Varsovia",
+    "city_to": "Seville",
+    "price_eur": 24.99
   }
 ]
