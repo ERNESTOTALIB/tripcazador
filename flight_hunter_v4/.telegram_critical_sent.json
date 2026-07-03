@@ -3127,6 +3127,22 @@
       "destination": "MLA",
       "price_eur": 26.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d9158c1e5f81",
+      "ts": "2026-07-03T19:09:45.397273+00:00",
+      "origin": "PRG",
+      "destination": "JSI",
+      "price_eur": 27.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "600fb1e08de4",
+      "ts": "2026-07-03T19:09:45.397273+00:00",
+      "origin": "LIS",
+      "destination": "MLA",
+      "price_eur": 27.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
