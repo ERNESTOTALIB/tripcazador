@@ -3159,6 +3159,22 @@
       "destination": "TGD",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d84c2c220acb",
+      "ts": "2026-07-03T22:03:53.364934+00:00",
+      "origin": "BUD",
+      "destination": "RAK",
+      "price_eur": 22.45,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "14de13a15dac",
+      "ts": "2026-07-03T22:03:53.364934+00:00",
+      "origin": "WAW",
+      "destination": "PFO",
+      "price_eur": 27.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
