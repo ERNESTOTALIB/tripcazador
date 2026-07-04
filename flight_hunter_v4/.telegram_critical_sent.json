@@ -3303,6 +3303,22 @@
       "destination": "NAP",
       "price_eur": 17.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6134ea454e4d",
+      "ts": "2026-07-04T22:52:27.507082+00:00",
+      "origin": "STN",
+      "destination": "ATH",
+      "price_eur": 20.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "239741d5ba66",
+      "ts": "2026-07-04T22:52:27.507082+00:00",
+      "origin": "DUB",
+      "destination": "BJV",
+      "price_eur": 40.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
