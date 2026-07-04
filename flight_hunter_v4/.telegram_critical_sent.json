@@ -3239,6 +3239,22 @@
       "destination": "MLA",
       "price_eur": 25.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "705aee429171",
+      "ts": "2026-07-04T17:02:44.597669+00:00",
+      "origin": "IST",
+      "destination": "IZM",
+      "price_eur": 47.84,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "3b56cc46f9f1",
+      "ts": "2026-07-04T17:02:44.597669+00:00",
+      "origin": "FCO",
+      "destination": "EVN",
+      "price_eur": 67.16,
+      "classification": "CRÍTICO"
     }
   ]
 }
