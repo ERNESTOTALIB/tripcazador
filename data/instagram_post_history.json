@@ -1357,5 +1357,14 @@
     "city_from": "Lisboa",
     "city_to": "Madeira Funchal",
     "price_eur": 23.58
+  },
+  {
+    "timestamp": 1783136118.9302235,
+    "deal_id": "ryanair_bcn_mla_20260824_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 18.54
   }
 ]
