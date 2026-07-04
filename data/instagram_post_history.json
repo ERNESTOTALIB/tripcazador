@@ -1375,5 +1375,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 24.99
+  },
+  {
+    "timestamp": 1783160161.8568811,
+    "deal_id": "ryanair_stn_nap_20260929_economy",
+    "origin": "STN",
+    "destination": "NAP",
+    "city_from": "Londres Stansted",
+    "city_to": "Naples",
+    "price_eur": 17.99
   }
 ]
