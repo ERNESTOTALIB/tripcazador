@@ -3271,6 +3271,22 @@
       "destination": "PDL",
       "price_eur": 83.72,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "5d6e7a37bce0",
+      "ts": "2026-07-04T20:48:30.483534+00:00",
+      "origin": "DUB",
+      "destination": "ATH",
+      "price_eur": 25.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "0345e195b304",
+      "ts": "2026-07-04T20:48:30.483534+00:00",
+      "origin": "MXP",
+      "destination": "REK",
+      "price_eur": 69.92,
+      "classification": "CRÍTICO"
     }
   ]
 }
