@@ -3175,6 +3175,22 @@
       "destination": "PFO",
       "price_eur": 27.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "38f234e18ebe",
+      "ts": "2026-07-04T10:02:38.623075+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "70069b8ed6f0",
+      "ts": "2026-07-04T10:02:38.623075+00:00",
+      "origin": "MXP",
+      "destination": "TGD",
+      "price_eur": 23.92,
+      "classification": "CRÍTICO"
     }
   ]
 }
