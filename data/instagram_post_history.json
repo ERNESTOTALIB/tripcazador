@@ -1384,5 +1384,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Naples",
     "price_eur": 17.99
+  },
+  {
+    "timestamp": 1783172631.6255212,
+    "deal_id": "ryanair_bcn_mla_20260824_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 18.54
   }
 ]
