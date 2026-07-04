@@ -3207,6 +3207,22 @@
       "destination": "ATH",
       "price_eur": 24.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6bd0fac9581f",
+      "ts": "2026-07-04T14:24:31.631471+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "acc8effbed85",
+      "ts": "2026-07-04T14:24:31.631471+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
