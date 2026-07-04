@@ -3191,6 +3191,22 @@
       "destination": "TGD",
       "price_eur": 23.92,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "429f1bd4837f",
+      "ts": "2026-07-04T12:02:38.706998+00:00",
+      "origin": "STN",
+      "destination": "AGA",
+      "price_eur": 25.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "832a5c5e66f1",
+      "ts": "2026-07-04T12:02:38.706998+00:00",
+      "origin": "DUB",
+      "destination": "ATH",
+      "price_eur": 24.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
