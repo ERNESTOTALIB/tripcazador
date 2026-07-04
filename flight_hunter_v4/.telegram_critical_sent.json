@@ -3255,6 +3255,22 @@
       "destination": "EVN",
       "price_eur": 67.16,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d96890c53c96",
+      "ts": "2026-07-04T19:01:01.692828+00:00",
+      "origin": "MXP",
+      "destination": "REK",
+      "price_eur": 72.68,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "611fa25b936f",
+      "ts": "2026-07-04T19:01:01.692828+00:00",
+      "origin": "LIS",
+      "destination": "PDL",
+      "price_eur": 83.72,
+      "classification": "CRÍTICO"
     }
   ]
 }
