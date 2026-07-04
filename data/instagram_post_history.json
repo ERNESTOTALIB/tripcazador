@@ -1366,5 +1366,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 18.54
+  },
+  {
+    "timestamp": 1783147861.553542,
+    "deal_id": "ryanair_waw_pmi_20261020_economy",
+    "origin": "WAW",
+    "destination": "PMI",
+    "city_from": "Varsovia",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 24.99
   }
 ]
