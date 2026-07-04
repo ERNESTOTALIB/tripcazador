@@ -3287,6 +3287,22 @@
       "destination": "REK",
       "price_eur": 69.92,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "71f1d9a325f5",
+      "ts": "2026-07-04T21:52:32.180800+00:00",
+      "origin": "FCO",
+      "destination": "EVN",
+      "price_eur": 73.6,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7c8c2663964d",
+      "ts": "2026-07-04T21:52:32.180800+00:00",
+      "origin": "STN",
+      "destination": "NAP",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
