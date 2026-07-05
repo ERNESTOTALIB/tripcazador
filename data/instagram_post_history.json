@@ -1438,5 +1438,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 24.99
+  },
+  {
+    "timestamp": 1783259400.3036754,
+    "deal_id": "ryanair_prg_rho_20261023_economy",
+    "origin": "PRG",
+    "destination": "RHO",
+    "city_from": "Praga",
+    "city_to": "Rhodes",
+    "price_eur": 27.99
   }
 ]
