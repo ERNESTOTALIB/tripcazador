@@ -1447,5 +1447,14 @@
     "city_from": "Praga",
     "city_to": "Rhodes",
     "price_eur": 27.99
+  },
+  {
+    "timestamp": 1783271826.7175229,
+    "deal_id": "ryanair_mad_lis_20260908_economy",
+    "origin": "MAD",
+    "destination": "LIS",
+    "city_from": "Madrid",
+    "city_to": "Lisbon",
+    "price_eur": 15.99
   }
 ]
