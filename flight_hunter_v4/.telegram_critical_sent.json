@@ -3351,6 +3351,22 @@
       "destination": "KUT",
       "price_eur": 67.16,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7e803b0cbeca",
+      "ts": "2026-07-05T14:26:58.460538+00:00",
+      "origin": "BCN",
+      "destination": "TRN",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "27cd02e6e62c",
+      "ts": "2026-07-05T14:26:58.460538+00:00",
+      "origin": "BUD",
+      "destination": "BOJ",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
