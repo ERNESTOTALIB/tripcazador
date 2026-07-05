@@ -3383,6 +3383,22 @@
       "destination": "TCI",
       "price_eur": 69.0,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "b7b555925e6b",
+      "ts": "2026-07-05T17:57:39.212419+00:00",
+      "origin": "STN",
+      "destination": "GRO",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "8928439eac15",
+      "ts": "2026-07-05T17:57:39.212419+00:00",
+      "origin": "MXP",
+      "destination": "REK",
+      "price_eur": 92.92,
+      "classification": "CRÍTICO"
     }
   ]
 }
