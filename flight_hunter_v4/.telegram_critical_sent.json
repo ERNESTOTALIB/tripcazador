@@ -3319,6 +3319,22 @@
       "destination": "BJV",
       "price_eur": 40.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6917e5e7a215",
+      "ts": "2026-07-05T10:05:14.709696+00:00",
+      "origin": "BCN",
+      "destination": "TRN",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "7c8f0f732230",
+      "ts": "2026-07-05T10:05:14.709696+00:00",
+      "origin": "MAD",
+      "destination": "CAG",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
