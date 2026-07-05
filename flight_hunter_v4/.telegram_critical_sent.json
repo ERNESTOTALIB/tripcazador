@@ -3447,6 +3447,22 @@
       "destination": "DLM",
       "price_eur": 34.99,
       "classification": "ERROR"
+    },
+    {
+      "hash": "59295c99f227",
+      "ts": "2026-07-05T22:58:24.829689+00:00",
+      "origin": "PRG",
+      "destination": "RHO",
+      "price_eur": 27.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ac24ae20b36e",
+      "ts": "2026-07-05T22:58:24.829689+00:00",
+      "origin": "PRG",
+      "destination": "CFU",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
