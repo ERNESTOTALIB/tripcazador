@@ -1429,5 +1429,14 @@
     "city_from": "Madrid",
     "city_to": "Lisbon",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1783246836.7652724,
+    "deal_id": "ryanair_waw_pmi_20261020_economy",
+    "origin": "WAW",
+    "destination": "PMI",
+    "city_from": "Varsovia",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 24.99
   }
 ]
