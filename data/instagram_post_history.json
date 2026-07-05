@@ -1456,5 +1456,14 @@
     "city_from": "Madrid",
     "city_to": "Lisbon",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1783285644.6031272,
+    "deal_id": "ryanair_bcn_ndr_20260827_economy",
+    "origin": "BCN",
+    "destination": "NDR",
+    "city_from": "Barcelona",
+    "city_to": "Nador",
+    "price_eur": 16.99
   }
 ]
