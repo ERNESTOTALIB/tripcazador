@@ -3399,6 +3399,22 @@
       "destination": "REK",
       "price_eur": 92.92,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c9ebdd025a11",
+      "ts": "2026-07-05T19:18:17.317222+00:00",
+      "origin": "STN",
+      "destination": "TGD",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "50eff5286bc8",
+      "ts": "2026-07-05T19:18:17.317222+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
