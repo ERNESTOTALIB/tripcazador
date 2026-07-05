@@ -1411,5 +1411,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 24.99
+  },
+  {
+    "timestamp": 1783223624.0078611,
+    "deal_id": "ryanair_bcn_mla_20260918_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 19.99
   }
 ]
