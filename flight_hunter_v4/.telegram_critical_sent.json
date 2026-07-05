@@ -3367,6 +3367,22 @@
       "destination": "BOJ",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d84f75f96069",
+      "ts": "2026-07-05T16:02:01.948167+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ee838cd97fd0",
+      "ts": "2026-07-05T16:02:01.948167+00:00",
+      "origin": "MAD",
+      "destination": "TCI",
+      "price_eur": 69.0,
+      "classification": "CRÍTICO"
     }
   ]
 }
