@@ -1492,5 +1492,14 @@
     "city_from": "Madrid",
     "city_to": "Lisbon",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1783373989.3583171,
+    "deal_id": "ryanair_bcn_mla_20260826_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 14.99
   }
 ]
