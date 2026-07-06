@@ -1474,5 +1474,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Naples",
     "price_eur": 17.99
+  },
+  {
+    "timestamp": 1783339706.1754863,
+    "deal_id": "ryanair_opo_fnc_20260914_economy",
+    "origin": "OPO",
+    "destination": "FNC",
+    "city_from": "Oporto",
+    "city_to": "Madeira Funchal",
+    "price_eur": 14.99
   }
 ]
