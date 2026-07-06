@@ -3527,6 +3527,22 @@
       "destination": "KUN",
       "price_eur": 21.42,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "53402b916432",
+      "ts": "2026-07-06T22:09:23.671243+00:00",
+      "origin": "STN",
+      "destination": "MLA",
+      "price_eur": 24.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "b7c8cb94bc77",
+      "ts": "2026-07-06T22:09:23.671243+00:00",
+      "origin": "MAD",
+      "destination": "KUN",
+      "price_eur": 26.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
