@@ -1465,5 +1465,14 @@
     "city_from": "Barcelona",
     "city_to": "Nador",
     "price_eur": 16.99
+  },
+  {
+    "timestamp": 1783310444.645796,
+    "deal_id": "ryanair_stn_nap_20260929_economy",
+    "origin": "STN",
+    "destination": "NAP",
+    "city_from": "Londres Stansted",
+    "city_to": "Naples",
+    "price_eur": 17.99
   }
 ]
