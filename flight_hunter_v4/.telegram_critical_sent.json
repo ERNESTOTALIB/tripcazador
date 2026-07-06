@@ -3463,6 +3463,22 @@
       "destination": "CFU",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "05896f505505",
+      "ts": "2026-07-06T11:58:22.579169+00:00",
+      "origin": "BGY",
+      "destination": "ZAD",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "feb33e93baa8",
+      "ts": "2026-07-06T11:58:22.579169+00:00",
+      "origin": "VLC",
+      "destination": "RAK",
+      "price_eur": 15.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
