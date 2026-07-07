@@ -3575,6 +3575,22 @@
       "destination": "FNC",
       "price_eur": 28.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "444ae064db21",
+      "ts": "2026-07-07T16:23:29.938826+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 19.85,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d1b7c9eccf44",
+      "ts": "2026-07-07T16:23:29.938826+00:00",
+      "origin": "BUD",
+      "destination": "CAG",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
