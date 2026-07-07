@@ -3607,6 +3607,22 @@
       "destination": "MLA",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "eefc178c6049",
+      "ts": "2026-07-07T20:49:13.891410+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 19.85,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ef4563b6cde4",
+      "ts": "2026-07-07T20:49:13.891410+00:00",
+      "origin": "STN",
+      "destination": "KUN",
+      "price_eur": 19.85,
+      "classification": "CRÍTICO"
     }
   ]
 }
