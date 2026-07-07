@@ -1546,5 +1546,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 16.99
+  },
+  {
+    "timestamp": 1783459665.2914343,
+    "deal_id": "ryanair_mad_kun_20260909_economy",
+    "origin": "MAD",
+    "destination": "KUN",
+    "city_from": "Madrid",
+    "city_to": "Kaunas",
+    "price_eur": 26.99
   }
 ]
