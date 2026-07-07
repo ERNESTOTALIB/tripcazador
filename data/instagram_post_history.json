@@ -1501,5 +1501,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1783396298.5114195,
+    "deal_id": "ryanair_stn_nap_20260929_economy",
+    "origin": "STN",
+    "destination": "NAP",
+    "city_from": "Londres Stansted",
+    "city_to": "Naples",
+    "price_eur": 17.99
   }
 ]
