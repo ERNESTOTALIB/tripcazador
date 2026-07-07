@@ -1510,5 +1510,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Naples",
     "price_eur": 17.99
+  },
+  {
+    "timestamp": 1783410249.3972492,
+    "deal_id": "ryanair_lis_rak_20261010_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 16.99
   }
 ]
