@@ -1555,5 +1555,14 @@
     "city_from": "Madrid",
     "city_to": "Kaunas",
     "price_eur": 26.99
+  },
+  {
+    "timestamp": 1783480727.0402136,
+    "deal_id": "ryanair_bcn_mla_20260828_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 14.99
   }
 ]
