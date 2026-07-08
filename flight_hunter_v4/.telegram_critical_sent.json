@@ -3719,6 +3719,22 @@
       "destination": "LPA",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "210c204e3b47",
+      "ts": "2026-07-08T21:00:18.008837+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 19.85,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "3ac853150288",
+      "ts": "2026-07-08T21:00:18.008837+00:00",
+      "origin": "STN",
+      "destination": "CAG",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
