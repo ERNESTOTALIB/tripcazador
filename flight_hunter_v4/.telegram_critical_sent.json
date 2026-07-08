@@ -3703,6 +3703,22 @@
       "destination": "GDN",
       "price_eur": 23.5,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "15b00e289914",
+      "ts": "2026-07-08T19:14:52.479903+00:00",
+      "origin": "STN",
+      "destination": "ATH",
+      "price_eur": 18.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "69a79cf8d109",
+      "ts": "2026-07-08T19:14:52.479903+00:00",
+      "origin": "MAD",
+      "destination": "LPA",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
