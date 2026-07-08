@@ -3655,6 +3655,22 @@
       "destination": "RAK",
       "price_eur": 19.85,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "653147b6fcd6",
+      "ts": "2026-07-08T12:15:57.001054+00:00",
+      "origin": "STN",
+      "destination": "KUN",
+      "price_eur": 19.85,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f08154b37eef",
+      "ts": "2026-07-08T12:15:57.001054+00:00",
+      "origin": "STN",
+      "destination": "LEI",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
