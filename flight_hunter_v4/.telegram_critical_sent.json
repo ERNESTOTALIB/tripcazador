@@ -3671,6 +3671,22 @@
       "destination": "LEI",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "6691df11d29d",
+      "ts": "2026-07-08T15:13:38.484576+00:00",
+      "origin": "BCN",
+      "destination": "NDR",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "11aedadf2512",
+      "ts": "2026-07-08T15:13:38.484576+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 19.85,
+      "classification": "CRÍTICO"
     }
   ]
 }
