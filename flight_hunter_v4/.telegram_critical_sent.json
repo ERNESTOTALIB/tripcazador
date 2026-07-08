@@ -3735,6 +3735,22 @@
       "destination": "CAG",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "47e95489c0ed",
+      "ts": "2026-07-08T22:13:26.672734+00:00",
+      "origin": "DUB",
+      "destination": "BTS",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "bedec07ef8e3",
+      "ts": "2026-07-08T22:13:26.672734+00:00",
+      "origin": "BUD",
+      "destination": "SKG",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
