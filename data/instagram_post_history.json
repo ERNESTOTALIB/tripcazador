@@ -1654,5 +1654,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Barcelona Girona",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1783632372.6863294,
+    "deal_id": "ryanair_bcn_mla_20260827_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 14.99
   }
 ]
