@@ -3783,6 +3783,22 @@
       "destination": "DLM",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "306c5009c91d",
+      "ts": "2026-07-09T16:23:32.373401+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 19.85,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "925c2c183fbd",
+      "ts": "2026-07-09T16:23:32.373401+00:00",
+      "origin": "STN",
+      "destination": "CAG",
+      "price_eur": 23.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
