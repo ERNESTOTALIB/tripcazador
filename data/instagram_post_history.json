@@ -1636,5 +1636,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 21.99
+  },
+  {
+    "timestamp": 1783610401.5379384,
+    "deal_id": "ryanair_mad_lis_20260908_economy",
+    "origin": "MAD",
+    "destination": "LIS",
+    "city_from": "Madrid",
+    "city_to": "Lisbon",
+    "price_eur": 14.99
   }
 ]
