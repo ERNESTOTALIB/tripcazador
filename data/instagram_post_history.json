@@ -1645,5 +1645,14 @@
     "city_from": "Madrid",
     "city_to": "Lisbon",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1783620021.9114742,
+    "deal_id": "ryanair_stn_gro_20261006_economy",
+    "origin": "STN",
+    "destination": "GRO",
+    "city_from": "Londres Stansted",
+    "city_to": "Barcelona Girona",
+    "price_eur": 14.99
   }
 ]
