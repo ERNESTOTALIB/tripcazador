@@ -3751,6 +3751,22 @@
       "destination": "SKG",
       "price_eur": 16.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "d32091d612f8",
+      "ts": "2026-07-09T10:48:27.206834+00:00",
+      "origin": "BCN",
+      "destination": "NDR",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c9022b0fb63c",
+      "ts": "2026-07-09T10:48:27.206834+00:00",
+      "origin": "STN",
+      "destination": "KUN",
+      "price_eur": 19.85,
+      "classification": "CRÍTICO"
     }
   ]
 }
