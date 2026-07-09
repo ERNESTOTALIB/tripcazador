@@ -3815,6 +3815,22 @@
       "destination": "BOJ",
       "price_eur": 34.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "4e956814e838",
+      "ts": "2026-07-09T20:42:48.170339+00:00",
+      "origin": "BCN",
+      "destination": "MLA",
+      "price_eur": 14.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "69697ab8cae2",
+      "ts": "2026-07-09T20:42:48.170339+00:00",
+      "origin": "BCN",
+      "destination": "NDR",
+      "price_eur": 16.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
