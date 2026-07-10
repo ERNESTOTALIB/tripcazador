@@ -3927,6 +3927,22 @@
       "destination": "BFS",
       "price_eur": 18.77,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "db452d462a7f",
+      "ts": "2026-07-10T21:55:44.366693+00:00",
+      "origin": "LIS",
+      "destination": "AGA",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "fa52532dd6ed",
+      "ts": "2026-07-10T21:55:44.366693+00:00",
+      "origin": "STN",
+      "destination": "PVK",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
