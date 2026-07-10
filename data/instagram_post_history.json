@@ -1708,5 +1708,14 @@
     "city_from": "Dubl\u00edn",
     "city_to": "Dalaman",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1783717791.481427,
+    "deal_id": "ryanair_bcn_mla_20260831_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 14.99
   }
 ]
