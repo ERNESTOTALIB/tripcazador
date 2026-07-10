@@ -1699,5 +1699,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1783705812.2944071,
+    "deal_id": "ryanair_dub_dlm_20261019_economy",
+    "origin": "DUB",
+    "destination": "DLM",
+    "city_from": "Dubl\u00edn",
+    "city_to": "Dalaman",
+    "price_eur": 29.99
   }
 ]
