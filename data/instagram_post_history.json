@@ -1672,5 +1672,14 @@
     "city_from": "Lisboa",
     "city_to": "Agadir",
     "price_eur": 19.85
+  },
+  {
+    "timestamp": 1783669241.7839456,
+    "deal_id": "ryanair_stn_gro_20261006_economy",
+    "origin": "STN",
+    "destination": "GRO",
+    "city_from": "Londres Stansted",
+    "city_to": "Barcelona Girona",
+    "price_eur": 14.99
   }
 ]
