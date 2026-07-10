@@ -1690,5 +1690,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 18.24
+  },
+  {
+    "timestamp": 1783694282.1125903,
+    "deal_id": "ryanair_lis_rak_20261011_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 19.99
   }
 ]
