@@ -3943,6 +3943,22 @@
       "destination": "PVK",
       "price_eur": 21.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "efa5ebe01f25",
+      "ts": "2026-07-10T22:55:56.813796+00:00",
+      "origin": "MXP",
+      "destination": "TGD",
+      "price_eur": 28.52,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "ad70ee0e050e",
+      "ts": "2026-07-10T22:55:56.813796+00:00",
+      "origin": "DUB",
+      "destination": "BTS",
+      "price_eur": 29.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
