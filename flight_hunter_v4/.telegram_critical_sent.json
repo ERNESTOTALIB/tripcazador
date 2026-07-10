@@ -3863,6 +3863,22 @@
       "destination": "RAK",
       "price_eur": 19.85,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "08c0a39d7a87",
+      "ts": "2026-07-10T13:07:37.126421+00:00",
+      "origin": "MXP",
+      "destination": "TGD",
+      "price_eur": 26.68,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "b1c42f5acd90",
+      "ts": "2026-07-10T13:07:37.126421+00:00",
+      "origin": "DUB",
+      "destination": "BOJ",
+      "price_eur": 34.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
