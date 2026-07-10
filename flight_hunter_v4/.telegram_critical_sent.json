@@ -3911,6 +3911,22 @@
       "destination": "LEI",
       "price_eur": 20.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f5542107dfdf",
+      "ts": "2026-07-10T20:17:32.388118+00:00",
+      "origin": "PRG",
+      "destination": "ZAD",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "645d903e058b",
+      "ts": "2026-07-10T20:17:32.388118+00:00",
+      "origin": "STN",
+      "destination": "BFS",
+      "price_eur": 18.77,
+      "classification": "CRÍTICO"
     }
   ]
 }
