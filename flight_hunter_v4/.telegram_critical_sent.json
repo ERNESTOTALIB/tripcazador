@@ -3975,6 +3975,22 @@
       "destination": "RAK",
       "price_eur": 19.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "0eb6fa0e860e",
+      "ts": "2026-07-11T10:58:57.130849+00:00",
+      "origin": "LIS",
+      "destination": "AGA",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "f278cb99d52b",
+      "ts": "2026-07-11T10:58:57.130849+00:00",
+      "origin": "PRG",
+      "destination": "TRS",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
