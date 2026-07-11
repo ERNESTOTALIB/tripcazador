@@ -1753,5 +1753,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 21.99
+  },
+  {
+    "timestamp": 1783789347.49716,
+    "deal_id": "ryanair_lis_rak_20261017_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 18.99
   }
 ]
