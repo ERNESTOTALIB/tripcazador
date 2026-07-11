@@ -1717,5 +1717,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1783739592.0895686,
+    "deal_id": "ryanair_stn_gro_20261006_economy",
+    "origin": "STN",
+    "destination": "GRO",
+    "city_from": "Londres Stansted",
+    "city_to": "Barcelona Girona",
+    "price_eur": 14.99
   }
 ]
