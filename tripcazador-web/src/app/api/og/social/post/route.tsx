@@ -4,7 +4,7 @@ import { getDeals } from "@/lib/api";
 import { getDestImage, buildUnsplashUrl } from "@/lib/dest_images";
 import { getCoordForDeal } from "@/lib/dest_coords";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * /api/og/social/post?dealId=X — fase SSS74 (May 2026)

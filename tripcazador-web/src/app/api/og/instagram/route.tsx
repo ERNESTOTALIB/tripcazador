@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { getDeals } from "@/lib/api";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * /api/og/instagram?dealId=X — fase ww XX2

@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { getAirlineByCode } from "@/lib/airlines";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * /api/og/airline/[slug] — OG image dinámica para perfiles de aerolínea.

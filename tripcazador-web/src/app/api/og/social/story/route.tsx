@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { getDeals } from "@/lib/api";
 import { getDestImage, buildUnsplashUrl } from "@/lib/dest_images";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * /api/og/social/story?dealId=X — fase SSS56 (May 2026)

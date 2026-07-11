@@ -5,7 +5,7 @@ import { getDestImage, buildUnsplashUrl } from "@/lib/dest_images";
 import { getDestContent } from "@/lib/dest_content";
 import { getCoordForDeal } from "@/lib/dest_coords";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * /api/og/social/carousel?dealId=X&slide=N — fase SSS74 (May 2026)
