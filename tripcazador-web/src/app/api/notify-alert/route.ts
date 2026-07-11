@@ -31,9 +31,6 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-
-export const runtime = "edge";
-
 const RESEND_FROM =
   process.env.RESEND_FROM || "TripCazador Alertas <alertas@tripcazador.com>";
 
