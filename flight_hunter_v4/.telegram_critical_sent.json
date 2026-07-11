@@ -3959,6 +3959,22 @@
       "destination": "BTS",
       "price_eur": 29.99,
       "classification": "CRÍTICO"
+    },
+    {
+      "hash": "e9f9ea6d87a5",
+      "ts": "2026-07-11T09:21:26.117596+00:00",
+      "origin": "PRG",
+      "destination": "ZAD",
+      "price_eur": 17.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "c87b8383c558",
+      "ts": "2026-07-11T09:21:26.117596+00:00",
+      "origin": "BCN",
+      "destination": "RAK",
+      "price_eur": 19.99,
+      "classification": "CRÍTICO"
     }
   ]
 }
