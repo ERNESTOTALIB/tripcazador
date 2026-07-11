@@ -26,7 +26,6 @@ const ALLOWED_HOSTS = new Set([
 
 const CACHE_SECONDS = 7 * 24 * 3600; // 7 días
 
-export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
