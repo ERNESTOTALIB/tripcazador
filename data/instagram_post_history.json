@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778136137.1032014,
-    "deal_id": "seed-2f0cfb366a",
-    "origin": "MUC",
-    "destination": "BCN",
-    "city_from": "M\u00fanich",
-    "city_to": "Barcelona",
-    "price_eur": 79.0
-  },
-  {
     "timestamp": 1778149801.1253867,
     "deal_id": "seed-b53d915d32",
     "origin": "FRA",
@@ -1798,5 +1789,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 16.99
+  },
+  {
+    "timestamp": 1783875831.0575109,
+    "deal_id": "ryanair_stn_pmi_20261006_economy",
+    "origin": "STN",
+    "destination": "PMI",
+    "city_from": "Londres Stansted",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 15.99
   }
 ]
