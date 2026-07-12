@@ -1789,5 +1789,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Palma de Mallorca",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1783850253.5348601,
+    "deal_id": "ryanair_bcn_mla_20260907_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 19.99
   }
 ]
