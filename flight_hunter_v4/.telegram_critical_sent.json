@@ -1,22 +1,6 @@
 {
   "sent": [
     {
-      "hash": "1a944077169c",
-      "ts": "2026-05-06T19:28:47.679751+00:00",
-      "origin": "STN",
-      "destination": "MLA",
-      "price_eur": 30.55,
-      "classification": "CRÍTICO"
-    },
-    {
-      "hash": "062a26a23b13",
-      "ts": "2026-05-06T21:06:00.180292+00:00",
-      "origin": "STN",
-      "destination": "RZE",
-      "price_eur": 17.99,
-      "classification": "CRÍTICO"
-    },
-    {
       "hash": "97877225a1c0",
       "ts": "2026-05-06T21:06:00.180292+00:00",
       "origin": "STN",
@@ -3998,6 +3982,22 @@
       "origin": "LIS",
       "destination": "AGA",
       "price_eur": 19.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "9d13dd499c95",
+      "ts": "2026-07-12T15:53:45.472600+00:00",
+      "origin": "STN",
+      "destination": "KUN",
+      "price_eur": 21.99,
+      "classification": "CRÍTICO"
+    },
+    {
+      "hash": "694ae32dbaea",
+      "ts": "2026-07-12T15:53:45.472600+00:00",
+      "origin": "MAD",
+      "destination": "MLA",
+      "price_eur": 21.99,
       "classification": "CRÍTICO"
     }
   ]
