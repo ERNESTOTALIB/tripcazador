@@ -1771,5 +1771,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1783826678.5362437,
+    "deal_id": "ryanair_prg_nap_20261030_economy",
+    "origin": "PRG",
+    "destination": "NAP",
+    "city_from": "Praga",
+    "city_to": "Naples",
+    "price_eur": 21.99
   }
 ]
