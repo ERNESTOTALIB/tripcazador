@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778149801.1253867,
-    "deal_id": "seed-b53d915d32",
-    "origin": "FRA",
-    "destination": "LIS",
-    "city_from": "Fr\u00e1ncfort",
-    "city_to": "Lisboa",
-    "price_eur": 94.0
-  },
-  {
     "timestamp": 1778164038.473763,
     "deal_id": "seed-d689e4d235",
     "origin": "BSL",
@@ -1798,5 +1789,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Palma de Mallorca",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1783889787.3781066,
+    "deal_id": "ryanair_prg_nap_20261030_economy",
+    "origin": "PRG",
+    "destination": "NAP",
+    "city_from": "Praga",
+    "city_to": "Naples",
+    "price_eur": 21.99
   }
 ]
