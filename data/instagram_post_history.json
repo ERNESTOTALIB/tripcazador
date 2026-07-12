@@ -1780,5 +1780,14 @@
     "city_from": "Praga",
     "city_to": "Naples",
     "price_eur": 21.99
+  },
+  {
+    "timestamp": 1783838324.114663,
+    "deal_id": "ryanair_stn_pmi_20261006_economy",
+    "origin": "STN",
+    "destination": "PMI",
+    "city_from": "Londres Stansted",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 15.99
   }
 ]
