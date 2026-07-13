@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778189076.4390552,
-    "deal_id": "ryanair_ath_mla_20260625_economy",
-    "origin": "ATH",
-    "destination": "MLA",
-    "city_from": "Atenas",
-    "city_to": "Malta",
-    "price_eur": 14.99
-  },
-  {
     "timestamp": 1778211172.3163044,
     "deal_id": "ryanair_dub_gro_20260728_economy",
     "origin": "DUB",
@@ -1798,5 +1789,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Palma de Mallorca",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1783965529.9967327,
+    "deal_id": "ryanair_lis_rak_20261017_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 18.99
   }
 ]
