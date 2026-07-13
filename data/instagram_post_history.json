@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778181628.6215549,
-    "deal_id": "ryanair_waw_vie_20260622_economy",
-    "origin": "WAW",
-    "destination": "VIE",
-    "city_from": "Varsovia",
-    "city_to": "Vienna",
-    "price_eur": 19.99
-  },
-  {
     "timestamp": 1778188097.9955537,
     "deal_id": "ryanair_mad_lis_20260902_economy",
     "origin": "MAD",
@@ -1798,5 +1789,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 18.99
+  },
+  {
+    "timestamp": 1783941460.8574653,
+    "deal_id": "ryanair_prg_nap_20261030_economy",
+    "origin": "PRG",
+    "destination": "NAP",
+    "city_from": "Praga",
+    "city_to": "Naples",
+    "price_eur": 21.99
   }
 ]
