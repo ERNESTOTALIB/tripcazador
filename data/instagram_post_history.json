@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778164038.473763,
-    "deal_id": "seed-d689e4d235",
-    "origin": "BSL",
-    "destination": "PMI",
-    "city_from": "Basilea",
-    "city_to": "Palma de Mallorca",
-    "price_eur": 69.0
-  },
-  {
     "timestamp": 1778176357.9350832,
     "deal_id": "seed-2f0cfb366a",
     "origin": "MUC",
@@ -1798,5 +1789,14 @@
     "city_from": "Praga",
     "city_to": "Naples",
     "price_eur": 21.99
+  },
+  {
+    "timestamp": 1783913264.1561713,
+    "deal_id": "ryanair_bcn_mla_20261024_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 19.99
   }
 ]
