@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778318672.6941874,
-    "deal_id": "ryanair_mad_lis_20260902_economy",
-    "origin": "MAD",
-    "destination": "LIS",
-    "city_from": "Madrid",
-    "city_to": "Lisbon",
-    "price_eur": 14.99
-  },
-  {
     "timestamp": 1778333243.3275378,
     "deal_id": "travelpayouts_gig_sao_20260710_economy",
     "origin": "GIG",
@@ -1798,5 +1789,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Naples",
     "price_eur": 17.99
+  },
+  {
+    "timestamp": 1784096366.8574774,
+    "deal_id": "ryanair_lis_rak_20261017_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 18.99
   }
 ]
