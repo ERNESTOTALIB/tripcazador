@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778346038.8451967,
-    "deal_id": "travelpayouts_gru_poa_20260826_economy",
-    "origin": "GRU",
-    "destination": "POA",
-    "city_from": "S\u00e3o Paulo",
-    "city_to": "POA",
-    "price_eur": 60.72
-  },
-  {
     "timestamp": 1778359924.2557585,
     "deal_id": "ryanair_vlc_nap_20260721_economy",
     "origin": "VLC",
@@ -1798,5 +1789,14 @@
     "city_from": "Praga",
     "city_to": "Gdansk",
     "price_eur": 22.61
+  },
+  {
+    "timestamp": 1784123532.326264,
+    "deal_id": "ryanair_bcn_fez_20260904_economy",
+    "origin": "BCN",
+    "destination": "FEZ",
+    "city_from": "Barcelona",
+    "city_to": "Fez",
+    "price_eur": 14.99
   }
 ]
