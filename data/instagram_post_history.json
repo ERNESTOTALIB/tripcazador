@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778307659.470655,
-    "deal_id": "ryanair_bcn_ber_20260709_economy",
-    "origin": "BCN",
-    "destination": "BER",
-    "city_from": "Barcelona",
-    "city_to": "Berlin Brandenburg",
-    "price_eur": 38.79
-  },
-  {
     "timestamp": 1778318672.6941874,
     "deal_id": "ryanair_mad_lis_20260902_economy",
     "origin": "MAD",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1784083741.4127152,
+    "deal_id": "ryanair_stn_nap_20260929_economy",
+    "origin": "STN",
+    "destination": "NAP",
+    "city_from": "Londres Stansted",
+    "city_to": "Naples",
+    "price_eur": 17.99
   }
 ]
