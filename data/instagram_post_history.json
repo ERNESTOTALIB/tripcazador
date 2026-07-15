@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778359924.2557585,
-    "deal_id": "ryanair_vlc_nap_20260721_economy",
-    "origin": "VLC",
-    "destination": "NAP",
-    "city_from": "Valencia",
-    "city_to": "Naples",
-    "price_eur": 27.99
-  },
-  {
     "timestamp": 1778384830.6079857,
     "deal_id": "ryanair_lis_rak_20260627_economy",
     "origin": "LIS",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Fez",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1784136094.9353259,
+    "deal_id": "ryanair_mad_rak_20260829_economy",
+    "origin": "MAD",
+    "destination": "RAK",
+    "city_from": "Madrid",
+    "city_to": "Marrakesh",
+    "price_eur": 16.99
   }
 ]
