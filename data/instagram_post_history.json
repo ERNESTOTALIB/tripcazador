@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778446501.70159,
-    "deal_id": "ryanair_mad_bds_20260907_economy",
-    "origin": "MAD",
-    "destination": "BDS",
-    "city_from": "Madrid",
-    "city_to": "Brindisi",
-    "price_eur": 29.99
-  },
-  {
     "timestamp": 1778471933.4967308,
     "deal_id": "ryanair_bcn_gdn_20260903_economy",
     "origin": "BCN",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1784222601.6017559,
+    "deal_id": "ryanair_mad_vie_20261014_economy",
+    "origin": "MAD",
+    "destination": "VIE",
+    "city_from": "Madrid",
+    "city_to": "Vienna",
+    "price_eur": 21.99
   }
 ]
