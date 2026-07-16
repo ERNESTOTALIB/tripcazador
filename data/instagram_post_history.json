@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778406114.5554,
-    "deal_id": "ryanair_bcn_ber_20260709_economy",
-    "origin": "BCN",
-    "destination": "BER",
-    "city_from": "Barcelona",
-    "city_to": "Berlin Brandenburg",
-    "price_eur": 38.15
-  },
-  {
     "timestamp": 1778420394.0674517,
     "deal_id": "ryanair_lis_agp_20260728_economy",
     "origin": "LIS",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1784182960.5224233,
+    "deal_id": "ryanair_prg_gdn_20260930_economy",
+    "origin": "PRG",
+    "destination": "GDN",
+    "city_from": "Praga",
+    "city_to": "Gdansk",
+    "price_eur": 22.68
   }
 ]
