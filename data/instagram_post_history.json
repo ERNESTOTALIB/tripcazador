@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778512953.4764254,
-    "deal_id": "ryanair_mad_bds_20260907_economy",
-    "origin": "MAD",
-    "destination": "BDS",
-    "city_from": "Madrid",
-    "city_to": "Brindisi",
-    "price_eur": 29.99
-  },
-  {
     "timestamp": 1778522332.983296,
     "deal_id": "ryanair_ams_dub_20260630_economy",
     "origin": "AMS",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 14.99
+  },
+  {
+    "timestamp": 1784282549.4088526,
+    "deal_id": "ryanair_lis_rak_20261011_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 18.99
   }
 ]
