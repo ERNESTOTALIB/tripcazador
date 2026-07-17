@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778499013.9587944,
-    "deal_id": "ryanair_stn_tgd_20260826_economy",
-    "origin": "STN",
-    "destination": "TGD",
-    "city_from": "Londres Stansted",
-    "city_to": "Podgorica",
-    "price_eur": 27.34
-  },
-  {
     "timestamp": 1778512953.4764254,
     "deal_id": "ryanair_mad_bds_20260907_economy",
     "origin": "MAD",
@@ -1798,5 +1789,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 21.99
+  },
+  {
+    "timestamp": 1784269264.1809108,
+    "deal_id": "ryanair_bcn_mla_20260831_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 14.99
   }
 ]
