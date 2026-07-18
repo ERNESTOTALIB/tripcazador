@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778621015.3767483,
-    "deal_id": "ryanair_bcn_tng_20260828_economy",
-    "origin": "BCN",
-    "destination": "TNG",
-    "city_from": "Barcelona",
-    "city_to": "Tangier",
-    "price_eur": 20.71
-  },
-  {
     "timestamp": 1778644298.4942918,
     "deal_id": "ryanair_lis_agp_20260714_economy",
     "origin": "LIS",
@@ -1798,5 +1789,14 @@
     "city_from": "Varsovia",
     "city_to": "Palma de Mallorca",
     "price_eur": 21.99
+  },
+  {
+    "timestamp": 1784394104.314163,
+    "deal_id": "ryanair_bcn_mla_20261008_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 19.99
   }
 ]
