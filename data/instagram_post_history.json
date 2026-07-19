@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778695537.7016127,
-    "deal_id": "ryanair_prg_gdn_20260826_economy",
-    "origin": "PRG",
-    "destination": "GDN",
-    "city_from": "Praga",
-    "city_to": "Gdansk",
-    "price_eur": 22.99
-  },
-  {
     "timestamp": 1778708377.8748589,
     "deal_id": "ryanair_bcn_tng_20260828_economy",
     "origin": "BCN",
@@ -1798,5 +1789,14 @@
     "city_from": "Lisboa",
     "city_to": "Venice M.Polo",
     "price_eur": 42.96
+  },
+  {
+    "timestamp": 1784467627.415897,
+    "deal_id": "ryanair_waw_pmi_20261023_economy",
+    "origin": "WAW",
+    "destination": "PMI",
+    "city_from": "Varsovia",
+    "city_to": "Palma de Mallorca",
+    "price_eur": 23.99
   }
 ]
