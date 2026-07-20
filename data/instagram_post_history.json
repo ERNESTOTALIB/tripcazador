@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778781486.67303,
-    "deal_id": "ryanair_waw_pmi_20260712_economy",
-    "origin": "WAW",
-    "destination": "PMI",
-    "city_from": "Varsovia",
-    "city_to": "Palma de Mallorca",
-    "price_eur": 29.99
-  },
-  {
     "timestamp": 1778793334.1947994,
     "deal_id": "ryanair_bcn_mla_20260821_economy",
     "origin": "BCN",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1784556978.065753,
+    "deal_id": "ryanair_stn_ber_20261008_economy",
+    "origin": "STN",
+    "destination": "BER",
+    "city_from": "Londres Stansted",
+    "city_to": "Berlin Brandenburg",
+    "price_eur": 27.99
   }
 ]
