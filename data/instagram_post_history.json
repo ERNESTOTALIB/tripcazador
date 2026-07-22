@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778964938.1002984,
-    "deal_id": "ryanair_svq_bud_20260910_economy",
-    "origin": "SVQ",
-    "destination": "BUD",
-    "city_from": "Sevilla",
-    "city_to": "Budapest",
-    "price_eur": 47.99
-  },
-  {
     "timestamp": 1778990113.2600393,
     "deal_id": "ryanair_stn_bfs_20260825_economy",
     "origin": "STN",
@@ -1798,5 +1789,14 @@
     "city_from": "Lisboa",
     "city_to": "Madeira Funchal",
     "price_eur": 23.58
+  },
+  {
+    "timestamp": 1784741063.4629817,
+    "deal_id": "ryanair_bcn_mla_20261015_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 19.99
   }
 ]
