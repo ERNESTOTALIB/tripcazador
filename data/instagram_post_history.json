@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1778951030.6996493,
-    "deal_id": "ryanair_prg_gdn_20260826_economy",
-    "origin": "PRG",
-    "destination": "GDN",
-    "city_from": "Praga",
-    "city_to": "Gdansk",
-    "price_eur": 23.03
-  },
-  {
     "timestamp": 1778964938.1002984,
     "deal_id": "ryanair_svq_bud_20260910_economy",
     "origin": "SVQ",
@@ -1798,5 +1789,14 @@
     "city_from": "Varsovia",
     "city_to": "Alicante",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1784729205.0395489,
+    "deal_id": "ryanair_lis_fnc_20260917_economy",
+    "origin": "LIS",
+    "destination": "FNC",
+    "city_from": "Lisboa",
+    "city_to": "Madeira Funchal",
+    "price_eur": 23.58
   }
 ]
