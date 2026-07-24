@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779104919.5591493,
-    "deal_id": "ryanair_mad_cag_20260914_economy",
-    "origin": "MAD",
-    "destination": "CAG",
-    "city_from": "Madrid",
-    "city_to": "Cagliari",
-    "price_eur": 34.99
-  },
-  {
     "timestamp": 1779118974.3341687,
     "deal_id": "ryanair_ams_agp_20260818_economy",
     "origin": "AMS",
@@ -1798,5 +1789,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Athens",
     "price_eur": 23.99
+  },
+  {
+    "timestamp": 1784862852.2287254,
+    "deal_id": "ryanair_lis_fnc_20261013_economy",
+    "origin": "LIS",
+    "destination": "FNC",
+    "city_from": "Lisboa",
+    "city_to": "Madeira Funchal",
+    "price_eur": 23.58
   }
 ]
