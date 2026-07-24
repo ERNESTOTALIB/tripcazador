@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779163266.9010825,
-    "deal_id": "ryanair_ams_agp_20260818_economy",
-    "origin": "AMS",
-    "destination": "AGP",
-    "city_from": "\u00c1msterdam",
-    "city_to": "Malaga",
-    "price_eur": 38.91
-  },
-  {
     "timestamp": 1779189970.5921457,
     "deal_id": "ryanair_lis_rak_20260814_economy",
     "origin": "LIS",
@@ -1798,5 +1789,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1784914873.4597638,
+    "deal_id": "ryanair_bcn_gdn_20261022_economy",
+    "origin": "BCN",
+    "destination": "GDN",
+    "city_from": "Barcelona",
+    "city_to": "Gdansk",
+    "price_eur": 18.99
   }
 ]
