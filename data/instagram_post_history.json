@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779214188.1199923,
-    "deal_id": "ryanair_bcn_aho_20260709_economy",
-    "origin": "BCN",
-    "destination": "AHO",
-    "city_from": "Barcelona",
-    "city_to": "Alghero",
-    "price_eur": 14.99
-  },
-  {
     "timestamp": 1779225858.6288652,
     "deal_id": "ryanair_stn_bfs_20260825_economy",
     "origin": "STN",
@@ -1798,5 +1789,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1784960466.5479746,
+    "deal_id": "ryanair_bcn_mla_20261020_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
+    "price_eur": 19.99
   }
 ]
