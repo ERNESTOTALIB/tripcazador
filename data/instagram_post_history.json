@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779274620.7566612,
-    "deal_id": "ryanair_lis_rak_20260814_economy",
-    "origin": "LIS",
-    "destination": "RAK",
-    "city_from": "Lisboa",
-    "city_to": "Marrakesh",
-    "price_eur": 16.99
-  },
-  {
     "timestamp": 1779291230.9364748,
     "deal_id": "ryanair_waw_pmi_20260705_economy",
     "origin": "WAW",
@@ -1798,5 +1789,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1784999045.381341,
+    "deal_id": "ryanair_stn_aga_20260928_economy",
+    "origin": "STN",
+    "destination": "AGA",
+    "city_from": "Londres Stansted",
+    "city_to": "Agadir",
+    "price_eur": 25.99
   }
 ]
