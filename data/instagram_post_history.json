@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779291230.9364748,
-    "deal_id": "ryanair_waw_pmi_20260705_economy",
-    "origin": "WAW",
-    "destination": "PMI",
-    "city_from": "Varsovia",
-    "city_to": "Palma de Mallorca",
-    "price_eur": 29.99
-  },
-  {
     "timestamp": 1779301360.8410225,
     "deal_id": "ryanair_bcn_aho_20260708_economy",
     "origin": "BCN",
@@ -1798,5 +1789,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Agadir",
     "price_eur": 25.99
+  },
+  {
+    "timestamp": 1785013056.0961483,
+    "deal_id": "ryanair_bcn_ndr_20260918_economy",
+    "origin": "BCN",
+    "destination": "NDR",
+    "city_from": "Barcelona",
+    "city_to": "Nador",
+    "price_eur": 18.89
   }
 ]
