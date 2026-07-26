@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779363057.32369,
-    "deal_id": "ryanair_bcn_aho_20260709_economy",
-    "origin": "BCN",
-    "destination": "AHO",
-    "city_from": "Barcelona",
-    "city_to": "Alghero",
-    "price_eur": 14.99
-  },
-  {
     "timestamp": 1779377939.8090718,
     "deal_id": "ryanair_mad_cag_20260914_economy",
     "origin": "MAD",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Gdansk",
     "price_eur": 24.99
+  },
+  {
+    "timestamp": 1785073143.1909478,
+    "deal_id": "ryanair_lis_rak_20261018_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 16.99
   }
 ]
