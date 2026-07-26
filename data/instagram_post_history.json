@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779314433.3114116,
-    "deal_id": "ryanair_lis_rak_20260814_economy",
-    "origin": "LIS",
-    "destination": "RAK",
-    "city_from": "Lisboa",
-    "city_to": "Marrakesh",
-    "price_eur": 16.99
-  },
-  {
     "timestamp": 1779336675.442864,
     "deal_id": "ryanair_waw_pmi_20260721_economy",
     "origin": "WAW",
@@ -1798,5 +1789,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 17.99
+  },
+  {
+    "timestamp": 1785048023.0977187,
+    "deal_id": "ryanair_waw_pfo_20261009_economy",
+    "origin": "WAW",
+    "destination": "PFO",
+    "city_from": "Varsovia",
+    "city_to": "Paphos",
+    "price_eur": 27.99
   }
 ]
