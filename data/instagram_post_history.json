@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779472642.2811322,
-    "deal_id": "ryanair_stn_chq_20260825_economy",
-    "origin": "STN",
-    "destination": "CHQ",
-    "city_from": "Londres Stansted",
-    "city_to": "Chania",
-    "price_eur": 26.99
-  },
-  {
     "timestamp": 1779484593.0947685,
     "deal_id": "ryanair_dub_bds_20260824_economy",
     "origin": "DUB",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1785174377.6669197,
+    "deal_id": "ryanair_lis_rak_20261024_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 16.99
   }
 ]
