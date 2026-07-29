@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779682601.3689508,
-    "deal_id": "ryanair_bcn_gdn_20260903_economy",
-    "origin": "BCN",
-    "destination": "GDN",
-    "city_from": "Barcelona",
-    "city_to": "Gdansk",
-    "price_eur": 28.99
-  },
-  {
     "timestamp": 1779710183.9576375,
     "deal_id": "ryanair_ber_zad_20260826_economy",
     "origin": "BER",
@@ -1798,5 +1789,14 @@
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
     "price_eur": 16.99
+  },
+  {
+    "timestamp": 1785358852.1965365,
+    "deal_id": "ryanair_stn_bfs_20261015_economy",
+    "origin": "STN",
+    "destination": "BFS",
+    "city_from": "Londres Stansted",
+    "city_to": "Belfast International",
+    "price_eur": 19.83
   }
 ]
