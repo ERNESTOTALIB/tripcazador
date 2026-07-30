@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779743720.9611042,
-    "deal_id": "ryanair_vlc_lpa_20260920_economy",
-    "origin": "VLC",
-    "destination": "LPA",
-    "city_from": "Valencia",
-    "city_to": "Gran Canaria",
-    "price_eur": 29.47
-  },
-  {
     "timestamp": 1779768109.3928077,
     "deal_id": "ryanair_ams_dub_20260829_economy",
     "origin": "AMS",
@@ -1798,5 +1789,14 @@
     "city_from": "Praga",
     "city_to": "Rhodes",
     "price_eur": 27.99
+  },
+  {
+    "timestamp": 1785420744.9703257,
+    "deal_id": "ryanair_lis_rak_20261011_economy",
+    "origin": "LIS",
+    "destination": "RAK",
+    "city_from": "Lisboa",
+    "city_to": "Marrakesh",
+    "price_eur": 21.99
   }
 ]
