@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779810716.0736344,
-    "deal_id": "ryanair_bcn_bts_20260923_economy",
-    "origin": "BCN",
-    "destination": "BTS",
-    "city_from": "Barcelona",
-    "city_to": "Bratislava",
-    "price_eur": 25.99
-  },
-  {
     "timestamp": 1779820325.5499659,
     "deal_id": "ryanair_lis_rak_20260814_economy",
     "origin": "LIS",
@@ -1797,6 +1788,15 @@
     "destination": "PFO",
     "city_from": "Varsovia",
     "city_to": "Paphos",
+    "price_eur": 27.99
+  },
+  {
+    "timestamp": 1785446219.8909566,
+    "deal_id": "ryanair_prg_rho_20261021_economy",
+    "origin": "PRG",
+    "destination": "RHO",
+    "city_from": "Praga",
+    "city_to": "Rhodes",
     "price_eur": 27.99
   }
 ]
