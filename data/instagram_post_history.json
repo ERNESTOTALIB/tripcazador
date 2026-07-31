@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779897440.6928842,
-    "deal_id": "ryanair_mad_mla_20260824_economy",
-    "origin": "MAD",
-    "destination": "MLA",
-    "city_from": "Madrid",
-    "city_to": "Malta",
-    "price_eur": 26.29
-  },
-  {
     "timestamp": 1779906659.4643042,
     "deal_id": "ryanair_waw_pmi_20260726_economy",
     "origin": "WAW",
@@ -1798,5 +1789,14 @@
     "city_from": "Budapest",
     "city_to": "Madrid",
     "price_eur": 24.99
+  },
+  {
+    "timestamp": 1785519915.0468962,
+    "deal_id": "ryanair_waw_alc_20261031_economy",
+    "origin": "WAW",
+    "destination": "ALC",
+    "city_from": "Varsovia",
+    "city_to": "Alicante",
+    "price_eur": 29.99
   }
 ]
