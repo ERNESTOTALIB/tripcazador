@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1779984689.2783713,
-    "deal_id": "ryanair_stn_tng_20260901_economy",
-    "origin": "STN",
-    "destination": "TNG",
-    "city_from": "Londres Stansted",
-    "city_to": "Tangier",
-    "price_eur": 20.99
-  },
-  {
     "timestamp": 1780005521.807127,
     "deal_id": "ryanair_bcn_bts_20260718_economy",
     "origin": "BCN",
@@ -1798,5 +1789,14 @@
     "city_from": "Praga",
     "city_to": "Rhodes",
     "price_eur": 27.99
+  },
+  {
+    "timestamp": 1785591437.2941437,
+    "deal_id": "ryanair_stn_bcn_20261030_economy",
+    "origin": "STN",
+    "destination": "BCN",
+    "city_from": "Londres Stansted",
+    "city_to": "Barcelona",
+    "price_eur": 15.99
   }
 ]
