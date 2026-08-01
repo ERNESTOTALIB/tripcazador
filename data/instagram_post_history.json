@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1780027570.1864908,
-    "deal_id": "ryanair_bud_ber_20260714_economy",
-    "origin": "BUD",
-    "destination": "BER",
-    "city_from": "Budapest",
-    "city_to": "Berlin Brandenburg",
-    "price_eur": 15.99
-  },
-  {
     "timestamp": 1780054437.0246823,
     "deal_id": "ryanair_dub_boj_20260923_economy",
     "origin": "DUB",
@@ -1798,5 +1789,14 @@
     "city_from": "Budapest",
     "city_to": "Madrid",
     "price_eur": 24.99
+  },
+  {
+    "timestamp": 1785617929.5396903,
+    "deal_id": "ryanair_prg_rho_20261021_economy",
+    "origin": "PRG",
+    "destination": "RHO",
+    "city_from": "Praga",
+    "city_to": "Rhodes",
+    "price_eur": 27.99
   }
 ]
