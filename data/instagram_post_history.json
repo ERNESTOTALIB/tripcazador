@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1780069985.1667125,
-    "deal_id": "ryanair_bcn_bts_20260719_economy",
-    "origin": "BCN",
-    "destination": "BTS",
-    "city_from": "Barcelona",
-    "city_to": "Bratislava",
-    "price_eur": 24.99
-  },
-  {
     "timestamp": 1780079866.573391,
     "deal_id": "ryanair_prg_zad_20260829_economy",
     "origin": "PRG",
@@ -1798,5 +1789,14 @@
     "city_from": "Londres Stansted",
     "city_to": "Barcelona",
     "price_eur": 15.99
+  },
+  {
+    "timestamp": 1785652657.5877554,
+    "deal_id": "ryanair_mad_bru_20261016_economy",
+    "origin": "MAD",
+    "destination": "BRU",
+    "city_from": "Madrid",
+    "city_to": "Brussels",
+    "price_eur": 29.99
   }
 ]
