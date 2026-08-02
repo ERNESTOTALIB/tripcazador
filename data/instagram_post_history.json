@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1780079866.573391,
-    "deal_id": "ryanair_prg_zad_20260829_economy",
-    "origin": "PRG",
-    "destination": "ZAD",
-    "city_from": "Praga",
-    "city_to": "Zadar",
-    "price_eur": 24.7
-  },
-  {
     "timestamp": 1780091737.5922105,
     "deal_id": "ryanair_dub_boj_20260925_economy",
     "origin": "DUB",
@@ -1798,5 +1789,14 @@
     "city_from": "Madrid",
     "city_to": "Brussels",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1785664918.254007,
+    "deal_id": "ryanair_prg_rho_20261021_economy",
+    "origin": "PRG",
+    "destination": "RHO",
+    "city_from": "Praga",
+    "city_to": "Rhodes",
+    "price_eur": 27.99
   }
 ]
