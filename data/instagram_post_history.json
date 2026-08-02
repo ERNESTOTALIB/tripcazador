@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1780054437.0246823,
-    "deal_id": "ryanair_dub_boj_20260923_economy",
-    "origin": "DUB",
-    "destination": "BOJ",
-    "city_from": "Dubl\u00edn",
-    "city_to": "Burgas",
-    "price_eur": 45.99
-  },
-  {
     "timestamp": 1780069985.1667125,
     "deal_id": "ryanair_bcn_bts_20260719_economy",
     "origin": "BCN",
@@ -1798,5 +1789,14 @@
     "city_from": "Praga",
     "city_to": "Rhodes",
     "price_eur": 27.99
+  },
+  {
+    "timestamp": 1785641032.0178778,
+    "deal_id": "ryanair_stn_bcn_20261030_economy",
+    "origin": "STN",
+    "destination": "BCN",
+    "city_from": "Londres Stansted",
+    "city_to": "Barcelona",
+    "price_eur": 15.99
   }
 ]
