@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1780135492.0518377,
-    "deal_id": "ryanair_prg_zad_20260927_economy",
-    "origin": "PRG",
-    "destination": "ZAD",
-    "city_from": "Praga",
-    "city_to": "Zadar",
-    "price_eur": 20.99
-  },
-  {
     "timestamp": 1780148979.00221,
     "deal_id": "ryanair_stn_ath_20260825_economy",
     "origin": "STN",
@@ -1797,6 +1788,15 @@
     "destination": "RAK",
     "city_from": "Lisboa",
     "city_to": "Marrakesh",
+    "price_eur": 19.99
+  },
+  {
+    "timestamp": 1785727590.3075206,
+    "deal_id": "ryanair_bcn_mla_20261030_economy",
+    "origin": "BCN",
+    "destination": "MLA",
+    "city_from": "Barcelona",
+    "city_to": "Malta",
     "price_eur": 19.99
   }
 ]
