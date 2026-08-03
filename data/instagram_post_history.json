@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1780148979.00221,
-    "deal_id": "ryanair_stn_ath_20260825_economy",
-    "origin": "STN",
-    "destination": "ATH",
-    "city_from": "Londres Stansted",
-    "city_to": "Athens",
-    "price_eur": 28.59
-  },
-  {
     "timestamp": 1780161250.9673324,
     "deal_id": "ryanair_waw_pfo_20260731_economy",
     "origin": "WAW",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1785742628.7073624,
+    "deal_id": "ryanair_mad_lpa_20260927_economy",
+    "origin": "MAD",
+    "destination": "LPA",
+    "city_from": "Madrid",
+    "city_to": "Gran Canaria",
+    "price_eur": 21.99
   }
 ]
