@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1780201092.2271316,
-    "deal_id": "ryanair_prg_zad_20260928_economy",
-    "origin": "PRG",
-    "destination": "ZAD",
-    "city_from": "Praga",
-    "city_to": "Zadar",
-    "price_eur": 20.99
-  },
-  {
     "timestamp": 1780222800.3917592,
     "deal_id": "ryanair_waw_pfo_20260731_economy",
     "origin": "WAW",
@@ -1798,5 +1789,14 @@
     "city_from": "Varsovia",
     "city_to": "Alicante",
     "price_eur": 29.99
+  },
+  {
+    "timestamp": 1785779742.7115784,
+    "deal_id": "ryanair_stn_lpa_20261029_economy",
+    "origin": "STN",
+    "destination": "LPA",
+    "city_from": "Londres Stansted",
+    "city_to": "Gran Canaria",
+    "price_eur": 18.99
   }
 ]
