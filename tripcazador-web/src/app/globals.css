@@ -504,13 +504,13 @@ h1, h2 {
    * Width 100% del span = (card.right-20) - (card.left+20).
    * Para que el span termine antes del badge: ancho = card-width − 70px
    * (40 padding card + 30 reservados para badge). */
-  display: block;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   width: calc(100% - 50px);
   font-size: 13px;
   font-weight: 600;
   color: #fff;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
-  white-space: nowrap;
+    white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
 }
