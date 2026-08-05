@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": 1780402178.024174,
-    "deal_id": "ryanair_opo_mla_20260918_economy",
-    "origin": "OPO",
-    "destination": "MLA",
-    "city_from": "Oporto",
-    "city_to": "Malta",
-    "price_eur": 50.19
-  },
-  {
     "timestamp": 1783014853.6792595,
     "deal_id": "ryanair_ber_mrs_20260930_economy",
     "origin": "BER",
@@ -1798,5 +1789,14 @@
     "city_from": "Barcelona",
     "city_to": "Malta",
     "price_eur": 19.99
+  },
+  {
+    "timestamp": 1785911527.8304343,
+    "deal_id": "ryanair_stn_krk_20261031_economy",
+    "origin": "STN",
+    "destination": "KRK",
+    "city_from": "Londres Stansted",
+    "city_to": "Krakow",
+    "price_eur": 16.99
   }
 ]
