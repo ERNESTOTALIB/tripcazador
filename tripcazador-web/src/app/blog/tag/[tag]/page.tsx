@@ -6,8 +6,8 @@ import { JsonLd } from "@/components/JsonLd";
 
 type Params = { tag: string };
 
-export const revalidate = 3600;
-export const dynamicParams = true;
+export const revalidate = false;
+export const dynamicParams = false;
 
 export async function generateStaticParams(): Promise<Params[]> {
   return getAllTagsWithCounts("es").map((t) => ({ tag: encodeURIComponent(t.tag) }));
